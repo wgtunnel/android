@@ -1,1 +1,1 @@
-WG Tunnel
+WG VPN

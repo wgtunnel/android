@@ -1,13 +1,22 @@
-WG Tunnel is a WireGuard VPN client that strikes the balance between simplicity and robustness, making it the ideal client for casual and power users alike.
-Whether you simply want to automate when you're connected to your VPN or you're a power user with advanced privacy use cases, WG Tunnel has you covered.
+WG VPNเป็นไคลเอนต์ VPN ของ WireGuard ที่ผสมผสานความเรียบง่ายและความแข็งแกร่งได้อย่างลงตัว ทำให้เป็นไคลเอนต์ที่เหมาะสำหรับทั้งผู้ใช้ทั่วไปและผู้ใช้ขั้นสูง
+ไม่ว่าคุณต้องการตั้งค่าการเชื่อมต่อ VPN โดยอัตโนมัติ หรือคุณเป็นผู้ใช้ขั้นสูงที่มีกรณีการใช้งานความเป็นส่วนตัวขั้นสูง WG VPNก็ครอบคลุมทุกความต้องการของคุณ
 
-- **Auto-Tunneling:** Automatically activate tunnels based on Wi-Fi SSID, Ethernet connections, or mobile data networks.
-- **Split Tunneling:** Flexible support for routing specific apps or traffic through the VPN.
-- **App Modes:** Support for multiple tunnel modes, including standard VPN, kernel, lockdown (custom kill switch), and proxy modes.
-- **AmneziaWG Integration:** Full support for AmneziaWG, providing robust censorship evasion.
-- **Proxying Options:** Built-in HTTP and SOCKS5 proxy support allowing third-party apps to tunnel their traffic.
-- **Quick Controls:** Quick Settings tile and home screen shortcuts for easy toggling actions.
-- **Automation Support:** Intent-based automation for controlling tunnels and auto-tunneling.
-- **Dynamic DNS Handling:** Detects and updates DNS changes without tunnel restarts.
-- **Monitoring Tools:** Advanced tunnel monitoring features for tunnel performance monitoring.
-- **Android TV Support:** Android TV support for nearly all app features.
+- **การสร้างอุโมงค์อัตโนมัติ:** เปิดใช้งานอุโมงค์โดยอัตโนมัติตาม SSID ของ Wi-Fi การเชื่อมต่ออีเธอร์เน็ต หรือเครือข่ายข้อมูลมือถือ
+
+- **การแบ่งอุโมงค์:** รองรับการกำหนดเส้นทางแอปหรือทราฟฟิกเฉพาะผ่าน VPN ได้อย่างยืดหยุ่น
+
+- **โหมดแอป:** รองรับโหมดอุโมงค์หลายโหมด รวมถึง VPN มาตรฐาน เคอร์เนล ล็อกดาวน์ (สวิตช์ปิดการทำงานแบบกำหนดเอง) และโหมดพร็อกซี
+
+- **การผสานรวม AmneziaWG:** รองรับ AmneziaWG อย่างเต็มรูปแบบ ให้การหลีกเลี่ยงการเซ็นเซอร์ที่แข็งแกร่ง
+
+- **ตัวเลือกพร็อกซี:** รองรับพร็อกซี HTTP และ SOCKS5 ในตัว ช่วยให้แอปของบุคคลที่สามสามารถส่งทราฟฟิกผ่านอุโมงค์ได้
+
+-  - **การควบคุมด่วน:** ไทล์การตั้งค่าด่วนและทางลัดบนหน้าจอหลักเพื่อการสลับการทำงานที่ง่ายดาย
+
+- **การสนับสนุนระบบอัตโนมัติ:** ระบบอัตโนมัติแบบอิงตามความตั้งใจสำหรับการควบคุมอุโมงค์และการสร้างอุโมงค์อัตโนมัติ
+
+- **การจัดการ DNS แบบไดนามิก:** ตรวจจับและอัปเดตการเปลี่ยนแปลง DNS โดยไม่ต้องรีสตาร์ทอุโมงค์
+
+- **เครื่องมือตรวจสอบ:** คุณสมบัติการตรวจสอบอุโมงค์ขั้นสูงสำหรับการตรวจสอบประสิทธิภาพของอุโมงค์
+
+- **การสนับสนุน Android TV:** รองรับ Android TV สำหรับคุณสมบัติแอปเกือบทั้งหมด

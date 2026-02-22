@@ -1,1 +1,1 @@
-A WireGuard & AmneziaWG VPN client with auto-tunneling, lockdown & proxying.
+แอปพลิเคชัน VPN สำหรับ WireGuard และ AmneziaWG
