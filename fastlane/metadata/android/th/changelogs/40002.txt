@@ -1,0 +1,5 @@
+What's new:
+- App lock crash bugfix
+- Fdroid publishing bugfix
+- Exporting logs bugfix
+- Auto-tunnel ethernet toggle bugfix

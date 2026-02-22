@@ -1,0 +1,6 @@
+What's new:
+- Tunnel sorting
+- Shizuku support for Wi-Fi SSIDs
+- Android TV hover visibility improvements
+- Auto-tunnel default detection method bug fix
+- Other UI changes and improvements
