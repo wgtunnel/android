@@ -1,0 +1,3 @@
+What's new:
+- Auto-tunnel regression bugfix
+- Resource usage bugfix for kill switch mode

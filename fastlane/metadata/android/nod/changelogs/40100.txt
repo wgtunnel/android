@@ -1,0 +1,8 @@
+What's new:
+- UI rework
+- Dynamic DNS fixes
+- Battery usage bugfix
+- Auto-tunnel reliability improvements
+- Global split tunneling and config overrides
+- Restart on boot and AOVPN bugfixes
+- Various other improvements and optimizations

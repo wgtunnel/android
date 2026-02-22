@@ -1,0 +1,7 @@
+What's new:
+- Fix for tunnel sort bug
+- Improved location permissions flow
+- Location permission detection and notifications
+- Fix for AndroidTV apps detection for split tunneling
+- Improved tunnel monitoring and reboot recovery
+- Fix tunnel slow reconnect from sleep
