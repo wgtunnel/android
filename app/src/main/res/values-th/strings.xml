@@ -279,7 +279,6 @@
     <string name="general">General</string>
     <string name="donation_dev_message">As the sole developer, I work tirelessly to make WG Tunnel the best free and open-source WireGuard client for Android, but this is only possible with your support.</string>
     <string name="review">Rate app</string>
-    <string name="app_permission_description"></string>
     <string name="install_updated_permission">This app needs permission to install updates.</string>
     <string name="use_root_shell_for_wifi">Use a root shell to get Wi-Fi information, preventing the need for location permissions</string>
     <string name="disabled">Disabled</string>
