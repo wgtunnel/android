@@ -120,7 +120,7 @@
     <string name="update_available">Update Available!</string>
     <string name="vpn_on">VPN on</string>
     <string name="appearance">Appearance</string>
-    <string name="vpn_channel_name">VPN Notification Channel</string>
+    <string name="vpn_channel_name">การแจ้งเตือน</string>
     <string name="name">Name</string>
     <string name="dns_provider">DNS provider</string>
     <string name="recommended_template">%1$s (recommended)</string>
@@ -248,9 +248,9 @@
     <string name="show_scripts">Show scripts</string>
     <string name="allowed_ips">Allowed IPs</string>
     <string name="reliability">Reliability</string>
-    <string name="no_tunnels">No tunnels added yet!</string>
+    <string name="no_tunnels">ยังไม่มีโปรไฟล์</string>
     <string name="monitoring">Monitoring</string>
-    <string name="app_permission_title">Control tunnels and auto-tunnel features.</string>
+    <string name="app_permission_title">ตั้งค่า เชื่อมต่อเองอัตโนมัติ</string>
     <string name="wireguard">WireGuard</string>
     <string name="rotate_keys">Rotate keys</string>
     <string name="aovpn_description">Allows Android to start tunnels</string>
@@ -279,7 +279,7 @@
     <string name="general">General</string>
     <string name="donation_dev_message">As the sole developer, I work tirelessly to make WG Tunnel the best free and open-source WireGuard client for Android, but this is only possible with your support.</string>
     <string name="review">Rate app</string>
-    <string name="app_permission_description">https://hosted.weblate.org/translate/wg-tunnel/strings/en/?checksum=e52d7eb2e28a9a12Control tunnels and auto-tunnel features.</string>
+    <string name="app_permission_description"></string>
     <string name="install_updated_permission">This app needs permission to install updates.</string>
     <string name="use_root_shell_for_wifi">Use a root shell to get Wi-Fi information, preventing the need for location permissions</string>
     <string name="disabled">Disabled</string>
