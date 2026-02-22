@@ -385,4 +385,5 @@
     <string name="done">Done</string>
     <string name="thank_you">Thank you for using WG Tunnel!</string>
     <string name="invalid_key">Invalid key</string>
+    <string name="app_name">WG VPN</string>
 </resources>
