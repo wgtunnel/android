@@ -238,12 +238,28 @@ class WifiRoamingHandler(
     }
 
     private fun applyIpCache(config: TunnelConfig, cache: Map<String, String>): TunnelConfig {
-        fun replace(text: String) =
-            text.lines().joinToString("\n") { line ->
-                if (line.trim().startsWith("Endpoint", ignoreCase = true)) {
-                    cache.entries.fold(line) { acc, (host, ip) -> acc.replace(host, ip) }
-                } else line
-            }
+            fun replace(text: String) =
+                text.lines().joinToString("\n") { line ->
+                    if (line.trim().startsWith("Endpoint", ignoreCase = true)) {
+                        val parts = line.split("=", limit = 2)
+                        if (parts.size == 2) {
+                            val keyPart = parts[0]
+                            val valuePart = parts[1].trim()
+                            
+                            val hostPart = valuePart.substringBeforeLast(':')
+                            val portPart = valuePart.substringAfterLast(':', "")
+                            
+                            val newHost = cache[hostPart] ?: hostPart
+                            
+                            val newValue = if (portPart.isNotEmpty() && portPart != hostPart) {
+                                "$newHost:$portPart"
+                            } else {
+                                newHost
+                            }
+                            "$keyPart= $newValue"
+                        } else line
+                    } else line
+                }
 
         return config.copy(
             amQuick = replace(config.amQuick.ifBlank { config.wgQuick }),
