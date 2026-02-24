@@ -13,6 +13,9 @@ fun Entity.toDomain(): Domain =
         tunnelPingTimeoutSeconds = tunnelPingTimeoutSeconds,
         showDetailedPingStats = showDetailedPingStats,
         isLocalLogsEnabled = isLocalLogsEnabled,
+        isRestartOnHandshakeTimeoutEnabled = isRestartOnHandshakeTimeoutEnabled,
+        maxHandshakeRestartAttempts = maxHandshakeRestartAttempts,
+        restartCooldownSeconds = restartCooldownSeconds,
     )
 
 fun Domain.toEntity(): Entity =
@@ -25,4 +28,7 @@ fun Domain.toEntity(): Entity =
         tunnelPingTimeoutSeconds = tunnelPingTimeoutSeconds,
         showDetailedPingStats = showDetailedPingStats,
         isLocalLogsEnabled = isLocalLogsEnabled,
+        isRestartOnHandshakeTimeoutEnabled = isRestartOnHandshakeTimeoutEnabled,
+        maxHandshakeRestartAttempts = maxHandshakeRestartAttempts,
+        restartCooldownSeconds = restartCooldownSeconds,
     )

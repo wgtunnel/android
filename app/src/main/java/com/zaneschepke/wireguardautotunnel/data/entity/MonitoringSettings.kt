@@ -18,4 +18,10 @@ data class MonitoringSettings(
     val showDetailedPingStats: Boolean = false,
     @ColumnInfo(name = "is_local_logs_enabled", defaultValue = "0")
     val isLocalLogsEnabled: Boolean = false,
+    @ColumnInfo(name = "is_restart_on_handshake_timeout_enabled", defaultValue = "0")
+    val isRestartOnHandshakeTimeoutEnabled: Boolean = false,
+    @ColumnInfo(name = "max_handshake_restart_attempts", defaultValue = "5")
+    val maxHandshakeRestartAttempts: Int = 5,
+    @ColumnInfo(name = "restart_cooldown_seconds", defaultValue = "30")
+    val restartCooldownSeconds: Int = 30,
 )

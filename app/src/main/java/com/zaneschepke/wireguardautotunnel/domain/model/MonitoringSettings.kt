@@ -9,4 +9,7 @@ data class MonitoringSettings(
     val tunnelPingTimeoutSeconds: Int? = null,
     val showDetailedPingStats: Boolean = false,
     val isLocalLogsEnabled: Boolean = false,
+    val isRestartOnHandshakeTimeoutEnabled: Boolean = false,
+    val maxHandshakeRestartAttempts: Int = 5,
+    val restartCooldownSeconds: Int = 30,
 )
