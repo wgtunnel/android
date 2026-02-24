@@ -51,6 +51,8 @@ import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import kotlinx.coroutines.supervisorScope
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 
@@ -77,6 +79,9 @@ class TunnelManager(
     override val activeTunnels: StateFlow<Map<Int, TunnelState>> = _activeTunnels.asStateFlow()
 
     @OptIn(ExperimentalAtomicApi::class) val currentAppMode = AtomicReference(AppMode.VPN)
+
+    private val restoreMutex = Mutex()
+    @OptIn(ExperimentalAtomicApi::class) private val hasRestored = AtomicBoolean(false)
 
     private val defaultManager =
         TunnelLifecycleManager(userspaceBackend, applicationScope, ioDispatcher, _activeTunnels)
@@ -280,28 +285,62 @@ class TunnelManager(
         }
     }
 
+    @OptIn(ExperimentalAtomicApi::class)
     suspend fun handleRestore(settings: GeneralSettings? = null) =
         withContext(ioDispatcher) {
-            val currentSettings = settings ?: settingsRepository.getGeneralSettings()
-            val autoTunnelSettings = autoTunnelSettingsRepository.getAutoTunnelSettings()
-            val tunnels = tunnelsRepository.userTunnelsFlow.firstOrNull()
-            if (autoTunnelSettings.isAutoTunnelEnabled)
-                return@withContext restoreAutoTunnel(autoTunnelSettings)
-            if (currentSettings.appMode == AppMode.LOCK_DOWN) handleLockDownModeInit()
-            if (tunnels?.any { it.isActive } == true) {
-                if (currentSettings.appMode == AppMode.VPN && !serviceManager.hasVpnPermission())
-                    return@withContext localErrorEvents.emit(null to NotAuthorized())
-                when (currentSettings.appMode) {
-                    AppMode.VPN,
-                    AppMode.PROXY,
-                    AppMode.LOCK_DOWN -> {
-                        tunnels.firstOrNull { it.isActive }?.let { startTunnel(it) }
-                    }
-                    AppMode.KERNEL ->
-                        tunnels.filter { it.isActive }.forEach { conf -> startTunnel(conf) }
+            restoreMutex.withLock {
+                if (hasRestored.load()) {
+                    Timber.d("handleRestore already completed, skipping duplicate call")
+                    return@withContext
                 }
+                val currentSettings = settings ?: settingsRepository.getGeneralSettings()
+                val autoTunnelSettings = autoTunnelSettingsRepository.getAutoTunnelSettings()
+                val tunnels = tunnelsRepository.userTunnelsFlow.firstOrNull()
+                if (autoTunnelSettings.isAutoTunnelEnabled) {
+                    hasRestored.store(true)
+                    return@withContext restoreAutoTunnel(autoTunnelSettings)
+                }
+                if (currentSettings.appMode == AppMode.LOCK_DOWN) handleLockDownModeInit()
+                if (tunnels?.any { it.isActive } == true) {
+                    if (
+                        currentSettings.appMode == AppMode.VPN && !serviceManager.hasVpnPermission()
+                    ) {
+                        hasRestored.store(true)
+                        return@withContext localErrorEvents.emit(null to NotAuthorized())
+                    }
+                    // Clean up any stale backend state before starting tunnels.
+                    // After an app update or process restart, the Go backend's VPN service
+                    // may have been restarted by the system (START_STICKY) in a bad state.
+                    // Force-stopping stale tunnels at the backend level and waiting briefly
+                    // ensures the OS has time to fully release the old VPN session.
+                    cleanupStaleBackendState(currentSettings.appMode)
+                    delay(RESTORE_SETTLE_DELAY)
+                    when (currentSettings.appMode) {
+                        AppMode.VPN,
+                        AppMode.PROXY,
+                        AppMode.LOCK_DOWN -> {
+                            tunnels.firstOrNull { it.isActive }?.let { startTunnel(it) }
+                        }
+                        AppMode.KERNEL ->
+                            tunnels.filter { it.isActive }.forEach { conf -> startTunnel(conf) }
+                    }
+                }
+                hasRestored.store(true)
             }
         }
+
+    private suspend fun cleanupStaleBackendState(appMode: AppMode) {
+        val provider = lifecycleManagers[appMode] ?: defaultManager
+        try {
+            val staleNames = provider.runningTunnelNames()
+            if (staleNames.isNotEmpty()) {
+                Timber.i("Cleaning up ${staleNames.size} stale tunnel(s) from previous session")
+                provider.stopActiveTunnels()
+            }
+        } catch (e: Exception) {
+            Timber.w(e, "Failed to clean up stale backend state")
+        }
+    }
 
     private suspend fun restoreAutoTunnel(autoTunnelSettings: AutoTunnelSettings) {
         autoTunnelSettingsRepository.upsert(autoTunnelSettings.copy(isAutoTunnelEnabled = true))
@@ -370,6 +409,7 @@ class TunnelManager(
     }
 
     companion object {
-        const val RESTART_TUNNEL_DELAY = 300L
+        const val RESTART_TUNNEL_DELAY = 1_000L
+        const val RESTORE_SETTLE_DELAY = 500L
     }
 }

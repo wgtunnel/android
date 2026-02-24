@@ -8,6 +8,7 @@ import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelState
 import com.zaneschepke.wireguardautotunnel.util.extensions.isValidIpv4orIpv6Address
+import java.net.Inet4Address
 import java.net.InetAddress
 import java.util.concurrent.ConcurrentHashMap
 import kotlinx.coroutines.CoroutineDispatcher
@@ -22,6 +23,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import org.amnezia.awg.config.InetEndpoint
 import timber.log.Timber
 
 /**
@@ -114,9 +116,31 @@ class WifiRoamingHandler(
     /**
      * Maintains IP cache for DDNS endpoints. DNS may fail during roaming (broken tunnel), so we
      * cache IPs beforehand. Cache is cleaned when tunnel goes DOWN or is removed.
+     * Also resets BSSID tracking state when all tunnels go DOWN. This prevents false roaming.
      */
     private suspend fun maintainEndpointCache() {
+        var hadActiveTunnels = false
         activeTunnels.collect { tunnelMap ->
+            val hasActiveTunnels = tunnelMap.values.any { it.status.isUp() }
+
+            when {
+                // All tunnels just went DOWN: clear BSSID
+                hadActiveTunnels && !hasActiveTunnels -> {
+                    lastBssid = null
+                    lastSsid = null
+                    Timber.d("All tunnels DOWN: BSSID cleared")
+                }
+                !hadActiveTunnels && hasActiveTunnels -> {
+                    val wifi =
+                        networkMonitor.connectivityStateFlow.first().activeNetwork
+                            as? ActiveNetwork.Wifi
+                    lastBssid = wifi?.bssid
+                    lastSsid = wifi?.ssid
+                    Timber.d("First tunnel UP : cached BSSID to %s", lastBssid)
+                }
+            }
+            hadActiveTunnels = hasActiveTunnels
+
             // Clean cache for tunnels that are DOWN or removed
             endpointIpCache.keys.toList().forEach { id ->
                 val state = tunnelMap[id]
@@ -136,12 +160,21 @@ class WifiRoamingHandler(
 
     private fun cacheEndpointIps(id: Int, config: TunnelConfig) {
         val cache = mutableMapOf<String, String>()
+        val isIpv4Preferred = config.isIpv4Preferred
         for (peer in config.toAmConfig().peers) {
             val host = peer.endpoint.orElse(null)?.host ?: continue
             if (host.isValidIpv4orIpv6Address()) continue
 
             runCatching {
-                InetAddress.getByName(host).hostAddress?.let {
+                val addresses = InetAddress.getAllByName(host)
+                val preferred =
+                    if (isIpv4Preferred) {
+                        addresses.filterIsInstance<Inet4Address>().firstOrNull()
+                            ?: addresses.firstOrNull()
+                    } else {
+                        addresses.firstOrNull()
+                    }
+                preferred?.hostAddress?.let {
                     cache[host] = it
                     Timber.d("Cached: %s -> %s", host, it)
                 }
@@ -238,28 +271,25 @@ class WifiRoamingHandler(
     }
 
     private fun applyIpCache(config: TunnelConfig, cache: Map<String, String>): TunnelConfig {
-            fun replace(text: String) =
-                text.lines().joinToString("\n") { line ->
-                    if (line.trim().startsWith("Endpoint", ignoreCase = true)) {
-                        val parts = line.split("=", limit = 2)
-                        if (parts.size == 2) {
-                            val keyPart = parts[0]
-                            val valuePart = parts[1].trim()
-                            
-                            val hostPart = valuePart.substringBeforeLast(':')
-                            val portPart = valuePart.substringAfterLast(':', "")
-                            
-                            val newHost = cache[hostPart] ?: hostPart
-                            
-                            val newValue = if (portPart.isNotEmpty() && portPart != hostPart) {
-                                "$newHost:$portPart"
-                            } else {
-                                newHost
-                            }
-                            "$keyPart= $newValue"
-                        } else line
-                    } else line
-                }
+        fun replaceEndpointLine(line: String): String {
+            if (!line.trim().startsWith("Endpoint", ignoreCase = true)) return line
+            val eqIdx = line.indexOf('=')
+            if (eqIdx == -1) return line
+            val prefix = line.substring(0, eqIdx + 1)
+            val value = line.substring(eqIdx + 1).trim()
+            return try {
+                val endpoint = InetEndpoint.parse(value)
+                val ip = cache[endpoint.host] ?: return line
+                val newValue =
+                    if (ip.contains(':')) "[$ip]:${endpoint.port}" else "$ip:${endpoint.port}"
+                "$prefix $newValue"
+            } catch (e: Exception) {
+                line
+            }
+        }
+
+        fun replace(text: String) =
+            text.lines().joinToString("\n") { line -> replaceEndpointLine(line) }
 
         return config.copy(
             amQuick = replace(config.amQuick.ifBlank { config.wgQuick }),

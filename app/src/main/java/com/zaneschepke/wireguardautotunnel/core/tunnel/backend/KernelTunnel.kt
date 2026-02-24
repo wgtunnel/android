@@ -33,30 +33,6 @@ class KernelTunnel(private val runConfigHelper: RunConfigHelper, private val bac
 
     private val runtimeTunnels = ConcurrentHashMap<Int, Tunnel>()
 
-    init {
-        try {
-            val staleNames = backend.runningTunnelNames
-            for (name in staleNames) {
-                try {
-                    val stub =
-                        object : Tunnel {
-                            override fun getName() = name
-
-                            override fun onStateChange(newState: Tunnel.State) {}
-
-                            override fun isIpv4ResolutionPreferred() = true
-                        }
-                    backend.setState(stub, Tunnel.State.DOWN, null)
-                    Timber.i("Released stale kernel tunnel: %s", name)
-                } catch (e: Exception) {
-                    Timber.e(e, "Failed to release stale kernel tunnel: %s", name)
-                }
-            }
-        } catch (e: Exception) {
-            Timber.d(e, "Kernel backend not available for cleanup")
-        }
-    }
-
     private fun validateWireGuardInterfaceName(name: String): Result<Unit> {
         if (name.isEmpty() || name.length > 15)
             return Result.failure(KernelTunnelName(R.string.kernel_name_error))
@@ -83,19 +59,36 @@ class KernelTunnel(private val runConfigHelper: RunConfigHelper, private val bac
             stateChannel.consumeAsFlow().collect { state -> trySend(state.asTunnelState()) }
         }
 
+        fun releaseOnFailure() {
+            runCatching { backend.setState(runtimeTunnel, Tunnel.State.DOWN, null) }
+                .onFailure {
+                    Timber.w(
+                        it,
+                        "Failed to release socket after startup failure for ${tunnelConfig.name}",
+                    )
+                }
+            consumerJob.cancel()
+            stateChannel.close()
+            runtimeTunnels.remove(tunnelConfig.id)
+        }
+
         try {
             val runConfig = runConfigHelper.buildWgRunConfig(tunnelConfig)
             backend.setState(runtimeTunnel, Tunnel.State.UP, runConfig)
         } catch (e: TimeoutCancellationException) {
             Timber.Forest.e("Startup timed out for ${tunnelConfig.name}")
+            releaseOnFailure()
             throw DnsFailure()
         } catch (e: BackendException) {
+            releaseOnFailure()
             throw e.toBackendCoreException()
         } catch (e: IllegalArgumentException) {
             Timber.Forest.e(e, "Invalid backend arguments")
+            releaseOnFailure()
             throw InvalidConfig()
         } catch (e: Exception) {
             Timber.Forest.e(e, "Error while setting tunnel state")
+            releaseOnFailure()
             throw UnknownError()
         }
 

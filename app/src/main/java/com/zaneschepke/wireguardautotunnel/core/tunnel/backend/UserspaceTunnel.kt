@@ -34,24 +34,11 @@ class UserspaceTunnel(private val backend: Backend, private val runConfigHelper:
     private val runtimeTunnels = ConcurrentHashMap<Int, Tunnel>()
 
     init {
-        val staleNames = backend.runningTunnelNames
-        for (name in staleNames) {
-            try {
-                val stub =
-                    object : Tunnel {
-                        override fun getName() = name
-
-                        override fun onStateChange(newState: Tunnel.State) {}
-
-                        override fun isIpv4ResolutionPreferred() = true
-
-                        override fun isMetered() = false
-                    }
-                backend.setState(stub, Tunnel.State.DOWN, null)
-                Timber.i("Released stale tunnel socket: %s", name)
-            } catch (e: Exception) {
-                Timber.e(e, "Failed to release stale tunnel: %s", name)
-            }
+        try {
+            backend.backendMode = backend.backendMode
+            Timber.d("Backend mode re-applied during init to ensure clean VPN service state")
+        } catch (e: Exception) {
+            Timber.w(e, "Failed to reset backend mode during init (non-fatal)")
         }
     }
 
@@ -65,18 +52,35 @@ class UserspaceTunnel(private val backend: Backend, private val runConfigHelper:
             stateChannel.consumeAsFlow().collect { awgState -> trySend(awgState.asTunnelState()) }
         }
 
+        fun releaseOnFailure() {
+            runCatching { backend.setState(runtimeTunnel, Tunnel.State.DOWN, null) }
+                .onFailure {
+                    Timber.w(
+                        it,
+                        "Failed to release socket after startup failure for ${tunnelConfig.name}",
+                    )
+                }
+            consumerJob.cancel()
+            stateChannel.close()
+            runtimeTunnels.remove(tunnelConfig.id)
+        }
+
         try {
             val runConfig = runConfigHelper.buildAmRunConfig(tunnelConfig)
             backend.setState(runtimeTunnel, Tunnel.State.UP, runConfig)
         } catch (_: TimeoutCancellationException) {
             Timber.e("Startup timed out for ${tunnelConfig.name} (likely DNS hang)")
+            releaseOnFailure()
             throw DnsFailure()
         } catch (e: BackendException) {
+            releaseOnFailure()
             throw e.toBackendCoreException()
         } catch (_: IllegalArgumentException) {
+            releaseOnFailure()
             throw InvalidConfig()
         } catch (e: Exception) {
             Timber.e(e, "Error while setting tunnel state")
+            releaseOnFailure()
             throw UnknownError()
         }
 
@@ -84,7 +88,9 @@ class UserspaceTunnel(private val backend: Backend, private val runConfigHelper:
             try {
                 backend.setState(runtimeTunnel, Tunnel.State.DOWN, null)
             } catch (e: BackendException) {
-                // Errors emitted by caller
+                Timber.w(e, "Backend error while stopping tunnel ${tunnelConfig.name}")
+            } catch (e: Exception) {
+                Timber.w(e, "Error while stopping tunnel ${tunnelConfig.name}")
             } finally {
                 consumerJob.cancel()
                 stateChannel.close()
