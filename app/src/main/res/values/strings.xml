@@ -479,4 +479,10 @@
     <string name="restart_reason_ping_failure_targets">Ping unreachable: %1$s</string>
     <string name="restarting_attempt">Restarting… %1$d/%2$d</string>
     <string name="restart_cooldown_countdown">Restart %1$d/%2$d · next in %3$ds</string>
+    <string name="restart_max_reached">Restart %1$d/%2$d · max reached</string>
+    <string name="notif_recovery_degraded">%1$s · restarting… (%2$s/%3$s)</string>
+    <string name="notif_recovery_restored">Connection restored</string>
+    <string name="notif_recovery_failed">%1$s · max restarts reached</string>
+    <string name="recovery_notifications">Recovery notifications</string>
+    <string name="recovery_notifications_description">Get notified when a tunnel failure is detected and when it recovers</string>
 </resources>

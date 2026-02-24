@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Replay
 import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.material3.Icon
@@ -20,6 +21,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.R
+import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
+import com.zaneschepke.wireguardautotunnel.ui.common.button.SwitchWithDivider
 import com.zaneschepke.wireguardautotunnel.ui.common.dropdown.LabelledDropdown
 import com.zaneschepke.wireguardautotunnel.ui.common.label.GroupLabel
 import com.zaneschepke.wireguardautotunnel.viewmodel.MonitoringViewModel
@@ -69,6 +72,26 @@ fun AutoRestartScreen(viewModel: MonitoringViewModel = koinViewModel()) {
                 },
                 options = listOf(3, 5, 10, 20),
                 optionToString = { it?.toString() ?: stringResource(R.string._default) },
+            )
+            SurfaceRow(
+                leading = { Icon(Icons.Outlined.Notifications, contentDescription = null) },
+                title = stringResource(R.string.recovery_notifications),
+                description = {
+                    Text(
+                        text = stringResource(R.string.recovery_notifications_description),
+                        style =
+                            MaterialTheme.typography.bodySmall.copy(
+                                color = MaterialTheme.colorScheme.outline
+                            ),
+                    )
+                },
+                trailing = { modifier ->
+                    SwitchWithDivider(
+                        checked = uiState.monitoringSettings.isRecoveryNotificationEnabled,
+                        onClick = { viewModel.setRecoveryNotificationEnabled(it) },
+                        modifier = modifier,
+                    )
+                },
             )
         }
     }

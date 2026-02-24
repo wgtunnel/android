@@ -16,6 +16,7 @@ fun Entity.toDomain(): Domain =
         isRestartOnHandshakeTimeoutEnabled = isRestartOnHandshakeTimeoutEnabled,
         maxHandshakeRestartAttempts = maxHandshakeRestartAttempts,
         restartCooldownSeconds = restartCooldownSeconds,
+        isRecoveryNotificationEnabled = isRecoveryNotificationEnabled,
     )
 
 fun Domain.toEntity(): Entity =
@@ -31,4 +32,5 @@ fun Domain.toEntity(): Entity =
         isRestartOnHandshakeTimeoutEnabled = isRestartOnHandshakeTimeoutEnabled,
         maxHandshakeRestartAttempts = maxHandshakeRestartAttempts,
         restartCooldownSeconds = restartCooldownSeconds,
+        isRecoveryNotificationEnabled = isRecoveryNotificationEnabled,
     )

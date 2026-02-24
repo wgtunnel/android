@@ -24,4 +24,6 @@ data class MonitoringSettings(
     val maxHandshakeRestartAttempts: Int = 5,
     @ColumnInfo(name = "restart_cooldown_seconds", defaultValue = "30")
     val restartCooldownSeconds: Int = 30,
+    @ColumnInfo(name = "is_recovery_notification_enabled", defaultValue = "1")
+    val isRecoveryNotificationEnabled: Boolean = true,
 )

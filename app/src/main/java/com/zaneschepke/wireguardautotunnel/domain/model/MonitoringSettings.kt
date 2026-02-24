@@ -12,4 +12,5 @@ data class MonitoringSettings(
     val isRestartOnHandshakeTimeoutEnabled: Boolean = false,
     val maxHandshakeRestartAttempts: Int = 5,
     val restartCooldownSeconds: Int = 30,
+    val isRecoveryNotificationEnabled: Boolean = true,
 )

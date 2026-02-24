@@ -80,4 +80,10 @@ class MonitoringViewModel(
             state.monitoringSettings.copy(isPingMonitoringEnabled = to)
         )
     }
+
+    fun setRecoveryNotificationEnabled(to: Boolean) = intent {
+        monitoringSettingsRepository.upsert(
+            state.monitoringSettings.copy(isRecoveryNotificationEnabled = to)
+        )
+    }
 }

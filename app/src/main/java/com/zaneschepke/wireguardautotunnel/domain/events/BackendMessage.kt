@@ -9,17 +9,17 @@ sealed class BackendMessage {
 
     data object DynamicDnsSuccess : BackendMessage()
 
-    data class HandshakeRestarted(val reason: RestartReason) : BackendMessage()
+    data class ConnectionDegrading(val reason: RestartReason, val attempt: Int, val maxAttempts: Int) : BackendMessage()
 
-    fun toStringRes() =
+    data object ConnectionRestored : BackendMessage()
+
+    data class ConnectionPermanentlyLost(val reason: RestartReason, val totalAttempts: Int) : BackendMessage()
+
+    data object ConnectionCancelled : BackendMessage()
+
+    fun toStringValue(): StringValue? =
         when (this) {
-            DynamicDnsSuccess -> R.string.ddns_success_message
-            is HandshakeRestarted ->
-                when (reason) {
-                    RestartReason.STALE_HANDSHAKE -> R.string.handshake_restart_stale
-                    RestartReason.PING_FAILURE -> R.string.handshake_restart_ping
-                }
+            DynamicDnsSuccess -> StringValue.StringResource(R.string.ddns_success_message)
+            else -> null
         }
-
-    fun toStringValue() = StringValue.StringResource(this.toStringRes())
 }

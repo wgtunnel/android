@@ -59,6 +59,14 @@ class HandshakeRestartHandler(
     private val _restartProgress = MutableStateFlow<Map<Int, TunnelRestartProgress>>(emptyMap())
     val restartProgress: StateFlow<Map<Int, TunnelRestartProgress>> = _restartProgress.asStateFlow()
 
+    // Counts total restarts per tunnel since it was activated (reset on manual stop)
+    private val _restartCounts = MutableStateFlow<Map<Int, Int>>(emptyMap())
+    val restartCounts: StateFlow<Map<Int, Int>> = _restartCounts.asStateFlow()
+
+    // Tracks tunnels currently in a degraded state (stale handshake / ping failure detected)
+    // Used to emit ConnectionRestored / ConnectionPermanentlyLost events
+    private val degradedTunnels = ConcurrentHashMap<Int, BackendMessage.RestartReason>()
+
     // Emits Unit after NETWORK_RECOVERY_GRACE_MS on any network interface change
     // (Disconnected→WiFi/Cellular, WiFi→Cellular, Cellular→WiFi, etc.)
     // — wakes up the monitoring loop early instead of waiting ~3.5 min for stale detection.
@@ -133,7 +141,13 @@ class HandshakeRestartHandler(
         Timber.d("Manual stop for tunnel $tunnelId — cancelling restart job and clearing history")
         jobs.remove(tunnelId)?.cancel()
         _restartProgress.update { it - tunnelId }
+        _restartCounts.update { it - tunnelId }
         restartTimestamps.remove(tunnelId)
+        if (degradedTunnels.remove(tunnelId) != null) {
+            applicationScope.launch(ioDispatcher) {
+                localMessageEvents.emit(null to BackendMessage.ConnectionCancelled)
+            }
+        }
     }
 
     /**
@@ -189,6 +203,11 @@ class HandshakeRestartHandler(
             val settings = monitoringSettingsRepository.getMonitoringSettings()
 
             if (!shouldTrigger(state, settings.isPingMonitoringEnabled)) {
+                // Tunnel healthy — emit ConnectionRestored if it was previously degraded
+                if (degradedTunnels.remove(tunnelId) != null) {
+                    val tunnelName = tunnelsRepository.getById(tunnelId)?.name
+                    localMessageEvents.emit(tunnelName to BackendMessage.ConnectionRestored)
+                }
                 // Wait for either a trigger condition or a network reconnection event
                 merge(
                         tunStateFlow
@@ -214,11 +233,24 @@ class HandshakeRestartHandler(
                     "Max restart attempts (${settings.maxHandshakeRestartAttempts}) reached " +
                         "for tunnel $tunnelId within the last hour — waiting for recovery"
                 )
+                val permanentReason = degradedTunnels[tunnelId]
+                    ?: triggerReason(state, settings.isPingMonitoringEnabled)
+                val tunnelName = tunnelsRepository.getById(tunnelId)?.name
+                localMessageEvents.emit(
+                    tunnelName to BackendMessage.ConnectionPermanentlyLost(
+                        permanentReason,
+                        settings.maxHandshakeRestartAttempts,
+                    )
+                )
                 // Wait until healthy again or tunnel goes down
                 tunStateFlow.first {
                     it == null || (it.status is TunnelStatus.Up && !shouldTrigger(it, settings.isPingMonitoringEnabled))
                 }
                 restartTimestamps.remove(tunnelId)
+                if (degradedTunnels.remove(tunnelId) != null) {
+                    val tunnelNameRestored = tunnelsRepository.getById(tunnelId)?.name
+                    localMessageEvents.emit(tunnelNameRestored to BackendMessage.ConnectionRestored)
+                }
                 continue
             }
 
@@ -251,10 +283,14 @@ class HandshakeRestartHandler(
             }
             // Record the attempt before restarting so the rate limit applies even if the restart fails
             timestamps.addLast(now)
+            _restartCounts.update { it + (tunnelId to (it.getOrDefault(tunnelId, 0) + 1)) }
+            val tunnelName = tunnelsRepository.getById(tunnelId)?.name
+            degradedTunnels[tunnelId] = reason
+            localMessageEvents.emit(
+                tunnelName to BackendMessage.ConnectionDegrading(reason, attempt, settings.maxHandshakeRestartAttempts)
+            )
             runCatching {
-                    val tunnelName = tunnelsRepository.getById(tunnelId)?.name
                     restartTunnel(tunnelId)
-                    localMessageEvents.emit(tunnelName to BackendMessage.HandshakeRestarted(reason))
                 }
                 .onFailure { e ->
                     if (e is CancellationException) throw e
