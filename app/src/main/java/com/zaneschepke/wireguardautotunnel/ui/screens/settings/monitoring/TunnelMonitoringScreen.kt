@@ -103,6 +103,21 @@ fun TunnelMonitoringScreen(viewModel: MonitoringViewModel = koinViewModel()) {
             )
             SurfaceRow(
                 leading = { Icon(Icons.Outlined.Adjust, contentDescription = null) },
+                title = stringResource(R.string.use_ping_for_detection),
+                trailing = {
+                    ThemedSwitch(
+                        checked = monitoringUiState.monitoringSettings.isPingMonitoringEnabled,
+                        onClick = { viewModel.setPingMonitoringEnabled(it) },
+                    )
+                },
+                onClick = {
+                    viewModel.setPingMonitoringEnabled(
+                        !monitoringUiState.monitoringSettings.isPingMonitoringEnabled
+                    )
+                },
+            )
+            SurfaceRow(
+                leading = { Icon(Icons.Outlined.Adjust, contentDescription = null) },
                 title = stringResource(R.string.set_custom_ping_target),
                 onClick = { navController.push(Route.PingTarget) },
             )

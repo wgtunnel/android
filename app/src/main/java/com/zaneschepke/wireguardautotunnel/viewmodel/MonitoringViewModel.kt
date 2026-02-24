@@ -11,7 +11,6 @@ import org.orbitmvi.orbit.viewmodel.container
 
 class MonitoringViewModel(
     private val monitoringSettingsRepository: MonitoringSettingsRepository,
-    private val tunnelRepository: TunnelRepository,
     private val tunnelsRepository: TunnelRepository,
 ) : ContainerHost<MonitoringUiState, Nothing>, ViewModel() {
 
@@ -20,7 +19,7 @@ class MonitoringViewModel(
             MonitoringUiState(),
             buildSettings = { repeatOnSubscribedStopTimeout = 5000L },
         ) {
-            combine(monitoringSettingsRepository.flow, tunnelRepository.userTunnelsFlow) {
+            combine(monitoringSettingsRepository.flow, tunnelsRepository.userTunnelsFlow) {
                     monitoringSettings,
                     tunnels ->
                     state.copy(
@@ -56,5 +55,29 @@ class MonitoringViewModel(
 
     fun setPingTarget(tunnel: TunnelConfig, target: String?) = intent {
         tunnelsRepository.save(tunnel.copy(pingTarget = target?.ifBlank { null }))
+    }
+
+    fun setRestartOnHandshakeTimeout(to: Boolean) = intent {
+        monitoringSettingsRepository.upsert(
+            state.monitoringSettings.copy(isRestartOnHandshakeTimeoutEnabled = to)
+        )
+    }
+
+    fun setMaxHandshakeRestartAttempts(to: Int) = intent {
+        monitoringSettingsRepository.upsert(
+            state.monitoringSettings.copy(maxHandshakeRestartAttempts = to)
+        )
+    }
+
+    fun setRestartCooldownSeconds(to: Int) = intent {
+        monitoringSettingsRepository.upsert(
+            state.monitoringSettings.copy(restartCooldownSeconds = to)
+        )
+    }
+
+    fun setPingMonitoringEnabled(to: Boolean) = intent {
+        monitoringSettingsRepository.upsert(
+            state.monitoringSettings.copy(isPingMonitoringEnabled = to)
+        )
     }
 }

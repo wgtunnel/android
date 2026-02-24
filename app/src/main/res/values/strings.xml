@@ -464,4 +464,19 @@
     <string name="fdroid_url" translatable="false">https://apt.izzysoft.de/fdroid/index/apk/com.zaneschepke.wireguardautotunnel</string>
     <string name="import_url_description">The URL must be secure and serve a .conf file.</string>
     <string name="only_template">%1$s only</string>
+    <string name="auto_restart">Auto-restart</string>
+    <string name="restart_on_handshake_timeout">Auto-restart on tunnel failure</string>
+    <string name="restart_on_handshake_timeout_description">Automatically restart the tunnel when a stale handshake is detected (~3.5 min) or when ping monitoring detects a failure.</string>
+    <string name="max_handshake_restart_attempts">Max restarts per hour</string>
+    <string name="max_handshake_restart_attempts_description">Stops auto-restarting after this many attempts within one hour to avoid restart loops.</string>
+    <string name="handshake_restart_stale">Tunnel restarted automatically: stale WireGuard handshake (~3.5 min).</string>
+    <string name="handshake_restart_ping">Tunnel restarted automatically: all ping targets unreachable.</string>
+    <string name="restart_cooldown">Cooldown between restarts</string>
+    <string name="use_ping_for_detection">Use ping to trigger restart</string>
+    <string name="restarting">Restarting…</string>
+    <string name="restart_reason_stale_handshake">Stale handshake</string>
+    <string name="restart_reason_ping_failure">Ping unreachable</string>
+    <string name="restart_reason_ping_failure_targets">Ping unreachable: %1$s</string>
+    <string name="restarting_attempt">Restarting… %1$d/%2$d</string>
+    <string name="restart_cooldown_countdown">Restart %1$d/%2$d · next in %3$ds</string>
 </resources>
