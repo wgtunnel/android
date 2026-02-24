@@ -70,13 +70,15 @@ class SharedAppViewModel(
                 monitoringSettingsRepository.flow,
                 tunnelManager.activeTunnels,
                 selectedTunnelsRepository.flow,
-            ) { tunnels, monitoringSettings, activeTuns, selectedTuns ->
+                tunnelManager.restartProgress,
+            ) { tunnels, monitoringSettings, activeTuns, selectedTuns, restartProgress ->
                 TunnelsUiState(
                     tunnels = tunnels,
                     isPingEnabled = monitoringSettings.isPingEnabled,
                     showPingStats = monitoringSettings.showDetailedPingStats,
                     activeTunnels = activeTuns,
                     selectedTunnels = selectedTuns,
+                    restartProgress = restartProgress,
                     isLoading = false,
                 )
             }

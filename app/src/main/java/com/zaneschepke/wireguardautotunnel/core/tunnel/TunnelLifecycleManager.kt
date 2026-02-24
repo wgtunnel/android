@@ -9,6 +9,7 @@ import com.zaneschepke.wireguardautotunnel.domain.events.UnknownError
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.domain.state.LogHealthState
 import com.zaneschepke.wireguardautotunnel.domain.state.PingState
+import com.zaneschepke.wireguardautotunnel.domain.state.TunnelRestartProgress
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelState
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelStatistics
 import java.util.concurrent.ConcurrentHashMap
@@ -39,6 +40,7 @@ class TunnelLifecycleManager(
 ) : TunnelProvider {
 
     override val activeTunnels: StateFlow<Map<Int, TunnelState>> = sharedActiveTunnels.asStateFlow()
+    override val restartProgress: StateFlow<Map<Int, TunnelRestartProgress>> = MutableStateFlow(emptyMap())
 
     private val _errorEvents = MutableSharedFlow<Pair<String?, BackendCoreException>>()
     override val errorEvents: SharedFlow<Pair<String?, BackendCoreException>> =

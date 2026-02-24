@@ -6,6 +6,7 @@ import com.zaneschepke.networkmonitor.NetworkMonitor
 import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
 import com.zaneschepke.wireguardautotunnel.core.tunnel.backend.TunnelBackend
 import com.zaneschepke.wireguardautotunnel.core.tunnel.handler.DynamicDnsHandler
+import com.zaneschepke.wireguardautotunnel.core.tunnel.handler.HandshakeRestartHandler
 import com.zaneschepke.wireguardautotunnel.core.tunnel.handler.TunnelActiveStatePersister
 import com.zaneschepke.wireguardautotunnel.core.tunnel.handler.TunnelMonitorHandler
 import com.zaneschepke.wireguardautotunnel.core.tunnel.handler.TunnelServiceHandler
@@ -25,6 +26,7 @@ import com.zaneschepke.wireguardautotunnel.domain.repository.MonitoringSettingsR
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.domain.state.LogHealthState
 import com.zaneschepke.wireguardautotunnel.domain.state.PingState
+import com.zaneschepke.wireguardautotunnel.domain.state.TunnelRestartProgress
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelState
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelStatistics
 import com.zaneschepke.wireguardautotunnel.util.network.NetworkUtils
@@ -74,6 +76,8 @@ class TunnelManager(
 
     private val _activeTunnels = MutableStateFlow<Map<Int, TunnelState>>(emptyMap())
     override val activeTunnels: StateFlow<Map<Int, TunnelState>> = _activeTunnels.asStateFlow()
+    override val restartProgress: StateFlow<Map<Int, TunnelRestartProgress>>
+        get() = handshakeRestartHandler.restartProgress
 
     @OptIn(ExperimentalAtomicApi::class) val currentAppMode = AtomicReference(AppMode.VPN)
 
@@ -114,7 +118,10 @@ class TunnelManager(
     override suspend fun startTunnel(tunnelConfig: TunnelConfig): Result<Unit> =
         getProvider().startTunnel(tunnelConfig)
 
-    override suspend fun stopTunnel(tunnelId: Int) = getProvider().stopTunnel(tunnelId)
+    override suspend fun stopTunnel(tunnelId: Int) {
+        handshakeRestartHandler.cancelAndClear(tunnelId)
+        getProvider().stopTunnel(tunnelId)
+    }
 
     override suspend fun forceStopTunnel(tunnelId: Int) = getProvider().forceStopTunnel(tunnelId)
 
@@ -187,6 +194,18 @@ class TunnelManager(
             settingsRepository = settingsRepository,
             localMessageEvents = localMessageEvents,
             handleDnsReresolve = { config -> handleDnsReresolve(config) },
+            applicationScope = applicationScope,
+            ioDispatcher = ioDispatcher,
+        )
+
+    private val handshakeRestartHandler =
+        HandshakeRestartHandler(
+            activeTunnels = activeTunnels,
+            tunnelsRepository = tunnelsRepository,
+            monitoringSettingsRepository = monitoringSettingsRepository,
+            localMessageEvents = localMessageEvents,
+            restartTunnel = { id -> restartActiveTunnel(id) },
+            networkMonitor = networkMonitor,
             applicationScope = applicationScope,
             ioDispatcher = ioDispatcher,
         )
@@ -344,7 +363,8 @@ class TunnelManager(
         }
 
     private suspend fun restartTunnel(tunnel: TunnelConfig) {
-        runCatching { stopTunnel(tunnel.id) }
+        // Use getProvider() directly to avoid triggering cancelAndClear on the auto-restart job
+        runCatching { getProvider().stopTunnel(tunnel.id) }
             .onFailure { e -> Timber.e(e, "Failed to stop tunnel ${tunnel.id} during restart") }
 
         delay(RESTART_TUNNEL_DELAY)
