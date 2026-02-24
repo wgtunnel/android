@@ -91,14 +91,7 @@ class TunnelLifecycleManager(
             job.invokeOnCompletion { tunnelJobs.remove(id) }
 
             try {
-                val result = withTimeoutOrNull(STARTUP_TIMEOUT_MS) { startupCompleted.await() }
-                if (result == null) {
-                    Timber.e("Tunnel startup timed out for ${tunnelConfig.name}")
-                    job.cancel()
-                    Result.failure(UnknownError())
-                } else {
-                    result
-                }
+                startupCompleted.await()
             } catch (e: Throwable) {
                 job.cancel()
                 Result.failure(e)
@@ -196,6 +189,5 @@ class TunnelLifecycleManager(
 
     companion object {
         const val STOP_TIMEOUT_MS: Long = 5_000L
-        const val STARTUP_TIMEOUT_MS: Long = 30_000L
     }
 }
