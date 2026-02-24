@@ -171,6 +171,7 @@ class HandshakeRestartHandler(
         state: TunnelState,
         isPingMonitoringEnabled: Boolean,
     ): BackendMessage.RestartReason {
+        if (state.statistics?.isTunnelStale() == true) return BackendMessage.RestartReason.STALE_HANDSHAKE
         if (isPingMonitoringEnabled) {
             state.pingStates?.let { pings ->
                 val attempted = pings.values.filter { it.lastPingAttemptMillis != null }
