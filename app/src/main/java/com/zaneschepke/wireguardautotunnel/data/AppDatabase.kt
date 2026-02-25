@@ -17,7 +17,7 @@ import com.zaneschepke.wireguardautotunnel.data.entity.*
             DnsSettings::class,
             LockdownSettings::class,
         ],
-    version = 35,
+    version = 34,
     autoMigrations =
         [
             AutoMigration(from = 1, to = 2),
@@ -50,7 +50,6 @@ import com.zaneschepke.wireguardautotunnel.data.entity.*
             AutoMigration(from = 31, to = 32),
             AutoMigration(from = 32, to = 33),
             AutoMigration(from = 33, to = 34),
-            AutoMigration(from = 34, to = 35, spec = BackoffAttemptsMigration::class),
         ],
     exportSchema = true,
 )
@@ -135,6 +134,3 @@ class GlobalsMigration : AutoMigrationSpec
 
 @DeleteColumn(tableName = "general_settings", columnName = "custom_split_packages")
 class DonationMigration : AutoMigrationSpec
-
-@DeleteColumn(tableName = "monitoring_settings", columnName = "backoff_timeout_minutes")
-class BackoffAttemptsMigration : AutoMigrationSpec
