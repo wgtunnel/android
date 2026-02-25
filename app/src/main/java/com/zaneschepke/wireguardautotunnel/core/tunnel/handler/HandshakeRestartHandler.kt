@@ -267,23 +267,40 @@ class HandshakeRestartHandler(
             val now = System.currentTimeMillis()
             val timestamps = restartTimestamps.getOrPut(tunnelId) { ArrayDeque() }
 
-            // Prune timestamps older than 1 hour
-            while (timestamps.isNotEmpty() && timestamps.first() < now - ONE_HOUR_MS) {
-                timestamps.removeFirst()
-            }
+            val shouldGiveUp =
+                if (settings.isBackoffEnabled) {
+                    // Time-based: give up when backoffTimeoutMinutes elapsed since first restart
+                    val firstAttempt = timestamps.firstOrNull()
+                    firstAttempt != null &&
+                        (now - firstAttempt) >= settings.backoffTimeoutMinutes * 60_000L
+                } else {
+                    // Count-based: prune old timestamps, give up after maxHandshakeRestartAttempts in 1h
+                    while (timestamps.isNotEmpty() && timestamps.first() < now - ONE_HOUR_MS) {
+                        timestamps.removeFirst()
+                    }
+                    timestamps.size >= settings.maxHandshakeRestartAttempts
+                }
 
-            if (timestamps.size >= settings.maxHandshakeRestartAttempts) {
-                Timber.w(
-                    "Max restart attempts (${settings.maxHandshakeRestartAttempts}) reached " +
-                        "for tunnel $tunnelId within the last hour — waiting for recovery"
-                )
+            if (shouldGiveUp) {
+                val totalAttempts = timestamps.size
+                if (settings.isBackoffEnabled) {
+                    Timber.w(
+                        "Backoff timeout (${settings.backoffTimeoutMinutes}min) reached " +
+                            "for tunnel $tunnelId after $totalAttempts attempts — waiting for recovery"
+                    )
+                } else {
+                    Timber.w(
+                        "Max restart attempts (${settings.maxHandshakeRestartAttempts}) reached " +
+                            "for tunnel $tunnelId within the last hour — waiting for recovery"
+                    )
+                }
                 val permanentReason = degradedTunnels[tunnelId] ?: reason
                 val tunnelName = tunnelsRepository.getById(tunnelId)?.name
                 val isTunnelStopped = settings.maxAttemptsAction == MaxAttemptsAction.STOP_TUNNEL
                 localMessageEvents.emit(
                     tunnelName to BackendMessage.ConnectionPermanentlyLost(
                         permanentReason,
-                        settings.maxHandshakeRestartAttempts,
+                        totalAttempts,
                         isTunnelStopped = isTunnelStopped,
                     )
                 )
@@ -313,10 +330,10 @@ class HandshakeRestartHandler(
                 }
             }
             val attempt = timestamps.size + 1
-            Timber.i(
-                "Auto-restarting tunnel $tunnelId due to $reason " +
-                    "(attempt $attempt/${settings.maxHandshakeRestartAttempts})"
-            )
+            val maxAttemptsLabel =
+                if (settings.isBackoffEnabled) "${settings.backoffTimeoutMinutes}min timeout"
+                else "max ${settings.maxHandshakeRestartAttempts}"
+            Timber.i("Auto-restarting tunnel $tunnelId due to $reason (attempt $attempt, $maxAttemptsLabel)")
 
             val failingTargets =
                 if (reason == BackendMessage.RestartReason.PING_FAILURE) {
@@ -364,7 +381,7 @@ class HandshakeRestartHandler(
                             isRestarting = false,
                             attemptNumber = attempt,
                             maxAttempts = settings.maxHandshakeRestartAttempts,
-                            nextRetryAtMillis = if (cooldownRemaining > 0 && attempt < settings.maxHandshakeRestartAttempts) cooldownEnd else 0L,
+                            nextRetryAtMillis = if (cooldownRemaining > 0) cooldownEnd else 0L,
                             reason = reason,
                             failingPingTargets = failingTargets,
                         ))
@@ -386,17 +403,16 @@ class HandshakeRestartHandler(
     companion object {
         const val ONE_HOUR_MS = 3_600_000L
         const val NETWORK_RECOVERY_GRACE_MS = 10_000L
-        const val MAX_BACKOFF_SECONDS = 300L
 
         /**
          * Returns the cooldown in seconds for the given attempt number.
-         * With backoff: base × 2^(attempt-1), capped at MAX_BACKOFF_SECONDS.
+         * With backoff: base × 2^(attempt-1), unbounded (give-up is handled by backoffTimeoutMinutes).
          * Without backoff: always returns base.
          */
         fun computeCooldown(baseSec: Int, attempt: Int, backoffEnabled: Boolean): Long {
             if (!backoffEnabled) return baseSec.toLong()
-            val shift = (attempt - 1).coerceAtMost(30) // guard against overflow
-            return minOf(baseSec.toLong() shl shift, MAX_BACKOFF_SECONDS)
+            val shift = (attempt - 1).coerceAtMost(30) // guard against Long overflow
+            return baseSec.toLong() shl shift
         }
     }
 }

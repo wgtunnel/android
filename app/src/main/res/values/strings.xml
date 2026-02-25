@@ -491,5 +491,7 @@
     <string name="max_attempts_action_stop_tunnel">Stop tunnel</string>
     <string name="ping_failures_before_restart">Consecutive ping failures before first restart</string>
     <string name="exponential_backoff">Exponential backoff</string>
-    <string name="exponential_backoff_description">Doubles the cooldown after each failed restart attempt (max 5 min)</string>
+    <string name="exponential_backoff_description">Doubles the cooldown after each failed restart attempt</string>
+    <string name="backoff_timeout">Give up after</string>
+    <string name="backoff_timeout_description">Stop retrying after this total duration since the first restart attempt.</string>
 </resources>

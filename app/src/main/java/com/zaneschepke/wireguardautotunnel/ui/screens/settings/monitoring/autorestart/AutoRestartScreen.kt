@@ -9,6 +9,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Adjust
 import androidx.compose.material.icons.outlined.FilterAlt
+import androidx.compose.material.icons.outlined.HourglassBottom
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.PowerSettingsNew
 import androidx.compose.material.icons.outlined.Replay
@@ -111,8 +112,26 @@ fun AutoRestartScreen(viewModel: MonitoringViewModel = koinViewModel()) {
                 },
             )
             LabelledDropdown(
+                title = stringResource(R.string.backoff_timeout),
+                leading = { Icon(Icons.Outlined.HourglassBottom, contentDescription = null) },
+                enabled = uiState.monitoringSettings.isBackoffEnabled,
+                currentValue = uiState.monitoringSettings.backoffTimeoutMinutes,
+                onSelected = { selected ->
+                    selected?.let { viewModel.setBackoffTimeoutMinutes(it) }
+                },
+                options = listOf(15, 30, 60, 120),
+                optionToString = {
+                    when {
+                        it == null -> stringResource(R.string._default)
+                        it < 60 -> "${it}min"
+                        else -> "${it / 60}h"
+                    }
+                },
+            )
+            LabelledDropdown(
                 title = stringResource(R.string.max_handshake_restart_attempts),
                 leading = { Icon(Icons.Outlined.Replay, contentDescription = null) },
+                enabled = !uiState.monitoringSettings.isBackoffEnabled,
                 description = {
                     Text(
                         text = stringResource(R.string.max_handshake_restart_attempts_description),
