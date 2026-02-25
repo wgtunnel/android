@@ -17,4 +17,5 @@ data class MonitoringSettings(
     val isRecoveryNotificationEnabled: Boolean = true,
     val maxAttemptsAction: MaxAttemptsAction = MaxAttemptsAction.DO_NOTHING,
     val pingFailuresBeforeRestart: Int = 1,
+    val isBackoffEnabled: Boolean = false,
 )

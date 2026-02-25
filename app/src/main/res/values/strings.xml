@@ -490,4 +490,6 @@
     <string name="max_attempts_action_do_nothing">Keep waiting</string>
     <string name="max_attempts_action_stop_tunnel">Stop tunnel</string>
     <string name="ping_failures_before_restart">Consecutive failures before restart</string>
+    <string name="exponential_backoff">Exponential backoff</string>
+    <string name="exponential_backoff_description">Doubles the cooldown after each failed restart attempt (max 5 min)</string>
 </resources>

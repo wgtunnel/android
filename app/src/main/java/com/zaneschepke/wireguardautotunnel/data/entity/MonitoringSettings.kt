@@ -31,4 +31,6 @@ data class MonitoringSettings(
     val maxAttemptsAction: MaxAttemptsAction = MaxAttemptsAction.DO_NOTHING,
     @ColumnInfo(name = "ping_failures_before_restart", defaultValue = "1")
     val pingFailuresBeforeRestart: Int = 1,
+    @ColumnInfo(name = "is_backoff_enabled", defaultValue = "0")
+    val isBackoffEnabled: Boolean = false,
 )

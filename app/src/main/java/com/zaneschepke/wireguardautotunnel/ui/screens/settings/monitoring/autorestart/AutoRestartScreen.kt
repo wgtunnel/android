@@ -13,6 +13,7 @@ import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.PowerSettingsNew
 import androidx.compose.material.icons.outlined.Replay
 import androidx.compose.material.icons.outlined.Timer
+import androidx.compose.material.icons.outlined.TrendingUp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -86,6 +87,28 @@ fun AutoRestartScreen(viewModel: MonitoringViewModel = koinViewModel()) {
                 },
                 options = listOf(15, 30, 60, 120, 300),
                 optionToString = { it?.let { "${it}s" } ?: stringResource(R.string._default) },
+            )
+            SurfaceRow(
+                leading = { Icon(Icons.Outlined.TrendingUp, contentDescription = null) },
+                title = stringResource(R.string.exponential_backoff),
+                description = {
+                    Text(
+                        text = stringResource(R.string.exponential_backoff_description),
+                        style =
+                            MaterialTheme.typography.bodySmall.copy(
+                                color = MaterialTheme.colorScheme.outline
+                            ),
+                    )
+                },
+                trailing = {
+                    ThemedSwitch(
+                        checked = uiState.monitoringSettings.isBackoffEnabled,
+                        onClick = { viewModel.setBackoffEnabled(it) },
+                    )
+                },
+                onClick = {
+                    viewModel.setBackoffEnabled(!uiState.monitoringSettings.isBackoffEnabled)
+                },
             )
             LabelledDropdown(
                 title = stringResource(R.string.max_handshake_restart_attempts),

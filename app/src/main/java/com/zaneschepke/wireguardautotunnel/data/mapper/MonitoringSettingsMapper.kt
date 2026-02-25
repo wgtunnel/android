@@ -19,6 +19,7 @@ fun Entity.toDomain(): Domain =
         isRecoveryNotificationEnabled = isRecoveryNotificationEnabled,
         maxAttemptsAction = maxAttemptsAction,
         pingFailuresBeforeRestart = pingFailuresBeforeRestart,
+        isBackoffEnabled = isBackoffEnabled,
     )
 
 fun Domain.toEntity(): Entity =
@@ -37,4 +38,5 @@ fun Domain.toEntity(): Entity =
         isRecoveryNotificationEnabled = isRecoveryNotificationEnabled,
         maxAttemptsAction = maxAttemptsAction,
         pingFailuresBeforeRestart = pingFailuresBeforeRestart,
+        isBackoffEnabled = isBackoffEnabled,
     )

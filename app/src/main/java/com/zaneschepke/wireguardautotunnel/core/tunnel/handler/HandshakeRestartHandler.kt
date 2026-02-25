@@ -190,7 +190,9 @@ class HandshakeRestartHandler(
     ) {
         // Apply cooldown if we recently restarted this tunnel (e.g. job recreated after manual toggle)
         restartTimestamps[tunnelId]?.lastOrNull()?.let { lastRestart ->
-            val cooldownSec = monitoringSettingsRepository.getMonitoringSettings().restartCooldownSeconds
+            val settings = monitoringSettingsRepository.getMonitoringSettings()
+            val attemptsDone = restartTimestamps[tunnelId]?.size ?: 1
+            val cooldownSec = computeCooldown(settings.restartCooldownSeconds, attemptsDone, settings.isBackoffEnabled)
             val cooldownRemaining = (lastRestart + cooldownSec * 1_000L) - System.currentTimeMillis()
             if (cooldownRemaining > 0) {
                 Timber.d(
@@ -336,7 +338,8 @@ class HandshakeRestartHandler(
                     Timber.e(e, "Failed to restart tunnel $tunnelId after $reason")
                 }
             // Post-restart cooldown: wait remaining time before next check
-            val cooldownEnd = now + settings.restartCooldownSeconds * 1_000L
+            val cooldownSec = computeCooldown(settings.restartCooldownSeconds, attempt, settings.isBackoffEnabled)
+            val cooldownEnd = now + cooldownSec * 1_000L
             val cooldownRemaining = cooldownEnd - System.currentTimeMillis()
             _restartProgress.update {
                 it +
@@ -367,5 +370,17 @@ class HandshakeRestartHandler(
     companion object {
         const val ONE_HOUR_MS = 3_600_000L
         const val NETWORK_RECOVERY_GRACE_MS = 10_000L
+        const val MAX_BACKOFF_SECONDS = 300L
+
+        /**
+         * Returns the cooldown in seconds for the given attempt number.
+         * With backoff: base × 2^(attempt-1), capped at MAX_BACKOFF_SECONDS.
+         * Without backoff: always returns base.
+         */
+        fun computeCooldown(baseSec: Int, attempt: Int, backoffEnabled: Boolean): Long {
+            if (!backoffEnabled) return baseSec.toLong()
+            val shift = (attempt - 1).coerceAtMost(30) // guard against overflow
+            return minOf(baseSec.toLong() shl shift, MAX_BACKOFF_SECONDS)
+        }
     }
 }

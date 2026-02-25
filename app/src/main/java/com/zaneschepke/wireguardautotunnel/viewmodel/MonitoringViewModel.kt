@@ -97,4 +97,8 @@ class MonitoringViewModel(
             state.monitoringSettings.copy(pingFailuresBeforeRestart = to)
         )
     }
+
+    fun setBackoffEnabled(to: Boolean) = intent {
+        monitoringSettingsRepository.upsert(state.monitoringSettings.copy(isBackoffEnabled = to))
+    }
 }
