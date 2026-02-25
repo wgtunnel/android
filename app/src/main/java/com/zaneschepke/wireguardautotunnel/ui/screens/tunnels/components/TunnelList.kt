@@ -153,31 +153,50 @@ fun TunnelList(
                                     null -> null
                                 }
 
-                            val statusText =
-                                if (restartProgress.isRestarting) {
-                                    stringResource(
-                                        R.string.restarting_attempt,
-                                        restartProgress.attemptNumber,
-                                        restartProgress.maxAttempts,
-                                    )
-                                } else {
-                                    stringResource(
-                                        R.string.restart_cooldown_countdown,
-                                        restartProgress.attemptNumber,
-                                        restartProgress.maxAttempts,
-                                        secondsRemaining,
-                                    )
+                            val statusText: String? =
+                                when {
+                                    restartProgress.isRestarting ->
+                                        stringResource(
+                                            R.string.restarting_attempt,
+                                            restartProgress.attemptNumber,
+                                            restartProgress.maxAttempts,
+                                        )
+                                    secondsRemaining > 0 ->
+                                        stringResource(
+                                            R.string.restart_cooldown_countdown,
+                                            restartProgress.attemptNumber,
+                                            restartProgress.maxAttempts,
+                                            secondsRemaining,
+                                        )
+                                    restartProgress.attemptNumber >= restartProgress.maxAttempts ->
+                                        stringResource(
+                                            R.string.restart_max_reached,
+                                            restartProgress.attemptNumber,
+                                            restartProgress.maxAttempts,
+                                        )
+                                    // Transient gap between countdown hitting 0 and handler clearing
+                                    // _restartProgress — don't show anything
+                                    else -> null
                                 }
 
-                            Text(
-                                text =
-                                    if (reasonText != null) "$reasonText · $statusText"
-                                    else statusText,
-                                style =
-                                    MaterialTheme.typography.bodySmall.copy(
-                                        color = MaterialTheme.colorScheme.outline
-                                    ),
-                            )
+                            val displayText =
+                                when {
+                                    reasonText != null && statusText != null ->
+                                        "$reasonText · $statusText"
+                                    statusText != null -> statusText
+                                    reasonText != null -> reasonText
+                                    else -> null
+                                }
+
+                            if (displayText != null) {
+                                Text(
+                                    text = displayText,
+                                    style =
+                                        MaterialTheme.typography.bodySmall.copy(
+                                            color = MaterialTheme.colorScheme.outline
+                                        ),
+                                )
+                            }
                         }
                     } else null,
                 onClick = {
@@ -197,6 +216,7 @@ fun TunnelList(
                                 tunnelState,
                                 uiState.isPingEnabled,
                                 uiState.showPingStats,
+                                restartCount = uiState.restartCounts[tunnel.id] ?: 0,
                             )
                         }
                     } else null,
