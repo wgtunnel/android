@@ -46,8 +46,8 @@ class WifiRoamingHandler(
     private val ioDispatcher: CoroutineDispatcher,
 ) {
     // State tracking
-    private var lastBssid: String? = null
-    private var lastSsid: String? = null
+    @Volatile private var lastBssid: String? = null
+    @Volatile private var lastSsid: String? = null
 
     // Recovery job management (thread-safe)
     private var pendingRecoveryJob: Job? = null
