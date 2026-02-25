@@ -111,55 +111,56 @@ fun AutoRestartScreen(viewModel: MonitoringViewModel = koinViewModel()) {
                     viewModel.setBackoffEnabled(!uiState.monitoringSettings.isBackoffEnabled)
                 },
             )
-            LabelledDropdown(
-                title = stringResource(R.string.backoff_timeout),
-                leading = { Icon(Icons.Outlined.HourglassBottom, contentDescription = null) },
-                enabled = uiState.monitoringSettings.isBackoffEnabled,
-                currentValue = uiState.monitoringSettings.backoffMaxAttempts,
-                onSelected = { selected ->
-                    selected?.let { viewModel.setBackoffMaxAttempts(it) }
-                },
-                options = listOf(2, 3, 4, 5, 6, 7),
-                optionToString = { n ->
-                    if (n == null) return@LabelledDropdown stringResource(R.string._default)
-                    val baseSec = uiState.monitoringSettings.restartCooldownSeconds.toLong()
-                    val totalSec = baseSec * ((1L shl n) - 1)
-                    val display = when {
-                        totalSec < 60 -> "${totalSec}s"
-                        totalSec < 3600 -> {
-                            val m = totalSec / 60
-                            val s = totalSec % 60
-                            if (s == 0L) "${m}m" else "${m}m${s}s"
+            if (uiState.monitoringSettings.isBackoffEnabled) {
+                LabelledDropdown(
+                    title = stringResource(R.string.backoff_timeout),
+                    leading = { Icon(Icons.Outlined.HourglassBottom, contentDescription = null) },
+                    currentValue = uiState.monitoringSettings.backoffMaxAttempts,
+                    onSelected = { selected ->
+                        selected?.let { viewModel.setBackoffMaxAttempts(it) }
+                    },
+                    options = listOf(2, 3, 4, 5, 6, 7),
+                    optionToString = { n ->
+                        if (n == null) return@LabelledDropdown stringResource(R.string._default)
+                        val baseSec = uiState.monitoringSettings.restartCooldownSeconds.toLong()
+                        val totalSec = baseSec * ((1L shl n) - 1)
+                        val display = when {
+                            totalSec < 60 -> "${totalSec}s"
+                            totalSec < 3600 -> {
+                                val m = totalSec / 60
+                                val s = totalSec % 60
+                                if (s == 0L) "${m}m" else "${m}m${s}s"
+                            }
+                            else -> {
+                                val h = totalSec / 3600
+                                val m = (totalSec % 3600) / 60
+                                if (m == 0L) "${h}h" else "${h}h${m}m"
+                            }
                         }
-                        else -> {
-                            val h = totalSec / 3600
-                            val m = (totalSec % 3600) / 60
-                            if (m == 0L) "${h}h" else "${h}h${m}m"
-                        }
-                    }
-                    "$n attempts (~$display)"
-                },
-            )
-            LabelledDropdown(
-                title = stringResource(R.string.max_handshake_restart_attempts),
-                leading = { Icon(Icons.Outlined.Replay, contentDescription = null) },
-                enabled = !uiState.monitoringSettings.isBackoffEnabled,
-                description = {
-                    Text(
-                        text = stringResource(R.string.max_handshake_restart_attempts_description),
-                        style =
-                            MaterialTheme.typography.bodySmall.copy(
-                                color = MaterialTheme.colorScheme.outline
-                            ),
-                    )
-                },
-                currentValue = uiState.monitoringSettings.maxHandshakeRestartAttempts,
-                onSelected = { selected ->
-                    selected?.let { viewModel.setMaxHandshakeRestartAttempts(it) }
-                },
-                options = listOf(3, 5, 10, 20),
-                optionToString = { it?.toString() ?: stringResource(R.string._default) },
-            )
+                        "$n attempts (~$display)"
+                    },
+                )
+            } else {
+                LabelledDropdown(
+                    title = stringResource(R.string.max_handshake_restart_attempts),
+                    leading = { Icon(Icons.Outlined.Replay, contentDescription = null) },
+                    description = {
+                        Text(
+                            text = stringResource(R.string.max_handshake_restart_attempts_description),
+                            style =
+                                MaterialTheme.typography.bodySmall.copy(
+                                    color = MaterialTheme.colorScheme.outline
+                                ),
+                        )
+                    },
+                    currentValue = uiState.monitoringSettings.maxHandshakeRestartAttempts,
+                    onSelected = { selected ->
+                        selected?.let { viewModel.setMaxHandshakeRestartAttempts(it) }
+                    },
+                    options = listOf(3, 5, 10, 20),
+                    optionToString = { it?.toString() ?: stringResource(R.string._default) },
+                )
+            }
             LabelledDropdown(
                 title = stringResource(R.string.max_attempts_action),
                 leading = { Icon(Icons.Outlined.PowerSettingsNew, contentDescription = null) },
