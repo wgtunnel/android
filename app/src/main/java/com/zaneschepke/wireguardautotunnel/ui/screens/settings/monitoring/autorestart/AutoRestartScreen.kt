@@ -123,7 +123,7 @@ fun AutoRestartScreen(viewModel: MonitoringViewModel = koinViewModel()) {
                     optionToString = { n ->
                         if (n == null) return@LabelledDropdown stringResource(R.string._default)
                         val baseSec = uiState.monitoringSettings.restartCooldownSeconds.toLong()
-                        val totalSec = baseSec * ((1L shl n) - 1)
+                        val totalSec = baseSec * ((1L shl (n - 1)) - 1)
                         val display = when {
                             totalSec < 60 -> "${totalSec}s"
                             totalSec < 3600 -> {
