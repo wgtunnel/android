@@ -241,8 +241,21 @@ class HandshakeRestartHandler(
                         "Ping failure streak $pingFailureStreak/${settings.pingFailuresBeforeRestart} " +
                             "for tunnel $tunnelId — waiting for next ping cycle"
                     )
-                    // Wait for the next ping-state update before re-evaluating
-                    tunStateFlow.drop(1).first()
+                    // Wait for a NEW ping attempt (not just any state update like statistics).
+                    // tunStateFlow emits on every stats poll (bytes, handshake time…), so using
+                    // drop(1).first() would return almost immediately. We need to wait until
+                    // lastPingAttemptMillis actually advances to a new cycle.
+                    val currentPingTime = state.pingStates
+                        ?.values
+                        ?.mapNotNull { it.lastPingAttemptMillis }
+                        ?.maxOrNull()
+                    tunStateFlow.first { newState ->
+                        val newPingTime = newState?.pingStates
+                            ?.values
+                            ?.mapNotNull { it.lastPingAttemptMillis }
+                            ?.maxOrNull()
+                        newPingTime != null && newPingTime != currentPingTime
+                    }
                     continue
                 }
                 pingFailureStreak = 0
