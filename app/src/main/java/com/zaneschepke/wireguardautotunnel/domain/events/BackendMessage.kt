@@ -13,7 +13,7 @@ sealed class BackendMessage {
 
     data object ConnectionRestored : BackendMessage()
 
-    data class ConnectionPermanentlyLost(val reason: RestartReason, val totalAttempts: Int) : BackendMessage()
+    data class ConnectionPermanentlyLost(val reason: RestartReason, val totalAttempts: Int, val isTunnelStopped: Boolean = false) : BackendMessage()
 
     data object ConnectionCancelled : BackendMessage()
 

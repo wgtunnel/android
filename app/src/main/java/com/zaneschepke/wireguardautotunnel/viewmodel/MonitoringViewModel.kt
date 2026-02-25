@@ -1,6 +1,7 @@
 package com.zaneschepke.wireguardautotunnel.viewmodel
 
 import androidx.lifecycle.ViewModel
+import com.zaneschepke.wireguardautotunnel.data.model.MaxAttemptsAction
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.domain.repository.MonitoringSettingsRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
@@ -85,5 +86,9 @@ class MonitoringViewModel(
         monitoringSettingsRepository.upsert(
             state.monitoringSettings.copy(isRecoveryNotificationEnabled = to)
         )
+    }
+
+    fun setMaxAttemptsAction(to: MaxAttemptsAction) = intent {
+        monitoringSettingsRepository.upsert(state.monitoringSettings.copy(maxAttemptsAction = to))
     }
 }

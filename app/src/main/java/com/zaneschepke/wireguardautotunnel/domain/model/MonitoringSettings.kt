@@ -1,5 +1,7 @@
 package com.zaneschepke.wireguardautotunnel.domain.model
 
+import com.zaneschepke.wireguardautotunnel.data.model.MaxAttemptsAction
+
 data class MonitoringSettings(
     val id: Int = 0,
     val isPingEnabled: Boolean = false,
@@ -13,4 +15,5 @@ data class MonitoringSettings(
     val maxHandshakeRestartAttempts: Int = 5,
     val restartCooldownSeconds: Int = 30,
     val isRecoveryNotificationEnabled: Boolean = true,
+    val maxAttemptsAction: MaxAttemptsAction = MaxAttemptsAction.DO_NOTHING,
 )

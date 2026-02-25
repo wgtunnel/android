@@ -8,6 +8,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material.icons.outlined.PowerSettingsNew
 import androidx.compose.material.icons.outlined.Replay
 import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.material3.Icon
@@ -21,6 +22,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.R
+import com.zaneschepke.wireguardautotunnel.data.model.MaxAttemptsAction
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SwitchWithDivider
 import com.zaneschepke.wireguardautotunnel.ui.common.dropdown.LabelledDropdown
@@ -72,6 +74,20 @@ fun AutoRestartScreen(viewModel: MonitoringViewModel = koinViewModel()) {
                 },
                 options = listOf(3, 5, 10, 20),
                 optionToString = { it?.toString() ?: stringResource(R.string._default) },
+            )
+            LabelledDropdown(
+                title = stringResource(R.string.max_attempts_action),
+                leading = { Icon(Icons.Outlined.PowerSettingsNew, contentDescription = null) },
+                currentValue = uiState.monitoringSettings.maxAttemptsAction,
+                onSelected = { selected -> selected?.let { viewModel.setMaxAttemptsAction(it) } },
+                options = MaxAttemptsAction.entries.toList(),
+                optionToString = { action ->
+                    when (action) {
+                        MaxAttemptsAction.DO_NOTHING -> stringResource(R.string.max_attempts_action_do_nothing)
+                        MaxAttemptsAction.STOP_TUNNEL -> stringResource(R.string.max_attempts_action_stop_tunnel)
+                        null -> stringResource(R.string._default)
+                    }
+                },
             )
             SurfaceRow(
                 leading = { Icon(Icons.Outlined.Notifications, contentDescription = null) },

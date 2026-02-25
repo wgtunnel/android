@@ -116,15 +116,16 @@ class NotificationMonitor(
                             if (message.reason == BackendMessage.RestartReason.STALE_HANDSHAKE)
                                 R.string.restart_reason_stale_handshake
                             else R.string.restart_reason_ping_failure
+                        val descRes =
+                            if (message.isTunnelStopped)
+                                StringValue.StringResource(R.string.notif_recovery_failed_stopped, reasonRes)
+                            else
+                                StringValue.StringResource(R.string.notif_recovery_failed, reasonRes)
                         val notification =
                             notificationManager.createNotification(
                                 WireGuardNotification.NotificationChannels.VPN,
                                 title = title,
-                                description =
-                                    StringValue.StringResource(
-                                        R.string.notif_recovery_failed,
-                                        reasonRes,
-                                    ),
+                                description = descRes,
                                 groupKey = NotificationManager.VPN_GROUP_KEY,
                             )
                         notificationManager.show(NotificationManager.RECOVERY_NOTIFICATION_ID, notification)

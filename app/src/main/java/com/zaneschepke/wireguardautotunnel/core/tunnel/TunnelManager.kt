@@ -78,6 +78,8 @@ class TunnelManager(
     override val activeTunnels: StateFlow<Map<Int, TunnelState>> = _activeTunnels.asStateFlow()
     override val restartProgress: StateFlow<Map<Int, TunnelRestartProgress>>
         get() = handshakeRestartHandler.restartProgress
+    override val restartCounts: StateFlow<Map<Int, Int>>
+        get() = handshakeRestartHandler.restartCounts
 
     @OptIn(ExperimentalAtomicApi::class) val currentAppMode = AtomicReference(AppMode.VPN)
 
@@ -205,6 +207,7 @@ class TunnelManager(
             monitoringSettingsRepository = monitoringSettingsRepository,
             localMessageEvents = localMessageEvents,
             restartTunnel = { id -> restartActiveTunnel(id) },
+            stopTunnel = { id -> stopTunnel(id) },
             networkMonitor = networkMonitor,
             applicationScope = applicationScope,
             ioDispatcher = ioDispatcher,

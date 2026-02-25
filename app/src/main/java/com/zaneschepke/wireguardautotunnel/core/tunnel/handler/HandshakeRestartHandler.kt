@@ -4,6 +4,7 @@ import com.zaneschepke.networkmonitor.ActiveNetwork
 import com.zaneschepke.networkmonitor.NetworkMonitor
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
 import com.zaneschepke.wireguardautotunnel.domain.events.BackendMessage
+import com.zaneschepke.wireguardautotunnel.data.model.MaxAttemptsAction
 import com.zaneschepke.wireguardautotunnel.domain.repository.MonitoringSettingsRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelRestartProgress
@@ -44,6 +45,7 @@ class HandshakeRestartHandler(
     private val monitoringSettingsRepository: MonitoringSettingsRepository,
     private val localMessageEvents: MutableSharedFlow<Pair<String?, BackendMessage>>,
     private val restartTunnel: suspend (Int) -> Unit,
+    private val stopTunnel: suspend (Int) -> Unit,
     private val networkMonitor: NetworkMonitor,
     private val applicationScope: CoroutineScope,
     private val ioDispatcher: CoroutineDispatcher,
@@ -237,22 +239,38 @@ class HandshakeRestartHandler(
                 val permanentReason = degradedTunnels[tunnelId]
                     ?: triggerReason(state, settings.isPingMonitoringEnabled)
                 val tunnelName = tunnelsRepository.getById(tunnelId)?.name
+                val isTunnelStopped = settings.maxAttemptsAction == MaxAttemptsAction.STOP_TUNNEL
                 localMessageEvents.emit(
                     tunnelName to BackendMessage.ConnectionPermanentlyLost(
                         permanentReason,
                         settings.maxHandshakeRestartAttempts,
+                        isTunnelStopped = isTunnelStopped,
                     )
                 )
-                // Wait until healthy again or tunnel goes down
-                tunStateFlow.first {
-                    it == null || (it.status is TunnelStatus.Up && !shouldTrigger(it, settings.isPingMonitoringEnabled))
+                when (settings.maxAttemptsAction) {
+                    MaxAttemptsAction.DO_NOTHING -> {
+                        // Wait until healthy again or tunnel goes down
+                        tunStateFlow.first {
+                            it == null || (it.status is TunnelStatus.Up && !shouldTrigger(it, settings.isPingMonitoringEnabled))
+                        }
+                        restartTimestamps.remove(tunnelId)
+                        if (degradedTunnels.remove(tunnelId) != null) {
+                            val tunnelNameRestored = tunnelsRepository.getById(tunnelId)?.name
+                            localMessageEvents.emit(tunnelNameRestored to BackendMessage.ConnectionRestored)
+                        }
+                        continue
+                    }
+                    MaxAttemptsAction.STOP_TUNNEL -> {
+                        // Clear degradedTunnels before stopping so cancelAndClear won't emit
+                        // ConnectionCancelled — the "max restarts reached" notification stays visible
+                        degradedTunnels.remove(tunnelId)
+                        runCatching { stopTunnel(tunnelId) }.onFailure { e ->
+                            if (e is CancellationException) throw e
+                            Timber.e(e, "Failed to stop tunnel $tunnelId after max restart attempts")
+                        }
+                        return
+                    }
                 }
-                restartTimestamps.remove(tunnelId)
-                if (degradedTunnels.remove(tunnelId) != null) {
-                    val tunnelNameRestored = tunnelsRepository.getById(tunnelId)?.name
-                    localMessageEvents.emit(tunnelNameRestored to BackendMessage.ConnectionRestored)
-                }
-                continue
             }
 
             val reason = triggerReason(state, settings.isPingMonitoringEnabled)

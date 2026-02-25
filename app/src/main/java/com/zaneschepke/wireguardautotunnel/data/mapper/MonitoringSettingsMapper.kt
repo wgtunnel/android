@@ -17,6 +17,7 @@ fun Entity.toDomain(): Domain =
         maxHandshakeRestartAttempts = maxHandshakeRestartAttempts,
         restartCooldownSeconds = restartCooldownSeconds,
         isRecoveryNotificationEnabled = isRecoveryNotificationEnabled,
+        maxAttemptsAction = maxAttemptsAction,
     )
 
 fun Domain.toEntity(): Entity =
@@ -33,4 +34,5 @@ fun Domain.toEntity(): Entity =
         maxHandshakeRestartAttempts = maxHandshakeRestartAttempts,
         restartCooldownSeconds = restartCooldownSeconds,
         isRecoveryNotificationEnabled = isRecoveryNotificationEnabled,
+        maxAttemptsAction = maxAttemptsAction,
     )

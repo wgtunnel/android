@@ -3,6 +3,7 @@ package com.zaneschepke.wireguardautotunnel.data.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.zaneschepke.wireguardautotunnel.data.model.MaxAttemptsAction
 
 @Entity(tableName = "monitoring_settings")
 data class MonitoringSettings(
@@ -26,4 +27,6 @@ data class MonitoringSettings(
     val restartCooldownSeconds: Int = 30,
     @ColumnInfo(name = "is_recovery_notification_enabled", defaultValue = "1")
     val isRecoveryNotificationEnabled: Boolean = true,
+    @ColumnInfo(name = "max_attempts_action", defaultValue = "0")
+    val maxAttemptsAction: MaxAttemptsAction = MaxAttemptsAction.DO_NOTHING,
 )

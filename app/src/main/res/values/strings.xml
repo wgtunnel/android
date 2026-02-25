@@ -483,6 +483,10 @@
     <string name="notif_recovery_degraded">%1$s · restarting… (%2$s/%3$s)</string>
     <string name="notif_recovery_restored">Connection restored</string>
     <string name="notif_recovery_failed">%1$s · max restarts reached</string>
+    <string name="notif_recovery_failed_stopped">%1$s · max restarts reached · VPN stopped</string>
     <string name="recovery_notifications">Recovery notifications</string>
     <string name="recovery_notifications_description">Get notified when a tunnel failure is detected and when it recovers</string>
+    <string name="max_attempts_action">On max attempts reached</string>
+    <string name="max_attempts_action_do_nothing">Keep waiting</string>
+    <string name="max_attempts_action_stop_tunnel">Stop tunnel</string>
 </resources>
