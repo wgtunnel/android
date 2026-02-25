@@ -20,7 +20,7 @@ fun Entity.toDomain(): Domain =
         maxAttemptsAction = maxAttemptsAction,
         pingFailuresBeforeRestart = pingFailuresBeforeRestart,
         isBackoffEnabled = isBackoffEnabled,
-        backoffTimeoutMinutes = backoffTimeoutMinutes,
+        backoffMaxAttempts = backoffMaxAttempts,
     )
 
 fun Domain.toEntity(): Entity =
@@ -40,5 +40,5 @@ fun Domain.toEntity(): Entity =
         maxAttemptsAction = maxAttemptsAction,
         pingFailuresBeforeRestart = pingFailuresBeforeRestart,
         isBackoffEnabled = isBackoffEnabled,
-        backoffTimeoutMinutes = backoffTimeoutMinutes,
+        backoffMaxAttempts = backoffMaxAttempts,
     )

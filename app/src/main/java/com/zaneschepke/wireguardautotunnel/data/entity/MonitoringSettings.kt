@@ -33,6 +33,6 @@ data class MonitoringSettings(
     val pingFailuresBeforeRestart: Int = 1,
     @ColumnInfo(name = "is_backoff_enabled", defaultValue = "0")
     val isBackoffEnabled: Boolean = false,
-    @ColumnInfo(name = "backoff_timeout_minutes", defaultValue = "60")
-    val backoffTimeoutMinutes: Int = 60,
+    @ColumnInfo(name = "backoff_max_attempts", defaultValue = "3")
+    val backoffMaxAttempts: Int = 3,
 )

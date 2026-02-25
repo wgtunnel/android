@@ -115,17 +115,29 @@ fun AutoRestartScreen(viewModel: MonitoringViewModel = koinViewModel()) {
                 title = stringResource(R.string.backoff_timeout),
                 leading = { Icon(Icons.Outlined.HourglassBottom, contentDescription = null) },
                 enabled = uiState.monitoringSettings.isBackoffEnabled,
-                currentValue = uiState.monitoringSettings.backoffTimeoutMinutes,
+                currentValue = uiState.monitoringSettings.backoffMaxAttempts,
                 onSelected = { selected ->
-                    selected?.let { viewModel.setBackoffTimeoutMinutes(it) }
+                    selected?.let { viewModel.setBackoffMaxAttempts(it) }
                 },
-                options = listOf(15, 30, 60, 120),
-                optionToString = {
-                    when {
-                        it == null -> stringResource(R.string._default)
-                        it < 60 -> "${it}min"
-                        else -> "${it / 60}h"
+                options = listOf(2, 3, 4, 5, 6, 7),
+                optionToString = { n ->
+                    if (n == null) return@LabelledDropdown stringResource(R.string._default)
+                    val baseSec = uiState.monitoringSettings.restartCooldownSeconds.toLong()
+                    val totalSec = baseSec * ((1L shl n) - 1)
+                    val display = when {
+                        totalSec < 60 -> "${totalSec}s"
+                        totalSec < 3600 -> {
+                            val m = totalSec / 60
+                            val s = totalSec % 60
+                            if (s == 0L) "${m}m" else "${m}m${s}s"
+                        }
+                        else -> {
+                            val h = totalSec / 3600
+                            val m = (totalSec % 3600) / 60
+                            if (m == 0L) "${h}h" else "${h}h${m}m"
+                        }
                     }
+                    "$n attempts (~$display)"
                 },
             )
             LabelledDropdown(

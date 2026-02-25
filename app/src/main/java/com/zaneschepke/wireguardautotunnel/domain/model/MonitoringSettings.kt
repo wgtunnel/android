@@ -18,5 +18,5 @@ data class MonitoringSettings(
     val maxAttemptsAction: MaxAttemptsAction = MaxAttemptsAction.DO_NOTHING,
     val pingFailuresBeforeRestart: Int = 1,
     val isBackoffEnabled: Boolean = false,
-    val backoffTimeoutMinutes: Int = 60,
+    val backoffMaxAttempts: Int = 3,
 )

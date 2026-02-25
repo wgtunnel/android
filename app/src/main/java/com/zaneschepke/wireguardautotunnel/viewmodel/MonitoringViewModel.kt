@@ -102,9 +102,9 @@ class MonitoringViewModel(
         monitoringSettingsRepository.upsert(state.monitoringSettings.copy(isBackoffEnabled = to))
     }
 
-    fun setBackoffTimeoutMinutes(to: Int) = intent {
+    fun setBackoffMaxAttempts(to: Int) = intent {
         monitoringSettingsRepository.upsert(
-            state.monitoringSettings.copy(backoffTimeoutMinutes = to)
+            state.monitoringSettings.copy(backoffMaxAttempts = to)
         )
     }
 }
