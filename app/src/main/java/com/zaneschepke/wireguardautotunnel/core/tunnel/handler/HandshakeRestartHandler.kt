@@ -309,6 +309,7 @@ class HandshakeRestartHandler(
                             it == null || (it.status is TunnelStatus.Up && !shouldTrigger(it, settings.isPingMonitoringEnabled))
                         }
                         restartTimestamps.remove(tunnelId)
+                        _restartProgress.update { it - tunnelId }
                         if (degradedTunnels.remove(tunnelId) != null) {
                             val tunnelNameRestored = tunnelsRepository.getById(tunnelId)?.name
                             localMessageEvents.emit(tunnelNameRestored to BackendMessage.ConnectionRestored)
