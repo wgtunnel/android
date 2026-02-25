@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Adjust
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.PowerSettingsNew
 import androidx.compose.material.icons.outlined.Replay
@@ -25,6 +26,7 @@ import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.data.model.MaxAttemptsAction
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SwitchWithDivider
+import com.zaneschepke.wireguardautotunnel.ui.common.button.ThemedSwitch
 import com.zaneschepke.wireguardautotunnel.ui.common.dropdown.LabelledDropdown
 import com.zaneschepke.wireguardautotunnel.ui.common.label.GroupLabel
 import com.zaneschepke.wireguardautotunnel.viewmodel.MonitoringViewModel
@@ -45,6 +47,23 @@ fun AutoRestartScreen(viewModel: MonitoringViewModel = koinViewModel()) {
             GroupLabel(
                 stringResource(R.string.auto_restart),
                 modifier = Modifier.padding(horizontal = 16.dp),
+            )
+            SurfaceRow(
+                enabled = uiState.monitoringSettings.isPingEnabled,
+                leading = { Icon(Icons.Outlined.Adjust, contentDescription = null) },
+                title = stringResource(R.string.use_ping_for_detection),
+                trailing = {
+                    ThemedSwitch(
+                        checked = uiState.monitoringSettings.isPingMonitoringEnabled,
+                        onClick = { viewModel.setPingMonitoringEnabled(it) },
+                        enabled = uiState.monitoringSettings.isPingEnabled,
+                    )
+                },
+                onClick = {
+                    viewModel.setPingMonitoringEnabled(
+                        !uiState.monitoringSettings.isPingMonitoringEnabled
+                    )
+                },
             )
             LabelledDropdown(
                 title = stringResource(R.string.restart_cooldown),
