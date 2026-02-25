@@ -91,4 +91,10 @@ class MonitoringViewModel(
     fun setMaxAttemptsAction(to: MaxAttemptsAction) = intent {
         monitoringSettingsRepository.upsert(state.monitoringSettings.copy(maxAttemptsAction = to))
     }
+
+    fun setPingFailuresBeforeRestart(to: Int) = intent {
+        monitoringSettingsRepository.upsert(
+            state.monitoringSettings.copy(pingFailuresBeforeRestart = to)
+        )
+    }
 }

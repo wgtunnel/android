@@ -201,12 +201,17 @@ class HandshakeRestartHandler(
             }
         }
 
+        // Counts consecutive ping-failure intervals for the current failure streak.
+        // Resets to 0 when the tunnel becomes healthy or after a restart attempt.
+        var pingFailureStreak = 0
+
         while (true) {
             val state = tunStateFlow.value ?: break
             val settings = monitoringSettingsRepository.getMonitoringSettings()
 
             if (!shouldTrigger(state, settings.isPingMonitoringEnabled)) {
                 // Tunnel healthy — emit ConnectionRestored if it was previously degraded
+                pingFailureStreak = 0
                 if (degradedTunnels.remove(tunnelId) != null) {
                     val tunnelName = tunnelsRepository.getById(tunnelId)?.name
                     localMessageEvents.emit(tunnelName to BackendMessage.ConnectionRestored)
@@ -223,6 +228,24 @@ class HandshakeRestartHandler(
                 continue
             }
 
+            val reason = triggerReason(state, settings.isPingMonitoringEnabled)
+
+            // For ping failures: require N consecutive failing intervals before restarting.
+            // Stale-handshake restarts are not subject to this threshold (WG already waits ~3.5 min).
+            if (reason == BackendMessage.RestartReason.PING_FAILURE) {
+                pingFailureStreak++
+                if (pingFailureStreak < settings.pingFailuresBeforeRestart) {
+                    Timber.d(
+                        "Ping failure streak $pingFailureStreak/${settings.pingFailuresBeforeRestart} " +
+                            "for tunnel $tunnelId — waiting for next ping cycle"
+                    )
+                    // Wait for the next ping-state update before re-evaluating
+                    tunStateFlow.drop(1).first()
+                    continue
+                }
+                pingFailureStreak = 0
+            }
+
             val now = System.currentTimeMillis()
             val timestamps = restartTimestamps.getOrPut(tunnelId) { ArrayDeque() }
 
@@ -236,8 +259,7 @@ class HandshakeRestartHandler(
                     "Max restart attempts (${settings.maxHandshakeRestartAttempts}) reached " +
                         "for tunnel $tunnelId within the last hour — waiting for recovery"
                 )
-                val permanentReason = degradedTunnels[tunnelId]
-                    ?: triggerReason(state, settings.isPingMonitoringEnabled)
+                val permanentReason = degradedTunnels[tunnelId] ?: reason
                 val tunnelName = tunnelsRepository.getById(tunnelId)?.name
                 val isTunnelStopped = settings.maxAttemptsAction == MaxAttemptsAction.STOP_TUNNEL
                 localMessageEvents.emit(
@@ -272,8 +294,6 @@ class HandshakeRestartHandler(
                     }
                 }
             }
-
-            val reason = triggerReason(state, settings.isPingMonitoringEnabled)
             val attempt = timestamps.size + 1
             Timber.i(
                 "Auto-restarting tunnel $tunnelId due to $reason " +

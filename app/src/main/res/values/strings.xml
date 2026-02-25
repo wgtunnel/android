@@ -489,4 +489,5 @@
     <string name="max_attempts_action">On max attempts reached</string>
     <string name="max_attempts_action_do_nothing">Keep waiting</string>
     <string name="max_attempts_action_stop_tunnel">Stop tunnel</string>
+    <string name="ping_failures_before_restart">Consecutive failures before restart</string>
 </resources>

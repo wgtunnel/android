@@ -29,4 +29,6 @@ data class MonitoringSettings(
     val isRecoveryNotificationEnabled: Boolean = true,
     @ColumnInfo(name = "max_attempts_action", defaultValue = "0")
     val maxAttemptsAction: MaxAttemptsAction = MaxAttemptsAction.DO_NOTHING,
+    @ColumnInfo(name = "ping_failures_before_restart", defaultValue = "1")
+    val pingFailuresBeforeRestart: Int = 1,
 )

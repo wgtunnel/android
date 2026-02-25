@@ -8,6 +8,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Adjust
+import androidx.compose.material.icons.outlined.FilterAlt
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.PowerSettingsNew
 import androidx.compose.material.icons.outlined.Replay
@@ -64,6 +65,17 @@ fun AutoRestartScreen(viewModel: MonitoringViewModel = koinViewModel()) {
                         !uiState.monitoringSettings.isPingMonitoringEnabled
                     )
                 },
+            )
+            LabelledDropdown(
+                title = stringResource(R.string.ping_failures_before_restart),
+                leading = { Icon(Icons.Outlined.FilterAlt, contentDescription = null) },
+                enabled = uiState.monitoringSettings.isPingEnabled && uiState.monitoringSettings.isPingMonitoringEnabled,
+                currentValue = uiState.monitoringSettings.pingFailuresBeforeRestart,
+                onSelected = { selected ->
+                    selected?.let { viewModel.setPingFailuresBeforeRestart(it) }
+                },
+                options = listOf(1, 2, 3, 4, 5),
+                optionToString = { it?.toString() ?: stringResource(R.string._default) },
             )
             LabelledDropdown(
                 title = stringResource(R.string.restart_cooldown),
