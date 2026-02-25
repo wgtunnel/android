@@ -86,7 +86,7 @@ fun AutoRestartScreen(viewModel: MonitoringViewModel = koinViewModel()) {
                 onSelected = { selected ->
                     selected?.let { viewModel.setRestartCooldownSeconds(it) }
                 },
-                options = listOf(15, 30, 60, 120, 300),
+                options = listOf(3, 5, 10, 15, 30, 60, 120, 300),
                 optionToString = { it?.let { "${it}s" } ?: stringResource(R.string._default) },
             )
             SurfaceRow(
