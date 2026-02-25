@@ -250,7 +250,10 @@ class HandshakeRestartHandler(
                         ?.mapNotNull { it.lastPingAttemptMillis }
                         ?.maxOrNull()
                     tunStateFlow.first { newState ->
-                        val newPingTime = newState?.pingStates
+                        // Also break out if the tunnel is no longer triggering (recovered,
+                        // or ping was disabled so pingStates are cleared).
+                        if (newState == null || !shouldTrigger(newState, settings.isPingMonitoringEnabled)) return@first true
+                        val newPingTime = newState.pingStates
                             ?.values
                             ?.mapNotNull { it.lastPingAttemptMillis }
                             ?.maxOrNull()
