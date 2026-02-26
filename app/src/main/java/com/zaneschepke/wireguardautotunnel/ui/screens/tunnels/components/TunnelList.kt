@@ -216,7 +216,6 @@ fun TunnelList(
                                 tunnelState,
                                 uiState.isPingEnabled,
                                 uiState.showPingStats,
-                                restartCount = uiState.restartCounts[tunnel.id] ?: 0,
                             )
                         }
                     } else null,
