@@ -361,11 +361,9 @@ class TunnelMonitorHandler(
     ) = coroutineScope {
         while (isActive) {
             ensureActive()
-            if (!powerManager.isDeviceIdleMode) {
-                val stats = getStatistics(tunnelId)
-                ensureActive()
-                updateTunnelStatus(tunnelId, null, stats, null, null)
-            }
+            val stats = getStatistics(tunnelId)
+            ensureActive()
+            updateTunnelStatus(tunnelId, null, stats, null, null)
             delay(STATS_DELAY)
         }
     }
