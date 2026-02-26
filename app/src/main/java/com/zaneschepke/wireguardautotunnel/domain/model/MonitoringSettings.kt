@@ -19,4 +19,5 @@ data class MonitoringSettings(
     val pingFailuresBeforeRestart: Int = 1,
     val isBackoffEnabled: Boolean = false,
     val backoffMaxAttempts: Int = 3,
+    val startupGraceSeconds: Int = 30,
 )

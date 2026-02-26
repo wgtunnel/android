@@ -35,4 +35,6 @@ data class MonitoringSettings(
     val isBackoffEnabled: Boolean = false,
     @ColumnInfo(name = "backoff_max_attempts", defaultValue = "3")
     val backoffMaxAttempts: Int = 3,
+    @ColumnInfo(name = "startup_grace_seconds", defaultValue = "30")
+    val startupGraceSeconds: Int = 30,
 )

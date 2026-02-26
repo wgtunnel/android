@@ -494,4 +494,6 @@
     <string name="exponential_backoff_description">Doubles the cooldown after each failed restart attempt</string>
     <string name="backoff_timeout">Give up after</string>
     <string name="backoff_timeout_description">Stop retrying after this many restart attempts. Estimated total time is based on the current cooldown setting.</string>
+    <string name="startup_grace">Startup grace period</string>
+    <string name="startup_grace_description">Wait for the tunnel to establish a connection before monitoring begins. Prevents false restarts caused by stale statistics on startup.</string>
 </resources>

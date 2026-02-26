@@ -197,10 +197,13 @@ class HandshakeRestartHandler(
         // (the kernel can retain old handshake timestamps until the new handshake completes).
         if (restartTimestamps[tunnelId].isNullOrEmpty()) {
             val initialSettings = monitoringSettingsRepository.getMonitoringSettings()
-            Timber.d("Fresh start: waiting for tunnel $tunnelId to establish healthy state (${STARTUP_GRACE_MS}ms grace)")
-            withTimeoutOrNull(STARTUP_GRACE_MS) {
-                tunStateFlow.filterNotNull().first { s ->
-                    !shouldTrigger(s, initialSettings.isPingMonitoringEnabled)
+            val graceMs = initialSettings.startupGraceSeconds * 1_000L
+            if (graceMs > 0) {
+                Timber.d("Fresh start: waiting for tunnel $tunnelId to establish healthy state (${graceMs}ms grace)")
+                withTimeoutOrNull(graceMs) {
+                    tunStateFlow.filterNotNull().first { s ->
+                        !shouldTrigger(s, initialSettings.isPingMonitoringEnabled)
+                    }
                 }
             }
         }
@@ -422,9 +425,6 @@ class HandshakeRestartHandler(
     companion object {
         const val ONE_HOUR_MS = 3_600_000L
         const val NETWORK_RECOVERY_GRACE_MS = 10_000L
-        // Grace period on fresh tunnel start to let WireGuard complete its first handshake
-        // before monitoring begins (avoids false-positive restarts from stale statistics).
-        const val STARTUP_GRACE_MS = 30_000L
 
         /**
          * Returns the cooldown in seconds for the given attempt number.

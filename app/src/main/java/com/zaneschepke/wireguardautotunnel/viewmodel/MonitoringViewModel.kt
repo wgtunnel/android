@@ -107,4 +107,10 @@ class MonitoringViewModel(
             state.monitoringSettings.copy(backoffMaxAttempts = to)
         )
     }
+
+    fun setStartupGraceSeconds(to: Int) = intent {
+        monitoringSettingsRepository.upsert(
+            state.monitoringSettings.copy(startupGraceSeconds = to)
+        )
+    }
 }

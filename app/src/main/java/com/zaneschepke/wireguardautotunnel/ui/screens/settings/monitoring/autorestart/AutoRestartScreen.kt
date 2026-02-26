@@ -10,6 +10,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Adjust
 import androidx.compose.material.icons.outlined.FilterAlt
 import androidx.compose.material.icons.outlined.HourglassBottom
+import androidx.compose.material.icons.outlined.HourglassTop
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.PowerSettingsNew
 import androidx.compose.material.icons.outlined.Replay
@@ -88,6 +89,20 @@ fun AutoRestartScreen(viewModel: MonitoringViewModel = koinViewModel()) {
                 },
                 options = listOf(3, 5, 10, 15, 30, 60, 120, 300),
                 optionToString = { it?.let { "${it}s" } ?: stringResource(R.string._default) },
+            )
+            LabelledDropdown(
+                title = stringResource(R.string.startup_grace),
+                leading = { Icon(Icons.Outlined.HourglassTop, contentDescription = null) },
+                currentValue = uiState.monitoringSettings.startupGraceSeconds,
+                onSelected = { selected -> selected?.let { viewModel.setStartupGraceSeconds(it) } },
+                options = listOf(0, 10, 15, 30, 60),
+                optionToString = {
+                    when (it) {
+                        null -> stringResource(R.string._default)
+                        0 -> stringResource(R.string.disabled)
+                        else -> "${it}s"
+                    }
+                },
             )
             SurfaceRow(
                 leading = { Icon(Icons.Outlined.TrendingUp, contentDescription = null) },
