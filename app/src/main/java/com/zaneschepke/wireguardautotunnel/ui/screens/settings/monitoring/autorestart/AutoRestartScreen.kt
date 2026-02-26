@@ -88,7 +88,7 @@ fun AutoRestartScreen(viewModel: MonitoringViewModel = koinViewModel()) {
                 onSelected = { selected ->
                     selected?.let { viewModel.setRestartCooldownSeconds(it) }
                 },
-                options = listOf(3, 5, 10, 15, 30, 60, 120, 300),
+                options = listOf(5, 10, 15, 30, 60, 120, 300),
                 optionToString = { it?.let { "${it}s" } ?: stringResource(R.string._default) },
             )
             LabelledDropdown(
@@ -96,7 +96,7 @@ fun AutoRestartScreen(viewModel: MonitoringViewModel = koinViewModel()) {
                 leading = { Icon(Icons.Outlined.HourglassTop, contentDescription = null) },
                 currentValue = uiState.monitoringSettings.startupGraceSeconds,
                 onSelected = { selected -> selected?.let { viewModel.setStartupGraceSeconds(it) } },
-                options = listOf(0, 10, 15, 30, 60),
+                options = listOf(0, 5, 10, 15, 30, 60),
                 optionToString = {
                     when (it) {
                         null -> stringResource(R.string._default)

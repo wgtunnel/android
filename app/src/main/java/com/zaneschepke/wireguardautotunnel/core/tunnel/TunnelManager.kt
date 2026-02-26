@@ -209,6 +209,7 @@ class TunnelManager(
             restartTunnel = { id -> restartActiveTunnel(id) },
             stopTunnel = { id -> stopTunnel(id) },
             networkMonitor = networkMonitor,
+            networkUtils = networkUtils,
             applicationScope = applicationScope,
             ioDispatcher = ioDispatcher,
         )

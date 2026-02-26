@@ -2,6 +2,7 @@ package com.zaneschepke.wireguardautotunnel.core.tunnel.handler
 
 import com.zaneschepke.networkmonitor.ActiveNetwork
 import com.zaneschepke.networkmonitor.NetworkMonitor
+import com.zaneschepke.wireguardautotunnel.util.network.NetworkUtils
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
 import com.zaneschepke.wireguardautotunnel.domain.events.BackendMessage
 import com.zaneschepke.wireguardautotunnel.data.model.MaxAttemptsAction
@@ -47,6 +48,7 @@ class HandshakeRestartHandler(
     private val restartTunnel: suspend (Int) -> Unit,
     private val stopTunnel: suspend (Int) -> Unit,
     private val networkMonitor: NetworkMonitor,
+    private val networkUtils: NetworkUtils,
     private val applicationScope: CoroutineScope,
     private val ioDispatcher: CoroutineDispatcher,
 ) {
@@ -352,6 +354,29 @@ class HandshakeRestartHandler(
                     }
                 }
             }
+            // Pre-restart verification: ping each known target to confirm the tunnel is truly down.
+            // If any target is reachable, the tunnel has recovered — skip restart and reset streak.
+            // Conditioned on isPingEnabled (not isPingMonitoringEnabled): the user may have pings
+            // active without using them to trigger restarts — verification is still meaningful.
+            // If isPingEnabled = false, pingStates = null → targets empty → block skipped anyway.
+            if (settings.isPingEnabled) {
+                val targets = tunStateFlow.value?.pingStates?.values?.map { it.pingTarget }.orEmpty()
+                if (targets.isNotEmpty()) {
+                    Timber.d("Pre-restart verification: pinging ${targets.size} target(s) for tunnel $tunnelId")
+                    val anyReachable = targets.any { target ->
+                        runCatching {
+                            networkUtils.pingWithStats(target, settings.tunnelPingAttempts).isReachable
+                        }.getOrDefault(false)
+                    }
+                    if (anyReachable) {
+                        Timber.d("Pre-restart verification: tunnel $tunnelId is reachable — skipping restart, resetting streak")
+                        pingFailureStreak = 0
+                        continue
+                    }
+                    Timber.d("Pre-restart verification: tunnel $tunnelId confirmed down — proceeding with restart")
+                }
+            }
+
             val attempt = timestamps.size + 1
             val effectiveMaxAttempts =
                 if (settings.isBackoffEnabled) settings.backoffMaxAttempts
@@ -423,6 +448,19 @@ class HandshakeRestartHandler(
                 }
             }
             _restartProgress.update { it - tunnelId }
+
+            // Post-restart grace: mirrors the startup grace at the top of monitorHandshake.
+            // Prevents false-positive restart loops when cooldown < WireGuard re-handshake time.
+            // isTunnelStale() is always checked first in shouldTrigger and WireGuard can retain
+            // stale stats until a fresh handshake completes, so we wait just like on fresh start.
+            val postRestartGraceMs = settings.startupGraceSeconds * 1_000L
+            if (postRestartGraceMs > 0) {
+                withTimeoutOrNull(postRestartGraceMs) {
+                    tunStateFlow.filterNotNull().first { s ->
+                        !shouldTrigger(s, settings.isPingMonitoringEnabled)
+                    }
+                }
+            }
         }
     }
 

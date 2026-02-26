@@ -472,7 +472,7 @@
     <string name="handshake_restart_stale">Tunnel restarted automatically: stale WireGuard handshake (~3.5 min).</string>
     <string name="handshake_restart_ping">Tunnel restarted automatically: all ping targets unreachable.</string>
     <string name="restart_cooldown">Cooldown between restarts</string>
-    <string name="use_ping_for_detection">Use ping to trigger restart</string>
+    <string name="use_ping_for_detection">Use ping monitoring</string>
     <string name="restarting">Restarting…</string>
     <string name="restart_reason_stale_handshake">Stale handshake</string>
     <string name="restart_reason_ping_failure">Ping unreachable</string>
