@@ -69,17 +69,18 @@ fun AutoRestartScreen(viewModel: MonitoringViewModel = koinViewModel()) {
                     )
                 },
             )
-            LabelledDropdown(
-                title = stringResource(R.string.ping_failures_before_restart),
-                leading = { Icon(Icons.Outlined.FilterAlt, contentDescription = null) },
-                enabled = uiState.monitoringSettings.isPingEnabled && uiState.monitoringSettings.isPingMonitoringEnabled,
-                currentValue = uiState.monitoringSettings.pingFailuresBeforeRestart,
-                onSelected = { selected ->
-                    selected?.let { viewModel.setPingFailuresBeforeRestart(it) }
-                },
-                options = listOf(1, 2, 3, 4, 5),
-                optionToString = { it?.toString() ?: stringResource(R.string._default) },
-            )
+            if (uiState.monitoringSettings.isPingEnabled && uiState.monitoringSettings.isPingMonitoringEnabled) {
+                LabelledDropdown(
+                    title = stringResource(R.string.ping_failures_before_restart),
+                    leading = { Icon(Icons.Outlined.FilterAlt, contentDescription = null) },
+                    currentValue = uiState.monitoringSettings.pingFailuresBeforeRestart,
+                    onSelected = { selected ->
+                        selected?.let { viewModel.setPingFailuresBeforeRestart(it) }
+                    },
+                    options = listOf(1, 2, 3, 4, 5),
+                    optionToString = { it?.toString() ?: stringResource(R.string._default) },
+                )
+            }
             LabelledDropdown(
                 title = stringResource(R.string.restart_cooldown),
                 leading = { Icon(Icons.Outlined.Timer, contentDescription = null) },
