@@ -24,17 +24,17 @@ data class MonitoringSettings(
     @ColumnInfo(name = "max_handshake_restart_attempts", defaultValue = "5")
     val maxHandshakeRestartAttempts: Int = 5,
     @ColumnInfo(name = "restart_cooldown_seconds", defaultValue = "30")
-    val restartCooldownSeconds: Int = 30,
+    val restartCooldownSeconds: Int = 15,
     @ColumnInfo(name = "is_recovery_notification_enabled", defaultValue = "1")
     val isRecoveryNotificationEnabled: Boolean = true,
     @ColumnInfo(name = "max_attempts_action", defaultValue = "0")
     val maxAttemptsAction: MaxAttemptsAction = MaxAttemptsAction.DO_NOTHING,
     @ColumnInfo(name = "ping_failures_before_restart", defaultValue = "1")
-    val pingFailuresBeforeRestart: Int = 1,
+    val pingFailuresBeforeRestart: Int = 2,
     @ColumnInfo(name = "is_backoff_enabled", defaultValue = "0")
     val isBackoffEnabled: Boolean = false,
     @ColumnInfo(name = "backoff_max_attempts", defaultValue = "3")
     val backoffMaxAttempts: Int = 3,
     @ColumnInfo(name = "startup_grace_seconds", defaultValue = "30")
-    val startupGraceSeconds: Int = 30,
+    val startupGraceSeconds: Int = 10,
 )

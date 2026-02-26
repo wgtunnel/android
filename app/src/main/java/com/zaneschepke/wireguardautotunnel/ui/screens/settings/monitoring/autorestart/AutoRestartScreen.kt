@@ -63,6 +63,15 @@ fun AutoRestartScreen(viewModel: MonitoringViewModel = koinViewModel()) {
                     )
                 },
                 title = stringResource(R.string.use_ping_for_detection),
+                description = {
+                    Text(
+                        text = stringResource(R.string.use_ping_for_detection_description),
+                        style =
+                            MaterialTheme.typography.bodySmall.copy(
+                                color = MaterialTheme.colorScheme.outline
+                            ),
+                    )
+                },
                 trailing = {
                     ThemedSwitch(
                         checked = uiState.monitoringSettings.isPingMonitoringEnabled,
@@ -100,6 +109,15 @@ fun AutoRestartScreen(viewModel: MonitoringViewModel = koinViewModel()) {
             )
             LabelledDropdown(
                 title = stringResource(R.string.startup_grace),
+                description = {
+                    Text(
+                        text = stringResource(R.string.startup_grace_description),
+                        style =
+                            MaterialTheme.typography.bodySmall.copy(
+                                color = MaterialTheme.colorScheme.outline
+                            ),
+                    )
+                },
                 leading = { Icon(Icons.Outlined.HourglassTop, contentDescription = null) },
                 currentValue = uiState.monitoringSettings.startupGraceSeconds,
                 onSelected = { selected -> selected?.let { viewModel.setStartupGraceSeconds(it) } },

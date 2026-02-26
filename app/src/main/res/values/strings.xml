@@ -473,6 +473,7 @@
     <string name="handshake_restart_ping">Tunnel restarted automatically: all ping targets unreachable.</string>
     <string name="restart_cooldown">Cooldown between restarts</string>
     <string name="use_ping_for_detection">Restart on ping failure</string>
+    <string name="use_ping_for_detection_description">Requires ping monitoring to be enabled.</string>
     <string name="restarting">Restarting…</string>
     <string name="restart_reason_stale_handshake">Stale handshake</string>
     <string name="restart_reason_ping_failure">Ping unreachable</string>
@@ -495,5 +496,5 @@
     <string name="backoff_timeout">Give up after</string>
     <string name="backoff_timeout_description">Stop retrying after this many restart attempts. Estimated total time is based on the current cooldown setting.</string>
     <string name="startup_grace">Startup grace period</string>
-    <string name="startup_grace_description">Wait for the tunnel to establish a connection before monitoring begins. Prevents false restarts caused by stale statistics on startup.</string>
+    <string name="startup_grace_description">Delays monitoring start to prevent false restarts on startup.</string>
 </resources>
