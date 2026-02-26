@@ -70,13 +70,16 @@ class SharedAppViewModel(
                 monitoringSettingsRepository.flow,
                 tunnelManager.activeTunnels,
                 selectedTunnelsRepository.flow,
-            ) { tunnels, monitoringSettings, activeTuns, selectedTuns ->
+                combine(tunnelManager.restartProgress, tunnelManager.restartCounts) { p, c -> Pair(p, c) },
+            ) { tunnels, monitoringSettings, activeTuns, selectedTuns, (restartProgress, restartCounts) ->
                 TunnelsUiState(
                     tunnels = tunnels,
                     isPingEnabled = monitoringSettings.isPingEnabled,
                     showPingStats = monitoringSettings.showDetailedPingStats,
                     activeTunnels = activeTuns,
                     selectedTunnels = selectedTuns,
+                    restartProgress = restartProgress,
+                    restartCounts = restartCounts,
                     isLoading = false,
                 )
             }
@@ -126,7 +129,7 @@ class SharedAppViewModel(
 
             intent {
                 tunnelManager.messageEvents.collect { (_, message) ->
-                    postSideEffect(GlobalSideEffect.Snackbar(message.toStringValue()))
+                    message.toStringValue()?.let { postSideEffect(GlobalSideEffect.Snackbar(it)) }
                 }
             }
         }

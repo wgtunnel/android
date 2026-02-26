@@ -86,6 +86,10 @@ class SettingsViewModel(
         monitoringRepository.upsert(state.monitoring.copy(isPingEnabled = to))
     }
 
+    fun setRestartOnHandshakeTimeout(to: Boolean) = intent {
+        monitoringRepository.upsert(state.monitoring.copy(isRestartOnHandshakeTimeoutEnabled = to))
+    }
+
     fun setRemoteEnabled(to: Boolean) = intent {
         settingsRepository.upsert(
             state.settings.copy(
