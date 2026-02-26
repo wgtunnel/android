@@ -466,7 +466,7 @@ class HandshakeRestartHandler(
 
     companion object {
         const val ONE_HOUR_MS = 3_600_000L
-        const val NETWORK_RECOVERY_GRACE_MS = 10_000L
+        const val NETWORK_RECOVERY_GRACE_MS = 3_000L
 
         /**
          * Returns the cooldown in seconds for the given attempt number.
