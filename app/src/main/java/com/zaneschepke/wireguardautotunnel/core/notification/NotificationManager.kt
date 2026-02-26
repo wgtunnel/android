@@ -57,6 +57,7 @@ interface NotificationManager {
         const val VPN_NOTIFICATION_ID = 100
         const val TUNNEL_ERROR_NOTIFICATION_ID = 101
         const val TUNNEL_MESSAGES_NOTIFICATION_ID = 102
+        const val RECOVERY_NOTIFICATION_ID = 103
         const val EXTRA_ID = "id"
     }
 }
