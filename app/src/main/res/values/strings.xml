@@ -464,4 +464,36 @@
     <string name="fdroid_url" translatable="false">https://apt.izzysoft.de/fdroid/index/apk/com.zaneschepke.wireguardautotunnel</string>
     <string name="import_url_description">The URL must be secure and serve a .conf file.</string>
     <string name="only_template">%1$s only</string>
+    <string name="auto_restart">Auto-restart</string>
+    <string name="restart_on_handshake_timeout">Auto-restart on tunnel failure</string>
+    <string name="restart_on_handshake_timeout_description">Automatically restart the tunnel when a stale handshake is detected (~3.5 min) or when ping monitoring detects a failure.</string>
+    <string name="max_handshake_restart_attempts">Max restarts per hour</string>
+    <string name="max_handshake_restart_attempts_description">Stops auto-restarting after this many attempts within one hour to avoid restart loops.</string>
+    <string name="handshake_restart_stale">Tunnel restarted automatically: stale WireGuard handshake (~3.5 min).</string>
+    <string name="handshake_restart_ping">Tunnel restarted automatically: all ping targets unreachable.</string>
+    <string name="restart_cooldown">Cooldown between restarts</string>
+    <string name="use_ping_for_detection">Restart on ping failure</string>
+    <string name="restarting">Restarting…</string>
+    <string name="restart_reason_stale_handshake">Stale handshake</string>
+    <string name="restart_reason_ping_failure">Ping unreachable</string>
+    <string name="restart_reason_ping_failure_targets">Ping unreachable: %1$s</string>
+    <string name="restarting_attempt">Restarting… %1$d/%2$d</string>
+    <string name="restart_cooldown_countdown">Restart %1$d/%2$d · next in %3$ds</string>
+    <string name="restart_max_reached">Restart %1$d/%2$d · max reached</string>
+    <string name="notif_recovery_degraded">%1$s · restarting… (%2$s/%3$s)</string>
+    <string name="notif_recovery_restored">Connection restored</string>
+    <string name="notif_recovery_failed">%1$s · max restarts reached</string>
+    <string name="notif_recovery_failed_stopped">%1$s · max restarts reached · VPN stopped</string>
+    <string name="recovery_notifications">Recovery notifications</string>
+    <string name="recovery_notifications_description">Get notified when a tunnel failure is detected and when it recovers</string>
+    <string name="max_attempts_action">On max attempts reached</string>
+    <string name="max_attempts_action_do_nothing">Keep waiting</string>
+    <string name="max_attempts_action_stop_tunnel">Stop tunnel</string>
+    <string name="ping_failures_before_restart">Consecutive ping failures before first restart</string>
+    <string name="exponential_backoff">Exponential backoff</string>
+    <string name="exponential_backoff_description">Doubles the cooldown after each failed restart attempt</string>
+    <string name="backoff_timeout">Give up after</string>
+    <string name="backoff_timeout_description">Stop retrying after this many restart attempts. Estimated total time is based on the current cooldown setting.</string>
+    <string name="startup_grace">Startup grace period</string>
+    <string name="startup_grace_description">Wait for the tunnel to establish a connection before monitoring begins. Prevents false restarts caused by stale statistics on startup.</string>
 </resources>

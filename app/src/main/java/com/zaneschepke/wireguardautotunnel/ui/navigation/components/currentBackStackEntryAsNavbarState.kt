@@ -542,6 +542,19 @@ fun currentRouteAsNavbarState(
                         topTitle = context.getString(R.string.ping_target),
                         showBottomItems = true,
                     )
+                AutoRestart ->
+                    NavbarState(
+                        topLeading = {
+                            IconButton(onClick = { navController.pop() }) {
+                                Icon(
+                                    Icons.AutoMirrored.Rounded.ArrowBack,
+                                    stringResource(R.string.back),
+                                )
+                            }
+                        },
+                        topTitle = context.getString(R.string.auto_restart),
+                        showBottomItems = true,
+                    )
                 null -> NavbarState()
             }
         }

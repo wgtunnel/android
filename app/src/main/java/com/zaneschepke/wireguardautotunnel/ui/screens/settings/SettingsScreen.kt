@@ -13,6 +13,7 @@ import androidx.compose.material.icons.outlined.Android
 import androidx.compose.material.icons.outlined.Dns
 import androidx.compose.material.icons.outlined.ExpandMore
 import androidx.compose.material.icons.outlined.NetworkPing
+import androidx.compose.material.icons.outlined.RestartAlt
 import androidx.compose.material.icons.outlined.Pin
 import androidx.compose.material.icons.outlined.SettingsBackupRestore
 import androidx.compose.material.icons.outlined.ViewHeadline
@@ -236,6 +237,18 @@ fun SettingsScreen(
                     )
                 },
                 onClick = { navController.push(Route.TunnelMonitoring) },
+            )
+            SurfaceRow(
+                leading = { Icon(Icons.Outlined.RestartAlt, contentDescription = null) },
+                title = stringResource(R.string.auto_restart),
+                trailing = { modifier ->
+                    SwitchWithDivider(
+                        checked = uiState.monitoring.isRestartOnHandshakeTimeoutEnabled,
+                        onClick = { viewModel.setRestartOnHandshakeTimeout(it) },
+                        modifier = modifier,
+                    )
+                },
+                onClick = { navController.push(Route.AutoRestart) },
             )
             SurfaceRow(
                 leading = { Icon(Icons.Outlined.ViewHeadline, contentDescription = null) },
