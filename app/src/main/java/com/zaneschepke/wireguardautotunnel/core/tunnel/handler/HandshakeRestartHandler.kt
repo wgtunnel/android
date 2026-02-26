@@ -120,6 +120,9 @@ class HandshakeRestartHandler(
 
                         activeIds.forEach { id ->
                             if (jobs.containsKey(id)) return@forEach
+                            // Reset count when a fresh monitoring job starts (covers the race where
+                            // the previous coroutine incremented the count after cancelAndClear ran)
+                            _restartCounts.update { it - id }
                             val tunStateFlow =
                                 activeTunnels
                                     .map { it[id] }
