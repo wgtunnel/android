@@ -474,6 +474,8 @@
     <string name="restart_cooldown">Cooldown between restarts</string>
     <string name="use_ping_for_detection">Restart on ping failure</string>
     <string name="use_ping_for_detection_description">Requires ping monitoring to be enabled.</string>
+    <string name="battery_optimization_warning">Disable battery optimization</string>
+    <string name="battery_optimization_warning_description">Battery optimization may prevent auto-restart from working reliably. Tap to disable.</string>
     <string name="restarting">Restarting…</string>
     <string name="restart_reason_stale_handshake">Stale handshake</string>
     <string name="restart_reason_ping_failure">Ping unreachable</string>

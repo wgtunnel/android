@@ -6,8 +6,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import android.annotation.SuppressLint
+import android.content.Intent
+import android.provider.Settings
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Adjust
+import androidx.compose.material.icons.outlined.BatterySaver
 import androidx.compose.material.icons.outlined.FilterAlt
 import androidx.compose.material.icons.outlined.HourglassBottom
 import androidx.compose.material.icons.outlined.HourglassTop
@@ -24,8 +28,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.data.model.MaxAttemptsAction
@@ -34,12 +40,15 @@ import com.zaneschepke.wireguardautotunnel.ui.common.button.SwitchWithDivider
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ThemedSwitch
 import com.zaneschepke.wireguardautotunnel.ui.common.dropdown.LabelledDropdown
 import com.zaneschepke.wireguardautotunnel.ui.common.label.GroupLabel
+import com.zaneschepke.wireguardautotunnel.util.extensions.isBatteryOptimizationsDisabled
 import com.zaneschepke.wireguardautotunnel.viewmodel.MonitoringViewModel
 import org.koin.androidx.compose.koinViewModel
 
+@SuppressLint("BatteryLife")
 @Composable
 fun AutoRestartScreen(viewModel: MonitoringViewModel = koinViewModel()) {
     val uiState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
+    val context = LocalContext.current
 
     if (uiState.isLoading) return
 
@@ -48,6 +57,33 @@ fun AutoRestartScreen(viewModel: MonitoringViewModel = koinViewModel()) {
         verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.Top),
         modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
     ) {
+        if (!context.isBatteryOptimizationsDisabled()) {
+            SurfaceRow(
+                leading = {
+                    Icon(
+                        Icons.Outlined.BatterySaver,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.error,
+                    )
+                },
+                title = stringResource(R.string.battery_optimization_warning),
+                description = {
+                    Text(
+                        text = stringResource(R.string.battery_optimization_warning_description),
+                        style = MaterialTheme.typography.bodySmall.copy(
+                            color = MaterialTheme.colorScheme.outline,
+                        ),
+                    )
+                },
+                onClick = {
+                    context.startActivity(
+                        Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
+                            data = "package:${context.packageName}".toUri()
+                        }
+                    )
+                },
+            )
+        }
         Column {
             GroupLabel(
                 stringResource(R.string.auto_restart),
