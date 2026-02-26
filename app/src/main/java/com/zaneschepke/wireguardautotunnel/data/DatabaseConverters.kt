@@ -3,6 +3,7 @@ package com.zaneschepke.wireguardautotunnel.data
 import androidx.room.TypeConverter
 import com.zaneschepke.wireguardautotunnel.data.model.AppMode
 import com.zaneschepke.wireguardautotunnel.data.model.DnsProtocol
+import com.zaneschepke.wireguardautotunnel.data.model.MaxAttemptsAction
 import com.zaneschepke.wireguardautotunnel.data.model.WifiDetectionMethod
 import kotlinx.serialization.json.Json
 
@@ -64,4 +65,8 @@ class DatabaseConverters {
     @TypeConverter fun toDnsProtocol(value: Int): DnsProtocol = DnsProtocol.fromValue(value)
 
     @TypeConverter fun fromDnsProtocol(mode: DnsProtocol): Int = mode.value
+
+    @TypeConverter fun toMaxAttemptsAction(value: Int): MaxAttemptsAction = MaxAttemptsAction.fromValue(value)
+
+    @TypeConverter fun fromMaxAttemptsAction(action: MaxAttemptsAction): Int = action.value
 }

@@ -13,6 +13,15 @@ fun Entity.toDomain(): Domain =
         tunnelPingTimeoutSeconds = tunnelPingTimeoutSeconds,
         showDetailedPingStats = showDetailedPingStats,
         isLocalLogsEnabled = isLocalLogsEnabled,
+        isRestartOnHandshakeTimeoutEnabled = isRestartOnHandshakeTimeoutEnabled,
+        maxHandshakeRestartAttempts = maxHandshakeRestartAttempts,
+        restartCooldownSeconds = restartCooldownSeconds,
+        isRecoveryNotificationEnabled = isRecoveryNotificationEnabled,
+        maxAttemptsAction = maxAttemptsAction,
+        pingFailuresBeforeRestart = pingFailuresBeforeRestart,
+        isBackoffEnabled = isBackoffEnabled,
+        backoffMaxAttempts = backoffMaxAttempts,
+        startupGraceSeconds = startupGraceSeconds,
     )
 
 fun Domain.toEntity(): Entity =
@@ -25,4 +34,13 @@ fun Domain.toEntity(): Entity =
         tunnelPingTimeoutSeconds = tunnelPingTimeoutSeconds,
         showDetailedPingStats = showDetailedPingStats,
         isLocalLogsEnabled = isLocalLogsEnabled,
+        isRestartOnHandshakeTimeoutEnabled = isRestartOnHandshakeTimeoutEnabled,
+        maxHandshakeRestartAttempts = maxHandshakeRestartAttempts,
+        restartCooldownSeconds = restartCooldownSeconds,
+        isRecoveryNotificationEnabled = isRecoveryNotificationEnabled,
+        maxAttemptsAction = maxAttemptsAction,
+        pingFailuresBeforeRestart = pingFailuresBeforeRestart,
+        isBackoffEnabled = isBackoffEnabled,
+        backoffMaxAttempts = backoffMaxAttempts,
+        startupGraceSeconds = startupGraceSeconds,
     )

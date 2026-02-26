@@ -5,12 +5,21 @@ import com.zaneschepke.wireguardautotunnel.util.StringValue
 
 sealed class BackendMessage {
 
+    enum class RestartReason { STALE_HANDSHAKE, PING_FAILURE }
+
     data object DynamicDnsSuccess : BackendMessage()
 
-    fun toStringRes() =
-        when (this) {
-            DynamicDnsSuccess -> R.string.ddns_success_message
-        }
+    data class ConnectionDegrading(val reason: RestartReason, val attempt: Int, val maxAttempts: Int) : BackendMessage()
 
-    fun toStringValue() = StringValue.StringResource(this.toStringRes())
+    data object ConnectionRestored : BackendMessage()
+
+    data class ConnectionPermanentlyLost(val reason: RestartReason, val totalAttempts: Int, val isTunnelStopped: Boolean = false) : BackendMessage()
+
+    data object ConnectionCancelled : BackendMessage()
+
+    fun toStringValue(): StringValue? =
+        when (this) {
+            DynamicDnsSuccess -> StringValue.StringResource(R.string.ddns_success_message)
+            else -> null
+        }
 }

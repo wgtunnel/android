@@ -3,6 +3,7 @@ package com.zaneschepke.wireguardautotunnel.data.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.zaneschepke.wireguardautotunnel.data.model.MaxAttemptsAction
 
 @Entity(tableName = "monitoring_settings")
 data class MonitoringSettings(
@@ -18,4 +19,22 @@ data class MonitoringSettings(
     val showDetailedPingStats: Boolean = false,
     @ColumnInfo(name = "is_local_logs_enabled", defaultValue = "0")
     val isLocalLogsEnabled: Boolean = false,
+    @ColumnInfo(name = "is_restart_on_handshake_timeout_enabled", defaultValue = "0")
+    val isRestartOnHandshakeTimeoutEnabled: Boolean = false,
+    @ColumnInfo(name = "max_handshake_restart_attempts", defaultValue = "5")
+    val maxHandshakeRestartAttempts: Int = 5,
+    @ColumnInfo(name = "restart_cooldown_seconds", defaultValue = "30")
+    val restartCooldownSeconds: Int = 30,
+    @ColumnInfo(name = "is_recovery_notification_enabled", defaultValue = "1")
+    val isRecoveryNotificationEnabled: Boolean = true,
+    @ColumnInfo(name = "max_attempts_action", defaultValue = "0")
+    val maxAttemptsAction: MaxAttemptsAction = MaxAttemptsAction.DO_NOTHING,
+    @ColumnInfo(name = "ping_failures_before_restart", defaultValue = "1")
+    val pingFailuresBeforeRestart: Int = 1,
+    @ColumnInfo(name = "is_backoff_enabled", defaultValue = "0")
+    val isBackoffEnabled: Boolean = false,
+    @ColumnInfo(name = "backoff_max_attempts", defaultValue = "3")
+    val backoffMaxAttempts: Int = 3,
+    @ColumnInfo(name = "startup_grace_seconds", defaultValue = "30")
+    val startupGraceSeconds: Int = 30,
 )
