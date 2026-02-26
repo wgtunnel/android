@@ -265,7 +265,11 @@ class HandshakeRestartHandler(
                     // tunStateFlow emits on every stats poll (bytes, handshake time…), so using
                     // drop(1).first() would return almost immediately. We need to wait until
                     // lastPingAttemptMillis actually advances to a new cycle.
-                    val currentPingTime = state.pingStates
+                    //
+                    // Re-read from tunStateFlow.value immediately before first { } so the
+                    // StateFlow replay always matches our baseline (no suspend point between
+                    // the two reads → no concurrent update possible in this coroutine).
+                    val currentPingTime = tunStateFlow.value?.pingStates
                         ?.values
                         ?.mapNotNull { it.lastPingAttemptMillis }
                         ?.maxOrNull()
