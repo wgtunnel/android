@@ -115,7 +115,7 @@ jobs:
         id: apk-path
         run: echo "path=$(find . -regex '^.*/build/outputs/apk/${{ inputs.flavor }}/${{ inputs.build_type }}/.*\.apk$' -type f | head -1 | tail -c+2)" >> $GITHUB_OUTPUT
       - name: Upload All APK Artifacts
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: android_artifacts_${{ inputs.flavor }}
           path: >-
