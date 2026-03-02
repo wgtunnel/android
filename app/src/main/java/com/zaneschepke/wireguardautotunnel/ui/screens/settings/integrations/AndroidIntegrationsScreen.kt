@@ -68,128 +68,156 @@ fun AndroidIntegrationsScreen(viewModel: SettingsViewModel = koinViewModel()) {
     }
 
     Column(
-        horizontalAlignment = Alignment.Start,
-        verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.Top),
-        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.Top),
+            modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
     ) {
         if (!isTv) {
             Column {
                 GroupLabel(stringResource(id = R.string.vpn), Modifier.padding(horizontal = 16.dp))
                 SurfaceRow(
-                    leading = {
-                        Icon(Icons.Outlined.AdminPanelSettings, contentDescription = null)
-                    },
-                    title = stringResource(R.string.native_kill_switch),
-                    trailing = { Icon(Icons.AutoMirrored.Outlined.Launch, null) },
-                    onClick = { context.launchVpnSettings() },
+                        leading = {
+                            Icon(Icons.Outlined.AdminPanelSettings, contentDescription = null)
+                        },
+                        title = stringResource(R.string.native_kill_switch),
+                        trailing = { Icon(Icons.AutoMirrored.Outlined.Launch, null) },
+                        onClick = { context.launchVpnSettings() },
                 )
                 SurfaceRow(
-                    leading = { Icon(Icons.Outlined.VpnLock, contentDescription = null) },
-                    trailing = {
-                        ThemedSwitch(
-                            checked = isAlwaysOnEnabled,
-                            onClick = { viewModel.setAlwaysOnVpnEnabled(it) },
-                        )
-                    },
-                    title = stringResource(R.string.always_on_vpn_support),
-                    onClick = { viewModel.setAlwaysOnVpnEnabled(!isAlwaysOnEnabled) },
-                    description = { DescriptionText(stringResource(R.string.aovpn_description)) },
+                        leading = { Icon(Icons.Outlined.VpnLock, contentDescription = null) },
+                        trailing = {
+                            ThemedSwitch(
+                                    checked = isAlwaysOnEnabled,
+                                    onClick = { viewModel.setAlwaysOnVpnEnabled(it) },
+                            )
+                        },
+                        title = stringResource(R.string.always_on_vpn_support),
+                        onClick = { viewModel.setAlwaysOnVpnEnabled(!isAlwaysOnEnabled) },
+                        description = {
+                            DescriptionText(stringResource(R.string.aovpn_description))
+                        },
+                )
+                SurfaceRow(
+                        leading = {
+                            Icon(Icons.Outlined.AdminPanelSettings, contentDescription = null)
+                        },
+                        trailing = {
+                            ThemedSwitch(
+                                    checked = settingsState.settings.isLanBypassEnabled,
+                                    onClick = { viewModel.setLanBypassEnabled(it) },
+                            )
+                        },
+                        title = stringResource(R.string.lan_bypass),
+                        onClick = {
+                            viewModel.setLanBypassEnabled(
+                                    !settingsState.settings.isLanBypassEnabled
+                            )
+                        },
+                        description = {
+                            DescriptionText(stringResource(R.string.lan_bypass_description))
+                        },
                 )
             }
         }
+
         Column {
             GroupLabel(
-                stringResource(id = R.string.tunnel_control),
-                Modifier.padding(horizontal = 16.dp),
+                    stringResource(id = R.string.tunnel_control),
+                    Modifier.padding(horizontal = 16.dp),
             )
             SurfaceRow(
-                leading = {
-                    Icon(
-                        Icons.Outlined.Restore,
-                        contentDescription = null,
-                        tint =
-                            if (isAlwaysOnEnabled) MaterialTheme.colorScheme.outline
-                            else MaterialTheme.colorScheme.onSurface,
-                    )
-                },
-                trailing = {
-                    ThemedSwitch(
-                        checked = settingsState.settings.isRestoreOnBootEnabled,
-                        onClick = { viewModel.setRestoreOnBootEnabled(it) },
-                        enabled = !isAlwaysOnEnabled,
-                    )
-                },
-                title = stringResource(R.string.restart_at_boot),
-                onClick = {
-                    viewModel.setRestoreOnBootEnabled(
-                        !settingsState.settings.isRestoreOnBootEnabled
-                    )
-                },
-                enabled = !isAlwaysOnEnabled,
-                description = { DescriptionText(stringResource(R.string.tunnel_boot_description)) },
+                    leading = {
+                        Icon(
+                                Icons.Outlined.Restore,
+                                contentDescription = null,
+                                tint =
+                                        if (isAlwaysOnEnabled) MaterialTheme.colorScheme.outline
+                                        else MaterialTheme.colorScheme.onSurface,
+                        )
+                    },
+                    trailing = {
+                        ThemedSwitch(
+                                checked = settingsState.settings.isRestoreOnBootEnabled,
+                                onClick = { viewModel.setRestoreOnBootEnabled(it) },
+                                enabled = !isAlwaysOnEnabled,
+                        )
+                    },
+                    title = stringResource(R.string.restart_at_boot),
+                    onClick = {
+                        viewModel.setRestoreOnBootEnabled(
+                                !settingsState.settings.isRestoreOnBootEnabled
+                        )
+                    },
+                    enabled = !isAlwaysOnEnabled,
+                    description = {
+                        DescriptionText(stringResource(R.string.tunnel_boot_description))
+                    },
             )
             SurfaceRow(
-                leading = { Icon(Icons.Filled.AppShortcut, contentDescription = null) },
-                trailing = {
-                    ThemedSwitch(
-                        checked = settingsState.settings.isShortcutsEnabled,
-                        onClick = { viewModel.setShortcutsEnabled(it) },
-                    )
-                },
-                title = stringResource(R.string.enabled_app_shortcuts),
-                onClick = {
-                    viewModel.setShortcutsEnabled(!settingsState.settings.isShortcutsEnabled)
-                },
+                    leading = { Icon(Icons.Filled.AppShortcut, contentDescription = null) },
+                    trailing = {
+                        ThemedSwitch(
+                                checked = settingsState.settings.isShortcutsEnabled,
+                                onClick = { viewModel.setShortcutsEnabled(it) },
+                        )
+                    },
+                    title = stringResource(R.string.enabled_app_shortcuts),
+                    onClick = {
+                        viewModel.setShortcutsEnabled(!settingsState.settings.isShortcutsEnabled)
+                    },
             )
             SurfaceRow(
-                leading = { Icon(Icons.Filled.SmartToy, contentDescription = null) },
-                trailing = {
-                    ThemedSwitch(
-                        checked = settingsState.isRemoteEnabled,
-                        onClick = { viewModel.setRemoteEnabled(it) },
-                    )
-                },
-                title = stringResource(R.string.enable_remote_app_control),
-                onClick = { viewModel.setRemoteEnabled(!settingsState.isRemoteEnabled) },
+                    leading = { Icon(Icons.Filled.SmartToy, contentDescription = null) },
+                    trailing = {
+                        ThemedSwitch(
+                                checked = settingsState.isRemoteEnabled,
+                                onClick = { viewModel.setRemoteEnabled(it) },
+                        )
+                    },
+                    title = stringResource(R.string.enable_remote_app_control),
+                    onClick = { viewModel.setRemoteEnabled(!settingsState.isRemoteEnabled) },
             )
             AnimatedVisibility(settingsState.isRemoteEnabled) {
                 settingsState.remoteKey?.let { key ->
                     var passwordProtected by remember { mutableStateOf(true) }
                     val keyText by
-                        remember(passwordProtected) {
-                            derivedStateOf {
-                                if (passwordProtected) "•".repeat(key.length) else key
+                            remember(passwordProtected) {
+                                derivedStateOf {
+                                    if (passwordProtected) "•".repeat(key.length) else key
+                                }
                             }
-                        }
                     SurfaceRow(
-                        leading = { Icon(Icons.Outlined.Key, contentDescription = null) },
-                        title = stringResource(R.string.remote_key),
-                        description = {
-                            Text(
-                                text = keyText,
-                                style =
-                                    MaterialTheme.typography.bodySmall.copy(
-                                        color = MaterialTheme.colorScheme.outline
-                                    ),
-                                overflow = TextOverflow.Clip,
-                            )
-                        },
-                        trailing = {
-                            Row {
-                                IconButton(onClick = { passwordProtected = !passwordProtected }) {
-                                    Icon(
-                                        Icons.Outlined.RemoveRedEye,
-                                        contentDescription = stringResource(R.string.show_password),
-                                    )
+                            leading = { Icon(Icons.Outlined.Key, contentDescription = null) },
+                            title = stringResource(R.string.remote_key),
+                            description = {
+                                Text(
+                                        text = keyText,
+                                        style =
+                                                MaterialTheme.typography.bodySmall.copy(
+                                                        color = MaterialTheme.colorScheme.outline
+                                                ),
+                                        overflow = TextOverflow.Clip,
+                                )
+                            },
+                            trailing = {
+                                Row {
+                                    IconButton(
+                                            onClick = { passwordProtected = !passwordProtected }
+                                    ) {
+                                        Icon(
+                                                Icons.Outlined.RemoveRedEye,
+                                                contentDescription =
+                                                        stringResource(R.string.show_password),
+                                        )
+                                    }
+                                    IconButton(onClick = { clipboard.copy(key) }) {
+                                        Icon(
+                                                Icons.Outlined.ContentCopy,
+                                                contentDescription = stringResource(R.string.copy),
+                                        )
+                                    }
                                 }
-                                IconButton(onClick = { clipboard.copy(key) }) {
-                                    Icon(
-                                        Icons.Outlined.ContentCopy,
-                                        contentDescription = stringResource(R.string.copy),
-                                    )
-                                }
-                            }
-                        },
+                            },
                     )
                 }
             }

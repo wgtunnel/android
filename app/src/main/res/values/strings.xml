@@ -464,4 +464,7 @@
     <string name="fdroid_url" translatable="false">https://apt.izzysoft.de/fdroid/index/apk/com.zaneschepke.wireguardautotunnel</string>
     <string name="import_url_description">The URL must be secure and serve a .conf file.</string>
     <string name="only_template">%1$s only</string>
+    <string name="lan_bypass">LAN bypass</string>
+    <string name="lan_bypass_description">Exclude private network ranges (192.168.x.x, 10.x.x.x, etc.) from the VPN tunnel. Required for Android Auto wireless, Chromecast, and local network access while the VPN is active. Internet traffic remains encrypted.</string>
 </resources>
+

@@ -250,5 +250,26 @@ data class TunnelConfig(
                 "208.0.0.0/4",
             )
         val LAN_BYPASS_ALLOWED_IPS = setOf(IPV6_ALL_NETWORKS) + IPV4_PUBLIC_NETWORKS
+
+        /**
+         * Private and link-local IPv4/IPv6 ranges that should NOT be routed through WireGuard when
+         * "LAN bypass" (Android Auto compatibility) mode is active.
+         *
+         * Covers:
+         *  - 10.0.0.0/8        RFC-1918 class A private (Android Auto hotspot variants)
+         *  - 172.16.0.0/12     RFC-1918 class B private
+         *  - 192.168.0.0/16    RFC-1918 class C private (most car WiFi hotspots)
+         *  - 169.254.0.0/16    Link-local (ARP, mDNS, APIPA)
+         *  - 224.0.0.0/4       IPv4 multicast (mDNS = 224.0.0.251)
+         */
+        val LAN_EXCLUDED_RANGES =
+            setOf(
+                "10.0.0.0/8",
+                "172.16.0.0/12",
+                "192.168.0.0/16",
+                "169.254.0.0/16",
+                "224.0.0.0/4",
+            )
+
     }
 }

@@ -19,6 +19,7 @@ fun Entity.toDomain(): Domain =
         isPinLockEnabled = isPinLockEnabled,
         isAlwaysOnVpnEnabled = isAlwaysOnVpnEnabled,
         alreadyDonated = alreadyDonated,
+        isLanBypassEnabled = isLanBypassEnabled,
     )
 
 fun Domain.toEntity(): Entity =
@@ -36,4 +37,5 @@ fun Domain.toEntity(): Entity =
         isPinLockEnabled = isPinLockEnabled,
         isAlwaysOnVpnEnabled = isAlwaysOnVpnEnabled,
         alreadyDonated = alreadyDonated,
+        isLanBypassEnabled = isLanBypassEnabled,
     )

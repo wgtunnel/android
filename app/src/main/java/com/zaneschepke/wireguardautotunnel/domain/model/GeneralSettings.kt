@@ -18,4 +18,5 @@ data class GeneralSettings(
     val isAlwaysOnVpnEnabled: Boolean = false,
     val isKillSwitchMetered: Boolean = true,
     val alreadyDonated: Boolean = false,
+    val isLanBypassEnabled: Boolean = false,
 )

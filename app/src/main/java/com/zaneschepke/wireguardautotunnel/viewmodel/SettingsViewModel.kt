@@ -98,4 +98,19 @@ class SettingsViewModel(
     fun setAlreadyDonated(to: Boolean) = intent {
         settingsRepository.upsert(state.settings.copy(alreadyDonated = to))
     }
+
+    /**
+     * Enables or disables Android Auto / LAN bypass mode.
+     *
+     * When enabled, private/link-local subnets (192.168.x.x, 10.x.x.x, 172.16-31.x.x,
+     * 169.254.x.x, multicast) are excluded from WireGuard's AllowedIPs so they are
+     * not captured by the VPN tunnel. This allows Android Auto wireless projection,
+     * Chromecast, and local network access to work while the VPN is active.
+     *
+     * Any currently active tunnel must be restarted for this change to take effect.
+     */
+    fun setLanBypassEnabled(to: Boolean) = intent {
+        settingsRepository.upsert(state.settings.copy(isLanBypassEnabled = to))
+    }
 }
+

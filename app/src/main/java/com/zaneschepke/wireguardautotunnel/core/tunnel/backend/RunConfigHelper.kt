@@ -11,11 +11,13 @@ import com.zaneschepke.wireguardautotunnel.domain.repository.DnsSettingsReposito
 import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.ProxySettingsRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
+import com.zaneschepke.wireguardautotunnel.util.network.CidrUtils
 import java.util.Optional
 import kotlinx.coroutines.flow.firstOrNull
 import org.amnezia.awg.config.Config
 import org.amnezia.awg.config.proxy.HttpProxy
 import org.amnezia.awg.config.proxy.Socks5Proxy
+
 
 class RunConfigHelper(
     private val settingsRepository: GeneralSettingRepository,
@@ -50,6 +52,37 @@ class RunConfigHelper(
         return PrepResult(effectiveConfig, generalSettings, dnsSettings)
     }
 
+    /**
+     * Rewrites the AllowedIPs lines of a wg-quick / awg-quick config string so that all
+     * LAN_EXCLUDED_RANGES (private/link-local subnets) are removed from each peer's AllowedIPs.
+     *
+     * This is the key mechanism for Android Auto / LAN bypass: after the transformation,
+     * WireGuard's VpnService.Builder.addRoute() will NOT add routes for 192.168.x.x etc.,
+     * so those packets bypass the TUN interface and travel directly over the physical WiFi.
+     */
+    private fun applyLanBypassToQuickConfig(quickConfig: String): String {
+        return quickConfig.lines().joinToString("\n") { line ->
+            val trimmed = line.trim()
+            if (trimmed.startsWith("AllowedIPs", ignoreCase = true)) {
+                val value = trimmed.substringAfter("=").trim()
+                val originalCidrs =
+                    value.split(",").map { it.trim() }.filter { it.isNotEmpty() }
+
+                val ipv4Cidrs = originalCidrs.filter { !it.contains(":") }
+                val ipv6Cidrs = originalCidrs.filter { it.contains(":") }
+
+                val lanBypassed =
+                    CidrUtils.applyLanBypass(ipv4Cidrs, TunnelConfig.LAN_EXCLUDED_RANGES)
+
+                // Preserve original line indentation
+                val indent = line.takeWhile { it.isWhitespace() }
+                "${indent}AllowedIPs = ${(lanBypassed + ipv6Cidrs).joinToString(", ")}"
+            } else {
+                line
+            }
+        }
+    }
+
     suspend fun buildAmRunConfig(tunnelConfig: TunnelConfig): Config {
         val prep = prepare(tunnelConfig)
         val proxies =
@@ -80,7 +113,20 @@ class RunConfigHelper(
             } else {
                 emptyList()
             }
-        val amConfig = prep.effectiveConfig.toAmConfig()
+        val effectiveQuickStr =
+            if (prep.generalSettings.isLanBypassEnabled) {
+                val original =
+                    prep.effectiveConfig.amQuick.ifBlank { prep.effectiveConfig.wgQuick }
+                applyLanBypassToQuickConfig(original)
+            } else null
+
+        val amConfig =
+            if (effectiveQuickStr != null) {
+                TunnelConfig.configFromAmQuick(effectiveQuickStr)
+            } else {
+                prep.effectiveConfig.toAmConfig()
+            }
+
         return Config.Builder()
             .setInterface(amConfig.`interface`)
             .addPeers(amConfig.peers)
@@ -96,6 +142,10 @@ class RunConfigHelper(
 
     suspend fun buildWgRunConfig(tunnelConfig: TunnelConfig): com.wireguard.config.Config {
         val prep = prepare(tunnelConfig)
+        if (prep.generalSettings.isLanBypassEnabled) {
+            val effectiveQuickStr = applyLanBypassToQuickConfig(prep.effectiveConfig.wgQuick)
+            return TunnelConfig.configFromWgQuick(effectiveQuickStr)
+        }
         return prep.effectiveConfig.toWgConfig()
     }
 }
