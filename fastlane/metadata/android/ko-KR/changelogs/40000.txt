@@ -1,0 +1,8 @@
+What's new:
+- Introduction of app modes
+- HTTP/SOCKS5 proxying of tunnels
+- Lockdown mode for leakproof kill switch
+- Dynamic DNS endpoint updates without tunnel restart
+- DoH for peer endpoint resolutions
+- AmneziaWG 1.5 with protocol mimic
+- Many bug fixes and performance improvements

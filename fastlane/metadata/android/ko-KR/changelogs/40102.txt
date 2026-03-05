@@ -1,0 +1,8 @@
+What's new:
+- Metered tunnels settings
+- Lockdown dual-stack support
+- Lockdown multiple profile bugfix
+- Split tunneling improved installed packages querying
+- Restart active tunnels on configuration changes
+- Android TV UI bugfixes
+- Various other bugfixes and improvements
