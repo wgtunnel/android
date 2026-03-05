@@ -1,5 +1,5 @@
-What's new:
-- App lock crash bugfix
-- Fdroid publishing bugfix
-- Exporting logs bugfix
-- Auto-tunnel ethernet toggle bugfix
+Yang baru:
+- Perbaikan bug crash kunci aplikasi
+- Perbaikan bug penerbitan Fdroid
+- Perbaikan bug ekspor log
+- Perbaikan bug pengalih ethernet terowongan otomatis

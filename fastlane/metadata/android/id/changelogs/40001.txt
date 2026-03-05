@@ -1,4 +1,4 @@
-What's new:
-- Search domain tunnels fail to start bugfix
-- DNS fallback to IPv4 on IPv4 only networks bugfix
-- Ping target not editable bugfix
+Yang baru:
+- Perbaikan bug terowongan domain pencarian gagal dimulai
+- Perbaikan bug fallback DNS ke IPv4 pada jaringan khusus IPv4
+- Perbaikan bug target ping tidak dapat diedit

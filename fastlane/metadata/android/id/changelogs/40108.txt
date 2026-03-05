@@ -1,2 +1,2 @@
-What's new:
-- Rapid network changes cause invalid network state bugfix
+Yang baru:
+- Perbaikan bug perubahan jaringan yang cepat menyebabkan status jaringan tidak valid

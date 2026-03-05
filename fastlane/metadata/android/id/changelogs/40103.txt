@@ -1,5 +1,5 @@
-What's new:
-- Resource usage bugfix
-- Improve network monitoring
-- Tab navigation bugfix
-- Tunnel metered default bugfix
+Yang baru:
+- Perbaikan bug penggunaan sumber daya
+- Peningkatan pemantauan jaringan
+- Perbaikan bug navigasi tab
+- Perbaikan bug default terukur terowongan

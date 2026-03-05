@@ -1,7 +1,7 @@
-What's new:
-- Fix for tunnel sort bug
-- Improved location permissions flow
-- Location permission detection and notifications
-- Fix for AndroidTV apps detection for split tunneling
-- Improved tunnel monitoring and reboot recovery
-- Fix tunnel slow reconnect from sleep
+Yang baru:
+- Perbaikan bug pengurutan terowongan
+- Peningkatan alur izin lokasi
+- Deteksi izin lokasi dan notifikasi
+- Perbaikan deteksi aplikasi AndroidTV untuk terowongan terpisah
+- Peningkatan pemantauan terowongan dan pemulihan setelah reboot
+- Perbaikan koneksi ulang terowongan yang lambat setelah tidur

@@ -1,14 +1,13 @@
-Fitur
+WG Tunnel adalah klien VPN WireGuard yang menyeimbangkan antara kesederhanaan dan ketangguhan, menjadikannya klien ideal bagi pengguna biasa maupun pengguna tingkat lanjut.
+Baik Anda hanya ingin mengotomatiskan kapan terhubung ke VPN atau Anda adalah pengguna tingkat lanjut dengan kebutuhan privasi yang kompleks, WG Tunnel siap membantu Anda.
 
-- Tambahkan tunnel melalui file .conf, zip, entri manual, atau kode
-QR- Sambungkan otomatis ke VPN berdasarkan SSID Wi-Fi, ethernet, atau data
-seluler- Tunnel terpisah berdasarkan aplikasi dengan pencarian
-- Dukungan WireGuard untuk mode
-kernel dan ruang pengguna- Dukungan Amnezia untuk mode ruang pengguna untuk perlindungan
-DPI/sensor- Dukungan
-VPN Selalu Aktif- Ekspor terowongan Amnezia dan WireGuard ke zip
-- Dukungan kartu akses cepat untuk beralih VPN
-- Dukungan pintasan statis untuk tunnel utama untuk integrasi
-otomatisasi- Dukungan otomatisasi niat untuk semua tunnel
-- Mulai ulang layanan otomatis setelah reboot
-- Tindakan pelestarian baterai
+- **Terowongan Otomatis:** Aktifkan terowongan secara otomatis berdasarkan SSID Wi-Fi, koneksi Ethernet, atau jaringan data seluler.
+- **Terowongan Terpisah:** Dukungan fleksibel untuk merutekan aplikasi atau lalu lintas tertentu melalui VPN.
+- **Mode Aplikasi:** Dukungan untuk berbagai mode terowongan, termasuk VPN standar, kernel, lockdown (kill switch kustom), dan mode proksi.
+- **Integrasi AmneziaWG:** Dukungan penuh untuk AmneziaWG, memberikan penghindaran sensor yang tangguh.
+- **Opsi Proksi:** Dukungan proksi HTTP dan SOCKS5 bawaan yang memungkinkan aplikasi pihak ketiga mengarahkan lalu lintasnya melalui terowongan.
+- **Kontrol Cepat:** Ubin Pengaturan Cepat dan pintasan layar beranda untuk tindakan pengalihan yang mudah.
+- **Dukungan Otomasi:** Otomasi berbasis intent untuk mengontrol terowongan dan terowongan otomatis.
+- **Penanganan DNS Dinamis:** Mendeteksi dan memperbarui perubahan DNS tanpa perlu memulai ulang terowongan.
+- **Alat Pemantauan:** Fitur pemantauan terowongan tingkat lanjut untuk memantau kinerja terowongan.
+- **Dukungan Android TV:** Dukungan Android TV untuk hampir semua fitur aplikasi.

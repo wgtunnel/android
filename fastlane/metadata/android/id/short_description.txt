@@ -1,1 +1,1 @@
-Aplikasi klien VPN alternatif untuk WireGuard dengan fitur tambahan
+Klien VPN WireGuard & AmneziaWG dengan terowongan otomatis, lockdown & proksi.

@@ -1,4 +1,4 @@
-What's new:
-- Monitoring failing to shut down race bugfix
-- Notifications stop action bugfix
-- Notification relaunch activity when already active bugfix
+Yang baru:
+- Perbaikan bug kondisi balapan pemantauan gagal dimatikan
+- Perbaikan bug tindakan hentikan notifikasi
+- Perbaikan bug notifikasi meluncurkan ulang aktivitas saat sudah aktif
