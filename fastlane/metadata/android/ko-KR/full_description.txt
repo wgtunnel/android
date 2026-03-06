@@ -1,13 +1,13 @@
-WG Tunnel is a WireGuard VPN client that strikes the balance between simplicity and robustness, making it the ideal client for casual and power users alike.
-Whether you simply want to automate when you're connected to your VPN or you're a power user with advanced privacy use cases, WG Tunnel has you covered.
+WG Tunnel은 단순함과 견고함 사이의 균형을 갖춘 WireGuard VPN 클라이언트로, 일반 사용자와 고급 사용자 모두에게 이상적인 클라이언트입니다.
+VPN 연결 시점을 단순히 자동화하고 싶은 경우든, 고급 프라이버시 사용 사례를 다루는 파워 유저든, WG Tunnel이 모두 해결해 드립니다.
 
-- **Auto-Tunneling:** Automatically activate tunnels based on Wi-Fi SSID, Ethernet connections, or mobile data networks.
-- **Split Tunneling:** Flexible support for routing specific apps or traffic through the VPN.
-- **App Modes:** Support for multiple tunnel modes, including standard VPN, kernel, lockdown (custom kill switch), and proxy modes.
-- **AmneziaWG Integration:** Full support for AmneziaWG, providing robust censorship evasion.
-- **Proxying Options:** Built-in HTTP and SOCKS5 proxy support allowing third-party apps to tunnel their traffic.
-- **Quick Controls:** Quick Settings tile and home screen shortcuts for easy toggling actions.
-- **Automation Support:** Intent-based automation for controlling tunnels and auto-tunneling.
-- **Dynamic DNS Handling:** Detects and updates DNS changes without tunnel restarts.
-- **Monitoring Tools:** Advanced tunnel monitoring features for tunnel performance monitoring.
-- **Android TV Support:** Android TV support for nearly all app features.
+- **자동 터널링:** Wi-Fi SSID, 이더넷 연결 또는 모바일 데이터 네트워크에 따라 터널을 자동으로 활성화합니다.
+- **스플릿 터널링:** 특정 앱 또는 트래픽을 VPN을 통해 라우팅하는 유연한 지원을 제공합니다.
+- **앱 모드:** 표준 VPN, 커널, 잠금(사용자 지정 킬 스위치), 프록시 모드 등 여러 터널 모드를 지원합니다.
+- **AmneziaWG 통합:** AmneziaWG를 완전히 지원하여 강력한 검열 우회 기능을 제공합니다.
+- **프록시 옵션:** 서드파티 앱이 트래픽을 터널링할 수 있도록 내장 HTTP 및 SOCKS5 프록시를 지원합니다.
+- **빠른 제어:** 간편한 토글 작업을 위한 빠른 설정 타일 및 홈 화면 바로가기를 제공합니다.
+- **자동화 지원:** 터널 및 자동 터널링 제어를 위한 인텐트 기반 자동화를 지원합니다.
+- **동적 DNS 처리:** 터널 재시작 없이 DNS 변경 사항을 감지하고 업데이트합니다.
+- **모니터링 도구:** 터널 성능 모니터링을 위한 고급 터널 모니터링 기능을 제공합니다.
+- **Android TV 지원:** 거의 모든 앱 기능에 대한 Android TV 지원을 제공합니다.

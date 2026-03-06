@@ -1,4 +1,4 @@
-What's new:
-- Monitoring failing to shut down race bugfix
-- Notifications stop action bugfix
-- Notification relaunch activity when already active bugfix
+새로운 사항:
+- 모니터링 종료 실패 경쟁 조건 버그 수정
+- 알림 중지 동작 버그 수정
+- 이미 활성 상태일 때 알림이 액티비티를 재실행하는 버그 수정

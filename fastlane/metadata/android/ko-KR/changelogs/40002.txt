@@ -1,5 +1,5 @@
-What's new:
-- App lock crash bugfix
-- Fdroid publishing bugfix
-- Exporting logs bugfix
-- Auto-tunnel ethernet toggle bugfix
+새로운 사항:
+- 앱 잠금 충돌 버그 수정
+- F-Droid 배포 버그 수정
+- 로그 내보내기 버그 수정
+- 자동 터널 이더넷 토글 버그 수정

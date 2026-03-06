@@ -1,3 +1,3 @@
-What's new:
-- Auto-tunnel regression bugfix
-- Resource usage bugfix for kill switch mode
+새로운 사항:
+- 자동 터널 회귀 버그 수정
+- 킬 스위치 모드 리소스 사용량 버그 수정

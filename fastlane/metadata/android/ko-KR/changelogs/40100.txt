@@ -1,8 +1,8 @@
-What's new:
-- UI rework
-- Dynamic DNS fixes
-- Battery usage bugfix
-- Auto-tunnel reliability improvements
-- Global split tunneling and config overrides
-- Restart on boot and AOVPN bugfixes
-- Various other improvements and optimizations
+새로운 사항:
+- UI 개편
+- 다이나믹 DNS 수정
+- 배터리 사용량 버그 수정
+- 자동 터널 안정성 개선
+- 글로벌 분할 터널링 및 구성 재정의
+- 부팅 시 재시작 및 AOVPN 버그 수정
+- 기타 다양한 개선 및 최적화

@@ -1,5 +1,5 @@
-What's new:
-- Resource usage bugfix
-- Improve network monitoring
-- Tab navigation bugfix
-- Tunnel metered default bugfix
+새로운 사항:
+- 리소스 사용량 버그 수정
+- 네트워크 모니터링 개선
+- 탭 내비게이션 버그 수정
+- 터널 측정 기본값 버그 수정

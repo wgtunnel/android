@@ -1,8 +1,8 @@
-What's new:
-- Metered tunnels settings
-- Lockdown dual-stack support
-- Lockdown multiple profile bugfix
-- Split tunneling improved installed packages querying
-- Restart active tunnels on configuration changes
-- Android TV UI bugfixes
-- Various other bugfixes and improvements
+새로운 사항:
+- 측정된 터널 설정
+- 잠금 모드 듀얼 스택 지원
+- 잠금 모드 다중 프로필 버그 수정
+- 분할 터널링 설치된 패키지 쿼리 개선
+- 구성 변경 시 활성 터널 재시작
+- Android TV UI 버그 수정
+- 기타 다양한 버그 수정 및 개선
