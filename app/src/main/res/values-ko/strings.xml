@@ -8,7 +8,7 @@
     <string name="advanced_settings">고급 설정</string>
     <string name="kernel_name_dots">커널 모드에서는 터널 이름이 \'.\' 또는 \'..\'일 수 없습니다</string>
     <string name="auto_tunnel_channel_name">자동 터널 알림 채널</string>
-    <string name="always_on_message">VPN 연결 권한이 거부되었습니다.</string>
+    <string name="always_on_message">VPN 연결 권한이 거부되었습니다. 확인해 주세요</string>
     <string name="github_sponsors">GitHub 스폰서</string>
     <string name="tunnel_on_ethernet">이더넷에서 터널 사용</string>
     <string name="current_template">현재: %1$s</string>
@@ -23,7 +23,7 @@
     <string name="ethernet_tunnel">이더넷 터널</string>
     <string name="config_changes_saved">변경한 설정이 저장되었습니다.</string>
     <string name="join_telegram">Telegram 커뮤니티 참여</string>
-    <string name="pin_created">PIN 생성 성공</string>
+    <string name="pin_created">Pin 생성 성공</string>
     <string name="post_up">시작 후</string>
     <string name="dual_stack_description">터널이 IPv4 및 IPv6를 지원해야 합니다</string>
     <string name="warning">주의</string>
@@ -332,7 +332,7 @@
     <string name="tunnel_running_name_message">터널이 활성화된 동안은 이름을 변경할 수 없습니다.</string>
     <string name="settings">설정</string>
     <string name="ping_success_template">최근 성공한 핑: %1$s</string>
-    <string name="incorrect_pin">PIN이 잘못되었습니다</string>
+    <string name="incorrect_pin">Pin이 잘못되었습니다</string>
     <string name="tunnel_running">터널 실행 중</string>
     <string name="export_failed">내보내기 실패</string>
     <string name="enable_remote_app_control">원격 앱 제어 켜기</string>
