@@ -17,6 +17,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
 import com.wireguard.crypto.KeyPair
 import com.zaneschepke.wireguardautotunnel.R
@@ -24,7 +25,6 @@ import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
 import com.zaneschepke.wireguardautotunnel.ui.common.functions.rememberClipboardHelper
 import com.zaneschepke.wireguardautotunnel.ui.common.textbox.ConfigurationTextBox
 import com.zaneschepke.wireguardautotunnel.ui.state.InterfaceProxy
-import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -36,12 +36,12 @@ fun InterfaceFields(
     onInterfaceChange: (InterfaceProxy) -> Unit,
     showKey: Boolean,
 ) {
+    val locale = Locale.current.platformLocale
     val keyboardController = LocalSoftwareKeyboardController.current
     val isTv = LocalIsAndroidTV.current
     val clipboardManager = rememberClipboardHelper()
     val keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() })
     val keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
-    val locale = Locale.getDefault()
     var showPrivateKey by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(showKey) { showPrivateKey = showKey }
@@ -52,7 +52,7 @@ fun InterfaceFields(
                 value = interfaceState.privateKey,
                 hint =
                     stringResource(R.string.hint_template, stringResource(R.string.base64_key))
-                        .lowercase(Locale.getDefault()),
+                        .lowercase(locale),
                 onValueChange = { onInterfaceChange(interfaceState.copy(privateKey = it)) },
                 label = stringResource(R.string.private_key),
                 modifier = Modifier.fillMaxWidth(),
@@ -107,7 +107,7 @@ fun InterfaceFields(
                 value = interfaceState.publicKey,
                 hint =
                     stringResource(R.string.hint_template, stringResource(R.string.base64_key))
-                        .lowercase(Locale.getDefault()),
+                        .lowercase(locale),
                 onValueChange = { onInterfaceChange(interfaceState.copy(publicKey = it)) },
                 label = stringResource(R.string.public_key),
                 enabled = false,
@@ -115,7 +115,7 @@ fun InterfaceFields(
                 singleLine = true,
                 trailing =
                     if (!isTv) {
-                        { modifier ->
+                        { _ ->
                             IconButton(
                                 onClick = { clipboardManager.copy(interfaceState.publicKey) }
                             ) {
@@ -138,9 +138,9 @@ fun InterfaceFields(
                 hint =
                     stringResource(
                             R.string.hint_template,
-                            stringResource(R.string.comma_separated).lowercase(locale),
+                            stringResource(R.string.comma_separated).lowercase(),
                         )
-                        .lowercase(Locale.getDefault()),
+                        .lowercase(locale),
                 modifier = Modifier.fillMaxWidth(),
             )
         if (!isGlobalConfig)
@@ -225,7 +225,13 @@ fun InterfaceFields(
             ConfigurationTextBox(
                 value = interfaceState.junkPacketCount,
                 onValueChange = { onInterfaceChange(interfaceState.copy(junkPacketCount = it)) },
-                label = stringResource(R.string.junk_packet_count),
+                label =
+                    stringResource(R.string.jc) +
+                        " " +
+                        stringResource(
+                            R.string.hint_template,
+                            stringResource(R.string.junk_packet_count).lowercase(locale),
+                        ),
                 hint = stringResource(R.string.range_hint, 1, 128),
                 modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -233,7 +239,13 @@ fun InterfaceFields(
             ConfigurationTextBox(
                 value = interfaceState.junkPacketMinSize,
                 onValueChange = { onInterfaceChange(interfaceState.copy(junkPacketMinSize = it)) },
-                label = stringResource(R.string.junk_packet_minimum_size),
+                label =
+                    stringResource(R.string.jmin) +
+                        " " +
+                        stringResource(
+                            R.string.hint_template,
+                            stringResource(R.string.junk_packet_minimum_size).lowercase(locale),
+                        ),
                 hint = stringResource(R.string.range_hint, 1, 1279),
                 modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -241,7 +253,13 @@ fun InterfaceFields(
             ConfigurationTextBox(
                 value = interfaceState.junkPacketMaxSize,
                 onValueChange = { onInterfaceChange(interfaceState.copy(junkPacketMaxSize = it)) },
-                label = stringResource(R.string.junk_packet_maximum_size),
+                label =
+                    stringResource(R.string.jmax) +
+                        " " +
+                        stringResource(
+                            R.string.hint_template,
+                            stringResource(R.string.junk_packet_maximum_size).lowercase(locale),
+                        ),
                 hint = stringResource(R.string.range_hint, 2, 1280),
                 modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -249,7 +267,13 @@ fun InterfaceFields(
             ConfigurationTextBox(
                 value = interfaceState.initPacketJunkSize,
                 onValueChange = { onInterfaceChange(interfaceState.copy(initPacketJunkSize = it)) },
-                label = stringResource(R.string.init_packet_junk_size),
+                label =
+                    stringResource(R.string.s1) +
+                        " " +
+                        stringResource(
+                            R.string.hint_template,
+                            stringResource(R.string.init_packet_junk_size).lowercase(locale),
+                        ),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 hint = stringResource(R.string.range_hint, 0, 64),
                 modifier = Modifier.fillMaxWidth(),
@@ -259,7 +283,13 @@ fun InterfaceFields(
                 onValueChange = {
                     onInterfaceChange(interfaceState.copy(responsePacketJunkSize = it))
                 },
-                label = stringResource(R.string.response_packet_junk_size),
+                label =
+                    stringResource(R.string.s2) +
+                        " " +
+                        stringResource(
+                            R.string.hint_template,
+                            stringResource(R.string.response_packet_junk_size).lowercase(locale),
+                        ),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 hint = stringResource(R.string.range_hint, 0, 64),
                 modifier = Modifier.fillMaxWidth(),
@@ -269,7 +299,13 @@ fun InterfaceFields(
                 onValueChange = {
                     onInterfaceChange(interfaceState.copy(cookiePacketJunkSize = it))
                 },
-                label = stringResource(R.string.cookie_packet_junk_size),
+                label =
+                    stringResource(R.string.s3) +
+                        " " +
+                        stringResource(
+                            R.string.hint_template,
+                            stringResource(R.string.cookie_packet_junk_size).lowercase(locale),
+                        ),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 hint = stringResource(R.string.range_hint, 0, 928),
                 modifier = Modifier.fillMaxWidth(),
@@ -279,7 +315,13 @@ fun InterfaceFields(
                 onValueChange = {
                     onInterfaceChange(interfaceState.copy(transportPacketJunkSize = it))
                 },
-                label = stringResource(R.string.transport_packet_junk_size),
+                label =
+                    stringResource(R.string.s4) +
+                        " " +
+                        stringResource(
+                            R.string.hint_template,
+                            stringResource(R.string.transport_packet_junk_size).lowercase(locale),
+                        ),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 hint = stringResource(R.string.range_hint, 0, 928),
                 modifier = Modifier.fillMaxWidth(),
@@ -289,7 +331,13 @@ fun InterfaceFields(
                 onValueChange = {
                     onInterfaceChange(interfaceState.copy(initPacketMagicHeader = it))
                 },
-                label = stringResource(R.string.init_packet_magic_header),
+                label =
+                    stringResource(R.string.h1) +
+                        " " +
+                        stringResource(
+                            R.string.hint_template,
+                            stringResource(R.string.init_packet_magic_header).lowercase(locale),
+                        ),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 hint = stringResource(R.string.range_hint, 1, 4),
                 modifier = Modifier.fillMaxWidth(),
@@ -299,7 +347,13 @@ fun InterfaceFields(
                 onValueChange = {
                     onInterfaceChange(interfaceState.copy(responsePacketMagicHeader = it))
                 },
-                label = stringResource(R.string.response_packet_magic_header),
+                label =
+                    stringResource(R.string.h2) +
+                        " " +
+                        stringResource(
+                            R.string.hint_template,
+                            stringResource(R.string.response_packet_magic_header).lowercase(locale),
+                        ),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 hint = stringResource(R.string.range_hint, 1, 4),
                 modifier = Modifier.fillMaxWidth(),
@@ -309,7 +363,13 @@ fun InterfaceFields(
                 onValueChange = {
                     onInterfaceChange(interfaceState.copy(underloadPacketMagicHeader = it))
                 },
-                label = stringResource(R.string.underload_packet_magic_header),
+                label =
+                    stringResource(R.string.h3) +
+                        " " +
+                        stringResource(
+                            R.string.hint_template,
+                            stringResource(R.string.underload_packet_magic_header).lowercase(locale),
+                        ),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 hint = stringResource(R.string.range_hint, 1, 4),
                 modifier = Modifier.fillMaxWidth(),
@@ -319,7 +379,13 @@ fun InterfaceFields(
                 onValueChange = {
                     onInterfaceChange(interfaceState.copy(transportPacketMagicHeader = it))
                 },
-                label = stringResource(R.string.transport_packet_magic_header),
+                label =
+                    stringResource(R.string.h4) +
+                        " " +
+                        stringResource(
+                            R.string.hint_template,
+                            stringResource(R.string.transport_packet_magic_header).lowercase(locale),
+                        ),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 hint = stringResource(R.string.range_hint, 1, 4),
                 modifier = Modifier.fillMaxWidth(),
@@ -327,35 +393,65 @@ fun InterfaceFields(
             ConfigurationTextBox(
                 value = interfaceState.i1,
                 onValueChange = { onInterfaceChange(interfaceState.copy(i1 = it)) },
-                label = "I1",
+                label =
+                    stringResource(R.string.i1) +
+                        " " +
+                        stringResource(
+                            R.string.hint_template,
+                            stringResource(R.string.special_junk_packet).lowercase(locale),
+                        ),
                 hint = stringResource(R.string.hint_template, "<b 0x1A2B3C>"),
                 modifier = Modifier.fillMaxWidth(),
             )
             ConfigurationTextBox(
                 value = interfaceState.i2,
                 onValueChange = { onInterfaceChange(interfaceState.copy(i2 = it)) },
-                label = "I2",
+                label =
+                    stringResource(R.string.i2) +
+                        " " +
+                        stringResource(
+                            R.string.hint_template,
+                            stringResource(R.string.special_junk_packet).lowercase(locale),
+                        ),
                 hint = stringResource(R.string.hint_template, "<b 0x1A2B3C>"),
                 modifier = Modifier.fillMaxWidth(),
             )
             ConfigurationTextBox(
                 value = interfaceState.i3,
                 onValueChange = { onInterfaceChange(interfaceState.copy(i3 = it)) },
-                label = "I3",
+                label =
+                    stringResource(R.string.i3) +
+                        " " +
+                        stringResource(
+                            R.string.hint_template,
+                            stringResource(R.string.special_junk_packet).lowercase(locale),
+                        ),
                 hint = stringResource(R.string.hint_template, "<b 0x1A2B3C>"),
                 modifier = Modifier.fillMaxWidth(),
             )
             ConfigurationTextBox(
                 value = interfaceState.i4,
                 onValueChange = { onInterfaceChange(interfaceState.copy(i4 = it)) },
-                label = "I4",
+                label =
+                    stringResource(R.string.i4) +
+                        " " +
+                        stringResource(
+                            R.string.hint_template,
+                            stringResource(R.string.special_junk_packet).lowercase(locale),
+                        ),
                 hint = stringResource(R.string.hint_template, "<b 0x1A2B3C>"),
                 modifier = Modifier.fillMaxWidth(),
             )
             ConfigurationTextBox(
                 value = interfaceState.i5,
                 onValueChange = { onInterfaceChange(interfaceState.copy(i5 = it)) },
-                label = "I5",
+                label =
+                    stringResource(R.string.i5) +
+                        " " +
+                        stringResource(
+                            R.string.hint_template,
+                            stringResource(R.string.special_junk_packet).lowercase(locale),
+                        ),
                 hint = stringResource(R.string.hint_template, "<b 0x1A2B3C>"),
                 modifier = Modifier.fillMaxWidth(),
             )

@@ -103,12 +103,16 @@
 				android:resource="@xml/file_paths" />
 		</provider>
 
-		<provider
-			android:name="androidx.startup.InitializationProvider"
-			android:authorities="${applicationId}.androidx-startup"
-			android:multiprocess="true"
-			tools:node="remove">
-		</provider>
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+            <meta-data
+                android:name="androidx.work.WorkManagerInitializer"
+                android:value="androidx.startup"
+                tools:node="remove" />
+        </provider>
         <service
             android:name=".core.service.tile.TunnelControlTile"
             android:exported="true"

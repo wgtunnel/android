@@ -1,5 +1,7 @@
 package com.zaneschepke.logcatter
 
+import android.os.Handler
+import android.os.Looper
 import androidx.lifecycle.ProcessLifecycleOwner
 import java.io.File
 
@@ -29,7 +31,13 @@ object LogcatReader {
                     maxFileSize = maxFileSize,
                     maxFolderSize = maxFolderSize,
                 )
-            ProcessLifecycleOwner.get().lifecycle.addObserver(logcatManager)
+            if (Looper.myLooper() == Looper.getMainLooper()) {
+                ProcessLifecycleOwner.get().lifecycle.addObserver(logcatManager)
+            } else {
+                Handler(Looper.getMainLooper()).post {
+                    ProcessLifecycleOwner.get().lifecycle.addObserver(logcatManager)
+                }
+            }
             isInitialized = true
             return logcatManager
         }

@@ -8,15 +8,20 @@ import android.net.VpnService
 import android.os.IBinder
 import com.zaneschepke.wireguardautotunnel.core.service.autotunnel.AutoTunnelService
 import com.zaneschepke.wireguardautotunnel.data.model.AppMode
-import com.zaneschepke.wireguardautotunnel.di.ApplicationScope
-import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
 import com.zaneschepke.wireguardautotunnel.domain.repository.AutoTunnelSettingsRepository
 import com.zaneschepke.wireguardautotunnel.util.extensions.requestAutoTunnelTileServiceUpdate
 import com.zaneschepke.wireguardautotunnel.util.extensions.requestTunnelTileServiceStateUpdate
-import jakarta.inject.Inject
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -24,12 +29,10 @@ import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import timber.log.Timber
 
-class ServiceManager
-@Inject
-constructor(
+class ServiceManager(
     private val context: Context,
-    @IoDispatcher ioDispatcher: CoroutineDispatcher,
-    @ApplicationScope applicationScope: CoroutineScope,
+    ioDispatcher: CoroutineDispatcher,
+    applicationScope: CoroutineScope,
     private val mainDispatcher: CoroutineDispatcher,
     private val autoTunnelSettingsRepository: AutoTunnelSettingsRepository,
 ) {

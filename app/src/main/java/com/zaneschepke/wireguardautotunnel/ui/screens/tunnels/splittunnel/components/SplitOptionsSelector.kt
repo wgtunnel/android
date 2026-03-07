@@ -13,14 +13,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.splittunnel.state.SplitOption
-import java.util.*
 
 @Composable
 fun SplitOptionSelector(selectedOption: SplitOption, onOptionChange: (SplitOption) -> Unit) {
     val context = LocalContext.current
+    val locale = Locale.current.platformLocale
     val inputHeight = 45.dp
 
     MultiChoiceSegmentedButtonRow(
@@ -69,7 +70,7 @@ fun SplitOptionSelector(selectedOption: SplitOption, onOptionChange: (SplitOptio
             ) {
                 Text(
                     entry.text().asString(context).replaceFirstChar {
-                        if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString()
+                        if (it.isLowerCase()) it.titlecase(locale) else it.toString()
                     },
                     color = MaterialTheme.colorScheme.onBackground,
                     style = MaterialTheme.typography.labelMedium,

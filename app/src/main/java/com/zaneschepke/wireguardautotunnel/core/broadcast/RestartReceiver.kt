@@ -5,24 +5,25 @@ import android.content.Context
 import android.content.Intent
 import com.zaneschepke.logcatter.LogReader
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
-import com.zaneschepke.wireguardautotunnel.di.ApplicationScope
+import com.zaneschepke.wireguardautotunnel.di.Scope
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppStateRepository
-import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
+import org.koin.core.component.inject
+import org.koin.core.qualifier.named
 import timber.log.Timber
 
-@AndroidEntryPoint
-class RestartReceiver : BroadcastReceiver() {
+class RestartReceiver : BroadcastReceiver(), KoinComponent {
 
-    @Inject @ApplicationScope lateinit var applicationScope: CoroutineScope
+    private val applicationScope: CoroutineScope = get(named(Scope.APPLICATION))
 
-    @Inject lateinit var tunnelManager: TunnelManager
+    private val tunnelManager: TunnelManager by inject()
 
-    @Inject lateinit var appStateRepository: AppStateRepository
+    private val appStateRepository: AppStateRepository by inject()
 
-    @Inject lateinit var logReader: LogReader
+    private val logReader: LogReader by inject()
 
     override fun onReceive(context: Context, intent: Intent) {
         Timber.d("RestartReceiver triggered with action: ${intent.action}")

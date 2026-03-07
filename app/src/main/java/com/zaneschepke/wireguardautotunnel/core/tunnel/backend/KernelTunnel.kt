@@ -1,17 +1,16 @@
-package com.zaneschepke.wireguardautotunnel.core.tunnel
+package com.zaneschepke.wireguardautotunnel.core.tunnel.backend
 
 import com.wireguard.android.backend.Backend
 import com.wireguard.android.backend.BackendException
-import com.wireguard.android.backend.Tunnel as WgTunnel
+import com.wireguard.android.backend.Tunnel
+import com.wireguard.android.backend.WgQuickBackend
 import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.di.ApplicationScope
-import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
-import com.zaneschepke.wireguardautotunnel.di.Kernel
 import com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
 import com.zaneschepke.wireguardautotunnel.domain.events.DnsFailure
 import com.zaneschepke.wireguardautotunnel.domain.events.InvalidConfig
 import com.zaneschepke.wireguardautotunnel.domain.events.KernelTunnelName
+import com.zaneschepke.wireguardautotunnel.domain.events.KernelWireguardNotSupported
 import com.zaneschepke.wireguardautotunnel.domain.events.UnknownError
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelStatistics
@@ -20,26 +19,19 @@ import com.zaneschepke.wireguardautotunnel.util.extensions.asTunnelState
 import com.zaneschepke.wireguardautotunnel.util.extensions.toBackendCoreException
 import java.util.concurrent.ConcurrentHashMap
 import java.util.regex.Pattern
-import javax.inject.Inject
-import kotlinx.coroutines.*
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.consumeAsFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class KernelTunnel
-@Inject
-constructor(
-    @ApplicationScope applicationScope: CoroutineScope,
-    @IoDispatcher ioDispatcher: CoroutineDispatcher,
-    private val runConfigHelper: RunConfigHelper,
-    @Kernel private val backend: Backend,
-) : BaseTunnel(applicationScope, ioDispatcher) {
+class KernelTunnel(private val runConfigHelper: RunConfigHelper, private val backend: Backend) :
+    TunnelBackend {
 
-    private val runtimeTunnels = ConcurrentHashMap<Int, WgTunnel>()
+    private val runtimeTunnels = ConcurrentHashMap<Int, Tunnel>()
 
     private fun validateWireGuardInterfaceName(name: String): Result<Unit> {
         if (name.isEmpty() || name.length > 15)
@@ -55,9 +47,10 @@ constructor(
     }
 
     override fun tunnelStateFlow(tunnelConfig: TunnelConfig): Flow<TunnelStatus> = callbackFlow {
-        validateWireGuardInterfaceName(tunnelConfig.name).onFailure { close(it) }
+        if (!WgQuickBackend.hasKernelSupport()) throw KernelWireguardNotSupported()
+        validateWireGuardInterfaceName(tunnelConfig.name).onFailure { throw it }
 
-        val stateChannel = Channel<WgTunnel.State>()
+        val stateChannel = Channel<Tunnel.State>()
 
         val runtimeTunnel = RuntimeWgTunnel(tunnelConfig, stateChannel)
         runtimeTunnels[tunnelConfig.id] = runtimeTunnel
@@ -67,37 +60,31 @@ constructor(
         }
 
         try {
-            withTimeout(STARTUP_TIMEOUT_MS) {
-                updateTunnelStatus(tunnelConfig.id, TunnelStatus.Starting)
-                val runConfig = runConfigHelper.buildWgRunConfig(tunnelConfig)
-                backend.setState(runtimeTunnel, WgTunnel.State.UP, runConfig)
-            }
+            val runConfig = runConfigHelper.buildWgRunConfig(tunnelConfig)
+            backend.setState(runtimeTunnel, Tunnel.State.UP, runConfig)
         } catch (e: TimeoutCancellationException) {
-            Timber.e("Startup timed out for ${tunnelConfig.name}")
-            errors.emit(tunnelConfig.name to DnsFailure())
-            forceStopTunnel(tunnelConfig.id)
-            close()
+            Timber.Forest.e("Startup timed out for ${tunnelConfig.name}")
+            throw DnsFailure()
         } catch (e: BackendException) {
-            close(e.toBackendCoreException())
+            throw e.toBackendCoreException()
         } catch (e: IllegalArgumentException) {
-            Timber.e(e, "Invalid backend arguments")
-            close(InvalidConfig())
+            Timber.Forest.e(e, "Invalid backend arguments")
+            throw InvalidConfig()
         } catch (e: Exception) {
-            Timber.e(e, "Error while setting tunnel state")
-            close(UnknownError())
+            Timber.Forest.e(e, "Error while setting tunnel state")
+            throw UnknownError()
         }
 
         awaitClose {
             try {
-                backend.setState(runtimeTunnel, WgTunnel.State.DOWN, null)
+                backend.setState(runtimeTunnel, Tunnel.State.DOWN, null)
             } catch (e: BackendException) {
-                errors.tryEmit(tunnelConfig.name to e.toBackendCoreException())
+                // Errors are emitted by caller (lifecycle manager)
             } finally {
                 consumerJob.cancel()
                 stateChannel.close()
                 runtimeTunnels.remove(tunnelConfig.id)
                 trySend(TunnelStatus.Down)
-                close()
             }
         }
     }
@@ -107,13 +94,13 @@ constructor(
             val runtimeTunnel = runtimeTunnels[tunnelId] ?: return null
             WireGuardStatistics(backend.getStatistics(runtimeTunnel))
         } catch (e: Exception) {
-            Timber.e(e, "Failed to get stats for $tunnelId")
+            Timber.Forest.e(e, "Failed to get stats for $tunnelId")
             null
         }
     }
 
     override fun setBackendMode(backendMode: BackendMode) {
-        Timber.w("Not yet implemented for kernel")
+        Timber.Forest.w("Not yet implemented for kernel")
     }
 
     override fun getBackendMode(): BackendMode {
@@ -131,15 +118,11 @@ constructor(
     override suspend fun forceStopTunnel(tunnelId: Int) {
         val runtimeTunnel = runtimeTunnels[tunnelId] ?: return
         try {
-            backend.setState(runtimeTunnel, WgTunnel.State.DOWN, null)
+            backend.setState(runtimeTunnel, Tunnel.State.DOWN, null)
         } catch (e: BackendException) {
-            Timber.e(e, "Force stop failed for $tunnelId")
+            Timber.Forest.e(e, "Force stop failed for $tunnelId")
         } finally {
-            tunJobs[tunnelId]?.cancel()
             runtimeTunnels.remove(tunnelId)
-            tunJobs.remove(tunnelId)
-            activeTuns.update { it - tunnelId }
-            updateTunnelStatus(tunnelId, TunnelStatus.Down)
         }
     }
 }

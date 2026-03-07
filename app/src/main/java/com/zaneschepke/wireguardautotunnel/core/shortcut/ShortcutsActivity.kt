@@ -5,26 +5,23 @@ import androidx.activity.ComponentActivity
 import com.zaneschepke.wireguardautotunnel.core.service.autotunnel.AutoTunnelService
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelProvider
-import com.zaneschepke.wireguardautotunnel.di.ApplicationScope
+import com.zaneschepke.wireguardautotunnel.di.Scope
 import com.zaneschepke.wireguardautotunnel.domain.repository.AutoTunnelSettingsRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
-import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
+import org.koin.core.qualifier.named
 import timber.log.Timber
 
-@AndroidEntryPoint
 class ShortcutsActivity : ComponentActivity() {
 
-    @Inject lateinit var settingsRepository: GeneralSettingRepository
-    @Inject lateinit var autoTunnelSettingsRepository: AutoTunnelSettingsRepository
-    @Inject lateinit var tunnelsRepository: TunnelRepository
-
-    @Inject lateinit var tunnelManager: TunnelManager
-
-    @Inject @ApplicationScope lateinit var applicationScope: CoroutineScope
+    private val settingsRepository: GeneralSettingRepository by inject()
+    private val autoTunnelSettingsRepository: AutoTunnelSettingsRepository by inject()
+    private val tunnelsRepository: TunnelRepository by inject()
+    private val tunnelManager: TunnelManager by inject()
+    private val applicationScope: CoroutineScope by inject(named(Scope.APPLICATION))
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

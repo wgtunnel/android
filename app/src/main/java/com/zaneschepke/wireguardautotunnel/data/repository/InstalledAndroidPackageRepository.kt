@@ -2,22 +2,16 @@ package com.zaneschepke.wireguardautotunnel.data.repository
 
 import android.content.Context
 import android.content.pm.PackageManager
-import com.zaneschepke.wireguardautotunnel.di.ApplicationScope
-import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
 import com.zaneschepke.wireguardautotunnel.domain.model.InstalledPackage
 import com.zaneschepke.wireguardautotunnel.domain.repository.InstalledPackageRepository
 import com.zaneschepke.wireguardautotunnel.util.extensions.getFriendlyAppName
-import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 
-@Singleton
 class InstalledAndroidPackageRepository(
     private val context: Context,
-    @ApplicationScope val applicationScope: CoroutineScope,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+    private val ioDispatcher: CoroutineDispatcher,
 ) : InstalledPackageRepository {
 
     private var cachedPackages: List<InstalledPackage>? = null

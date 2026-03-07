@@ -7,69 +7,68 @@ import com.zaneschepke.logcatter.LogcatReader
 import com.zaneschepke.wireguardautotunnel.core.notification.NotificationManager
 import com.zaneschepke.wireguardautotunnel.core.notification.NotificationMonitor
 import com.zaneschepke.wireguardautotunnel.core.notification.WireGuardNotification
+import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
 import com.zaneschepke.wireguardautotunnel.core.shortcut.DynamicShortcutManager
 import com.zaneschepke.wireguardautotunnel.core.shortcut.ShortcutManager
-import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
+import com.zaneschepke.wireguardautotunnel.domain.repository.GlobalEffectRepository
+import com.zaneschepke.wireguardautotunnel.domain.repository.SelectedTunnelsRepository
+import com.zaneschepke.wireguardautotunnel.util.FileUtils
 import com.zaneschepke.wireguardautotunnel.util.network.NetworkUtils
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
+import com.zaneschepke.wireguardautotunnel.viewmodel.*
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.annotation.KoinExperimentalAPI
+import org.koin.core.module.dsl.singleOf
+import org.koin.core.module.dsl.viewModel
+import org.koin.core.module.dsl.viewModelOf
+import org.koin.core.qualifier.named
+import org.koin.dsl.bind
+import org.koin.dsl.module
 
-@Module
-@InstallIn(SingletonComponent::class)
-class AppModule {
-
-    @Singleton
-    @ApplicationScope
-    @Provides
-    fun providesApplicationScope(
-        @DefaultDispatcher defaultDispatcher: CoroutineDispatcher
-    ): CoroutineScope = CoroutineScope(SupervisorJob() + defaultDispatcher)
-
-    @Singleton
-    @Provides
-    fun provideLogCollect(@ApplicationContext context: Context): LogReader {
-        return LogcatReader.init(storageDir = context.filesDir.absolutePath)
+@OptIn(KoinExperimentalAPI::class)
+val appModule = module {
+    single<CoroutineScope>(named(Scope.APPLICATION)) {
+        CoroutineScope(SupervisorJob() + get<CoroutineDispatcher>(named(Dispatcher.DEFAULT)))
     }
 
-    @Singleton
-    @Provides
-    fun provideNotificationService(@ApplicationContext context: Context): NotificationManager {
-        return WireGuardNotification(context)
+    single<LogReader> { LogcatReader.init(storageDir = androidContext().filesDir.absolutePath) }
+
+    single<PowerManager> {
+        androidContext().getSystemService(Context.POWER_SERVICE) as PowerManager
+    }
+    singleOf(::NotificationMonitor)
+    singleOf(::WireGuardNotification) bind NotificationManager::class
+    single {
+        ServiceManager(
+            androidContext(),
+            get(named(Dispatcher.IO)),
+            get(named(Scope.APPLICATION)),
+            get(named(Dispatcher.MAIN)),
+            get(),
+        )
     }
 
-    @Singleton
-    @Provides
-    fun provideShortcutManager(
-        @ApplicationContext context: Context,
-        @IoDispatcher ioDispatcher: CoroutineDispatcher,
-    ): ShortcutManager {
-        return DynamicShortcutManager(context, ioDispatcher)
-    }
+    singleOf(::GlobalEffectRepository)
 
-    @Singleton
-    @Provides
-    fun provideNetworkUtils(@IoDispatcher ioDispatcher: CoroutineDispatcher): NetworkUtils {
-        return NetworkUtils(ioDispatcher)
-    }
+    single { FileUtils(androidContext(), get(named(Dispatcher.IO))) }
+    single<ShortcutManager> { DynamicShortcutManager(androidContext(), get(named(Dispatcher.IO))) }
+    singleOf(::SelectedTunnelsRepository)
 
-    @Singleton
-    @Provides
-    fun provideNotificationMonitor(
-        tunnelManager: TunnelManager,
-        notificationManager: NotificationManager,
-    ): NotificationMonitor {
-        return NotificationMonitor(tunnelManager, notificationManager)
-    }
+    single { NetworkUtils(get(named(Dispatcher.IO))) }
 
-    @Provides
-    fun providePowerManager(@ApplicationContext context: Context): PowerManager {
-        return context.getSystemService(Context.POWER_SERVICE) as PowerManager
-    }
+    viewModelOf(::AutoTunnelViewModel)
+    viewModel { (id: Int?) -> ConfigViewModel(get(), get(), get(), id) }
+    viewModelOf(::DnsViewModel)
+    viewModelOf(::LicenseViewModel)
+    viewModelOf(::LockdownViewModel)
+    viewModelOf(::LoggerViewModel)
+    viewModelOf(::MonitoringViewModel)
+    viewModelOf(::ProxySettingsViewModel)
+    viewModelOf(::SettingsViewModel)
+    viewModelOf(::SharedAppViewModel)
+    viewModel { (id: Int) -> SplitTunnelViewModel(get(), get(), get(), id) }
+    viewModel { SupportViewModel(get(), get(named(Dispatcher.MAIN)), get()) }
+    viewModel { (id: Int) -> TunnelViewModel(get(), get(), id) }
 }

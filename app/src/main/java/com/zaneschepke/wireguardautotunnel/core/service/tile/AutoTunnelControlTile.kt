@@ -7,19 +7,17 @@ import android.service.quicksettings.TileService
 import androidx.lifecycle.*
 import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
 import com.zaneschepke.wireguardautotunnel.domain.repository.AutoTunnelSettingsRepository
-import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 import kotlin.concurrent.atomics.AtomicBoolean
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
 import timber.log.Timber
 
-@AndroidEntryPoint
 class AutoTunnelControlTile : TileService(), LifecycleOwner {
 
-    @Inject lateinit var autoTunnelSettingsRepository: AutoTunnelSettingsRepository
+    private val autoTunnelSettingsRepository: AutoTunnelSettingsRepository by inject()
 
-    @Inject lateinit var serviceManager: ServiceManager
+    private val serviceManager: ServiceManager by inject()
 
     @OptIn(ExperimentalAtomicApi::class) val isCollecting = AtomicBoolean(false)
 

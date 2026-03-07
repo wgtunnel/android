@@ -5,25 +5,34 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.monitoring.logs.components.LogList
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.monitoring.logs.components.LogsBottomSheet
 import com.zaneschepke.wireguardautotunnel.ui.sideeffect.LocalSideEffect
 import com.zaneschepke.wireguardautotunnel.viewmodel.LoggerViewModel
+import com.zaneschepke.wireguardautotunnel.viewmodel.SharedAppViewModel
+import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.viewmodel.koinActivityViewModel
 import org.orbitmvi.orbit.compose.collectSideEffect
 
 @Composable
-fun LogsScreen(viewModel: LoggerViewModel = hiltViewModel()) {
-    val sharedAppViewModel = LocalSharedVm.current
+fun LogsScreen(
+    viewModel: LoggerViewModel = koinViewModel(),
+    sharedViewModel: SharedAppViewModel = koinActivityViewModel(),
+) {
     val loggerState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
 
     val lazyColumnListState = rememberLazyListState()
@@ -31,7 +40,7 @@ fun LogsScreen(viewModel: LoggerViewModel = hiltViewModel()) {
     var lastScrollPosition by rememberSaveable { mutableIntStateOf(0) }
     var showLogsSheet by rememberSaveable { mutableStateOf(false) }
 
-    sharedAppViewModel.collectSideEffect { sideEffect ->
+    sharedViewModel.collectSideEffect { sideEffect ->
         if (sideEffect is LocalSideEffect.Sheet.LoggerActions) showLogsSheet = true
     }
 

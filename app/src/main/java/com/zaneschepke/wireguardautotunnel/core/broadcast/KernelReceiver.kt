@@ -4,21 +4,19 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
-import com.zaneschepke.wireguardautotunnel.di.ApplicationScope
+import com.zaneschepke.wireguardautotunnel.di.Scope
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
-import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+import org.koin.core.qualifier.named
 
-@AndroidEntryPoint
-class KernelReceiver : BroadcastReceiver() {
+class KernelReceiver : BroadcastReceiver(), KoinComponent {
 
-    @Inject @ApplicationScope lateinit var applicationScope: CoroutineScope
-
-    @Inject lateinit var tunnelRepository: TunnelRepository
-
-    @Inject lateinit var tunnelManager: TunnelManager
+    private val applicationScope: CoroutineScope by inject(named(Scope.APPLICATION))
+    private val tunnelRepository: TunnelRepository by inject()
+    private val tunnelManager: TunnelManager by inject()
 
     override fun onReceive(context: Context, intent: Intent) {
         val action = intent.action ?: return

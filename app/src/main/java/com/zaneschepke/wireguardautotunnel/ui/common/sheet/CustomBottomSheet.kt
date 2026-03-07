@@ -1,52 +1,20 @@
 package com.zaneschepke.wireguardautotunnel.ui.common.sheet
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
-import androidx.compose.material3.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
-
-@Composable
-fun SheetOption(
-    label: String,
-    leadingIcon: ImageVector? = null,
-    onClick: () -> Unit,
-    selected: Boolean,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        modifier = modifier.fillMaxWidth().clickable(onClick = onClick).padding(10.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-    ) {
-        Row {
-            leadingIcon?.let {
-                Icon(
-                    imageVector = it,
-                    contentDescription = null,
-                    modifier = Modifier.padding(10.dp),
-                )
-            }
-            Text(text = label, modifier = Modifier.padding(10.dp))
-        }
-        if (selected) {
-            Icon(
-                imageVector = Icons.Outlined.Check,
-                contentDescription = stringResource(R.string.selected),
-                modifier = Modifier.padding(10.dp),
-            )
-        }
-    }
-}
+import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
+import com.zaneschepke.wireguardautotunnel.ui.common.text.DescriptionText
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -59,7 +27,21 @@ fun CustomBottomSheet(options: List<SheetOption>, onDismiss: () -> Unit) {
         sheetState = sheetState,
     ) {
         options.forEachIndexed { index, option ->
-            SheetOption(option.label, option.leadingIcon, option.onClick, option.selected)
+            SurfaceRow(
+                title = option.label,
+                onClick = option.onClick,
+                leading = { Icon(imageVector = option.leadingIcon, contentDescription = null) },
+                trailing =
+                    if (option.selected) {
+                        {
+                            Icon(
+                                imageVector = Icons.Outlined.Check,
+                                contentDescription = stringResource(R.string.selected),
+                            )
+                        }
+                    } else null,
+                description = option.description?.let { { DescriptionText(it) } },
+            )
             if (index != options.size - 1) HorizontalDivider()
         }
     }
@@ -70,4 +52,5 @@ data class SheetOption(
     val label: String,
     val onClick: () -> Unit,
     val selected: Boolean = false,
+    val description: String? = null,
 )

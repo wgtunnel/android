@@ -7,16 +7,11 @@ import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.domain.repository.DnsSettingsRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.ui.state.DnsUiState
-import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.coroutines.flow.combine
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.viewmodel.container
 
-@HiltViewModel
-class DnsViewModel
-@Inject
-constructor(
+class DnsViewModel(
     private val dnsSettingsRepository: DnsSettingsRepository,
     private val tunnelRepository: TunnelRepository,
 ) : ContainerHost<DnsUiState, Nothing>, ViewModel() {

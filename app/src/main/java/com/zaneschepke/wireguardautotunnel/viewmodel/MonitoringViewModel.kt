@@ -5,16 +5,11 @@ import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.domain.repository.MonitoringSettingsRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.ui.state.MonitoringUiState
-import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.coroutines.flow.combine
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.viewmodel.container
 
-@HiltViewModel
-class MonitoringViewModel
-@Inject
-constructor(
+class MonitoringViewModel(
     private val monitoringSettingsRepository: MonitoringSettingsRepository,
     private val tunnelRepository: TunnelRepository,
     private val tunnelsRepository: TunnelRepository,

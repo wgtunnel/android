@@ -12,7 +12,11 @@ import androidx.compose.foundation.rememberOverscrollEffect
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Circle
 import androidx.compose.material3.Icon
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
@@ -25,7 +29,7 @@ import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SwitchWithDivider
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
-import com.zaneschepke.wireguardautotunnel.ui.state.SharedAppUiState
+import com.zaneschepke.wireguardautotunnel.ui.state.TunnelsUiState
 import com.zaneschepke.wireguardautotunnel.util.extensions.asColor
 import com.zaneschepke.wireguardautotunnel.util.extensions.openWebUrl
 import com.zaneschepke.wireguardautotunnel.viewmodel.SharedAppViewModel
@@ -33,7 +37,7 @@ import com.zaneschepke.wireguardautotunnel.viewmodel.SharedAppViewModel
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TunnelList(
-    sharedState: SharedAppUiState,
+    uiState: TunnelsUiState,
     modifier: Modifier = Modifier,
     viewModel: SharedAppViewModel,
 ) {
@@ -48,7 +52,7 @@ fun TunnelList(
             modifier
                 .pointerInput(Unit) {
                     detectTapGestures {
-                        if (sharedState.tunnels.isEmpty()) return@detectTapGestures
+                        if (uiState.tunnels.isEmpty()) return@detectTapGestures
                         viewModel.clearSelectedTunnels()
                     }
                 }
@@ -58,7 +62,7 @@ fun TunnelList(
         reverseLayout = false,
         flingBehavior = ScrollableDefaults.flingBehavior(),
     ) {
-        if (sharedState.tunnels.isEmpty()) {
+        if (uiState.tunnels.isEmpty()) {
             item {
                 GettingStartedLabel(
                     onClick = { context.openWebUrl(it) },
@@ -66,14 +70,14 @@ fun TunnelList(
                 )
             }
         }
-        items(sharedState.tunnels, key = { it.id }) { tunnel ->
+        items(uiState.tunnels, key = { it.id }) { tunnel ->
             val tunnelState =
-                remember(sharedState.activeTunnels) {
-                    sharedState.activeTunnels[tunnel.id] ?: TunnelState()
+                remember(uiState.activeTunnels) {
+                    uiState.activeTunnels[tunnel.id] ?: TunnelState()
                 }
             val selected =
-                remember(sharedState.selectedTunnels) {
-                    sharedState.selectedTunnels.any { it.id == tunnel.id }
+                remember(uiState.selectedTunnels) {
+                    uiState.selectedTunnels.any { it.id == tunnel.id }
                 }
             var leadingIconColor by
                 remember(
@@ -97,7 +101,7 @@ fun TunnelList(
                 },
                 title = tunnel.name,
                 onClick = {
-                    if (sharedState.selectedTunnels.isNotEmpty()) {
+                    if (uiState.selectedTunnels.isNotEmpty()) {
                         viewModel.toggleSelectedTunnel(tunnel.id)
                     } else {
                         navController.push(Route.TunnelSettings(tunnel.id))
@@ -111,8 +115,8 @@ fun TunnelList(
                             TunnelStatisticsRow(
                                 tunnel,
                                 tunnelState,
-                                sharedState.isPingEnabled,
-                                sharedState.showPingStats,
+                                uiState.isPingEnabled,
+                                uiState.showPingStats,
                             )
                         }
                     } else null,

@@ -24,10 +24,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ThemedSwitch
 import com.zaneschepke.wireguardautotunnel.ui.common.dialog.InfoDialog
@@ -35,12 +33,16 @@ import com.zaneschepke.wireguardautotunnel.ui.common.label.GroupLabel
 import com.zaneschepke.wireguardautotunnel.ui.common.text.DescriptionText
 import com.zaneschepke.wireguardautotunnel.ui.sideeffect.LocalSideEffect
 import com.zaneschepke.wireguardautotunnel.viewmodel.LockdownViewModel
+import com.zaneschepke.wireguardautotunnel.viewmodel.SharedAppViewModel
+import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.viewmodel.koinActivityViewModel
 import org.orbitmvi.orbit.compose.collectSideEffect
 
 @Composable
-fun LockdownSettingsScreen(viewModel: LockdownViewModel = hiltViewModel()) {
-
-    val sharedViewModel = LocalSharedVm.current
+fun LockdownSettingsScreen(
+    viewModel: LockdownViewModel = koinViewModel(),
+    sharedViewModel: SharedAppViewModel = koinActivityViewModel(),
+) {
 
     val uiState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
 

@@ -10,35 +10,31 @@ import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.core.notification.NotificationManager
 import com.zaneschepke.wireguardautotunnel.core.notification.WireGuardNotification
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
-import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelMonitor
-import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
+import com.zaneschepke.wireguardautotunnel.di.Dispatcher
 import com.zaneschepke.wireguardautotunnel.domain.enums.NotificationAction
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.util.extensions.distinctByKeys
-import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
+import org.koin.core.qualifier.named
 import timber.log.Timber
 
-@AndroidEntryPoint
 abstract class BaseTunnelForegroundService : LifecycleService(), TunnelService {
 
-    @Inject lateinit var notificationManager: NotificationManager
+    private val notificationManager: NotificationManager by inject()
 
-    @Inject lateinit var serviceManager: ServiceManager
+    private val serviceManager: ServiceManager by inject()
 
-    @Inject lateinit var tunnelManager: TunnelManager
+    private val tunnelManager: TunnelManager by inject()
 
-    @Inject lateinit var tunnelMonitor: TunnelMonitor
+    private val ioDispatcher: CoroutineDispatcher by inject(named(Dispatcher.IO))
 
-    @Inject @IoDispatcher lateinit var ioDispatcher: CoroutineDispatcher
+    private val settingsRepository: GeneralSettingRepository by inject()
 
-    @Inject lateinit var settingsRepository: GeneralSettingRepository
-
-    @Inject lateinit var tunnelsRepository: TunnelRepository
+    private val tunnelsRepository: TunnelRepository by inject()
 
     protected abstract val fgsType: Int
 

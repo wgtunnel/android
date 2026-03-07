@@ -23,16 +23,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
-import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
 import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.disclosure.components.LocationDisclosureHeader
+import com.zaneschepke.wireguardautotunnel.viewmodel.SharedAppViewModel
+import org.koin.compose.viewmodel.koinActivityViewModel
 
 @Composable
-fun LocationDisclosureScreen() {
+fun LocationDisclosureScreen(sharedViewModel: SharedAppViewModel = koinActivityViewModel()) {
     val context = LocalContext.current
     val navController = LocalNavController.current
-    val viewModel = LocalSharedVm.current
 
     fun goToAutoTunnel() {
         navController.popUpTo(Route.AutoTunnel)
@@ -43,7 +43,7 @@ fun LocationDisclosureScreen() {
             goToAutoTunnel()
         }
 
-    LaunchedEffect(Unit) { viewModel.setLocationDisclosureShown() }
+    LaunchedEffect(Unit) { sharedViewModel.setLocationDisclosureShown() }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,

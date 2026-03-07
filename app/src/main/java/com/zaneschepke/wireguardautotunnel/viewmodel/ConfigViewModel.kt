@@ -11,24 +11,17 @@ import com.zaneschepke.wireguardautotunnel.ui.state.ConfigProxy
 import com.zaneschepke.wireguardautotunnel.ui.state.ConfigUiState
 import com.zaneschepke.wireguardautotunnel.util.StringValue
 import com.zaneschepke.wireguardautotunnel.util.extensions.asStringValue
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.combine
 import org.amnezia.awg.config.BadConfigException
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.viewmodel.container
 import timber.log.Timber
 
-@HiltViewModel(assistedFactory = ConfigViewModel.Factory::class)
-class ConfigViewModel
-@AssistedInject
-constructor(
+class ConfigViewModel(
     private val tunnelRepository: TunnelRepository,
     private val globalEffectRepository: GlobalEffectRepository,
     private val tunnelManager: TunnelManager,
-    @Assisted val tunnelId: Int?,
+    val tunnelId: Int?,
 ) : ContainerHost<ConfigUiState, Nothing>, ViewModel() {
 
     override val container =
@@ -102,10 +95,5 @@ constructor(
 
     fun setShowSaveModal(showSaveModal: Boolean) = intent {
         reduce { state.copy(showSaveModal = showSaveModal) }
-    }
-
-    @AssistedFactory
-    interface Factory {
-        fun create(tunnelId: Int?): ConfigViewModel
     }
 }

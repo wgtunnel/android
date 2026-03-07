@@ -2,12 +2,9 @@ package com.zaneschepke.wireguardautotunnel.data
 
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
-import javax.inject.Inject
-import javax.inject.Provider
 import timber.log.Timber
 
-class DatabaseCallback @Inject constructor(private val databaseProvider: Provider<AppDatabase>) :
-    RoomDatabase.Callback() {
+class DatabaseCallback(private val databaseProvider: Lazy<AppDatabase>) : RoomDatabase.Callback() {
     override fun onCreate(db: SupportSQLiteDatabase) {
         super.onCreate(db)
         Timber.d("Database created, inserting default rows")

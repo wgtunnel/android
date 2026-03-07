@@ -15,4 +15,5 @@ data class SettingUiState(
     val globalTunnelConfig: TunnelConfig? = null,
     val tunnels: List<TunnelConfig> = emptyList(),
     val monitoring: MonitoringSettings = MonitoringSettings(),
+    val tunnelActive: Boolean = false,
 )

@@ -4,14 +4,11 @@ import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.WireGuardAutoTunnel
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
 import com.zaneschepke.wireguardautotunnel.util.StringValue
-import jakarta.inject.Inject
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-class NotificationMonitor
-@Inject
-constructor(
+class NotificationMonitor(
     private val tunnelManager: TunnelManager,
     private val notificationManager: NotificationManager,
 ) {

@@ -212,6 +212,8 @@ class AndroidNetworkMonitor(
 
         connectivityManager?.registerNetworkCallback(request, wifiCallback!!)
 
+        trySend(TransportEvent.Unknown)
+
         awaitClose {
             runCatching { connectivityManager?.unregisterNetworkCallback(wifiCallback!!) }
                 .onFailure { Timber.e(it, "Error unregistering WiFi network callback") }

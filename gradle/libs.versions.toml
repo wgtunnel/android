@@ -1,10 +1,11 @@
 [versions]
 accompanist = "0.37.3"
-activityCompose = "1.12.0"
-amneziawgAndroid = "2.3.0"
+activityCompose = "1.12.4"
+amneziawgAndroid = "2.3.6"
 androidx-junit = "1.3.0"
 icmp4a = "1.0.0"
-ipaddress = "5.5.1"
+ipaddress = "5.6.1"
+koinBom = "4.2.0-RC1"
 leakcanaryAndroid = "3.0-alpha-8"
 orbitCompose = "11.0.0"
 roomdatabasebackup = "1.1.0"
@@ -14,29 +15,26 @@ coreKtx = "1.17.0"
 datastorePreferences = "1.2.0"
 desugar_jdk_libs = "2.1.5"
 espressoCore = "3.7.0"
-hiltAndroid = "2.57.2"
-hiltCompiler = "1.3.0"
-hiltNavigationCompose = "1.3.0"
-navigation3 = "1.0.0"
+navigation3 = "1.0.1"
 junit = "4.13.2"
-kotlinx-serialization-json = "1.9.0"
-ktorClientCore = "3.3.2"
+kotlinx-serialization-json = "1.10.0"
+ktorClientCore = "3.4.1"
 lifecycle-runtime-compose = "2.10.0"
-material3 = "1.5.0-alpha09"
+material3 = "1.5.0-alpha15"
 pinLockCompose = "1.0.5"
-qrose = "1.0.1"
+qrose = "1.1.2"
 roomVersion = "2.8.4"
 semver4j = "3.1.0"
 slf4jAndroid = "1.7.36"
 timber = "5.0.1"
 tunnel = "1.4.0"
-androidGradlePlugin = "8.12.3"
-kotlin = "2.2.21"
-ksp = "2.3.1"
-composeBom = "2025.11.01"
-compose = "1.9.5"
+androidGradlePlugin = "9.1.0"
+kotlin = "2.3.10"
+ksp = "2.3.4"
+composeBom = "2026.02.01"
+compose = "1.10.4"
 icons = "1.7.8"
-workRuntimeKtxVersion = "2.11.0"
+workRuntimeKtxVersion = "2.11.1"
 quickieFoss = "1.15.7"
 coreSplashscreen = "1.2.0"
 gradlePlugins-grgit = "5.3.3"
@@ -73,9 +71,6 @@ accompanist = ["accompanist-permissions", "accompanist-drawablepainter"]
 androidx-room = ["androidx-room-runtime", "androidx-room-ktx"]
 androidx-datastore = ["androidx-datastore-preferences"]
 
-# Hilt DI and work
-hilt-android = ["hilt-android"]
-androidx-hilt = ["androidx-hilt-work", "androidx-hilt-hilt-navigation-compose"]
 androidx-work = ["androidx-work-runtime"]
 
 # Ktor networking
@@ -150,12 +145,15 @@ lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-com
 androidx-lifecycle-viewmodel-navigation3 = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-navigation3", version.ref = "lifecycleViewmodelNavigation3" }
 
 # di
+koin-android = { module = "io.insert-koin:koin-android" }
+koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose" }
+koin-androidx-navigation = { module = "io.insert-koin:koin-androidx-navigation" }
+koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel" }
+koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koinBom" }
+koin-core = { module = "io.insert-koin:koin-core" }
+koin-lazy = { module = "io.insert-koin:koin-core-coroutines" }
+koin-worker = { module = "io.insert-koin:koin-androidx-workmanager" }
 androidx-work-runtime = { module = "androidx.work:work-runtime-ktx", version.ref = "workRuntimeKtxVersion" }
-hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }
-hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltAndroid" }
-androidx-hilt-compiler = { module = "androidx.hilt:hilt-compiler", version.ref = "hiltCompiler" }
-androidx-hilt-work = { module = "androidx.hilt:hilt-work", version.ref = "hiltCompiler" }
-androidx-hilt-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 
 # testing
 junit = { module = "junit:junit", version.ref = "junit" }
@@ -199,7 +197,6 @@ shizuku-provider = { module = "dev.rikka.shizuku:provider", version.ref = "shizu
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hiltAndroid" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlinxSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 androidLibrary = { id = "com.android.library", version.ref = "androidGradlePlugin" }

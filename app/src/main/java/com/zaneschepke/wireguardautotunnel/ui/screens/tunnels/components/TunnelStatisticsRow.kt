@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
@@ -22,7 +23,6 @@ import com.zaneschepke.wireguardautotunnel.ui.common.label.lowercaseLabel
 import com.zaneschepke.wireguardautotunnel.util.extensions.abbreviateKey
 import com.zaneschepke.wireguardautotunnel.util.extensions.localizedDuration
 import com.zaneschepke.wireguardautotunnel.util.extensions.millisAgo
-import java.util.Locale
 import kotlinx.coroutines.delay
 
 @Composable
@@ -35,7 +35,7 @@ fun TunnelStatisticsRow(
     val context = LocalContext.current
     val textStyle = MaterialTheme.typography.bodySmall
     val textColor = MaterialTheme.colorScheme.outline
-    val locale = remember { Locale.getDefault() }
+    val locale = Locale.current.platformLocale
 
     // needs to be set as peer stats for duplicates return as a single set of stats
     val peers by

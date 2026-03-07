@@ -4,7 +4,6 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.hilt.android)
     alias(libs.plugins.kotlinxSerialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.compose.compiler)
@@ -189,7 +188,6 @@ dependencies {
     // Navigation
     implementation(libs.bundles.androidx.navigation3)
     implementation(libs.bundles.navigation.lifecycle)
-    implementation(libs.bundles.androidx.hilt)
 
     // Material and icons
     implementation(libs.bundles.google.material)
@@ -200,11 +198,7 @@ dependencies {
     implementation(libs.bundles.androidx.datastore)
     ksp(libs.androidx.room.compiler)
 
-    // DI and work
-    implementation(libs.bundles.hilt.android)
     implementation(libs.bundles.androidx.work)
-    ksp(libs.hilt.android.compiler)
-    ksp(libs.androidx.hilt.compiler)
 
     // Networking and serialization
     implementation(libs.bundles.ktor.client)
@@ -250,6 +244,16 @@ dependencies {
     implementation(libs.roomdatabasebackup) {
         exclude(group = "org.reactivestreams", module = "reactive-streams")
     }
+
+    // DI
+    implementation(platform(libs.koin.bom))
+    implementation(libs.koin.core)
+    implementation(libs.koin.android)
+    implementation(libs.koin.compose.viewmodel)
+    implementation(libs.koin.androidx.compose)
+    implementation(libs.koin.androidx.navigation)
+    implementation(libs.koin.lazy)
+    implementation(libs.koin.worker)
 }
 
 tasks.register<Copy>("copyLicenseeJsonToAssets") {

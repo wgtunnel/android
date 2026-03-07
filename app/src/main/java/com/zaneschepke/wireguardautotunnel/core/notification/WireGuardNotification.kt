@@ -16,11 +16,8 @@ import com.zaneschepke.wireguardautotunnel.core.broadcast.NotificationActionRece
 import com.zaneschepke.wireguardautotunnel.core.notification.NotificationManager.Companion.EXTRA_ID
 import com.zaneschepke.wireguardautotunnel.domain.enums.NotificationAction
 import com.zaneschepke.wireguardautotunnel.util.StringValue
-import dagger.hilt.android.qualifiers.ApplicationContext
-import javax.inject.Inject
 
-class WireGuardNotification @Inject constructor(@ApplicationContext override val context: Context) :
-    NotificationManager {
+class WireGuardNotification(override val context: Context) : NotificationManager {
 
     enum class NotificationChannels {
         VPN,

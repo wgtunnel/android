@@ -1,6 +1,6 @@
 package com.zaneschepke.wireguardautotunnel.domain.state
 
-import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelMonitor.Companion.CLOUDFLARE_IPV4_IP
+import com.zaneschepke.wireguardautotunnel.core.tunnel.handler.TunnelMonitorHandler.Companion.CLOUDFLARE_IPV4_IP
 
 enum class FailureReason {
     NoConnectivity,

@@ -4,22 +4,15 @@ import androidx.lifecycle.ViewModel
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.ui.state.TunnelUiState
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.viewmodel.container
 
-@HiltViewModel(assistedFactory = TunnelViewModel.Factory::class)
-class TunnelViewModel
-@AssistedInject
-constructor(
+class TunnelViewModel(
     private val tunnelRepository: TunnelRepository,
     private val tunnelManager: TunnelManager,
-    @Assisted val tunnelId: Int,
+    val tunnelId: Int,
 ) : ContainerHost<TunnelUiState, Nothing>, ViewModel() {
 
     override val container =
@@ -57,10 +50,5 @@ constructor(
     fun setMetered(to: Boolean) = intent {
         val tunnel = state.tunnel ?: return@intent
         tunnelRepository.save(tunnel.copy(isMetered = to))
-    }
-
-    @AssistedFactory
-    interface Factory {
-        fun create(tunnelId: Int): TunnelViewModel
     }
 }

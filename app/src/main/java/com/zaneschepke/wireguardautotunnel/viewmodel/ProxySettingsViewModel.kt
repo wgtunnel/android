@@ -10,16 +10,11 @@ import com.zaneschepke.wireguardautotunnel.domain.sideeffect.GlobalSideEffect
 import com.zaneschepke.wireguardautotunnel.ui.state.ProxySettingsUiState
 import com.zaneschepke.wireguardautotunnel.util.StringValue
 import com.zaneschepke.wireguardautotunnel.util.extensions.isValidAndroidProxyBindAddress
-import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.coroutines.flow.combine
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.viewmodel.container
 
-@HiltViewModel
-class ProxySettingsViewModel
-@Inject
-constructor(
+class ProxySettingsViewModel(
     private val proxySettingsRepository: ProxySettingsRepository,
     private val globalEffectRepository: GlobalEffectRepository,
     private val tunnelManager: TunnelManager,

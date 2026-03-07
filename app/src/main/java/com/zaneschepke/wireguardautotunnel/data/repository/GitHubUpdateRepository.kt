@@ -4,16 +4,17 @@ import android.content.Context
 import com.zaneschepke.wireguardautotunnel.BuildConfig
 import com.zaneschepke.wireguardautotunnel.data.mapper.GitHubReleaseMapper
 import com.zaneschepke.wireguardautotunnel.data.network.GitHubApi
-import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
 import com.zaneschepke.wireguardautotunnel.domain.model.AppUpdate
 import com.zaneschepke.wireguardautotunnel.domain.repository.UpdateRepository
 import com.zaneschepke.wireguardautotunnel.util.Constants
 import com.zaneschepke.wireguardautotunnel.util.NumberUtils
-import io.ktor.client.*
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
-import io.ktor.http.*
-import io.ktor.utils.io.*
+import io.ktor.client.HttpClient
+import io.ktor.client.request.get
+import io.ktor.client.statement.HttpResponse
+import io.ktor.client.statement.bodyAsChannel
+import io.ktor.http.contentLength
+import io.ktor.utils.io.ByteReadChannel
+import io.ktor.utils.io.readAvailable
 import java.io.File
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
@@ -25,8 +26,9 @@ class GitHubUpdateRepository(
     private val githubOwner: String,
     private val githubRepo: String,
     private val context: Context,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+    private val ioDispatcher: CoroutineDispatcher,
 ) : UpdateRepository {
+
     override suspend fun checkForUpdate(currentVersion: String): Result<AppUpdate?> =
         withContext(ioDispatcher) {
             Timber.i("Checking for update")

@@ -4,27 +4,25 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
-import com.zaneschepke.wireguardautotunnel.di.ApplicationScope
+import com.zaneschepke.wireguardautotunnel.di.Scope
 import com.zaneschepke.wireguardautotunnel.domain.repository.AutoTunnelSettingsRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.util.Constants
-import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+import org.koin.core.qualifier.named
 import timber.log.Timber
 
-@AndroidEntryPoint
-class RemoteControlReceiver : BroadcastReceiver() {
+class RemoteControlReceiver : BroadcastReceiver(), KoinComponent {
 
-    @Inject @ApplicationScope lateinit var applicationScope: CoroutineScope
-
-    @Inject lateinit var settingsRepository: GeneralSettingRepository
-    @Inject lateinit var tunnelsRepository: TunnelRepository
-    @Inject lateinit var autoTunnelSettingsRepository: AutoTunnelSettingsRepository
-
-    @Inject lateinit var tunnelManager: TunnelManager
+    private val applicationScope: CoroutineScope by inject(named(Scope.APPLICATION))
+    private val settingsRepository: GeneralSettingRepository by inject()
+    private val tunnelsRepository: TunnelRepository by inject()
+    private val autoTunnelSettingsRepository: AutoTunnelSettingsRepository by inject()
+    private val tunnelManager: TunnelManager by inject()
 
     enum class Action(private val suffix: String) {
         START_TUNNEL("START_TUNNEL"),

@@ -5,30 +5,32 @@ import android.os.Build
 import android.os.IBinder
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
-import androidx.lifecycle.*
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleRegistry
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.WireGuardAutoTunnel
 import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
-import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 import kotlin.concurrent.atomics.AtomicBoolean
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import org.koin.android.ext.android.inject
 import timber.log.Timber
 
-@AndroidEntryPoint
 class TunnelControlTile : TileService(), LifecycleOwner {
 
-    @Inject lateinit var tunnelsRepository: TunnelRepository
+    private val tunnelsRepository: TunnelRepository by inject()
 
-    @Inject lateinit var serviceManager: ServiceManager
+    private val serviceManager: ServiceManager by inject()
 
-    @Inject lateinit var tunnelManager: TunnelManager
+    private val tunnelManager: TunnelManager by inject()
 
     @OptIn(ExperimentalAtomicApi::class) val isCollecting = AtomicBoolean(false)
 

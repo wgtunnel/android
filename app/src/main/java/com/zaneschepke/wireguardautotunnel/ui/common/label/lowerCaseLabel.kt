@@ -1,11 +1,10 @@
 package com.zaneschepke.wireguardautotunnel.ui.common.label
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import java.util.*
+import androidx.compose.ui.text.intl.Locale
 
 @Composable
 fun lowercaseLabel(text: String): String {
-    val locale = remember { Locale.getDefault() }
+    val locale = Locale.current.platformLocale
     return text.lowercase(locale)
 }

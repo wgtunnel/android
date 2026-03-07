@@ -5,25 +5,21 @@ import android.content.Context
 import android.content.Intent
 import com.zaneschepke.wireguardautotunnel.core.notification.NotificationManager
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
-import com.zaneschepke.wireguardautotunnel.di.ApplicationScope
+import com.zaneschepke.wireguardautotunnel.di.Scope
 import com.zaneschepke.wireguardautotunnel.domain.enums.NotificationAction
 import com.zaneschepke.wireguardautotunnel.domain.repository.AutoTunnelSettingsRepository
-import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
-import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
+import org.koin.core.component.inject
+import org.koin.core.qualifier.named
 
-@AndroidEntryPoint
-class NotificationActionReceiver : BroadcastReceiver() {
+class NotificationActionReceiver : BroadcastReceiver(), KoinComponent {
 
-    @Inject lateinit var tunnelManager: TunnelManager
-
-    @Inject lateinit var tunnelRepository: TunnelRepository
-
-    @Inject lateinit var autoTunnelRepository: AutoTunnelSettingsRepository
-
-    @Inject @ApplicationScope lateinit var applicationScope: CoroutineScope
+    private val tunnelManager: TunnelManager by inject()
+    private val autoTunnelRepository: AutoTunnelSettingsRepository by inject()
+    private val applicationScope: CoroutineScope = get(named(Scope.APPLICATION))
 
     override fun onReceive(context: Context, intent: Intent) {
         applicationScope.launch {

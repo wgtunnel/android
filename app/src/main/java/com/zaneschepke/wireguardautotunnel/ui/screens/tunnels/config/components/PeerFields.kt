@@ -20,16 +20,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
 import com.zaneschepke.wireguardautotunnel.ui.common.textbox.ConfigurationTextBox
 import com.zaneschepke.wireguardautotunnel.ui.state.PeerProxy
-import java.util.*
 
 @Composable
 fun PeerFields(peer: PeerProxy, onPeerChange: (PeerProxy) -> Unit, showKey: Boolean) {
     val isTv = LocalIsAndroidTV.current
+    val locale = Locale.current.platformLocale
     val keyboardController = LocalSoftwareKeyboardController.current
     val keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() })
     val keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
@@ -47,7 +48,7 @@ fun PeerFields(peer: PeerProxy, onPeerChange: (PeerProxy) -> Unit, showKey: Bool
             label = stringResource(R.string.public_key),
             hint =
                 stringResource(R.string.hint_template, stringResource(R.string.base64_key))
-                    .lowercase(Locale.getDefault()),
+                    .lowercase(locale),
             modifier = Modifier.fillMaxWidth(),
         )
         ConfigurationTextBox(
@@ -81,7 +82,7 @@ fun PeerFields(peer: PeerProxy, onPeerChange: (PeerProxy) -> Unit, showKey: Bool
             hint = stringResource(R.string.optional),
             trailing = {
                 Text(
-                    stringResource(R.string.seconds).lowercase(Locale.getDefault()),
+                    stringResource(R.string.seconds).lowercase(locale),
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.padding(end = 10.dp),
                 )
@@ -96,7 +97,7 @@ fun PeerFields(peer: PeerProxy, onPeerChange: (PeerProxy) -> Unit, showKey: Bool
             label = stringResource(R.string.endpoint),
             hint =
                 stringResource(R.string.hint_template, stringResource(R.string.server_port))
-                    .lowercase(Locale.getDefault()),
+                    .lowercase(locale),
             modifier = Modifier.fillMaxWidth(),
         )
         ConfigurationTextBox(
@@ -105,7 +106,7 @@ fun PeerFields(peer: PeerProxy, onPeerChange: (PeerProxy) -> Unit, showKey: Bool
             label = stringResource(R.string.allowed_ips),
             hint =
                 stringResource(R.string.hint_template, stringResource(R.string.comma_separated))
-                    .lowercase(Locale.getDefault()),
+                    .lowercase(locale),
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = keyboardOptions,
             keyboardActions = keyboardActions,

@@ -7,7 +7,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.*
+import androidx.compose.material.icons.outlined.Adjust
+import androidx.compose.material.icons.outlined.QueryStats
+import androidx.compose.material.icons.outlined.Replay
+import androidx.compose.material.icons.outlined.Timer
+import androidx.compose.material.icons.outlined.TimerOff
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -17,7 +21,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
@@ -27,9 +30,10 @@ import com.zaneschepke.wireguardautotunnel.ui.common.dropdown.LabelledDropdown
 import com.zaneschepke.wireguardautotunnel.ui.common.label.GroupLabel
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
 import com.zaneschepke.wireguardautotunnel.viewmodel.MonitoringViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun TunnelMonitoringScreen(viewModel: MonitoringViewModel = hiltViewModel()) {
+fun TunnelMonitoringScreen(viewModel: MonitoringViewModel = koinViewModel()) {
     val navController = LocalNavController.current
     val monitoringUiState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
 

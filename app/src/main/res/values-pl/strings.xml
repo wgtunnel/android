@@ -324,6 +324,7 @@
     <string name="donation_closing">Moim marzeniem jest praca nad tym projektem na pełen etat.</string>
     <string name="donation_signoff">Z wdzięcznością,</string>
     <string name="google_donation_message">Niestety, ze względu na politykę Google, linki do darowizn nie są dozwolone w wersji tej aplikacji dostępnej w Google Play. Aby dowiedzieć się, gdzie można przekazać darowiznę, odwiedź strony projektu.</string>
+    <string name="kernel_wireguard_unsupported">Kernel nie zawiera wsparcia dla WireGuard (brak modułu albo nie wbudowany w kernel)!</string>
     <string name="delete_active_message">Nie można usunąć aktywnego tunelu.</string>
     <string name="back">Wstecz</string>
     <string name="configuration">Konfiguracja</string>

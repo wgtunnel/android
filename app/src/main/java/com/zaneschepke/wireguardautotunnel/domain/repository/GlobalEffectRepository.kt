@@ -1,11 +1,9 @@
 package com.zaneschepke.wireguardautotunnel.domain.repository
 
 import com.zaneschepke.wireguardautotunnel.domain.sideeffect.GlobalSideEffect
-import javax.inject.Singleton
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 
-@Singleton
 class GlobalEffectRepository {
 
     private val _globalEffectFlow =

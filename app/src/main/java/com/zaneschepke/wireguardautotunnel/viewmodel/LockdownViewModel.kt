@@ -11,15 +11,10 @@ import com.zaneschepke.wireguardautotunnel.domain.repository.LockdownSettingsRep
 import com.zaneschepke.wireguardautotunnel.domain.sideeffect.GlobalSideEffect
 import com.zaneschepke.wireguardautotunnel.ui.state.LockdownSettingsUiState
 import com.zaneschepke.wireguardautotunnel.util.StringValue
-import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.viewmodel.container
 
-@HiltViewModel
-class LockdownViewModel
-@Inject
-constructor(
+class LockdownViewModel(
     private val lockdownSettingsRepository: LockdownSettingsRepository,
     private val tunnelManager: TunnelManager,
     private val globalEffectRepository: GlobalEffectRepository,

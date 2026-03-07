@@ -4,9 +4,9 @@ import com.zaneschepke.logcatter.model.LogMessage
 import kotlinx.coroutines.flow.Flow
 
 interface LogReader {
-    fun start()
+    suspend fun start()
 
-    fun stop()
+    suspend fun stop()
 
     suspend fun zipLogFiles(path: String)
 

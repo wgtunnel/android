@@ -40,3 +40,7 @@ class UnknownError : BackendCoreException() {
 class UapiUpdateFailed : BackendCoreException() {
     override val stringRes = R.string.active_tunnel_update_failed
 }
+
+class KernelWireguardNotSupported : BackendCoreException() {
+    override val stringRes = R.string.kernel_wireguard_unsupported
+}

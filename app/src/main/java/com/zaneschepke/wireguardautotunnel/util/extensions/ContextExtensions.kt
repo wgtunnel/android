@@ -280,20 +280,6 @@ fun Context.launchPlayStoreReview() {
     }
 }
 
-fun Context.launchFDroidListing() {
-    val intent =
-        Intent(Intent.ACTION_VIEW, Uri.parse("fdroid.app://details?id=$packageName")).apply {
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            setPackage("org.fdroid.fdroid")
-        }
-
-    if (intent.resolveActivity(packageManager) != null) {
-        startActivity(intent)
-    } else {
-        openWebUrl("https://f-droid.org/packages/$packageName/")
-    }
-}
-
 fun Activity.setScreenBrightness(brightness: Float) {
     window.attributes = window.attributes.apply { screenBrightness = brightness }
 }
@@ -309,7 +295,7 @@ fun PackageManager.getFriendlyAppName(packageName: String, appInfo: ApplicationI
     val label =
         try {
             getApplicationLabel(appInfo).toString()
-        } catch (e: PackageManager.NameNotFoundException) {
+        } catch (_: PackageManager.NameNotFoundException) {
             packageName
         }
 

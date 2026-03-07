@@ -16,12 +16,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.domain.model.InstalledPackage
 import com.zaneschepke.wireguardautotunnel.ui.common.textbox.CustomTextField
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.splittunnel.state.SplitOption
-import java.util.*
 
 @Composable
 fun AppListSection(
@@ -31,7 +31,7 @@ fun AppListSection(
 ) {
 
     var query by remember { mutableStateOf("") }
-    val locale = remember { Locale.getDefault() }
+    val locale = Locale.current.platformLocale
 
     val filteredAndSortedPackages by remember {
         derivedStateOf {

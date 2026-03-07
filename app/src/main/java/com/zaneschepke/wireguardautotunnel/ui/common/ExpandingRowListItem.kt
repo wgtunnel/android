@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 
@@ -17,7 +18,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun ExpandingRowListItem(
     leading: @Composable () -> Unit,
-    text: String,
+    text: AnnotatedString,
     trailing: @Composable () -> Unit,
     isSelected: Boolean,
     expanded: @Composable () -> Unit,

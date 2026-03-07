@@ -7,12 +7,13 @@ import androidx.navigation3.runtime.NavKey
 import com.zaneschepke.wireguardautotunnel.ui.navigation.NavController
 
 @Composable
-fun <T : NavKey> rememberNavController(
+fun rememberNavController(
     backStack: NavBackStack<NavKey>,
     isDisclosureShown: Boolean,
     onChange: (NavKey?) -> Unit = {},
+    onExitApp: () -> Unit = {},
 ): NavController {
-    return remember(backStack, onChange, isDisclosureShown) {
-        NavController(backStack, isDisclosureShown, onChange)
+    return remember(backStack, isDisclosureShown, onChange, onExitApp) {
+        NavController(backStack, isDisclosureShown, onChange, onExitApp)
     }
 }

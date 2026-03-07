@@ -11,13 +11,33 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.animation.*
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.surfaceColorAtElevation
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -26,23 +46,21 @@ import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
-import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.zaneschepke.networkmonitor.NetworkMonitor
 import com.zaneschepke.wireguardautotunnel.data.AppDatabase
-import com.zaneschepke.wireguardautotunnel.data.DataStoreManager.Companion.shouldShowDonationSnackbar
 import com.zaneschepke.wireguardautotunnel.data.model.AppMode
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppStateRepository
@@ -50,7 +68,6 @@ import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.domain.sideeffect.GlobalSideEffect
 import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
-import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
 import com.zaneschepke.wireguardautotunnel.ui.common.banner.AppAlertBanner
 import com.zaneschepke.wireguardautotunnel.ui.common.dialog.VpnDeniedDialog
 import com.zaneschepke.wireguardautotunnel.ui.common.snackbar.CustomSnackBar
@@ -93,27 +110,32 @@ import com.zaneschepke.wireguardautotunnel.ui.theme.AlertRed
 import com.zaneschepke.wireguardautotunnel.ui.theme.OffWhite
 import com.zaneschepke.wireguardautotunnel.ui.theme.WireguardAutoTunnelTheme
 import com.zaneschepke.wireguardautotunnel.util.LocaleUtil
-import com.zaneschepke.wireguardautotunnel.util.extensions.*
+import com.zaneschepke.wireguardautotunnel.util.extensions.installApk
+import com.zaneschepke.wireguardautotunnel.util.extensions.isRunningOnTv
+import com.zaneschepke.wireguardautotunnel.util.extensions.openWebUrl
+import com.zaneschepke.wireguardautotunnel.util.extensions.restartApp
+import com.zaneschepke.wireguardautotunnel.util.extensions.showToast
 import com.zaneschepke.wireguardautotunnel.viewmodel.ConfigViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.SharedAppViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.SplitTunnelViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.TunnelViewModel
-import dagger.hilt.android.AndroidEntryPoint
 import de.raphaelebner.roomdatabasebackup.core.RoomBackup
-import java.util.*
-import javax.inject.Inject
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
+import org.koin.androidx.compose.koinViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 import xyz.teamgravity.pin_lock_compose.PinManager
 
-@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
-    @Inject lateinit var appStateRepository: AppStateRepository
-    @Inject lateinit var tunnelRepository: TunnelRepository
-    @Inject lateinit var appDatabase: AppDatabase
-    @Inject lateinit var networkMonitor: NetworkMonitor
+    private val appStateRepository: AppStateRepository by inject()
+    private val tunnelRepository: TunnelRepository by inject()
+    private val appDatabase: AppDatabase by inject()
+    private val networkMonitor: NetworkMonitor by inject()
 
+    val viewModel by viewModel<SharedAppViewModel>()
     private lateinit var roomBackup: RoomBackup
 
     @OptIn(ExperimentalMaterial3Api::class)
@@ -128,8 +150,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         roomBackup = RoomBackup(this)
-
-        val viewModel by viewModels<SharedAppViewModel>()
 
         installSplashScreen().apply {
             setKeepOnScreenCondition { !viewModel.container.stateFlow.value.isAppLoaded }
@@ -164,10 +184,12 @@ class MainActivity : AppCompatActivity() {
             var previousRoute by remember { mutableStateOf<Route?>(null) }
 
             val navController =
-                rememberNavController<NavKey>(backStack, uiState.isLocationDisclosureShown) {
-                    previousKey ->
-                    previousRoute = previousKey as? Route
-                }
+                rememberNavController(
+                    backStack,
+                    uiState.isLocationDisclosureShown,
+                    onChange = { previousKey -> previousRoute = previousKey as? Route },
+                    onExitApp = { finish() },
+                )
 
             val vpnActivity =
                 rememberLauncherForActivityResult(
@@ -233,7 +255,6 @@ class MainActivity : AppCompatActivity() {
 
             CompositionLocalProvider(
                 LocalIsAndroidTV provides isTv,
-                LocalSharedVm provides viewModel,
                 LocalNavController provides navController,
             ) {
                 WireguardAutoTunnelTheme(theme = uiState.theme) {
@@ -280,9 +301,7 @@ class MainActivity : AppCompatActivity() {
                     }
 
                     LaunchedEffect(Unit) {
-                        if (
-                            uiState.shouldShowDonationSnackbar && !uiState.settings.alreadyDonated
-                        ) {
+                        if (uiState.shouldShowDonationSnackbar && !uiState.alreadyDonated) {
                             viewModel.setShouldShowDonationSnackbar(false)
                             snackbarState.showSnackbar(
                                 SnackbarInfo(
@@ -313,10 +332,10 @@ class MainActivity : AppCompatActivity() {
                             )
 
                         Box(modifier = Modifier.fillMaxSize()) {
-                            if (uiState.settings.appMode == AppMode.LOCK_DOWN) {
+                            if (uiState.appMode == AppMode.LOCK_DOWN) {
                                 AppAlertBanner(
                                     stringResource(R.string.locked_down)
-                                        .uppercase(Locale.getDefault()),
+                                        .uppercase(Locale.current.platformLocale),
                                     OffWhite,
                                     AlertRed,
                                     modifier = Modifier.fillMaxWidth().zIndex(2f),
@@ -413,38 +432,23 @@ class MainActivity : AppCompatActivity() {
                                                 entry<Route.Tunnels> { TunnelsScreen() }
                                                 entry<Route.Sort> { SortScreen() }
                                                 entry<Route.TunnelSettings> { key ->
-                                                    val viewModel =
-                                                        hiltViewModel<
-                                                            TunnelViewModel,
-                                                            TunnelViewModel.Factory,
-                                                        >(
-                                                            creationCallback = { factory ->
-                                                                factory.create(key.id)
-                                                            }
+                                                    val viewModel: TunnelViewModel =
+                                                        koinViewModel(
+                                                            parameters = { parametersOf(key.id) }
                                                         )
                                                     TunnelSettingsScreen(viewModel)
                                                 }
                                                 entry<Route.SplitTunnel> { key ->
-                                                    val viewModel =
-                                                        hiltViewModel<
-                                                            SplitTunnelViewModel,
-                                                            SplitTunnelViewModel.Factory,
-                                                        >(
-                                                            creationCallback = { factory ->
-                                                                factory.create(key.id)
-                                                            }
+                                                    val viewModel: SplitTunnelViewModel =
+                                                        koinViewModel(
+                                                            parameters = { parametersOf(key.id) }
                                                         )
                                                     SplitTunnelScreen(viewModel)
                                                 }
                                                 entry<Route.Config> { key ->
-                                                    val viewModel =
-                                                        hiltViewModel<
-                                                            ConfigViewModel,
-                                                            ConfigViewModel.Factory,
-                                                        >(
-                                                            creationCallback = { factory ->
-                                                                factory.create(key.id)
-                                                            }
+                                                    val viewModel: ConfigViewModel =
+                                                        koinViewModel(
+                                                            parameters = { parametersOf(key.id) }
                                                         )
                                                     ConfigScreen(viewModel)
                                                 }
@@ -470,26 +474,16 @@ class MainActivity : AppCompatActivity() {
                                                 }
                                                 entry<Route.Dns> { DnsSettingsScreen() }
                                                 entry<Route.ConfigGlobal> { key ->
-                                                    val viewModel =
-                                                        hiltViewModel<
-                                                            ConfigViewModel,
-                                                            ConfigViewModel.Factory,
-                                                        >(
-                                                            creationCallback = { factory ->
-                                                                factory.create(key.id)
-                                                            }
+                                                    val viewModel: ConfigViewModel =
+                                                        koinViewModel(
+                                                            parameters = { parametersOf(key.id) }
                                                         )
                                                     ConfigScreen(viewModel)
                                                 }
                                                 entry<Route.SplitTunnelGlobal> { key ->
-                                                    val viewModel =
-                                                        hiltViewModel<
-                                                            SplitTunnelViewModel,
-                                                            SplitTunnelViewModel.Factory,
-                                                        >(
-                                                            creationCallback = { factory ->
-                                                                factory.create(key.id)
-                                                            }
+                                                    val viewModel: SplitTunnelViewModel =
+                                                        koinViewModel(
+                                                            parameters = { parametersOf(key.id) }
                                                         )
                                                     SplitTunnelScreen(viewModel)
                                                 }

@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -50,6 +51,8 @@ fun ConfigurationTextBox(
                 label,
                 color = MaterialTheme.colorScheme.onSurface,
                 style = MaterialTheme.typography.labelMedium,
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 1,
             )
         },
         containerColor = MaterialTheme.colorScheme.surface,
@@ -58,6 +61,8 @@ fun ConfigurationTextBox(
                 hint,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.outline,
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 1,
             )
         },
         keyboardOptions = keyboardOptions,

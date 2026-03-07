@@ -69,6 +69,12 @@ fun AppMode.asString(context: Context): String {
     }
 }
 
+fun AppMode.description(context: Context): String? {
+    return if (this == AppMode.KERNEL)
+        context.getString(R.string.only_template, context.getString(R.string.wireguard))
+    else null
+}
+
 @Composable
 fun AppMode.asIcon(): ImageVector {
     return when (this) {

@@ -9,7 +9,6 @@ import android.os.Build
 import android.provider.MediaStore
 import android.provider.OpenableColumns
 import androidx.annotation.RequiresApi
-import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
 import com.zaneschepke.wireguardautotunnel.util.extensions.QuickConfig
 import com.zaneschepke.wireguardautotunnel.util.extensions.TunnelName
 import com.zaneschepke.wireguardautotunnel.util.extensions.getInputStreamFromUri
@@ -22,10 +21,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import timber.log.Timber
 
-class FileUtils(
-    private val context: Context,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
-) {
+class FileUtils(private val context: Context, private val ioDispatcher: CoroutineDispatcher) {
 
     /**
      * Creates a configuration file for a given tunnel if the config string is valid.

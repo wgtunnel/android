@@ -8,6 +8,8 @@ import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 class LogcatManager(pid: Int, logDir: String, maxFileSize: Long, maxFolderSize: Long) :
     LogReader, DefaultLifecycleObserver {
@@ -16,6 +18,8 @@ class LogcatManager(pid: Int, logDir: String, maxFileSize: Long, maxFolderSize: 
     private val logcatReader = LogcatStreamReader(pid, fileManager)
     private var logJob: Job? = null
     private var isStarted = false
+
+    private val mutex = Mutex()
 
     private val _bufferedLogs =
         MutableSharedFlow<LogMessage>(
@@ -30,39 +34,49 @@ class LogcatManager(pid: Int, logDir: String, maxFileSize: Long, maxFolderSize: 
 
     override fun onCreate(owner: LifecycleOwner) {
         // for auto start
-        // start()
+        // logScope.launch { start() }
     }
 
     override fun onDestroy(owner: LifecycleOwner) {
-        stop()
+        logScope.launch { stop() }
         logScope.cancel()
     }
 
-    override fun start() {
-        if (isStarted) return
-        stop()
-        logJob =
-            logScope.launch {
-                logcatReader.readLogs().collect { logMessage ->
-                    _bufferedLogs.emit(logMessage)
-                    _liveLogs.emit(logMessage)
+    override suspend fun start() {
+        mutex.withLock {
+            if (isStarted) return
+            stopInternal()
+            logJob =
+                logScope.launch {
+                    logcatReader.readLogs().collect { logMessage ->
+                        _bufferedLogs.emit(logMessage)
+                        _liveLogs.emit(logMessage)
+                    }
                 }
-            }
-        isStarted = true
+            isStarted = true
+        }
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    override fun stop() {
-        if (!isStarted) return
+    override suspend fun stop() {
+        mutex.withLock {
+            if (!isStarted) return
+            stopInternal()
+            isStarted = false
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun stopInternal() {
         logJob?.cancel()
         logcatReader.stop()
         fileManager.close()
         _bufferedLogs.resetReplayCache()
-        isStarted = false
+        logJob = null
     }
 
     override suspend fun zipLogFiles(path: String) {
-        val wasStarted = isStarted
+        val wasStarted = mutex.withLock { isStarted }
         stop()
         fileManager.zipLogs(path)
         if (wasStarted) {
@@ -73,7 +87,7 @@ class LogcatManager(pid: Int, logDir: String, maxFileSize: Long, maxFolderSize: 
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override suspend fun deleteAndClearLogs() {
-        val wasStarted = isStarted
+        val wasStarted = mutex.withLock { isStarted }
         stop()
         _bufferedLogs.resetReplayCache()
         fileManager.deleteAllLogs()

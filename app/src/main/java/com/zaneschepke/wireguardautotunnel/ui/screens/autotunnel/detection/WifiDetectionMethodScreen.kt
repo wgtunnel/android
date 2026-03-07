@@ -10,16 +10,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.data.model.WifiDetectionMethod
 import com.zaneschepke.wireguardautotunnel.ui.common.button.IconSurfaceButton
 import com.zaneschepke.wireguardautotunnel.util.extensions.asDescriptionString
 import com.zaneschepke.wireguardautotunnel.util.extensions.asTitleString
 import com.zaneschepke.wireguardautotunnel.viewmodel.AutoTunnelViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun WifiDetectionMethodScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
+fun WifiDetectionMethodScreen(viewModel: AutoTunnelViewModel = koinViewModel()) {
     val context = LocalContext.current
 
     val autoTunnelState by viewModel.container.stateFlow.collectAsStateWithLifecycle()

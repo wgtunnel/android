@@ -3,8 +3,6 @@ package com.zaneschepke.wireguardautotunnel.data.repository
 import com.zaneschepke.wireguardautotunnel.data.DataStoreManager
 import com.zaneschepke.wireguardautotunnel.data.entity.AppState as Entity
 import com.zaneschepke.wireguardautotunnel.data.mapper.toDomain
-import com.zaneschepke.wireguardautotunnel.di.ApplicationScope
-import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
 import com.zaneschepke.wireguardautotunnel.domain.model.AppState as Domain
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppStateRepository
 import kotlinx.coroutines.CoroutineDispatcher
@@ -18,8 +16,8 @@ import timber.log.Timber
 
 class DataStoreAppStateRepository(
     private val dataStoreManager: DataStoreManager,
-    @ApplicationScope private val applicationScope: CoroutineScope,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+    applicationScope: CoroutineScope,
+    ioDispatcher: CoroutineDispatcher,
 ) : AppStateRepository {
     override suspend fun isLocationDisclosureShown(): Boolean {
         return dataStoreManager.getFromStore(DataStoreManager.locationDisclosureShown) ?: false

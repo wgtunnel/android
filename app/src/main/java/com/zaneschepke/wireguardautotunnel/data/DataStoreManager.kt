@@ -5,7 +5,6 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.preferencesDataStore
-import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
 import java.io.IOException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
@@ -17,7 +16,7 @@ import timber.log.Timber
 
 class DataStoreManager(
     private val context: Context,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+    private val ioDispatcher: CoroutineDispatcher,
 ) {
     private val preferencesKey = "preferences"
     val Context.dataStore by preferencesDataStore(name = preferencesKey)

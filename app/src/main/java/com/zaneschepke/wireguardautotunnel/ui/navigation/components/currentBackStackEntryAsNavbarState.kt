@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.Sort
+import androidx.compose.material.icons.outlined.ContentPasteGo
 import androidx.compose.material.icons.outlined.CopyAll
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.Icon
@@ -22,13 +23,13 @@ import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route.*
 import com.zaneschepke.wireguardautotunnel.ui.navigation.TunnelNetwork
 import com.zaneschepke.wireguardautotunnel.ui.sideeffect.LocalSideEffect
+import com.zaneschepke.wireguardautotunnel.ui.state.GlobalAppUiState
 import com.zaneschepke.wireguardautotunnel.ui.state.NavbarState
-import com.zaneschepke.wireguardautotunnel.ui.state.SharedAppUiState
 import com.zaneschepke.wireguardautotunnel.viewmodel.SharedAppViewModel
 
 @Composable
 fun currentRouteAsNavbarState(
-    sharedState: SharedAppUiState,
+    globalState: GlobalAppUiState,
     sharedViewModel: SharedAppViewModel,
     route: Route?,
     navController: NavController,
@@ -36,7 +37,7 @@ fun currentRouteAsNavbarState(
     val keyboardController = LocalSoftwareKeyboardController.current
     val context = LocalContext.current
 
-    return remember(route, sharedState) {
+    return remember(route, globalState) {
         derivedStateOf {
             when (route) {
                 AdvancedAutoTunnel ->
@@ -69,7 +70,7 @@ fun currentRouteAsNavbarState(
                     NavbarState(
                         showBottomItems = true,
                         topTitle =
-                            if (!sharedState.isLocationDisclosureShown) null
+                            if (!globalState.isLocationDisclosureShown) null
                             else {
                                 context.getString(R.string.auto_tunnel)
                             },
@@ -219,6 +220,16 @@ fun currentRouteAsNavbarState(
                             Row {
                                 IconButton(
                                     onClick = {
+                                        sharedViewModel.postSideEffect(LocalSideEffect.SortByLatency)
+                                    }
+                                ) {
+                                    Icon(
+                                        Icons.Rounded.NetworkCheck,
+                                        stringResource(R.string.sort_by_latency),
+                                    )
+                                }
+                                IconButton(
+                                    onClick = {
                                         sharedViewModel.postSideEffect(LocalSideEffect.Sort)
                                     }
                                 ) {
@@ -237,7 +248,7 @@ fun currentRouteAsNavbarState(
                 is Config,
                 is ConfigGlobal -> {
                     val tunnelName =
-                        if (route is Config) sharedState.tunnels.find { it.id == route.id }?.name
+                        if (route is Config) globalState.tunnelNames[route.id]
                         else context.getString(R.string.global_dns_servers)
                     NavbarState(
                         topLeading = {
@@ -265,8 +276,7 @@ fun currentRouteAsNavbarState(
                 is SplitTunnel,
                 is SplitTunnelGlobal -> {
                     val tunnelName =
-                        if (route is SplitTunnel)
-                            sharedState.tunnels.find { it.id == route.id }?.name
+                        if (route is SplitTunnel) globalState.tunnelNames[route.id]
                         else context.getString(R.string.global_split_tunneling)
                     NavbarState(
                         topLeading = {
@@ -279,12 +289,26 @@ fun currentRouteAsNavbarState(
                         },
                         topTitle = tunnelName ?: "",
                         topTrailing = {
-                            IconButton(
-                                onClick = {
-                                    sharedViewModel.postSideEffect(LocalSideEffect.SaveChanges)
+                            Row {
+                                IconButton(
+                                    onClick = {
+                                        sharedViewModel.postSideEffect(
+                                            LocalSideEffect.Modal.SelectTunnel
+                                        )
+                                    }
+                                ) {
+                                    Icon(
+                                        Icons.Outlined.ContentPasteGo,
+                                        stringResource(R.string.copy_from),
+                                    )
                                 }
-                            ) {
-                                Icon(Icons.Rounded.Save, stringResource(R.string.save))
+                                IconButton(
+                                    onClick = {
+                                        sharedViewModel.postSideEffect(LocalSideEffect.SaveChanges)
+                                    }
+                                ) {
+                                    Icon(Icons.Rounded.Save, stringResource(R.string.save))
+                                }
                             }
                         },
                         showBottomItems = true,
@@ -322,7 +346,7 @@ fun currentRouteAsNavbarState(
                         showBottomItems = true,
                     )
                 is TunnelSettings -> {
-                    val tunnelName = sharedState.tunnels.find { it.id == route.id }?.name
+                    val tunnelName = globalState.tunnelNames[route.id]
                     NavbarState(
                         topLeading = {
                             IconButton(onClick = { navController.pop() }) {
@@ -354,7 +378,7 @@ fun currentRouteAsNavbarState(
                     NavbarState(
                         topTitle = context.getString(R.string.tunnels),
                         topTrailing = {
-                            when (sharedState.selectedTunnels.size) {
+                            when (globalState.selectedTunnelCount) {
                                 0 ->
                                     Row {
                                         IconButton(onClick = { navController.push(Sort) }) {
@@ -408,7 +432,7 @@ fun currentRouteAsNavbarState(
                                             }
                                         }
 
-                                        if (sharedState.selectedTunnels.size == 1) {
+                                        if (globalState.selectedTunnelCount == 1) {
                                             IconButton(
                                                 onClick = {
                                                     sharedViewModel.postSideEffect(

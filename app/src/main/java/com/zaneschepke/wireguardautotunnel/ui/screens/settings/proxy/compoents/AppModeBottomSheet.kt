@@ -8,6 +8,7 @@ import com.zaneschepke.wireguardautotunnel.ui.common.sheet.CustomBottomSheet
 import com.zaneschepke.wireguardautotunnel.ui.common.sheet.SheetOption
 import com.zaneschepke.wireguardautotunnel.util.extensions.asIcon
 import com.zaneschepke.wireguardautotunnel.util.extensions.asTitleString
+import com.zaneschepke.wireguardautotunnel.util.extensions.description
 
 @Composable
 fun AppModeBottomSheet(
@@ -31,6 +32,7 @@ fun AppModeBottomSheet(
                         onAppModeChange(it)
                     },
                     selected = appMode == it,
+                    description = it.description(context),
                 )
             }
     ) {

@@ -12,7 +12,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.*
+import androidx.compose.material.icons.outlined.CheckCircle
+import androidx.compose.material.icons.outlined.ContentCopy
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.PublicOff
+import androidx.compose.material.icons.outlined.RestartAlt
+import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.outlined.SettingsEthernet
+import androidx.compose.material.icons.outlined.SignalCellular4Bar
+import androidx.compose.material.icons.outlined.Wifi
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -33,13 +41,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.zaneschepke.networkmonitor.ActiveNetwork
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
-import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SwitchWithDivider
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ThemedSwitch
@@ -49,23 +55,28 @@ import com.zaneschepke.wireguardautotunnel.ui.common.text.DescriptionText
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
 import com.zaneschepke.wireguardautotunnel.ui.navigation.TunnelNetwork
 import com.zaneschepke.wireguardautotunnel.viewmodel.AutoTunnelViewModel
+import com.zaneschepke.wireguardautotunnel.viewmodel.SharedAppViewModel
+import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.viewmodel.koinActivityViewModel
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun AutoTunnelScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
+fun AutoTunnelScreen(
+    viewModel: AutoTunnelViewModel = koinViewModel(),
+    sharedViewModel: SharedAppViewModel = koinActivityViewModel(),
+) {
     val context = LocalContext.current
     val navController = LocalNavController.current
-    val shareViewModel = LocalSharedVm.current
     val clipboard = rememberClipboardHelper()
 
-    val sharedUiState by shareViewModel.container.stateFlow.collectAsStateWithLifecycle()
+    val globalUiState by sharedViewModel.container.stateFlow.collectAsStateWithLifecycle()
     val uiState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
 
     if (uiState.isLoading) return
 
     val batteryActivity =
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            shareViewModel.disableBatteryOptimizationsShown()
+            sharedViewModel.disableBatteryOptimizationsShown()
         }
 
     @SuppressLint("BatteryLife")
@@ -112,9 +123,9 @@ fun AutoTunnelScreen(viewModel: AutoTunnelViewModel = hiltViewModel()) {
                 }
 
             fun onAutoTunnelClick() {
-                if (!sharedUiState.isBatteryOptimizationShown)
+                if (!globalUiState.isBatteryOptimizationShown)
                     return requestDisableBatteryOptimizations()
-                viewModel.toggleAutoTunnel(sharedUiState.settings.appMode)
+                viewModel.toggleAutoTunnel(globalUiState.appMode)
             }
 
             SurfaceRow(

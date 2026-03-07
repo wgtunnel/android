@@ -301,7 +301,7 @@
     <string name="general">Umum</string>
     <string name="donation_dev_message">Sebagai satu-satunya pengembang, saya bekerja tanpa henti untuk menjadikan WG Tunnel klien WireGuard gratis dan sumber terbuka terbaik untuk Android, tetapi ini hanya mungkin dengan dukungan Anda.</string>
     <string name="review">Beri nilai aplikasi</string>
-    <string name="app_permission_description">https://hosted.weblate.org/translate/wg-tunnel/strings/en/?checksum=e52d7eb2e28a9a12Control tunnels and auto-tunnel features.</string>
+    <string name="app_permission_description">Control tunnels and auto-tunnel features.</string>
     <string name="install_updated_permission">Aplikasi ini memerlukan izin untuk memasang pembaruan.</string>
     <string name="use_root_shell_for_wifi">Gunakan shell root untuk mendapatkan informasi Wi-Fi, sehingga tidak memerlukan izin lokasi</string>
     <string name="disabled">Dinonaktifkan</string>

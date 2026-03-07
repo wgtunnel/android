@@ -3,7 +3,6 @@ package com.zaneschepke.wireguardautotunnel.viewmodel
 import androidx.lifecycle.ViewModel
 import com.zaneschepke.wireguardautotunnel.BuildConfig
 import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.di.MainDispatcher
 import com.zaneschepke.wireguardautotunnel.domain.model.AppUpdate
 import com.zaneschepke.wireguardautotunnel.domain.repository.GlobalEffectRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.UpdateRepository
@@ -11,20 +10,14 @@ import com.zaneschepke.wireguardautotunnel.domain.sideeffect.GlobalSideEffect
 import com.zaneschepke.wireguardautotunnel.ui.state.SupportUiState
 import com.zaneschepke.wireguardautotunnel.util.Constants
 import com.zaneschepke.wireguardautotunnel.util.StringValue
-import dagger.hilt.android.lifecycle.HiltViewModel
-import jakarta.inject.Inject
-import javax.inject.Provider
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.viewmodel.container
 
-@HiltViewModel
-class SupportViewModel
-@Inject
-constructor(
-    private val updateRepository: Provider<UpdateRepository>,
-    @MainDispatcher private val mainDispatcher: CoroutineDispatcher,
+class SupportViewModel(
+    private val updateRepository: UpdateRepository,
+    private val mainDispatcher: CoroutineDispatcher,
     private val globalEffectRepository: GlobalEffectRepository,
 ) : ContainerHost<SupportUiState, Nothing>, ViewModel() {
 
@@ -36,7 +29,6 @@ constructor(
         )
         reduce { state.copy(isLoading = true) }
         updateRepository
-            .get()
             .checkForUpdate(BuildConfig.VERSION_NAME)
             .onSuccess { update ->
                 if (update == null) {
@@ -85,7 +77,6 @@ constructor(
             return@intent
         reduce { state.copy(isLoading = true) }
         updateRepository
-            .get()
             .downloadApk(state.appUpdate!!.apkUrl!!, state.appUpdate!!.apkFileName!!) { progress ->
                 handleProgress(progress)
             }

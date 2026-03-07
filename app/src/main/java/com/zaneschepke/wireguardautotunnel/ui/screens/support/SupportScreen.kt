@@ -17,7 +17,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.BuildConfig
 import com.zaneschepke.wireguardautotunnel.R
@@ -32,9 +31,10 @@ import com.zaneschepke.wireguardautotunnel.ui.screens.support.components.UpdateD
 import com.zaneschepke.wireguardautotunnel.util.Constants
 import com.zaneschepke.wireguardautotunnel.util.extensions.*
 import com.zaneschepke.wireguardautotunnel.viewmodel.SupportViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun SupportScreen(viewModel: SupportViewModel = hiltViewModel()) {
+fun SupportScreen(viewModel: SupportViewModel = koinViewModel()) {
     val context = LocalContext.current
     val navController = LocalNavController.current
 
@@ -191,7 +191,8 @@ fun SupportScreen(viewModel: SupportViewModel = hiltViewModel()) {
                         return@SurfaceRow context.showToast(R.string.update_check_unsupported)
                     when (BuildConfig.FLAVOR) {
                         Constants.GOOGLE_PLAY_FLAVOR -> context.launchPlayStoreListing()
-                        Constants.FDROID_FLAVOR -> context.launchFDroidListing()
+                        Constants.FDROID_FLAVOR ->
+                            context.openWebUrl(context.getString(R.string.fdroid_url))
                         else -> viewModel.checkForStandaloneUpdate()
                     }
                 },

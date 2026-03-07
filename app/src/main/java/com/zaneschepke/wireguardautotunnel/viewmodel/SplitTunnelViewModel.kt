@@ -11,24 +11,17 @@ import com.zaneschepke.wireguardautotunnel.ui.state.ConfigProxy
 import com.zaneschepke.wireguardautotunnel.ui.state.InterfaceProxy
 import com.zaneschepke.wireguardautotunnel.ui.state.SplitTunnelUiState
 import com.zaneschepke.wireguardautotunnel.util.StringValue
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.viewmodel.container
 
-@HiltViewModel(assistedFactory = SplitTunnelViewModel.Factory::class)
-class SplitTunnelViewModel
-@AssistedInject
-constructor(
+class SplitTunnelViewModel(
     private val tunnelRepository: TunnelRepository,
     private val packageRepository: InstalledPackageRepository,
     private val globalEffectRepository: GlobalEffectRepository,
-    @Assisted val tunnelId: Int,
+    val tunnelId: Int,
 ) : ContainerHost<SplitTunnelUiState, Nothing>, ViewModel() {
 
     override val container =
@@ -80,10 +73,5 @@ constructor(
             GlobalSideEffect.Snackbar(StringValue.StringResource(R.string.config_changes_saved))
         )
         postSideEffect(GlobalSideEffect.PopBackStack)
-    }
-
-    @AssistedFactory
-    interface Factory {
-        fun create(tunnelId: Int): SplitTunnelViewModel
     }
 }

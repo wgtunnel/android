@@ -5,17 +5,17 @@ import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 
 suspend fun TunnelRepository.saveTunnelsUniquely(
     tunnels: List<TunnelConfig>,
-    existing: List<TunnelConfig>,
+    existingNames: List<String>,
 ) {
-    val uniqueTunnels = generateUniquelyNamedConfigs(tunnels, existing)
+    val uniqueTunnels = generateUniquelyNamedConfigs(tunnels, existingNames)
     saveAll(uniqueTunnels)
 }
 
 private fun generateUniquelyNamedConfigs(
     incoming: List<TunnelConfig>,
-    existing: List<TunnelConfig>,
+    existingNames: List<String>,
 ): List<TunnelConfig> {
-    val usedNames = existing.map { it.name }.toMutableSet()
+    val usedNames = existingNames.toMutableSet()
     val result = mutableListOf<TunnelConfig>()
     val regex = Regex("(.+)\\s*\\((\\d+)\\)$")
 

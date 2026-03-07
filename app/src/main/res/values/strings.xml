@@ -242,6 +242,8 @@
     <string name="release_notes">Release notes</string>
     <string name="shizuku_not_detected">Shizuku not detected</string>
     <string name="sort">Sort</string>
+    <string name="sort_by_latency">Sort by latency</string>
+    <string name="pinging_servers">Pinging servers…</string>
     <string name="drag_handle">Drag Handle</string>
     <string name="move_up">Move Up</string>
     <string name="move_down">Move Down</string>
@@ -378,6 +380,7 @@
     <string name="delete_active_message">Cannot delete active tunnel.</string>
     <string name="back">Back</string>
     <string name="configuration">Configuration</string>
+    <string name="kernel_wireguard_unsupported">Kernel does not include WireGuard support (module missing or not built-in into kernel)!</string>
     <string name="about">About</string>
     <string name="resources">Resources</string>
     <string name="website">App website</string>
@@ -439,4 +442,28 @@
     <string name="donation_prompt_suffix">to keep it free and improving.</string>
     <string name="cookie_packet_junk_size">Cookie packet junk size</string>
     <string name="transport_packet_junk_size">Transport packet junk size</string>
+    <string name="special_junk_packet">Special junk packet</string>
+    <string name="jc" translatable="false">Jc</string>
+    <string name="jmin" translatable="false">Jmin</string>
+    <string name="jmax" translatable="false">Jmax</string>
+    <string name="s1" translatable="false">S1</string>
+    <string name="s2" translatable="false">S2</string>
+    <string name="s3" translatable="false">S3</string>
+    <string name="s4" translatable="false">S4</string>
+    <string name="h1" translatable="false">H1</string>
+    <string name="h2" translatable="false">H2</string>
+    <string name="h3" translatable="false">H3</string>
+    <string name="h4" translatable="false">H4</string>
+    <string name="i1" translatable="false">I1</string>
+    <string name="i2" translatable="false">I2</string>
+    <string name="i3" translatable="false">I3</string>
+    <string name="i4" translatable="false">I4</string>
+    <string name="i5" translatable="false">I5</string>
+    <string name="copy_from">Copy from</string>
+    <string name="mode">Mode</string>
+    <string name="app_selection">App selection</string>
+    <string name="example_import_url" translatable="false">https://123.com/tun.conf</string>
+    <string name="fdroid_url" translatable="false">https://apt.izzysoft.de/fdroid/index/apk/com.zaneschepke.wireguardautotunnel</string>
+    <string name="import_url_description">The URL must be secure and serve a .conf file.</string>
+    <string name="only_template">%1$s only</string>
 </resources>

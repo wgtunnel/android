@@ -1,31 +1,25 @@
 package com.zaneschepke.wireguardautotunnel.core.worker
 
 import android.content.Context
-import androidx.hilt.work.HiltWorker
-import androidx.work.*
+import androidx.work.CoroutineWorker
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.WorkerParameters
 import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
-import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
 import com.zaneschepke.wireguardautotunnel.domain.repository.AutoTunnelSettingsRepository
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
 import java.util.concurrent.TimeUnit
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.withContext
 import timber.log.Timber
 
-@HiltWorker
-class ServiceWorker
-@AssistedInject
-constructor(
-    @Assisted private val context: Context,
-    @Assisted private val params: WorkerParameters,
+class ServiceWorker(
+    context: Context,
+    params: WorkerParameters,
     private val serviceManager: ServiceManager,
     private val autoTunnelSettingsRepository: AutoTunnelSettingsRepository,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ) : CoroutineWorker(context, params) {
 
     companion object {
-        private const val TAG = "service_worker"
+        private const val TAG = "auto_tunnel_service_monitor"
 
         fun stop(context: Context) {
             WorkManager.getInstance(context).cancelAllWorkByTag(TAG)
@@ -47,16 +41,15 @@ constructor(
         }
     }
 
-    override suspend fun doWork(): Result =
-        withContext(ioDispatcher) {
-            Timber.i("Service worker started")
-            with(autoTunnelSettingsRepository.getAutoTunnelSettings()) {
-                Timber.i("Checking to see if auto-tunnel has been killed by system")
-                if (isAutoTunnelEnabled && serviceManager.autoTunnelService.value == null) {
-                    Timber.i("Service has been killed by system, restoring.")
-                    serviceManager.startAutoTunnelService()
-                }
+    override suspend fun doWork(): Result {
+        Timber.i("Service worker started")
+        with(autoTunnelSettingsRepository.getAutoTunnelSettings()) {
+            Timber.i("Checking to see if auto-tunnel has been killed by system")
+            if (isAutoTunnelEnabled && serviceManager.autoTunnelService.value == null) {
+                Timber.i("Service has been killed by system, restoring.")
+                serviceManager.startAutoTunnelService()
             }
-            Result.success()
+            return Result.success()
         }
+    }
 }

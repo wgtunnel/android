@@ -13,19 +13,12 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 
 interface TunnelProvider {
-    /** Starts the specified tunnel configuration. */
-    suspend fun startTunnel(tunnelConfig: TunnelConfig)
+    suspend fun startTunnel(tunnelConfig: TunnelConfig): Result<Unit>
 
-    /**
-     * Stops the specified tunnel.
-     *
-     * @param tunnelId The tunnelConf to stop.
-     */
     suspend fun stopTunnel(tunnelId: Int)
 
     suspend fun forceStopTunnel(tunnelId: Int)
 
-    /** Stops all active tunnels. */
     suspend fun stopActiveTunnels()
 
     fun setBackendMode(backendMode: BackendMode)
@@ -39,9 +32,7 @@ interface TunnelProvider {
     fun getStatistics(tunnelId: Int): TunnelStatistics?
 
     val activeTunnels: StateFlow<Map<Int, TunnelState>>
-
     val errorEvents: SharedFlow<Pair<String?, BackendCoreException>>
-
     val messageEvents: SharedFlow<Pair<String?, BackendMessage>>
 
     suspend fun updateTunnelStatus(

@@ -10,14 +10,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.ui.screens.support.license.components.LicenseList
 import com.zaneschepke.wireguardautotunnel.viewmodel.LicenseViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun LicenseScreen(viewModel: LicenseViewModel = hiltViewModel()) {
+fun LicenseScreen(viewModel: LicenseViewModel = koinViewModel()) {
     val licenseUiState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
 
     if (licenseUiState.isLoading) {

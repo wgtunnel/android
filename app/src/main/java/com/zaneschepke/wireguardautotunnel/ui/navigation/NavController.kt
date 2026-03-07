@@ -7,6 +7,7 @@ class NavController(
     private val backStack: NavBackStack<NavKey>,
     private val isDisclosureShown: Boolean,
     private val onChange: (previous: NavKey?) -> Unit = {},
+    private val onExitApp: () -> Unit = {},
 ) {
     fun push(route: NavKey) {
         onChange(currentRoute)
@@ -14,12 +15,13 @@ class NavController(
     }
 
     fun pop(): Boolean {
-        if (currentRoute != null) {
-            onChange(currentRoute)
-            backStack.removeLastOrNull()
+        if (!canPop) {
+            onExitApp()
             return true
         }
-        return false
+        onChange(currentRoute)
+        backStack.removeLastOrNull()
+        return true
     }
 
     fun popUpTo(route: NavKey) {

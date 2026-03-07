@@ -14,14 +14,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
 import com.zaneschepke.wireguardautotunnel.ui.theme.Theme
+import com.zaneschepke.wireguardautotunnel.viewmodel.SharedAppViewModel
+import org.koin.compose.viewmodel.koinActivityViewModel
 
 @Composable
-fun DisplayScreen() {
-
-    val sharedViewModel = LocalSharedVm.current
+fun DisplayScreen(sharedViewModel: SharedAppViewModel = koinActivityViewModel()) {
 
     val appState by sharedViewModel.container.stateFlow.collectAsStateWithLifecycle()
 

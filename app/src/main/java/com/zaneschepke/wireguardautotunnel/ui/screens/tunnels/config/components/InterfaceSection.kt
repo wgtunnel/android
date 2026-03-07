@@ -13,6 +13,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
 import com.wireguard.crypto.KeyPair
 import com.zaneschepke.wireguardautotunnel.R
@@ -22,7 +23,6 @@ import com.zaneschepke.wireguardautotunnel.ui.common.text.DescriptionText
 import com.zaneschepke.wireguardautotunnel.ui.common.textbox.ConfigurationTextBox
 import com.zaneschepke.wireguardautotunnel.ui.state.ConfigProxy
 import com.zaneschepke.wireguardautotunnel.ui.state.InterfaceProxy
-import java.util.*
 
 @Composable
 fun InterfaceSection(
@@ -147,7 +147,7 @@ fun InterfaceSection(
                                     R.string.hint_template,
                                     stringResource(R.string.tunnel_name),
                                 )
-                                .lowercase(Locale.getDefault()),
+                                .lowercase(locale = Locale.current.platformLocale),
                         modifier = Modifier.fillMaxWidth(),
                     )
                 InterfaceFields(

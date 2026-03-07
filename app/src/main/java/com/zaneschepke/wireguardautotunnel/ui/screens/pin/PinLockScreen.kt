@@ -11,15 +11,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
-import com.zaneschepke.wireguardautotunnel.ui.LocalSharedVm
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
 import com.zaneschepke.wireguardautotunnel.util.StringValue
+import com.zaneschepke.wireguardautotunnel.viewmodel.SharedAppViewModel
+import org.koin.compose.viewmodel.koinActivityViewModel
 import xyz.teamgravity.pin_lock_compose.PinLock
 import xyz.teamgravity.pin_lock_compose.PinManager
 
 @Composable
-fun PinLockScreen() {
-    val sharedViewModel = LocalSharedVm.current
+fun PinLockScreen(sharedViewModel: SharedAppViewModel = koinActivityViewModel()) {
     val navController = LocalNavController.current
     val pinAlreadyExists by rememberSaveable { mutableStateOf(PinManager.pinExists()) }
     var pinCreated by rememberSaveable { mutableStateOf(false) }

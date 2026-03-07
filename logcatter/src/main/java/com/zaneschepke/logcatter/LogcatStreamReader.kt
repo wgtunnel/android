@@ -9,11 +9,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 
-class LogcatStreamReader(private val pid: Int, private val fileManager: LogFileManager) {
+class LogcatStreamReader(pid: Int, private val fileManager: LogFileManager) {
     private val bufferSize = 1024
     private var process: Process? = null
     private var reader: BufferedReader? = null
-    private val command = "logcat -v epoch | grep \"($pid)\""
+    private val command = "logcat -v epoch --pid=$pid"
     private val clearCommand = "logcat -c"
 
     private val ioDispatcher = Dispatchers.IO
@@ -30,7 +30,7 @@ class LogcatStreamReader(private val pid: Int, private val fileManager: LogFileM
                             emit(LogMessage.from(line))
                         }
                     }
-                } catch (e: IOException) {
+                } catch (_: IOException) {
                     // do nothing
                 } finally {
                     stop()
@@ -43,7 +43,7 @@ class LogcatStreamReader(private val pid: Int, private val fileManager: LogFileM
             try {
                 process = Runtime.getRuntime().exec(command)
                 reader = BufferedReader(InputStreamReader(process!!.inputStream), bufferSize)
-            } catch (e: IOException) {
+            } catch (_: IOException) {
                 // do nothing
             }
         }

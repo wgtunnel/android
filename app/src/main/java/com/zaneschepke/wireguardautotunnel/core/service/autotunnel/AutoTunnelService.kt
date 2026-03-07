@@ -15,7 +15,7 @@ import com.zaneschepke.wireguardautotunnel.core.notification.WireGuardNotificati
 import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
 import com.zaneschepke.wireguardautotunnel.data.model.AppMode
-import com.zaneschepke.wireguardautotunnel.di.IoDispatcher
+import com.zaneschepke.wireguardautotunnel.di.Dispatcher
 import com.zaneschepke.wireguardautotunnel.domain.enums.NotificationAction
 import com.zaneschepke.wireguardautotunnel.domain.events.AutoTunnelEvent
 import com.zaneschepke.wireguardautotunnel.domain.model.AutoTunnelSettings
@@ -28,32 +28,45 @@ import com.zaneschepke.wireguardautotunnel.domain.state.toDomain
 import com.zaneschepke.wireguardautotunnel.util.Constants
 import com.zaneschepke.wireguardautotunnel.util.extensions.to
 import com.zaneschepke.wireguardautotunnel.util.extensions.toMillis
-import dagger.hilt.android.AndroidEntryPoint
 import java.lang.ref.WeakReference
-import javax.inject.Inject
-import javax.inject.Provider
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import org.koin.android.ext.android.inject
+import org.koin.core.qualifier.named
 import timber.log.Timber
 
-@AndroidEntryPoint
 class AutoTunnelService : LifecycleService() {
 
-    @Inject lateinit var networkMonitor: NetworkMonitor
+    private val networkMonitor: NetworkMonitor by inject()
 
-    @Inject lateinit var notificationManager: NotificationManager
+    private val notificationManager: NotificationManager by inject()
 
-    @Inject @IoDispatcher lateinit var ioDispatcher: CoroutineDispatcher
+    private val ioDispatcher: CoroutineDispatcher by inject(named(Dispatcher.IO))
 
-    @Inject lateinit var serviceManager: ServiceManager
+    private val serviceManager: ServiceManager by inject()
 
-    @Inject lateinit var tunnelManager: TunnelManager
+    private val tunnelManager: TunnelManager by inject()
 
-    @Inject lateinit var autoTunnelRepository: Provider<AutoTunnelSettingsRepository>
-    @Inject lateinit var settingsRepository: GeneralSettingRepository
-    @Inject lateinit var tunnelsRepository: TunnelRepository
+    private val autoTunnelRepository: AutoTunnelSettingsRepository by inject()
+    private val settingsRepository: GeneralSettingRepository by inject()
+    private val tunnelsRepository: TunnelRepository by inject()
 
     private val defaultState = AutoTunnelState()
 
@@ -235,7 +248,7 @@ class AutoTunnelService : LifecycleService() {
     private fun combineSettings(): Flow<Triple<AppMode, AutoTunnelSettings, List<TunnelConfig>>> {
         return combine(
                 settingsRepository.flow.map { it.appMode }.distinctUntilChanged(),
-                autoTunnelRepository.get().flow,
+                autoTunnelRepository.flow,
                 tunnelsRepository.userTunnelsFlow.map { tunnels ->
                     // isActive is ignored for equality checks so user can manually toggle off
                     // tunnel with auto-tunnel
@@ -352,7 +365,10 @@ class AutoTunnelService : LifecycleService() {
             ) {
                 is AutoTunnelEvent.Start ->
                     (event.tunnelConfig ?: tunnelsRepository.getDefaultTunnel())?.let {
-                        tunnelManager.startTunnel(it)
+                        tunnelManager.startTunnel(it).onFailure { e ->
+                            Timber.e(e, "Auto-tunnel start failed for ${it.name}")
+                            // TODO notify or retry
+                        }
                     }
                 is AutoTunnelEvent.Stop -> tunnelManager.stopActiveTunnels()
                 AutoTunnelEvent.DoNothing -> Timber.i("Auto-tunneling: nothing to do")
@@ -363,9 +379,7 @@ class AutoTunnelService : LifecycleService() {
     // restart network flow on debounce changes
     @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
     private val debouncedConnectivityStateFlow: Flow<ConnectivityState> by lazy {
-        autoTunnelRepository
-            .get()
-            .flow
+        autoTunnelRepository.flow
             .map { it.debounceDelaySeconds.toMillis() }
             .distinctUntilChanged()
             .flatMapLatest { debounceMillis ->
