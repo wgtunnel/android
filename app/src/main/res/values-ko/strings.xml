@@ -8,7 +8,7 @@
     <string name="advanced_settings">고급 설정</string>
     <string name="kernel_name_dots">커널 모드에서는 터널 이름이 \'.\' 또는 \'..\'일 수 없습니다</string>
     <string name="auto_tunnel_channel_name">자동 터널 알림 채널</string>
-    <string name="always_on_message">VPN 연결 권한이 거부되었습니다. 확인해 주세요</string>
+    <string name="always_on_message">VPN 연결 권한이 거부되었습니다.</string>
     <string name="github_sponsors">GitHub 스폰서</string>
     <string name="tunnel_on_ethernet">이더넷에서 터널 사용</string>
     <string name="current_template">현재: %1$s</string>
