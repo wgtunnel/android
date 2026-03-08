@@ -108,7 +108,7 @@
     <string name="stop_auto">Остановить автотуннель</string>
     <string name="donate">Пожертвовать на проект</string>
     <string name="local_logging">Отслеживание журналов</string>
-    <string name="wildcards_active">Подстановочные знаки используются</string>
+    <string name="wildcards_active">Используются подстановочные знаки</string>
     <string name="skip">Пропустить</string>
     <string name="use_wildcards">Использовать подстановочные знаки в имени</string>
     <string name="appearance">Внешний вид</string>
