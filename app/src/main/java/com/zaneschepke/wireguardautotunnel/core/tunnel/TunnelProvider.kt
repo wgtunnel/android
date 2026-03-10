@@ -7,6 +7,7 @@ import com.zaneschepke.wireguardautotunnel.domain.events.BackendMessage
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.domain.state.LogHealthState
 import com.zaneschepke.wireguardautotunnel.domain.state.PingState
+import com.zaneschepke.wireguardautotunnel.domain.state.TunnelRestartProgress
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelState
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelStatistics
 import kotlinx.coroutines.flow.SharedFlow
@@ -32,6 +33,7 @@ interface TunnelProvider {
     fun getStatistics(tunnelId: Int): TunnelStatistics?
 
     val activeTunnels: StateFlow<Map<Int, TunnelState>>
+    val restartProgress: StateFlow<Map<Int, TunnelRestartProgress>>
     val errorEvents: SharedFlow<Pair<String?, BackendCoreException>>
     val messageEvents: SharedFlow<Pair<String?, BackendMessage>>
 

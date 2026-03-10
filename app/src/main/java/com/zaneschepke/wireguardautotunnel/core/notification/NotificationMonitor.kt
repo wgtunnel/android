@@ -42,6 +42,7 @@ class NotificationMonitor(
 
     private suspend fun handleTunnelMessages() =
         tunnelManager.messageEvents.collectLatest { (tunName, message) ->
+            val description = message.toStringValue() ?: return@collectLatest
             if (!WireGuardAutoTunnel.uiActive.value) {
                 val notification =
                     notificationManager.createNotification(
@@ -49,7 +50,7 @@ class NotificationMonitor(
                         title =
                             tunName?.let { StringValue.DynamicString(it) }
                                 ?: StringValue.StringResource(R.string.tunnel),
-                        description = message.toStringValue(),
+                        description = description,
                         groupKey = NotificationManager.VPN_GROUP_KEY,
                     )
                 notificationManager.show(

@@ -12,6 +12,7 @@ import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.domain.state.FailureReason
 import com.zaneschepke.wireguardautotunnel.domain.state.LogHealthState
 import com.zaneschepke.wireguardautotunnel.domain.state.PingState
+import com.zaneschepke.wireguardautotunnel.domain.state.TunnelRestartProgress
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelState
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelStatistics
 import com.zaneschepke.wireguardautotunnel.util.extensions.toMillis
@@ -58,6 +59,7 @@ class TunnelMonitorHandler(
     private val networkUtils: NetworkUtils,
     private val logReader: LogReader,
     private val powerManager: PowerManager,
+    private val restartProgress: StateFlow<Map<Int, TunnelRestartProgress>>,
     private val getStatistics: (Int) -> TunnelStatistics?,
     private val updateTunnelStatus:
         suspend (
@@ -323,7 +325,11 @@ class TunnelMonitorHandler(
 
                 while (isActive) {
                     ensureActive()
-                    if (!powerManager.isDeviceIdleMode) {
+                    val activeRestart =
+                        restartProgress.value[tunnelConfig.id]?.let {
+                            it.isRestarting || it.isVerifying
+                        } ?: false
+                    if (!powerManager.isDeviceIdleMode && !activeRestart) {
                         if (isNetworkConnected.value) {
                             performPing()
                         } else {
