@@ -7,7 +7,9 @@ import com.zaneschepke.wireguardautotunnel.domain.state.TunnelState
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -20,17 +22,20 @@ class TunnelServiceHandler(
 ) {
     init {
         applicationScope.launch(ioDispatcher) {
-            activeTunnels.collect { activeTuns ->
-                if (activeTuns.isEmpty()) {
-                    Timber.d("Stopping tunnel service, no tunnels active.")
-                    serviceManager.stopTunnelService()
-                } else if (serviceManager.tunnelService.value == null) {
-                    val settings = settingsRepository.flow.firstOrNull() ?: GeneralSettings()
-                    Timber.d("Starting tunnel foreground service for active tunnel.")
-                    serviceManager.startTunnelService(settings.appMode)
+            activeTunnels
+                .map { tunnels -> tunnels.mapValues { it.value.status } }
+                .distinctUntilChanged()
+                .collect { activeTuns ->
+                    if (activeTuns.isEmpty()) {
+                        Timber.d("Stopping tunnel service, no tunnels active.")
+                        serviceManager.stopTunnelService()
+                    } else if (serviceManager.tunnelService.value == null) {
+                        val settings = settingsRepository.flow.firstOrNull() ?: GeneralSettings()
+                        Timber.d("Starting tunnel foreground service for active tunnel.")
+                        serviceManager.startTunnelService(settings.appMode)
+                    }
+                    serviceManager.updateTunnelTile()
                 }
-                serviceManager.updateTunnelTile()
-            }
         }
     }
 }
