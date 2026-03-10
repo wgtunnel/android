@@ -5,12 +5,50 @@ import com.zaneschepke.wireguardautotunnel.util.StringValue
 
 sealed class BackendMessage {
 
+    enum class RestartReason {
+        PING_FAILURE
+    }
+
     data object DynamicDnsSuccess : BackendMessage()
 
-    fun toStringRes() =
-        when (this) {
-            DynamicDnsSuccess -> R.string.ddns_success_message
-        }
+    data class ConnectionDegrading(
+        val reason: RestartReason,
+        val attempt: Int,
+        val maxAttempts: Int,
+    ) : BackendMessage()
 
-    fun toStringValue() = StringValue.StringResource(this.toStringRes())
+    data object ConnectionRestored : BackendMessage()
+
+    data class ConnectionPermanentlyLost(
+        val reason: RestartReason,
+        val totalAttempts: Int,
+        val isTunnelStopped: Boolean = false,
+    ) : BackendMessage()
+
+    data object ConnectionCancelled : BackendMessage()
+
+    fun toStringValue(): StringValue? =
+        when (this) {
+            DynamicDnsSuccess -> StringValue.StringResource(R.string.ddns_success_message)
+            is ConnectionDegrading ->
+                StringValue.StringResource(
+                    R.string.snackbar_connection_degrading,
+                    attempt.toString(),
+                    maxAttempts.toString(),
+                )
+            ConnectionRestored -> StringValue.StringResource(R.string.snackbar_connection_restored)
+            is ConnectionPermanentlyLost ->
+                if (isTunnelStopped) {
+                    StringValue.StringResource(
+                        R.string.snackbar_connection_lost_stopped,
+                        totalAttempts.toString(),
+                    )
+                } else {
+                    StringValue.StringResource(
+                        R.string.snackbar_connection_lost,
+                        totalAttempts.toString(),
+                    )
+                }
+            ConnectionCancelled -> null
+        }
 }
