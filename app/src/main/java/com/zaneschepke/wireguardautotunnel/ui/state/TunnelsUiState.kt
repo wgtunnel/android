@@ -1,6 +1,7 @@
 package com.zaneschepke.wireguardautotunnel.ui.state
 
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
+import com.zaneschepke.wireguardautotunnel.domain.state.TunnelRestartProgress
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelState
 
 data class TunnelsUiState(
@@ -9,5 +10,6 @@ data class TunnelsUiState(
     val selectedTunnels: List<TunnelConfig> = emptyList(),
     val isPingEnabled: Boolean = false,
     val showPingStats: Boolean = false,
+    val restartProgress: Map<Int, TunnelRestartProgress> = emptyMap(),
     val isLoading: Boolean = true,
 )

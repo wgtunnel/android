@@ -239,7 +239,8 @@ class HandshakeRestartHandler(
             val pingResult = runCatching {
                 networkUtils.pingWithStats(pingTarget, settings.tunnelPingAttempts, timeout)
             }
-            val recovered = pingResult.getOrNull()?.isReachable == true
+            val pingStats = pingResult.getOrNull()
+            val recovered = pingStats?.isReachable == true || pingStats?.transmitted == 0
 
             if (recovered) {
                 Timber.d(
@@ -326,7 +327,8 @@ class HandshakeRestartHandler(
             .distinctUntilChanged()
             .first { pingStates ->
                 val allFailing =
-                    pingStates.values.isNotEmpty() && pingStates.values.all { !it.isReachable }
+                    pingStates.values.isNotEmpty() &&
+                        pingStates.values.all { !it.isReachable && it.transmitted > 0 }
                 if (allFailing) {
                     pingStates.values
                         .firstOrNull { !it.isReachable }

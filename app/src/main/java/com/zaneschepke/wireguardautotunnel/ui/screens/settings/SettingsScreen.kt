@@ -14,11 +14,13 @@ import androidx.compose.material.icons.outlined.Dns
 import androidx.compose.material.icons.outlined.ExpandMore
 import androidx.compose.material.icons.outlined.NetworkPing
 import androidx.compose.material.icons.outlined.Pin
+import androidx.compose.material.icons.outlined.RestartAlt
 import androidx.compose.material.icons.outlined.SettingsBackupRestore
 import androidx.compose.material.icons.outlined.ViewHeadline
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -236,6 +238,32 @@ fun SettingsScreen(
                     )
                 },
                 onClick = { navController.push(Route.TunnelMonitoring) },
+            )
+            SurfaceRow(
+                enabled = uiState.monitoring.isPingEnabled,
+                leading = { Icon(Icons.Outlined.RestartAlt, contentDescription = null) },
+                title = stringResource(R.string.auto_restart),
+                description =
+                    if (!uiState.monitoring.isPingEnabled) {
+                        {
+                            Text(
+                                text = stringResource(R.string.use_ping_for_detection_description),
+                                style =
+                                    MaterialTheme.typography.bodySmall.copy(
+                                        color = MaterialTheme.colorScheme.outline
+                                    ),
+                            )
+                        }
+                    } else null,
+                trailing = { modifier ->
+                    SwitchWithDivider(
+                        checked = uiState.monitoring.isRestartOnHandshakeTimeoutEnabled,
+                        onClick = { viewModel.setRestartOnHandshakeTimeout(it) },
+                        enabled = uiState.monitoring.isPingEnabled,
+                        modifier = modifier,
+                    )
+                },
+                onClick = { navController.push(Route.AutoRestart) },
             )
             SurfaceRow(
                 leading = { Icon(Icons.Outlined.ViewHeadline, contentDescription = null) },

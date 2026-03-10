@@ -8,6 +8,7 @@ fun <T> LabelledDropdown(
     title: String,
     description: (@Composable () -> Unit)? = null,
     leading: @Composable () -> Unit,
+    enabled: Boolean = true,
     onSelected: (T?) -> Unit,
     options: List<T?>,
     currentValue: T?,
@@ -19,6 +20,7 @@ fun <T> LabelledDropdown(
         leading = leading,
         title = title,
         description = description,
+        enabled = enabled,
         onClick = { isDropDownExpanded = true },
         trailing = {
             DropdownSelector(
