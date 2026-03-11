@@ -278,36 +278,26 @@ class HandshakeRestartHandler(
                     ),
                 )
 
-                // If cooldown is longer than ping interval, race against periodic ping recovery
-                val pingIntervalMs = settings.tunnelPingIntervalSeconds.toMillis()
-                if (cooldownMs > pingIntervalMs) {
-                    val recoveredDuringCooldown =
-                        withTimeoutOrNull(cooldownMs) {
-                            activeTunnels
-                                .mapNotNull { it[tunnelId]?.pingStates }
-                                .distinctUntilChanged()
-                                .first { pingStates ->
-                                    pingStates.values.isNotEmpty() &&
-                                        pingStates.values.all { it.isReachable }
-                                }
-                            true
-                        } != null
+                // Race against periodic ping recovery during cooldown
+                val recoveredDuringCooldown =
+                    withTimeoutOrNull(cooldownMs) {
+                        activeTunnels
+                            .mapNotNull { it[tunnelId]?.pingStates }
+                            .distinctUntilChanged()
+                            .first { pingStates ->
+                                pingStates.values.isNotEmpty() &&
+                                    pingStates.values.all { it.isReachable }
+                            }
+                        true
+                    } != null
 
-                    if (recoveredDuringCooldown) {
-                        Timber.d(
-                            "HandshakeRestartHandler: tunnel $tunnelId recovered during cooldown"
-                        )
-                        emitMessage(config.name, BackendMessage.ConnectionRestored)
-                        attempt = 0
-                        updateProgress(
-                            tunnelId,
-                            TunnelRestartProgress(totalRestarts = totalRestarts),
-                        )
-                        pingTarget = awaitPingFailures(tunnelId, settings)
-                        continue
-                    }
-                } else {
-                    delay(cooldownMs)
+                if (recoveredDuringCooldown) {
+                    Timber.d("HandshakeRestartHandler: tunnel $tunnelId recovered during cooldown")
+                    emitMessage(config.name, BackendMessage.ConnectionRestored)
+                    attempt = 0
+                    updateProgress(tunnelId, TunnelRestartProgress(totalRestarts = totalRestarts))
+                    pingTarget = awaitPingFailures(tunnelId, settings)
+                    continue
                 }
             }
             // If not recovered: loop continues → next restart attempt
