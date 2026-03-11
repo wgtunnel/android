@@ -133,7 +133,7 @@
     <string name="bypass_lan_for_kill_switch">Разрешать трафик LAN при экстренном отключении</string>
     <string name="vpn_channel_description">Канал уведомлений о состоянии VPN</string>
     <string name="auto_tunnel_channel_description">Канал уведомлений о состоянии автотуннеля</string>
-    <string name="stop">Стоп</string>
+    <string name="stop">Отключить</string>
     <string name="splt_tunneling">Раздельное туннелирование</string>
     <string name="pre_up">До активации</string>
     <string name="post_up">После активации</string>
