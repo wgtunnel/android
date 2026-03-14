@@ -11,7 +11,8 @@ sealed class ActiveNetwork {
 
     data object Cellular : ActiveNetwork()
 
-    data class Wifi(val ssid: String, val isSecure: Boolean?) : ActiveNetwork()
+    data class Wifi(val ssid: String, val isSecure: Boolean?, val bssid: String? = null) :
+        ActiveNetwork()
 }
 
 data class NetworkState(
@@ -33,7 +34,7 @@ fun ConnectivityState.toDomain(): NetworkState {
                         null -> null
                         else -> true
                     }
-                ActiveNetwork.Wifi(ssid = network.ssid, isSecure = isSecure)
+                ActiveNetwork.Wifi(ssid = network.ssid, isSecure = isSecure, bssid = network.bssid)
             }
             is MonitorActiveNetwork.Cellular -> ActiveNetwork.Cellular
             is MonitorActiveNetwork.Ethernet -> ActiveNetwork.Ethernet

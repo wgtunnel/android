@@ -9,6 +9,7 @@ import com.zaneschepke.wireguardautotunnel.core.tunnel.handler.DynamicDnsHandler
 import com.zaneschepke.wireguardautotunnel.core.tunnel.handler.TunnelActiveStatePersister
 import com.zaneschepke.wireguardautotunnel.core.tunnel.handler.TunnelMonitorHandler
 import com.zaneschepke.wireguardautotunnel.core.tunnel.handler.TunnelServiceHandler
+import com.zaneschepke.wireguardautotunnel.core.tunnel.handler.WifiRoamingHandler
 import com.zaneschepke.wireguardautotunnel.data.model.AppMode
 import com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
@@ -130,6 +131,9 @@ class TunnelManager(
     override fun handleDnsReresolve(tunnelConfig: TunnelConfig): Boolean =
         getProvider().handleDnsReresolve(tunnelConfig)
 
+    override suspend fun forceSocketRebind(tunnelConfig: TunnelConfig): Boolean =
+        getProvider().forceSocketRebind(tunnelConfig)
+
     override fun getStatistics(tunnelId: Int): TunnelStatistics? =
         getProvider().getStatistics(tunnelId)
 
@@ -205,6 +209,18 @@ class TunnelManager(
             updateTunnelStatus = { id, status, stats, pings, logHealth ->
                 updateTunnelStatus(id, status, stats, pings, logHealth)
             },
+            applicationScope = applicationScope,
+            ioDispatcher = ioDispatcher,
+        )
+
+    private val wifiRoamingHandler =
+        WifiRoamingHandler(
+            activeTunnels = activeTunnels,
+            settingsRepository = settingsRepository,
+            networkMonitor = networkMonitor,
+            powerManager = powerManager,
+            forceSocketRebind = { config -> forceSocketRebind(config) },
+            getTunnelConfig = { id -> tunnelsRepository.getById(id) },
             applicationScope = applicationScope,
             ioDispatcher = ioDispatcher,
         )

@@ -17,6 +17,14 @@ interface TunnelBackend {
 
     fun handleDnsReresolve(tunnelConfig: TunnelConfig): Boolean
 
+    /**
+     * Forces the tunnel's UDP socket to rebind to the current network. Used after WiFi roaming when
+     * the endpoint IP hasn't changed but the socket is still bound to the old network path.
+     *
+     * @return true if rebind was successful, false otherwise
+     */
+    suspend fun forceSocketRebind(tunnelConfig: TunnelConfig): Boolean
+
     suspend fun runningTunnelNames(): Set<String>
 
     suspend fun forceStopTunnel(tunnelId: Int)

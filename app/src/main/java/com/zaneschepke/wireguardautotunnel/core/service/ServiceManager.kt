@@ -157,6 +157,17 @@ class ServiceManager(
                 val intent = Intent(context, serviceClass)
                 context.startForegroundService(intent)
                 context.bindService(intent, tunnelServiceConnection, Context.BIND_AUTO_CREATE)
+                val connected = withTimeoutOrNull(5000L) { _tunnelService.first { it != null } }
+                if (connected == null) {
+                    Timber.e(
+                        "Tunnel service failed to bind within 5s, cleaning up dangling connection"
+                    )
+                    try {
+                        context.unbindService(tunnelServiceConnection)
+                    } catch (e: Exception) {
+                        Timber.w(e, "Failed to unbind after connect timeout")
+                    }
+                }
             } else {
                 Timber.e("Service still not null after timeout")
             }
@@ -171,6 +182,7 @@ class ServiceManager(
                 } catch (e: Exception) {
                     Timber.e(e, "Failed to unbind Tunnel Service")
                 }
+                _tunnelService.update { null }
             }
         }
 

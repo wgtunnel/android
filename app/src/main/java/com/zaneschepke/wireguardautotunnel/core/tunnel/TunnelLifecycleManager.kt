@@ -141,8 +141,11 @@ class TunnelLifecycleManager(
         tunStatusMutex.withLock {
             sharedActiveTunnels.update { currentTuns ->
                 if (!currentTuns.containsKey(tunnelId) && status != TunnelStatus.Starting) {
-                    Timber.d("Ignoring update for inactive tunnel $tunnelId")
-                    return@update currentTuns
+                    val hasActiveJob = tunnelJobs.containsKey(tunnelId)
+                    if (!hasActiveJob || status == null) {
+                        Timber.d("Ignoring update for inactive tunnel $tunnelId")
+                        return@update currentTuns
+                    }
                 }
                 val existingState = currentTuns[tunnelId] ?: TunnelState()
                 val newStatus = status ?: existingState.status
@@ -178,6 +181,9 @@ class TunnelLifecycleManager(
 
     override fun handleDnsReresolve(tunnelConfig: TunnelConfig): Boolean =
         backend.handleDnsReresolve(tunnelConfig)
+
+    override suspend fun forceSocketRebind(tunnelConfig: TunnelConfig): Boolean =
+        backend.forceSocketRebind(tunnelConfig)
 
     override fun getStatistics(tunnelId: Int): TunnelStatistics? = backend.getStatistics(tunnelId)
 

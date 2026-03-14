@@ -57,6 +57,30 @@ fun NetworkCapabilities.getWifiSsid(): String {
     return ANDROID_UNKNOWN_SSID
 }
 
+fun NetworkCapabilities.getWifiBssid(): String? {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        if (transportInfo is WifiInfo) {
+            val info = transportInfo as WifiInfo
+            val bssid = info.bssid
+            if (bssid != null && bssid != "02:00:00:00:00:00") {
+                return bssid
+            }
+        }
+    }
+    return null
+}
+
+@Suppress("DEPRECATION")
+fun WifiManager?.getWifiBssid(): String? {
+    return try {
+        val bssid = this?.connectionInfo?.bssid
+        if (bssid != null && bssid != "02:00:00:00:00:00") bssid else null
+    } catch (e: Exception) {
+        Timber.e(e, "Failed to get BSSID from WifiManager")
+        null
+    }
+}
+
 fun LocationManager.isLocationServicesEnabled(): Boolean {
     return try {
         val isGpsEnabled = isProviderEnabled(LocationManager.GPS_PROVIDER)

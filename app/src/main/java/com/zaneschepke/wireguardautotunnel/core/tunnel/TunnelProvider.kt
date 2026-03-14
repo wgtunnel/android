@@ -29,6 +29,8 @@ interface TunnelProvider {
 
     fun handleDnsReresolve(tunnelConfig: TunnelConfig): Boolean
 
+    suspend fun forceSocketRebind(tunnelConfig: TunnelConfig): Boolean
+
     fun getStatistics(tunnelId: Int): TunnelStatistics?
 
     val activeTunnels: StateFlow<Map<Int, TunnelState>>

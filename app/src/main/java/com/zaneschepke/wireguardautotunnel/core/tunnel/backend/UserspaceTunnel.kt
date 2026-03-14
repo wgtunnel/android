@@ -33,6 +33,28 @@ class UserspaceTunnel(private val backend: Backend, private val runConfigHelper:
 
     private val runtimeTunnels = ConcurrentHashMap<Int, Tunnel>()
 
+    init {
+        val staleNames = backend.runningTunnelNames
+        for (name in staleNames) {
+            try {
+                val stub =
+                    object : Tunnel {
+                        override fun getName() = name
+
+                        override fun onStateChange(newState: Tunnel.State) {}
+
+                        override fun isIpv4ResolutionPreferred() = true
+
+                        override fun isMetered() = false
+                    }
+                backend.setState(stub, Tunnel.State.DOWN, null)
+                Timber.i("Released stale tunnel socket: %s", name)
+            } catch (e: Exception) {
+                Timber.e(e, "Failed to release stale tunnel: %s", name)
+            }
+        }
+    }
+
     override fun tunnelStateFlow(tunnelConfig: TunnelConfig): Flow<TunnelStatus> = callbackFlow {
         val stateChannel = Channel<Tunnel.State>()
 
@@ -90,6 +112,20 @@ class UserspaceTunnel(private val backend: Backend, private val runConfigHelper:
     override fun handleDnsReresolve(tunnelConfig: TunnelConfig): Boolean {
         val tunnel = runtimeTunnels[tunnelConfig.id] ?: throw ServiceNotRunning()
         return backend.resolveDDNS(tunnelConfig.toAmConfig(), tunnel.isIpv4ResolutionPreferred)
+    }
+
+    override suspend fun forceSocketRebind(tunnelConfig: TunnelConfig): Boolean {
+        val tunnel = runtimeTunnels[tunnelConfig.id] ?: throw ServiceNotRunning()
+        return try {
+            // Re-apply the config to force socket rebind
+            val runConfig = runConfigHelper.buildAmRunConfig(tunnelConfig)
+            backend.setState(tunnel, Tunnel.State.UP, runConfig)
+            Timber.d("Force socket rebind successful for ${tunnelConfig.name}")
+            true
+        } catch (e: Exception) {
+            Timber.w(e, "Force socket rebind failed for ${tunnelConfig.name}")
+            false
+        }
     }
 
     override suspend fun runningTunnelNames(): Set<String> {

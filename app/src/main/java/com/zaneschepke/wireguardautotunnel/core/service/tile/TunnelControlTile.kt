@@ -139,8 +139,9 @@ class TunnelControlTile : TileService(), LifecycleOwner {
         unlockAndRun {
             lifecycleScope.launch {
                 startLock.withLock {
-                    if (tunnelManager.activeTunnels.value.isNotEmpty())
+                    if (tunnelManager.activeTunnels.value.isNotEmpty()) {
                         return@launch tunnelManager.stopActiveTunnels()
+                    }
                     val lastActive = WireGuardAutoTunnel.getLastActiveTunnels()
                     if (lastActive.isEmpty()) {
                         tunnelsRepository.getStartTunnel()?.let { tunnelManager.startTunnel(it) }

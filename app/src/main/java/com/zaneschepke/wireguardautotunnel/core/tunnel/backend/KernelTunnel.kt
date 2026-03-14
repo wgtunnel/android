@@ -33,6 +33,30 @@ class KernelTunnel(private val runConfigHelper: RunConfigHelper, private val bac
 
     private val runtimeTunnels = ConcurrentHashMap<Int, Tunnel>()
 
+    init {
+        try {
+            val staleNames = backend.runningTunnelNames
+            for (name in staleNames) {
+                try {
+                    val stub =
+                        object : Tunnel {
+                            override fun getName() = name
+
+                            override fun onStateChange(newState: Tunnel.State) {}
+
+                            override fun isIpv4ResolutionPreferred() = true
+                        }
+                    backend.setState(stub, Tunnel.State.DOWN, null)
+                    Timber.i("Released stale kernel tunnel: %s", name)
+                } catch (e: Exception) {
+                    Timber.e(e, "Failed to release stale kernel tunnel: %s", name)
+                }
+            }
+        } catch (e: Exception) {
+            Timber.d(e, "Kernel backend not available for cleanup")
+        }
+    }
+
     private fun validateWireGuardInterfaceName(name: String): Result<Unit> {
         if (name.isEmpty() || name.length > 15)
             return Result.failure(KernelTunnelName(R.string.kernel_name_error))
@@ -109,6 +133,12 @@ class KernelTunnel(private val runConfigHelper: RunConfigHelper, private val bac
 
     override fun handleDnsReresolve(tunnelConfig: TunnelConfig): Boolean {
         throw NotImplementedError()
+    }
+
+    override suspend fun forceSocketRebind(tunnelConfig: TunnelConfig): Boolean {
+        // Kernel mode handles socket rebinding natively
+        Timber.d("Kernel mode: socket rebind handled natively")
+        return true
     }
 
     override suspend fun runningTunnelNames(): Set<String> {
