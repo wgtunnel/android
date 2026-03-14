@@ -306,6 +306,8 @@
     <string name="http_bind_address">HTTP bind address</string>
     <string name="defaults_to_template">(defaults to %1$s)</string>
     <string name="dns_settings">DNS settings</string>
+    <string name="dns_endpoint_section_description">Only used to resolve the VPN server address before connecting. Does not affect DNS used once tunnel is active.</string>
+    <string name="global_dns_description">Enable to override each tunnel\'s DNS. Tap to set IPs once enabled.</string>
     <string name="locked_down">Locked down</string>
     <string name="dns_provider">DNS provider</string>
     <string name="dns_protocol">DNS protocol</string>

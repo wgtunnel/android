@@ -30,6 +30,7 @@ import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SwitchWithDivider
 import com.zaneschepke.wireguardautotunnel.ui.common.dropdown.LabelledDropdown
 import com.zaneschepke.wireguardautotunnel.ui.common.label.GroupLabel
+import com.zaneschepke.wireguardautotunnel.ui.common.text.DescriptionText
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
 import com.zaneschepke.wireguardautotunnel.util.extensions.capitalize
 import com.zaneschepke.wireguardautotunnel.viewmodel.DnsViewModel
@@ -53,6 +54,7 @@ fun DnsSettingsScreen(viewModel: DnsViewModel = koinViewModel()) {
             GroupLabel(stringResource(R.string.endpoint), Modifier.padding(horizontal = 16.dp))
             LabelledDropdown(
                 title = stringResource(R.string.dns_protocol),
+                description = { DescriptionText(stringResource(R.string.dns_endpoint_section_description)) },
                 leading = { Icon(Icons.Outlined.Dns, contentDescription = null) },
                 currentValue = dnsUiState.dnsSettings.dnsProtocol,
                 onSelected = { selected -> selected?.let { viewModel.setDnsProtocol(it) } },
@@ -82,6 +84,7 @@ fun DnsSettingsScreen(viewModel: DnsViewModel = koinViewModel()) {
                     Icon(ImageVector.vectorResource(R.drawable.host), contentDescription = null)
                 },
                 title = stringResource(R.string.global_dns_servers),
+                description = { DescriptionText(stringResource(R.string.global_dns_description)) },
                 trailing = { modifier ->
                     SwitchWithDivider(
                         checked = dnsUiState.dnsSettings.isGlobalTunnelDnsEnabled,
