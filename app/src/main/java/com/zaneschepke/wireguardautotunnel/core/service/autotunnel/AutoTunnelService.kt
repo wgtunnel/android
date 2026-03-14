@@ -113,12 +113,13 @@ class AutoTunnelService : LifecycleService() {
     }
 
     fun stop() {
+        ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
         stopSelf()
     }
 
     override fun onDestroy() {
         serviceManager.handleAutoTunnelServiceDestroy()
-        ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
+        ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_DETACH)
         super.onDestroy()
     }
 

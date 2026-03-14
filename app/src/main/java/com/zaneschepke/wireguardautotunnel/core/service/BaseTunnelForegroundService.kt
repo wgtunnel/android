@@ -119,15 +119,19 @@ abstract class BaseTunnelForegroundService : LifecycleService(), TunnelService {
 
         statsJob =
             lifecycleScope.launch(ioDispatcher) {
+                var lastTraffic: Pair<Long, Long>? = null
                 while (isActive) {
                     val traffic = readTraffic(single.id)
-
-                    notificationManager.show(
-                        NotificationManager.VPN_NOTIFICATION_ID,
-                        createTunnelNotification(single, consumedTraffic = traffic),
-                    )
-
-                    delay(1000)
+                    if (traffic != lastTraffic) {
+                        lastTraffic = traffic
+                        ServiceCompat.startForeground(
+                            this@BaseTunnelForegroundService,
+                            NotificationManager.VPN_NOTIFICATION_ID,
+                            createTunnelNotification(single, consumedTraffic = traffic),
+                            fgsType,
+                        )
+                    }
+                    delay(5000)
                 }
             }
     }
@@ -171,7 +175,7 @@ abstract class BaseTunnelForegroundService : LifecycleService(), TunnelService {
         statsJob = null
         currentSingleTunnelId = null
 
-        ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
+        ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_DETACH)
         Timber.d("onDestroy")
         super.onDestroy()
     }
