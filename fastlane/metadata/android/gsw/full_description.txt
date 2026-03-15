@@ -1,0 +1,13 @@
+WG Tunnel is a WireGuard VPN client that strikes the balance between simplicity and robustness, making it the ideal client for casual and power users alike.
+Whether you simply want to automate when you're connected to your VPN or you're a power user with advanced privacy use cases, WG Tunnel has you covered.
+
+- **Auto-Tunneling:** Automatically activate tunnels based on Wi-Fi SSID, Ethernet connections, or mobile data networks.
+- **Split Tunneling:** Flexible support for routing specific apps or traffic through the VPN.
+- **App Modes:** Support for multiple tunnel modes, including standard VPN, kernel, lockdown (custom kill switch), and proxy modes.
+- **AmneziaWG Integration:** Full support for AmneziaWG, providing robust censorship evasion.
+- **Proxying Options:** Built-in HTTP and SOCKS5 proxy support allowing third-party apps to tunnel their traffic.
+- **Quick Controls:** Quick Settings tile and home screen shortcuts for easy toggling actions.
+- **Automation Support:** Intent-based automation for controlling tunnels and auto-tunneling.
+- **Dynamic DNS Handling:** Detects and updates DNS changes without tunnel restarts.
+- **Monitoring Tools:** Advanced tunnel monitoring features for tunnel performance monitoring.
+- **Android TV Support:** Android TV support for nearly all app features.

@@ -1,0 +1,6 @@
+What's new:
+- Improved QR scanning and device support
+- Display tunnel uptime
+- Fixes quick tile crash bug when running app in multiple profiles
+- Fixes global overrides regression causing unexpected tunnel start errors
+- Fixes network detection race while VPN is active
