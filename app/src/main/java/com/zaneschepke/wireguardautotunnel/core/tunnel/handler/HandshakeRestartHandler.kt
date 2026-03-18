@@ -8,6 +8,7 @@ import com.zaneschepke.wireguardautotunnel.domain.model.MonitoringSettings
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.domain.repository.MonitoringSettingsRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
+import com.zaneschepke.wireguardautotunnel.domain.state.FailureReason
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelRestartProgress
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelState
 import com.zaneschepke.wireguardautotunnel.util.extensions.toMillis
@@ -318,7 +319,11 @@ class HandshakeRestartHandler(
             .first { pingStates ->
                 val allFailing =
                     pingStates.values.isNotEmpty() &&
-                        pingStates.values.all { !it.isReachable && it.transmitted > 0 }
+                        pingStates.values.all {
+                            !it.isReachable &&
+                                it.transmitted > 0 &&
+                                it.failureReason != FailureReason.NoConnectivity
+                        }
                 if (allFailing) {
                     pingStates.values
                         .firstOrNull { !it.isReachable }

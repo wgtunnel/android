@@ -7,8 +7,11 @@ data class ConnectivityState(
     val locationPermissionsGranted: Boolean,
     val locationServicesEnabled: Boolean,
     val vpnState: VpnState,
+    val isPhysicalNetworkValidated: Boolean = false,
 ) {
     fun hasInternet(): Boolean = activeNetwork !is ActiveNetwork.Disconnected
+
+    fun hasValidatedInternet(): Boolean = isPhysicalNetworkValidated
 
     override fun toString(): String {
         val networkInfo =

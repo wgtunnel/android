@@ -166,7 +166,8 @@ class TunnelMonitorHandler(
 
         val connectivityStateFlow = networkMonitor.connectivityStateFlow.stateIn(this)
 
-        val isNetworkConnected = connectivityStateFlow.map { it.hasInternet() }.stateIn(this)
+        val isNetworkConnected =
+            connectivityStateFlow.map { it.hasValidatedInternet() }.stateIn(this)
 
         combine(
                 settingsRepository.flow.distinctUntilChangedBy { it.appMode },
@@ -330,8 +331,34 @@ class TunnelMonitorHandler(
                             it.isRestarting || it.isVerifying
                         } ?: false
                     if (!powerManager.isDeviceIdleMode && !activeRestart) {
-                        if (isNetworkConnected.value) {
+                        val hasConnectivity =
+                            isNetworkConnected.value &&
+                                networkMonitor.hasPhysicalInternetConnectivity()
+                        if (hasConnectivity) {
                             performPing()
+                            // Race condition guard: connectivity may have been lost during the ping
+                            if (
+                                !isNetworkConnected.value ||
+                                    !networkMonitor.hasPhysicalInternetConnectivity()
+                            ) {
+                                pingStatsFlow.update { current ->
+                                    current.mapValues { entry ->
+                                        entry.value.copy(
+                                            isReachable = false,
+                                            failureReason = FailureReason.NoConnectivity,
+                                            lastPingAttemptMillis = System.currentTimeMillis(),
+                                        )
+                                    }
+                                }
+                                ensureActive()
+                                updateTunnelStatus(
+                                    tunnelConfig.id,
+                                    null,
+                                    null,
+                                    pingStatsFlow.value,
+                                    null,
+                                )
+                            }
                         } else {
                             pingStatsFlow.update { current ->
                                 current.mapValues { entry ->
