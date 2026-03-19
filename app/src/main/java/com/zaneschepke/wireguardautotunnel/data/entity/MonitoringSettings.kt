@@ -30,4 +30,7 @@ data class MonitoringSettings(
     val pingFailuresBeforeRestart: Int = 1,
     @ColumnInfo(name = "is_backoff_enabled", defaultValue = "0")
     val isBackoffEnabled: Boolean = false,
+    @ColumnInfo(name = "is_fallback_enabled", defaultValue = "0")
+    val isFallbackEnabled: Boolean = false,
+    @ColumnInfo(name = "default_fallback_tunnel_id") val defaultFallbackTunnelId: Int? = null,
 )

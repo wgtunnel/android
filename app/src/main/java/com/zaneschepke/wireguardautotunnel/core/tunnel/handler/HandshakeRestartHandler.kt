@@ -136,6 +136,31 @@ class HandshakeRestartHandler(
                         totalRestarts = totalRestarts,
                     ),
                 )
+                // Try fallback before applying maxAttemptsAction
+                if (settings.isFallbackEnabled) {
+                    val freshConfig = tunnelsRepository.getById(tunnelId) ?: config
+                    val fallbackId =
+                        freshConfig.fallbackTunnelId ?: settings.defaultFallbackTunnelId
+                    val fallbackConfig =
+                        fallbackId?.takeIf { it != tunnelId }?.let { tunnelsRepository.getById(it) }
+                    if (fallbackConfig != null) {
+                        updateProgress(tunnelId, null)
+                        Timber.d(
+                            "HandshakeRestartHandler: switching tunnel $tunnelId to fallback ${fallbackConfig.id}"
+                        )
+                        emitMessage(
+                            config.name,
+                            BackendMessage.SwitchedToFallback(config.name, fallbackConfig.name),
+                        )
+                        mutex.withLock { restarting[tunnelId] = true }
+                        runCatching { stopTunnel(tunnelId) }
+                        delay(RESTART_SETTLE_DELAY_MS)
+                        runCatching { startTunnel(fallbackConfig) }
+                        mutex.withLock { restarting[tunnelId] = false }
+                        return
+                    }
+                }
+
                 val isStopped = settings.maxAttemptsAction == MaxAttemptsAction.STOP_TUNNEL
                 emitMessage(
                     config.name,
@@ -145,6 +170,7 @@ class HandshakeRestartHandler(
                         isStopped,
                     ),
                 )
+
                 if (isStopped) {
                     mutex.withLock { restarting[tunnelId] = false }
                     runCatching { stopTunnel(tunnelId) }

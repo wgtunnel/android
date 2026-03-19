@@ -567,6 +567,19 @@ fun currentRouteAsNavbarState(
                         topTitle = context.getString(R.string.auto_restart),
                         showBottomItems = true,
                     )
+                FallbackTunnel ->
+                    NavbarState(
+                        topLeading = {
+                            IconButton(onClick = { navController.pop() }) {
+                                Icon(
+                                    Icons.AutoMirrored.Rounded.ArrowBack,
+                                    stringResource(R.string.back),
+                                )
+                            }
+                        },
+                        topTitle = context.getString(R.string.per_tunnel_fallback),
+                        showBottomItems = true,
+                    )
                 null -> NavbarState()
             }
         }

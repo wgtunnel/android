@@ -489,4 +489,11 @@
     <string name="snackbar_connection_restored">Connection restored</string>
     <string name="snackbar_connection_lost">Tunnel degraded: ping failure after %1$s restarts, awaiting recovery</string>
     <string name="snackbar_connection_lost_stopped">Tunnel stopped after %1$s restarts (ping failure)</string>
+    <string name="snackbar_switched_to_fallback">Switched to fallback tunnel: %1$s</string>
+    <string name="enable_fallback_tunnel">Fallback tunnel</string>
+    <string name="enable_fallback_tunnel_description">Switch to a fallback tunnel when all restart attempts are exhausted</string>
+    <string name="default_fallback_tunnel">Default fallback tunnel</string>
+    <string name="per_tunnel_fallback">Per-tunnel fallback</string>
+    <string name="no_fallback">None</string>
+    <string name="use_default_fallback">Use default</string>
 </resources>

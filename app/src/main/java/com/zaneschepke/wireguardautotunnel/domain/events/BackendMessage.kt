@@ -27,6 +27,9 @@ sealed class BackendMessage {
 
     data object ConnectionCancelled : BackendMessage()
 
+    data class SwitchedToFallback(val fromTunnelName: String, val toTunnelName: String) :
+        BackendMessage()
+
     fun toStringValue(): StringValue? =
         when (this) {
             DynamicDnsSuccess -> StringValue.StringResource(R.string.ddns_success_message)
@@ -49,6 +52,8 @@ sealed class BackendMessage {
                         totalAttempts.toString(),
                     )
                 }
+            is SwitchedToFallback ->
+                StringValue.StringResource(R.string.snackbar_switched_to_fallback, toTunnelName)
             ConnectionCancelled -> null
         }
 }

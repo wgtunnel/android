@@ -28,6 +28,7 @@ fun <T> LabelledDropdown(
                 options = options,
                 onValueSelected = { selected -> onSelected(selected) },
                 isExpanded = isDropDownExpanded,
+                enabled = enabled,
                 onDismiss = { isDropDownExpanded = false },
                 optionToString = optionToString,
             )

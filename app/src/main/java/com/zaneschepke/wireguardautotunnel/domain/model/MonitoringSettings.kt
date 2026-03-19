@@ -17,4 +17,6 @@ data class MonitoringSettings(
     val maxAttemptsAction: MaxAttemptsAction = MaxAttemptsAction.DO_NOTHING,
     val pingFailuresBeforeRestart: Int = 1,
     val isBackoffEnabled: Boolean = false,
+    val isFallbackEnabled: Boolean = false,
+    val defaultFallbackTunnelId: Int? = null,
 )

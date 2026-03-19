@@ -19,6 +19,8 @@ fun Entity.toDomain(): Domain =
         maxAttemptsAction = maxAttemptsAction,
         pingFailuresBeforeRestart = pingFailuresBeforeRestart,
         isBackoffEnabled = isBackoffEnabled,
+        isFallbackEnabled = isFallbackEnabled,
+        defaultFallbackTunnelId = defaultFallbackTunnelId,
     )
 
 fun Domain.toEntity(): Entity =
@@ -37,4 +39,6 @@ fun Domain.toEntity(): Entity =
         maxAttemptsAction = maxAttemptsAction,
         pingFailuresBeforeRestart = pingFailuresBeforeRestart,
         isBackoffEnabled = isBackoffEnabled,
+        isFallbackEnabled = isFallbackEnabled,
+        defaultFallbackTunnelId = defaultFallbackTunnelId,
     )

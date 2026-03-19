@@ -96,6 +96,7 @@ import com.zaneschepke.wireguardautotunnel.ui.screens.settings.integrations.Andr
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.lockdown.LockdownSettingsScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.monitoring.TunnelMonitoringScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.monitoring.autorestart.AutoRestartScreen
+import com.zaneschepke.wireguardautotunnel.ui.screens.settings.monitoring.autorestart.FallbackTunnelScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.monitoring.logs.LogsScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.monitoring.ping.PingTargetScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.support.SupportScreen
@@ -505,6 +506,9 @@ class MainActivity : AppCompatActivity() {
                                                 }
                                                 entry<Route.PingTarget> { PingTargetScreen() }
                                                 entry<Route.AutoRestart> { AutoRestartScreen() }
+                                                entry<Route.FallbackTunnel> {
+                                                    FallbackTunnelScreen()
+                                                }
                                             },
                                     )
                                 }

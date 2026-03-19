@@ -28,6 +28,7 @@ data class TunnelConfig(
     val position: Int = 0,
     val autoTunnelApps: Set<String> = setOf(),
     val isMetered: Boolean = false,
+    val fallbackTunnelId: Int? = null,
 ) {
 
     override fun equals(other: Any?): Boolean {
@@ -44,7 +45,8 @@ data class TunnelConfig(
             restartOnPingFailure == other.restartOnPingFailure &&
             tunnelNetworks == other.tunnelNetworks &&
             isIpv4Preferred == other.isIpv4Preferred &&
-            isMetered == other.isMetered
+            isMetered == other.isMetered &&
+            fallbackTunnelId == other.fallbackTunnelId
     }
 
     override fun hashCode(): Int {
@@ -52,6 +54,7 @@ data class TunnelConfig(
         result = 31 * result + name.hashCode()
         result = 31 * result + wgQuick.hashCode()
         result = 31 * result + amQuick.hashCode()
+        result = 31 * result + (fallbackTunnelId ?: 0)
         return result
     }
 

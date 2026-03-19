@@ -8,6 +8,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.TrendingUp
+import androidx.compose.material.icons.outlined.AltRoute
 import androidx.compose.material.icons.outlined.FilterAlt
 import androidx.compose.material.icons.outlined.PowerSettingsNew
 import androidx.compose.material.icons.outlined.Replay
@@ -24,15 +25,18 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.data.model.MaxAttemptsAction
+import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ThemedSwitch
 import com.zaneschepke.wireguardautotunnel.ui.common.dropdown.LabelledDropdown
 import com.zaneschepke.wireguardautotunnel.ui.common.label.GroupLabel
+import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
 import com.zaneschepke.wireguardautotunnel.viewmodel.MonitoringViewModel
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun AutoRestartScreen(viewModel: MonitoringViewModel = koinViewModel()) {
+    val navController = LocalNavController.current
     val uiState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
 
     if (uiState.isLoading) return
@@ -155,6 +159,57 @@ fun AutoRestartScreen(viewModel: MonitoringViewModel = koinViewModel()) {
                         null -> stringResource(R.string._default)
                     }
                 },
+            )
+        }
+
+        val fallbackEnabled = uiState.monitoringSettings.isFallbackEnabled
+
+        Column {
+            GroupLabel(
+                stringResource(R.string.enable_fallback_tunnel),
+                modifier = Modifier.padding(horizontal = 16.dp),
+            )
+            SurfaceRow(
+                enabled = pingEnabled,
+                leading = { Icon(Icons.Outlined.AltRoute, contentDescription = null) },
+                title = stringResource(R.string.enable_fallback_tunnel),
+                description = {
+                    Text(
+                        text = stringResource(R.string.enable_fallback_tunnel_description),
+                        style =
+                            MaterialTheme.typography.bodySmall.copy(
+                                color = MaterialTheme.colorScheme.outline
+                            ),
+                    )
+                },
+                trailing = {
+                    ThemedSwitch(
+                        checked = fallbackEnabled,
+                        onClick = { viewModel.setFallbackEnabled(it) },
+                        enabled = pingEnabled,
+                    )
+                },
+                onClick = { viewModel.setFallbackEnabled(!fallbackEnabled) },
+            )
+            LabelledDropdown(
+                enabled = pingEnabled && fallbackEnabled,
+                title = stringResource(R.string.default_fallback_tunnel),
+                leading = { Icon(Icons.Outlined.AltRoute, contentDescription = null) },
+                currentValue = uiState.monitoringSettings.defaultFallbackTunnelId,
+                onSelected = { viewModel.setDefaultFallbackTunnelId(it) },
+                options = uiState.tunnels.map { it.id } + listOf(null),
+                optionToString = { id ->
+                    if (id == null) stringResource(R.string.no_fallback)
+                    else
+                        uiState.tunnels.find { it.id == id }?.name
+                            ?: stringResource(R.string.no_fallback)
+                },
+            )
+            SurfaceRow(
+                enabled = pingEnabled && fallbackEnabled,
+                leading = { Icon(Icons.Outlined.AltRoute, contentDescription = null) },
+                title = stringResource(R.string.per_tunnel_fallback),
+                onClick = { navController.push(Route.FallbackTunnel) },
             )
         }
     }

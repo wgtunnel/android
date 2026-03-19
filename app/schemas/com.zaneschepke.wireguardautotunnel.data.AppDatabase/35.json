@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 35,
-    "identityHash": "3f5d07c1a895d1a3d28c03ce2c2877c0",
+    "identityHash": "c5362e92a130332e3bb9a9949da3eaf1",
     "entities": [
       {
         "tableName": "tunnel_config",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `wg_quick` TEXT NOT NULL, `tunnel_networks` TEXT NOT NULL DEFAULT '', `is_mobile_data_tunnel` INTEGER NOT NULL DEFAULT false, `is_primary_tunnel` INTEGER NOT NULL DEFAULT false, `am_quick` TEXT NOT NULL DEFAULT '', `is_Active` INTEGER NOT NULL DEFAULT false, `restart_on_ping_failure` INTEGER NOT NULL DEFAULT false, `ping_target` TEXT DEFAULT null, `is_ethernet_tunnel` INTEGER NOT NULL DEFAULT false, `is_ipv4_preferred` INTEGER NOT NULL DEFAULT true, `position` INTEGER NOT NULL DEFAULT 0, `auto_tunnel_apps` TEXT NOT NULL DEFAULT '[]', `is_metered` INTEGER NOT NULL DEFAULT false)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `wg_quick` TEXT NOT NULL, `tunnel_networks` TEXT NOT NULL DEFAULT '', `is_mobile_data_tunnel` INTEGER NOT NULL DEFAULT false, `is_primary_tunnel` INTEGER NOT NULL DEFAULT false, `am_quick` TEXT NOT NULL DEFAULT '', `is_Active` INTEGER NOT NULL DEFAULT false, `restart_on_ping_failure` INTEGER NOT NULL DEFAULT false, `ping_target` TEXT DEFAULT null, `is_ethernet_tunnel` INTEGER NOT NULL DEFAULT false, `is_ipv4_preferred` INTEGER NOT NULL DEFAULT true, `position` INTEGER NOT NULL DEFAULT 0, `auto_tunnel_apps` TEXT NOT NULL DEFAULT '[]', `is_metered` INTEGER NOT NULL DEFAULT false, `fallback_tunnel_id` INTEGER)",
         "fields": [
           {
             "fieldPath": "id",
@@ -108,6 +108,11 @@
             "affinity": "INTEGER",
             "notNull": true,
             "defaultValue": "false"
+          },
+          {
+            "fieldPath": "fallbackTunnelId",
+            "columnName": "fallback_tunnel_id",
+            "affinity": "INTEGER"
           }
         ],
         "primaryKey": {
@@ -375,7 +380,7 @@
       },
       {
         "tableName": "monitoring_settings",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `is_ping_enabled` INTEGER NOT NULL DEFAULT 0, `is_ping_monitoring_enabled` INTEGER NOT NULL DEFAULT 1, `tunnel_ping_interval_sec` INTEGER NOT NULL DEFAULT 30, `tunnel_ping_attempts` INTEGER NOT NULL DEFAULT 3, `tunnel_ping_timeout_sec` INTEGER, `show_detailed_ping_stats` INTEGER NOT NULL DEFAULT 0, `is_local_logs_enabled` INTEGER NOT NULL DEFAULT 0, `is_restart_on_handshake_timeout_enabled` INTEGER NOT NULL DEFAULT 0, `max_handshake_restart_attempts` INTEGER NOT NULL DEFAULT 5, `restart_cooldown_seconds` INTEGER NOT NULL DEFAULT 30, `is_recovery_notification_enabled` INTEGER NOT NULL DEFAULT 1, `max_attempts_action` INTEGER NOT NULL DEFAULT 0, `ping_failures_before_restart` INTEGER NOT NULL DEFAULT 1, `is_backoff_enabled` INTEGER NOT NULL DEFAULT 0, `backoff_max_attempts` INTEGER NOT NULL DEFAULT 3, `startup_grace_seconds` INTEGER NOT NULL DEFAULT 30)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `is_ping_enabled` INTEGER NOT NULL DEFAULT 0, `is_ping_monitoring_enabled` INTEGER NOT NULL DEFAULT 1, `tunnel_ping_interval_sec` INTEGER NOT NULL DEFAULT 30, `tunnel_ping_attempts` INTEGER NOT NULL DEFAULT 3, `tunnel_ping_timeout_sec` INTEGER, `show_detailed_ping_stats` INTEGER NOT NULL DEFAULT 0, `is_local_logs_enabled` INTEGER NOT NULL DEFAULT 0, `is_restart_on_handshake_timeout_enabled` INTEGER NOT NULL DEFAULT 0, `max_restart_attempts` INTEGER NOT NULL DEFAULT 5, `restart_cooldown_seconds` INTEGER NOT NULL DEFAULT 30, `max_attempts_action` INTEGER NOT NULL DEFAULT 0, `ping_failures_before_restart` INTEGER NOT NULL DEFAULT 1, `is_backoff_enabled` INTEGER NOT NULL DEFAULT 0, `is_fallback_enabled` INTEGER NOT NULL DEFAULT 0, `default_fallback_tunnel_id` INTEGER)",
         "fields": [
           {
             "fieldPath": "id",
@@ -438,8 +443,8 @@
             "defaultValue": "0"
           },
           {
-            "fieldPath": "maxHandshakeRestartAttempts",
-            "columnName": "max_handshake_restart_attempts",
+            "fieldPath": "maxRestartAttempts",
+            "columnName": "max_restart_attempts",
             "affinity": "INTEGER",
             "notNull": true,
             "defaultValue": "5"
@@ -450,13 +455,6 @@
             "affinity": "INTEGER",
             "notNull": true,
             "defaultValue": "30"
-          },
-          {
-            "fieldPath": "isRecoveryNotificationEnabled",
-            "columnName": "is_recovery_notification_enabled",
-            "affinity": "INTEGER",
-            "notNull": true,
-            "defaultValue": "1"
           },
           {
             "fieldPath": "maxAttemptsAction",
@@ -480,18 +478,16 @@
             "defaultValue": "0"
           },
           {
-            "fieldPath": "backoffMaxAttempts",
-            "columnName": "backoff_max_attempts",
+            "fieldPath": "isFallbackEnabled",
+            "columnName": "is_fallback_enabled",
             "affinity": "INTEGER",
             "notNull": true,
-            "defaultValue": "3"
+            "defaultValue": "0"
           },
           {
-            "fieldPath": "startupGraceSeconds",
-            "columnName": "startup_grace_seconds",
-            "affinity": "INTEGER",
-            "notNull": true,
-            "defaultValue": "30"
+            "fieldPath": "defaultFallbackTunnelId",
+            "columnName": "default_fallback_tunnel_id",
+            "affinity": "INTEGER"
           }
         ],
         "primaryKey": {
@@ -580,7 +576,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3f5d07c1a895d1a3d28c03ce2c2877c0')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c5362e92a130332e3bb9a9949da3eaf1')"
     ]
   }
 }

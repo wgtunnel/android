@@ -20,6 +20,7 @@ fun Entity.toDomain(): Domain =
         position = position,
         autoTunnelApps = autoTunnelApps,
         isMetered = isMetered,
+        fallbackTunnelId = fallbackTunnelId,
     )
 
 fun Domain.toEntity(): Entity =
@@ -39,4 +40,5 @@ fun Domain.toEntity(): Entity =
         position = position,
         autoTunnelApps = autoTunnelApps,
         isMetered = isMetered,
+        fallbackTunnelId = fallbackTunnelId,
     )

@@ -23,21 +23,30 @@ fun <T> DropdownSelector(
     modifier: Modifier = Modifier,
     label: @Composable (() -> Unit)? = null,
     isExpanded: Boolean = false,
+    enabled: Boolean = true,
     onDismiss: () -> Unit = {},
     optionToString: @Composable (T?) -> String = {
         it?.toString() ?: stringResource(R.string._default)
     },
 ) {
+    val contentColor =
+        if (enabled) MaterialTheme.colorScheme.onSurface
+        else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
     Box(modifier = modifier) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(5.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             if (label != null) label()
-            Text(text = optionToString(currentValue), style = MaterialTheme.typography.bodyMedium)
+            Text(
+                text = optionToString(currentValue),
+                style = MaterialTheme.typography.bodyMedium,
+                color = contentColor,
+            )
             Icon(
                 Icons.Default.ArrowDropDown,
                 contentDescription = stringResource(R.string.dropdown),
+                tint = contentColor,
             )
         }
 
