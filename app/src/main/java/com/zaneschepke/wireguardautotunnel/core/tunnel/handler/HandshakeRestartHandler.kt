@@ -239,6 +239,17 @@ class HandshakeRestartHandler(
             mutex.withLock { restarting[tunnelId] = false }
             totalRestarts++
 
+            // The collector skips cancellation when restarting=true, and won't re-fire if
+            // activeTunnels hasn't changed since. Re-check here to abort if the tunnel was
+            // stopped externally (e.g. user toggle) while we were protected by the flag.
+            if (!activeTunnels.value.containsKey(tunnelId)) {
+                Timber.d(
+                    "HandshakeRestartHandler: tunnel $tunnelId was stopped externally during restart, aborting"
+                )
+                updateProgress(tunnelId, null)
+                return
+            }
+
             if (cameUp == null) {
                 Timber.w("HandshakeRestartHandler: tunnel $tunnelId did not come UP within timeout")
                 // Count as failed verification, will retry on next loop iteration
