@@ -6,6 +6,7 @@ import com.zaneschepke.networkmonitor.NetworkMonitor
 import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
 import com.zaneschepke.wireguardautotunnel.core.tunnel.backend.TunnelBackend
 import com.zaneschepke.wireguardautotunnel.core.tunnel.handler.DynamicDnsHandler
+import com.zaneschepke.wireguardautotunnel.core.tunnel.handler.HandshakeRestartHandler
 import com.zaneschepke.wireguardautotunnel.core.tunnel.handler.TunnelActiveStatePersister
 import com.zaneschepke.wireguardautotunnel.core.tunnel.handler.TunnelMonitorHandler
 import com.zaneschepke.wireguardautotunnel.core.tunnel.handler.TunnelServiceHandler
@@ -25,6 +26,7 @@ import com.zaneschepke.wireguardautotunnel.domain.repository.MonitoringSettingsR
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.domain.state.LogHealthState
 import com.zaneschepke.wireguardautotunnel.domain.state.PingState
+import com.zaneschepke.wireguardautotunnel.domain.state.TunnelRestartProgress
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelState
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelStatistics
 import com.zaneschepke.wireguardautotunnel.util.network.NetworkUtils
@@ -47,6 +49,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.shareIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import kotlinx.coroutines.supervisorScope
@@ -59,10 +62,10 @@ class TunnelManager(
     userspaceBackend: TunnelBackend,
     proxyUserspaceBackend: TunnelBackend,
     networkMonitor: NetworkMonitor,
-    networkUtils: NetworkUtils,
+    private val networkUtils: NetworkUtils,
     powerManager: PowerManager,
     logReader: LogReader,
-    monitoringSettingsRepository: MonitoringSettingsRepository,
+    private val monitoringSettingsRepository: MonitoringSettingsRepository,
     private val serviceManager: ServiceManager,
     private val settingsRepository: GeneralSettingRepository,
     private val autoTunnelSettingsRepository: AutoTunnelSettingsRepository,
@@ -74,6 +77,10 @@ class TunnelManager(
 
     private val _activeTunnels = MutableStateFlow<Map<Int, TunnelState>>(emptyMap())
     override val activeTunnels: StateFlow<Map<Int, TunnelState>> = _activeTunnels.asStateFlow()
+
+    private val _restartProgress = MutableStateFlow<Map<Int, TunnelRestartProgress>>(emptyMap())
+    override val restartProgress: StateFlow<Map<Int, TunnelRestartProgress>> =
+        _restartProgress.asStateFlow()
 
     @OptIn(ExperimentalAtomicApi::class) val currentAppMode = AtomicReference(AppMode.VPN)
 
@@ -201,10 +208,29 @@ class TunnelManager(
             networkUtils = networkUtils,
             powerManager = powerManager,
             logReader = logReader,
+            restartProgress = _restartProgress,
             getStatistics = { id -> getStatistics(id) },
             updateTunnelStatus = { id, status, stats, pings, logHealth ->
                 updateTunnelStatus(id, status, stats, pings, logHealth)
             },
+            applicationScope = applicationScope,
+            ioDispatcher = ioDispatcher,
+        )
+
+    private val handshakeRestartHandler =
+        HandshakeRestartHandler(
+            activeTunnels = activeTunnels,
+            tunnelsRepository = tunnelsRepository,
+            monitoringSettingsRepository = monitoringSettingsRepository,
+            networkUtils = networkUtils,
+            stopTunnel = { id -> getProvider().stopTunnel(id) },
+            startTunnel = { config -> startTunnel(config) },
+            updateProgress = { id, progress ->
+                _restartProgress.update { current ->
+                    if (progress == null) current - id else current + (id to progress)
+                }
+            },
+            emitMessage = { name, msg -> localMessageEvents.emit(name to msg) },
             applicationScope = applicationScope,
             ioDispatcher = ioDispatcher,
         )

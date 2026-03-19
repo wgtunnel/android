@@ -62,8 +62,8 @@ class NetworkUtils(private val ioDispatcher: CoroutineDispatcher) {
                     }
                     .collect()
 
+                stats.transmitted = count
                 if (rttList.isNotEmpty()) {
-                    stats.transmitted = count
                     stats.received = received
                     stats.packetLoss = ((count - received).toDouble().round(2) / count) * 100
                     stats.rttMin = rttList.minOrNull()?.round(2) ?: 0.0

@@ -8,4 +8,6 @@ interface NetworkMonitor {
     fun checkPermissionsAndUpdateState()
 
     fun destroy()
+
+    fun hasPhysicalInternetConnectivity(): Boolean
 }

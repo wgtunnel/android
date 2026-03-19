@@ -12,6 +12,7 @@ import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.domain.state.FailureReason
 import com.zaneschepke.wireguardautotunnel.domain.state.LogHealthState
 import com.zaneschepke.wireguardautotunnel.domain.state.PingState
+import com.zaneschepke.wireguardautotunnel.domain.state.TunnelRestartProgress
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelState
 import com.zaneschepke.wireguardautotunnel.domain.state.TunnelStatistics
 import com.zaneschepke.wireguardautotunnel.util.extensions.toMillis
@@ -58,6 +59,7 @@ class TunnelMonitorHandler(
     private val networkUtils: NetworkUtils,
     private val logReader: LogReader,
     private val powerManager: PowerManager,
+    private val restartProgress: StateFlow<Map<Int, TunnelRestartProgress>>,
     private val getStatistics: (Int) -> TunnelStatistics?,
     private val updateTunnelStatus:
         suspend (
@@ -164,7 +166,8 @@ class TunnelMonitorHandler(
 
         val connectivityStateFlow = networkMonitor.connectivityStateFlow.stateIn(this)
 
-        val isNetworkConnected = connectivityStateFlow.map { it.hasInternet() }.stateIn(this)
+        val isNetworkConnected =
+            connectivityStateFlow.map { it.hasValidatedInternet() }.stateIn(this)
 
         combine(
                 settingsRepository.flow.distinctUntilChangedBy { it.appMode },
@@ -323,9 +326,39 @@ class TunnelMonitorHandler(
 
                 while (isActive) {
                     ensureActive()
-                    if (!powerManager.isDeviceIdleMode) {
-                        if (isNetworkConnected.value) {
+                    val activeRestart =
+                        restartProgress.value[tunnelConfig.id]?.let {
+                            it.isRestarting || it.isVerifying
+                        } ?: false
+                    if (!powerManager.isDeviceIdleMode && !activeRestart) {
+                        val hasConnectivity =
+                            isNetworkConnected.value &&
+                                networkMonitor.hasPhysicalInternetConnectivity()
+                        if (hasConnectivity) {
                             performPing()
+                            // Race condition guard: connectivity may have been lost during the ping
+                            if (
+                                !isNetworkConnected.value ||
+                                    !networkMonitor.hasPhysicalInternetConnectivity()
+                            ) {
+                                pingStatsFlow.update { current ->
+                                    current.mapValues { entry ->
+                                        entry.value.copy(
+                                            isReachable = false,
+                                            failureReason = FailureReason.NoConnectivity,
+                                            lastPingAttemptMillis = System.currentTimeMillis(),
+                                        )
+                                    }
+                                }
+                                ensureActive()
+                                updateTunnelStatus(
+                                    tunnelConfig.id,
+                                    null,
+                                    null,
+                                    pingStatsFlow.value,
+                                    null,
+                                )
+                            }
                         } else {
                             pingStatsFlow.update { current ->
                                 current.mapValues { entry ->

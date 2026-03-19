@@ -1,6 +1,7 @@
 package com.zaneschepke.wireguardautotunnel.viewmodel
 
 import androidx.lifecycle.ViewModel
+import com.zaneschepke.wireguardautotunnel.data.model.MaxAttemptsAction
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.domain.repository.MonitoringSettingsRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
@@ -11,7 +12,6 @@ import org.orbitmvi.orbit.viewmodel.container
 
 class MonitoringViewModel(
     private val monitoringSettingsRepository: MonitoringSettingsRepository,
-    private val tunnelRepository: TunnelRepository,
     private val tunnelsRepository: TunnelRepository,
 ) : ContainerHost<MonitoringUiState, Nothing>, ViewModel() {
 
@@ -20,7 +20,7 @@ class MonitoringViewModel(
             MonitoringUiState(),
             buildSettings = { repeatOnSubscribedStopTimeout = 5000L },
         ) {
-            combine(monitoringSettingsRepository.flow, tunnelRepository.userTunnelsFlow) {
+            combine(monitoringSettingsRepository.flow, tunnelsRepository.userTunnelsFlow) {
                     monitoringSettings,
                     tunnels ->
                     state.copy(
@@ -56,5 +56,76 @@ class MonitoringViewModel(
 
     fun setPingTarget(tunnel: TunnelConfig, target: String?) = intent {
         tunnelsRepository.save(tunnel.copy(pingTarget = target?.ifBlank { null }))
+    }
+
+    fun setRestartOnHandshakeTimeout(to: Boolean) = intent {
+        monitoringSettingsRepository.upsert(
+            state.monitoringSettings.copy(isRestartOnHandshakeTimeoutEnabled = to)
+        )
+    }
+
+    fun setMaxRestartAttempts(to: Int) = intent {
+        monitoringSettingsRepository.upsert(state.monitoringSettings.copy(maxRestartAttempts = to))
+    }
+
+    fun setRestartCooldownSeconds(to: Int) = intent {
+        monitoringSettingsRepository.upsert(
+            state.monitoringSettings.copy(restartCooldownSeconds = to)
+        )
+    }
+
+    fun setMaxAttemptsAction(to: MaxAttemptsAction) = intent {
+        monitoringSettingsRepository.upsert(state.monitoringSettings.copy(maxAttemptsAction = to))
+    }
+
+    fun setPingFailuresBeforeRestart(to: Int) = intent {
+        monitoringSettingsRepository.upsert(
+            state.monitoringSettings.copy(pingFailuresBeforeRestart = to)
+        )
+    }
+
+    fun setBackoffEnabled(to: Boolean) = intent {
+        val clampedAttempts =
+            if (to) minOf(state.monitoringSettings.maxRestartAttempts, 8)
+            else state.monitoringSettings.maxRestartAttempts
+        monitoringSettingsRepository.upsert(
+            state.monitoringSettings.copy(
+                isBackoffEnabled = to,
+                maxRestartAttempts = clampedAttempts,
+            )
+        )
+    }
+
+    fun setFallbackEnabled(to: Boolean) = intent {
+        monitoringSettingsRepository.upsert(state.monitoringSettings.copy(isFallbackEnabled = to))
+    }
+
+    fun setDefaultFallbackTunnelId(to: Int?) = intent {
+        monitoringSettingsRepository.upsert(
+            state.monitoringSettings.copy(defaultFallbackTunnelId = to)
+        )
+    }
+
+    fun setTunnelFallbackId(tunnel: TunnelConfig, fallbackId: Int?) = intent {
+        if (fallbackId != null) {
+            if (fallbackId == tunnel.id) return@intent
+            if (wouldCreateLoop(tunnel.id, fallbackId, state.tunnels)) return@intent
+        }
+        tunnelsRepository.save(tunnel.copy(fallbackTunnelId = fallbackId))
+    }
+
+    private fun wouldCreateLoop(
+        sourceId: Int,
+        fallbackId: Int,
+        tunnels: List<TunnelConfig>,
+    ): Boolean {
+        var current: Int? = fallbackId
+        val visited = mutableSetOf<Int>()
+        while (current != null) {
+            if (current == sourceId) return true
+            if (!visited.add(current)) break
+            current = tunnels.find { it.id == current }?.fallbackTunnelId
+        }
+        return false
     }
 }

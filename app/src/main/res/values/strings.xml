@@ -466,4 +466,34 @@
     <string name="fdroid_url" translatable="false">https://apt.izzysoft.de/fdroid/index/apk/com.zaneschepke.wireguardautotunnel</string>
     <string name="import_url_description">The URL must be secure and serve a .conf file.</string>
     <string name="only_template">%1$s only</string>
+    <string name="auto_restart">Auto-restart</string>
+    <string name="restart_on_handshake_timeout">Auto-restart on tunnel failure</string>
+    <string name="restart_on_handshake_timeout_description">Automatically restart the tunnel when ping monitoring detects a failure.</string>
+    <string name="max_restart_attempts">Give up after</string>
+    <string name="restart_cooldown">Cooldown between restarts</string>
+    <string name="use_ping_for_detection_description">Requires ping monitoring to be enabled.</string>
+    <string name="restarting">Restarting…</string>
+    <string name="restart_reason_ping_failure">ping unreachable</string>
+    <string name="restart_reason_ping_failure_targets">ping unreachable: %1$s</string>
+    <string name="restart_restarting">restarting %1$d/%2$d…</string>
+    <string name="restart_verifying">verifying %1$d/%2$d…</string>
+    <string name="restart_cooldown_countdown">restart %1$d/%2$d · next in %3$ds</string>
+    <string name="restart_awaiting_recovery">awaiting ping recovery</string>
+    <string name="max_attempts_action">On max attempts reached</string>
+    <string name="max_attempts_action_do_nothing">Keep waiting</string>
+    <string name="max_attempts_action_stop_tunnel">Stop tunnel</string>
+    <string name="ping_failures_before_restart">Consecutive ping failures before first restart</string>
+    <string name="exponential_backoff">Exponential backoff</string>
+    <string name="exponential_backoff_description">Doubles the cooldown after each failed restart attempt</string>
+    <string name="snackbar_connection_degrading">Connection degrading · restart %1$s/%2$s</string>
+    <string name="snackbar_connection_restored">Connection restored</string>
+    <string name="snackbar_connection_lost">Tunnel degraded: ping failure after %1$s restarts, awaiting recovery</string>
+    <string name="snackbar_connection_lost_stopped">Tunnel stopped after %1$s restarts (ping failure)</string>
+    <string name="snackbar_switched_to_fallback">Switched to fallback tunnel: %1$s</string>
+    <string name="enable_fallback_tunnel">Fallback tunnel</string>
+    <string name="enable_fallback_tunnel_description">Switch to a fallback tunnel when all restart attempts are exhausted</string>
+    <string name="default_fallback_tunnel">Default fallback tunnel</string>
+    <string name="per_tunnel_fallback">Per-tunnel fallback</string>
+    <string name="no_fallback">None</string>
+    <string name="use_default_fallback">Use default</string>
 </resources>

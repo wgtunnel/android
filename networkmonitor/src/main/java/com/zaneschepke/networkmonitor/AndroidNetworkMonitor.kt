@@ -396,6 +396,8 @@ class AndroidNetworkMonitor(
                 val wifiEvent = networkData.wifiNetworkEvent
                 val cellularCaps = networkData.cellularCaps
                 val ethernetCaps = networkData.ethernetCaps
+                val wifiCaps =
+                    (wifiEvent as? TransportEvent.CapabilitiesChanged)?.networkCapabilities
 
                 val permissions =
                     when (defaultEvent) {
@@ -505,11 +507,19 @@ class AndroidNetworkMonitor(
                         }
                         .also { network -> lastKnownActiveNetwork.value = network }
 
+                val isPhysicalNetworkValidated =
+                    wifiCaps?.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED) == true ||
+                        cellularCaps?.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED) ==
+                            true ||
+                        ethernetCaps?.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED) ==
+                            true
+
                 ConnectivityState(
                     activeNetwork = activeNetwork,
                     locationPermissionsGranted = permissions.locationPermissionGranted,
                     locationServicesEnabled = permissions.locationServicesEnabled,
                     vpnState = vpnState,
+                    isPhysicalNetworkValidated = isPhysicalNetworkValidated,
                 )
             }
             .distinctUntilChanged()
@@ -606,6 +616,14 @@ class AndroidNetworkMonitor(
             exportedFlags,
         )
         airplaneModeState.update { appContext.isAirplaneModeOn() }
+    }
+
+    override fun hasPhysicalInternetConnectivity(): Boolean {
+        return connectivityManager?.allNetworks?.any { network ->
+            val caps = connectivityManager.getNetworkCapabilities(network) ?: return@any false
+            !caps.hasTransport(NetworkCapabilities.TRANSPORT_VPN) &&
+                caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
+        } ?: false
     }
 
     override fun destroy() {

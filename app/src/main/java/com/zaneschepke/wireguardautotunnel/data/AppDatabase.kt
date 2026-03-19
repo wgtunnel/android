@@ -17,7 +17,7 @@ import com.zaneschepke.wireguardautotunnel.data.entity.*
             DnsSettings::class,
             LockdownSettings::class,
         ],
-    version = 29,
+    version = 35,
     autoMigrations =
         [
             AutoMigration(from = 1, to = 2),
@@ -45,6 +45,12 @@ import com.zaneschepke.wireguardautotunnel.data.entity.*
             AutoMigration(from = 24, to = 25),
             AutoMigration(from = 26, to = 27, spec = GlobalsMigration::class),
             AutoMigration(from = 27, to = 28, spec = DonationMigration::class),
+            AutoMigration(from = 29, to = 30),
+            AutoMigration(from = 30, to = 31, spec = DropBackoffMaxAttemptsMigration::class),
+            AutoMigration(from = 31, to = 32, spec = RenameMaxRestartAttemptsMigration::class),
+            AutoMigration(from = 32, to = 33, spec = DropStartupGraceMigration::class),
+            AutoMigration(from = 33, to = 34, spec = DropRecoveryNotificationMigration::class),
+            AutoMigration(from = 34, to = 35),
         ],
     exportSchema = true,
 )
@@ -129,3 +135,19 @@ class GlobalsMigration : AutoMigrationSpec
 
 @DeleteColumn(tableName = "general_settings", columnName = "custom_split_packages")
 class DonationMigration : AutoMigrationSpec
+
+@DeleteColumn(tableName = "monitoring_settings", columnName = "backoff_max_attempts")
+class DropBackoffMaxAttemptsMigration : AutoMigrationSpec
+
+@RenameColumn(
+    tableName = "monitoring_settings",
+    fromColumnName = "max_handshake_restart_attempts",
+    toColumnName = "max_restart_attempts",
+)
+class RenameMaxRestartAttemptsMigration : AutoMigrationSpec
+
+@DeleteColumn(tableName = "monitoring_settings", columnName = "startup_grace_seconds")
+class DropStartupGraceMigration : AutoMigrationSpec
+
+@DeleteColumn(tableName = "monitoring_settings", columnName = "is_recovery_notification_enabled")
+class DropRecoveryNotificationMigration : AutoMigrationSpec

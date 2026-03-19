@@ -31,6 +31,7 @@ fun TunnelStatisticsRow(
     tunnelState: TunnelState,
     pingEnabled: Boolean,
     showDetailedStats: Boolean,
+    totalRestarts: Int = 0,
 ) {
     val context = LocalContext.current
     val textStyle = MaterialTheme.typography.bodySmall
@@ -73,8 +74,9 @@ fun TunnelStatisticsRow(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
+                    val restartSuffix = if (totalRestarts > 0) " · ↺ $totalRestarts" else ""
                     Text(
-                        "uptime: ${tunnelState.uptime().localizedDuration(locale)}",
+                        "uptime: ${tunnelState.uptime().localizedDuration(locale)}$restartSuffix",
                         style = textStyle,
                         color = textColor,
                     )
