@@ -17,7 +17,7 @@ interface NotificationManager {
         subText: String? = null,
         actions: Collection<NotificationCompat.Action> = emptyList(),
         description: String = "",
-        showTimestamp: Boolean = true,
+        showTimestamp: Boolean = false,
         importance: Int = NotificationManager.IMPORTANCE_LOW,
         onGoing: Boolean = false,
         onlyAlertOnce: Boolean = true,
