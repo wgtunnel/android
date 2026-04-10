@@ -151,6 +151,8 @@ class MainActivity : AppCompatActivity() {
 
         roomBackup = RoomBackup(this)
 
+        handleWgIntent(intent)
+
         installSplashScreen().apply {
             setKeepOnScreenCondition { !viewModel.container.stateFlow.value.isAppLoaded }
         }
@@ -510,6 +512,21 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
                 }
+            }
+        }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        handleWgIntent(intent)
+    }
+
+    private fun handleWgIntent(intent: Intent) {
+        if (intent.action == Intent.ACTION_VIEW) {
+            val uri = intent.data ?: return
+            if (uri.scheme == "wg") {
+                val httpsUrl = uri.toString().replaceFirst("wg://", "https://")
+                viewModel.importFromUrl(httpsUrl)
             }
         }
     }
