@@ -275,10 +275,7 @@ class MainActivity : AppCompatActivity() {
                         val host = Uri.parse(url).host ?: url
                         InfoDialog(
                             onDismiss = { viewModel.dismissWgImport() },
-                            onAttest = {
-                                viewModel.dismissWgImport()
-                                viewModel.importFromUrl(url)
-                            },
+                            onAttest = { viewModel.importFromUrl(url) },
                             title = stringResource(R.string.add_from_url),
                             body = {
                                 Text(stringResource(R.string.wg_url_confirm_message, host))

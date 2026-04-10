@@ -309,6 +309,7 @@ class SharedAppViewModel(
     }
 
     fun importFromUrl(url: String) = intent {
+        reduce { state.copy(pendingWgImportUrl = null) }
         try {
             httpClient.prepareGet(url).execute { response ->
                 if (response.status.value in 200..299) {
