@@ -182,6 +182,7 @@
     <string name="export_tunnels_wireguard">Экспорт туннелей как WireGuard</string>
     <string name="enable_remote_app_control">Удалённое управление приложением</string>
     <string name="error_download_failed">Невозможно скачать конфигурацию</string>
+    <string name="wg_url_confirm_message">Добавить туннели от %1$s? Никогда не подключайтесь к неизвестному VPN!</string>
     <string name="nothing_here_yet">Здесь пока ничего нет!</string>
     <string name="select_all">Выбрать все</string>
     <string name="export_success">Экспорт успешно выполнен</string>

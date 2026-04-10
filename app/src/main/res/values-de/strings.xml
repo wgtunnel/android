@@ -156,6 +156,7 @@
     <string name="config_error">Ungültige Konfiguration</string>
     <string name="join_matrix">Matrix-Community beitreten</string>
     <string name="error_download_failed">Download der Konfiguration fehlgeschlagen</string>
+    <string name="wg_url_confirm_message">Möchtest du wirklich Tunnel von %1$s hinzufügen? Verbinde dich niemals mit einem nicht vertrauenswürdigen VPN!</string>
     <string name="add_from_url">Von URL hinzufügen</string>
     <string name="export_logs">Gespeicherte Logs exportieren</string>
     <string name="app_permission_title">Steuere Tunnel und Auto-Tunnel Funktionen.</string>

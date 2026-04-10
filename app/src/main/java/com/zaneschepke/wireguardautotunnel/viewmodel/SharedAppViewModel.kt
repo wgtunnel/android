@@ -300,6 +300,14 @@ class SharedAppViewModel(
 
     fun importFromQr(conf: String) = intent { importFromClipboard(conf) }
 
+    fun promptWgImport(url: String) = intent {
+        reduce { state.copy(pendingWgImportUrl = url) }
+    }
+
+    fun dismissWgImport() = intent {
+        reduce { state.copy(pendingWgImportUrl = null) }
+    }
+
     fun importFromUrl(url: String) = intent {
         try {
             httpClient.prepareGet(url).execute { response ->

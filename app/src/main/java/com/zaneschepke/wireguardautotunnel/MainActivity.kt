@@ -3,6 +3,7 @@ package com.zaneschepke.wireguardautotunnel
 import ProxySettingsScreen
 import android.content.Intent
 import android.graphics.Color
+import android.net.Uri
 import android.net.VpnService
 import android.os.Build
 import android.os.Bundle
@@ -29,6 +30,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -69,6 +71,7 @@ import com.zaneschepke.wireguardautotunnel.domain.sideeffect.GlobalSideEffect
 import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.common.banner.AppAlertBanner
+import com.zaneschepke.wireguardautotunnel.ui.common.dialog.InfoDialog
 import com.zaneschepke.wireguardautotunnel.ui.common.dialog.VpnDeniedDialog
 import com.zaneschepke.wireguardautotunnel.ui.common.snackbar.CustomSnackBar
 import com.zaneschepke.wireguardautotunnel.ui.common.snackbar.SnackbarInfo
@@ -267,6 +270,22 @@ class MainActivity : AppCompatActivity() {
                             vpnPermissionDenied = false
                         },
                     )
+
+                    uiState.pendingWgImportUrl?.let { url ->
+                        val host = Uri.parse(url).host ?: url
+                        InfoDialog(
+                            onDismiss = { viewModel.dismissWgImport() },
+                            onAttest = {
+                                viewModel.dismissWgImport()
+                                viewModel.importFromUrl(url)
+                            },
+                            title = stringResource(R.string.add_from_url),
+                            body = {
+                                Text(stringResource(R.string.wg_url_confirm_message, host))
+                            },
+                            confirmText = stringResource(R.string.okay),
+                        )
+                    }
 
                     val annotatedMessage = buildAnnotatedString {
                         append(context.getString(R.string.donation_prompt_prefix))
@@ -526,7 +545,7 @@ class MainActivity : AppCompatActivity() {
             val uri = intent.data ?: return
             if (uri.scheme == "wg") {
                 val httpsUrl = uri.toString().replaceFirst("wg://", "https://")
-                viewModel.importFromUrl(httpsUrl)
+                viewModel.promptWgImport(httpsUrl)
             }
         }
     }
