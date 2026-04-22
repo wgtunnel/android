@@ -22,6 +22,7 @@ import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.monitoring.logs.components.LogList
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.monitoring.logs.components.LogsBottomSheet
 import com.zaneschepke.wireguardautotunnel.ui.sideeffect.LocalSideEffect
+import com.zaneschepke.wireguardautotunnel.util.StringValue
 import com.zaneschepke.wireguardautotunnel.viewmodel.LoggerViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.SharedAppViewModel
 import org.koin.androidx.compose.koinViewModel
@@ -77,17 +78,26 @@ fun LogsScreen(
 
     if (showLogsSheet) {
         LogsBottomSheet(
-            { uri ->
+            onExport = { uri ->
                 viewModel.exportLogs(uri)
                 showLogsSheet = false
             },
-            {
+            onDelete = {
                 viewModel.deleteLogs()
                 showLogsSheet = false
             },
-        ) {
-            showLogsSheet = false
-        }
+            onCanceled = {
+                sharedViewModel.showSnackMessage(StringValue.StringResource(R.string.export_canceled))
+                showLogsSheet = false
+            },
+            onUnsupported = {
+                sharedViewModel.showSnackMessage(StringValue.StringResource(R.string.export_unsupported))
+                showLogsSheet = false
+            },
+            onDismiss = {
+                showLogsSheet = false
+            }
+        )
     }
 
     if (loggerState.messages.isEmpty()) {

@@ -135,8 +135,9 @@ android {
     licensee {
         allowedLicenses().forEach { allow(it) }
         allowedLicenseUrls().forEach { allowUrl(it) }
-        // foss, but missing license
+        // foss, but missing licenses
         ignoreDependencies("com.github.T8RIN.QuickieExtended")
+        ignoreDependencies("com.github.topjohnwu.libsu")
     }
 
     android.applicationVariants.all {
@@ -172,6 +173,7 @@ android {
 dependencies {
     implementation(project(":logcatter"))
     implementation(project(":networkmonitor"))
+    implementation(project(":tunnel"))
 
     // Core foundations
     implementation(libs.bundles.androidx.core.full)
@@ -207,9 +209,6 @@ dependencies {
 
     // State management
     implementation(libs.bundles.orbit.mvi)
-
-    // Tunnel
-    implementation(libs.bundles.wireguard.tunnel)
 
     // Shizuku
     implementation(libs.bundles.shizuku)

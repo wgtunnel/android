@@ -34,16 +34,10 @@ class LockdownViewModel(
         reduce { state.copy(showSaveModal = false) }
         lockdownSettingsRepository.upsert(lockdownSettings)
 
-        tunnelManager.setBackendMode(BackendMode.Inactive)
+        tunnelManager.disableLockDown()
         val allowedIps =
             if (lockdownSettings.bypassLan) TunnelConfig.LAN_BYPASS_ALLOWED_IPS else emptySet()
-        tunnelManager.setBackendMode(
-            BackendMode.KillSwitch(
-                allowedIps = allowedIps,
-                isMetered = lockdownSettings.metered,
-                dualStack = lockdownSettings.dualStack,
-            )
-        )
+        tunnelManager.setLockDown(lockdownSettings)
 
         postSideEffect(GlobalSideEffect.PopBackStack)
         postSideEffect(

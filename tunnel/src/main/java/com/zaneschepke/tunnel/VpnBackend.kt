@@ -1,0 +1,44 @@
+package com.zaneschepke.tunnel
+
+import timber.log.Timber
+
+object VpnBackend {
+
+    fun setStatusCallback(callback: StatusCallback?) {
+        Timber.d("setStatusCallback called with ${if (callback != null) "callback" else "null"}")
+        awgSetStatusCallback(callback)
+    }
+
+    private external fun awgSetStatusCallback(callback: StatusCallback?)
+
+    external fun awgGetConfig(handle: Int): String?
+
+    external fun awgGetSocketV4(handle: Int): Int
+
+    external fun awgGetSocketV6(handle: Int): Int
+
+    external fun awgTurnOff(handle: Int)
+
+    external fun awgTurnOn(
+        ifName: String,
+        tunFd: Int,
+        settings: String,
+        uapiPath: String
+    ): Int
+
+    external fun awgUpdateTunnelPeers(handle: Int, settings: String): Int
+
+    external fun awgVersion(): String
+
+    /**
+     * Generates a globally unique handle across VPN, Proxy, and Kernel backends.
+     * Call this instead of the old GenerateHandle in Go.
+     */
+    external fun awgGenerateHandle(): Int
+
+    /**
+     * Releases a handle so it can be reused.
+     * Call this when a tunnel is fully torn down.
+     */
+    external fun awgReleaseHandle(handle: Int)
+}

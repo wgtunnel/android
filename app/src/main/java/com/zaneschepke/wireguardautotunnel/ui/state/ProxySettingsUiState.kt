@@ -1,11 +1,11 @@
 package com.zaneschepke.wireguardautotunnel.ui.state
 
+import com.zaneschepke.tunnel.state.BackendStatus
 import com.zaneschepke.wireguardautotunnel.domain.model.ProxySettings
-import com.zaneschepke.wireguardautotunnel.domain.state.TunnelState
 
 data class ProxySettingsUiState(
     val proxySettings: ProxySettings = ProxySettings(),
-    val activeTuns: Map<Int, TunnelState> = emptyMap(),
+    val backendStatus: BackendStatus = BackendStatus(),
     val isSocks5BindAddressError: Boolean = false,
     val isHttpBindAddressError: Boolean = false,
     val isUserNameError: Boolean = false,

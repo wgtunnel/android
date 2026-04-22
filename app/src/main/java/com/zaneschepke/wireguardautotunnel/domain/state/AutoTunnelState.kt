@@ -1,6 +1,7 @@
 package com.zaneschepke.wireguardautotunnel.domain.state
 
-import com.zaneschepke.wireguardautotunnel.core.service.autotunnel.ActiveTunnelsChange
+import com.zaneschepke.tunnel.state.BackendStatus
+import com.zaneschepke.wireguardautotunnel.core.service.autotunnel.BackendStatusChange
 import com.zaneschepke.wireguardautotunnel.core.service.autotunnel.NetworkChange
 import com.zaneschepke.wireguardautotunnel.core.service.autotunnel.SettingsChange
 import com.zaneschepke.wireguardautotunnel.core.service.autotunnel.StateChange
@@ -13,7 +14,7 @@ import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.util.extensions.isMatchingToWildcardList
 
 data class AutoTunnelState(
-    val activeTunnels: Map<Int, TunnelState> = emptyMap(),
+    val backendStatus: BackendStatus = BackendStatus(),
     val networkState: NetworkState = NetworkState(),
     val settings: AutoTunnelSettings = AutoTunnelSettings(),
     val appMode: AppMode = AppMode.VPN,
@@ -40,7 +41,7 @@ data class AutoTunnelState(
                 }
 
                 // Determine current active tunnel (assuming only one can be active)
-                val currentTunnel = activeTunnels.entries.firstOrNull()?.key
+                val currentTunnel = backendStatus.activeTunnels.entries.firstOrNull()?.key
 
                 // Handle tunnel start/stop/change
                 if (preferredTunnel != null) {
@@ -54,7 +55,7 @@ data class AutoTunnelState(
                 }
             }
 
-            is ActiveTunnelsChange -> Unit
+            is BackendStatusChange -> Unit
         }
         return DoNothing
     }

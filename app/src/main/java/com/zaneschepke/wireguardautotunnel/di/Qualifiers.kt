@@ -12,14 +12,3 @@ enum class Dispatcher {
 enum class Scope {
     APPLICATION
 }
-
-enum class Shell {
-    APP,
-    TUNNEL,
-}
-
-enum class Core {
-    KERNEL,
-    PROXY_USERSPACE,
-    USERSPACE,
-}

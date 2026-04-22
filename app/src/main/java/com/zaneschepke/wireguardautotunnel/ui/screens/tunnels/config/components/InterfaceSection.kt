@@ -15,8 +15,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
-import com.wireguard.crypto.KeyPair
 import com.zaneschepke.wireguardautotunnel.R
+import com.zaneschepke.wireguardautotunnel.parser.crypto.Key
 import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
 import com.zaneschepke.wireguardautotunnel.ui.common.label.GroupLabel
 import com.zaneschepke.wireguardautotunnel.ui.common.text.DescriptionText
@@ -83,11 +83,12 @@ fun InterfaceSection(
                             IconButton(
                                 enabled = true,
                                 onClick = {
-                                    val keypair = KeyPair()
+                                    val privateKey = Key.generatePrivateKey()
+                                    val publicKey = Key.generatePublicKey(privateKey)
                                     onInterfaceChange(
                                         configProxy.`interface`.copy(
-                                            privateKey = keypair.privateKey.toBase64(),
-                                            publicKey = keypair.publicKey.toBase64(),
+                                            privateKey = privateKey.toBase64(),
+                                            publicKey = publicKey.toBase64(),
                                         )
                                     )
                                 },

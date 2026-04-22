@@ -1,0 +1,87 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
+plugins {
+    alias(libs.plugins.androidLibrary)
+    alias(libs.plugins.kotlin.android)
+}
+
+android {
+    namespace = "com.zaneschepke.tunnel"
+    compileSdk {
+        version = release(36)
+    }
+
+    ndkVersion = "28.2.13676358"
+
+    defaultConfig {
+        minSdk = 26
+
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles("consumer-rules.pro")
+    }
+
+    externalNativeBuild {
+        cmake {
+            path("tools/CMakeLists.txt")
+        }
+    }
+
+    val basePackageName = namespace
+
+    buildTypes {
+        all {
+            externalNativeBuild {
+                cmake {
+                    targets("libam-go.so", "libam.so", "libam-quick.so")
+                    arguments("-DGRADLE_USER_HOME=${project.gradle.gradleUserHomeDir}")
+                    arguments("-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON")
+                }
+            }
+        }
+
+        release {
+            externalNativeBuild {
+                cmake {
+                    arguments("-DANDROID_PACKAGE_NAME=$basePackageName")
+                }
+            }
+        }
+
+        debug {
+            externalNativeBuild {
+                cmake {
+                    arguments("-DANDROID_PACKAGE_NAME=$basePackageName.debug")
+                }
+            }
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    kotlin { compilerOptions { jvmTarget = JvmTarget.JVM_17 } }
+}
+
+dependencies {
+    implementation(project(":hevtunnel"))
+    implementation(project(":pinger"))
+    implementation(project(":networkmonitor"))
+
+    implementation(libs.androidx.lifecycle.service)
+
+    implementation(libs.relinker)
+
+    api(libs.amneziawg.parser)
+    implementation(libs.libsu)
+
+    implementation(libs.timber)
+
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.material)
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
+}

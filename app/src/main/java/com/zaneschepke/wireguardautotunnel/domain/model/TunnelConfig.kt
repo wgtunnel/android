@@ -1,28 +1,19 @@
 package com.zaneschepke.wireguardautotunnel.domain.model
 
-import com.wireguard.config.Config
 import com.zaneschepke.wireguardautotunnel.data.entity.TunnelConfig.Companion.GLOBAL_CONFIG_NAME
+import com.zaneschepke.wireguardautotunnel.parser.Config
 import com.zaneschepke.wireguardautotunnel.util.extensions.defaultName
-import com.zaneschepke.wireguardautotunnel.util.extensions.isValidIpv4orIpv6Address
-import java.io.InputStream
-import java.nio.charset.StandardCharsets
-import org.amnezia.awg.config.InetEndpoint
-import org.amnezia.awg.config.InetNetwork
-import org.amnezia.awg.config.Interface
-import org.amnezia.awg.config.Peer
-import org.amnezia.awg.crypto.KeyPair
 
 data class TunnelConfig(
     val id: Int = 0,
     val name: String,
-    val wgQuick: String,
     val tunnelNetworks: Set<String> = setOf(),
     val isMobileDataTunnel: Boolean = false,
     val isPrimaryTunnel: Boolean = false,
-    val amQuick: String = "",
+    val quickConfig: String = "",
     val isActive: Boolean = false,
     val restartOnPingFailure: Boolean = false,
-    var pingTarget: String? = null,
+    val pingTarget: String? = null,
     val isEthernetTunnel: Boolean = false,
     val isIpv4Preferred: Boolean = true,
     val position: Int = 0,
@@ -35,8 +26,7 @@ data class TunnelConfig(
         if (other !is TunnelConfig) return false
         return id == other.id &&
             name == other.name &&
-            wgQuick == other.wgQuick &&
-            amQuick == other.amQuick &&
+            quickConfig == other.quickConfig &&
             isPrimaryTunnel == other.isPrimaryTunnel &&
             isMobileDataTunnel == other.isMobileDataTunnel &&
             isEthernetTunnel == other.isEthernetTunnel &&
@@ -50,166 +40,52 @@ data class TunnelConfig(
     override fun hashCode(): Int {
         var result = id
         result = 31 * result + name.hashCode()
-        result = 31 * result + wgQuick.hashCode()
-        result = 31 * result + amQuick.hashCode()
+        result = 31 * result + quickConfig.hashCode()
         return result
     }
 
-    fun isStaticallyConfigured(): Boolean {
-        return toAmConfig().peers.all { it.endpoint.get().host.isValidIpv4orIpv6Address() }
-    }
-
-    fun toAmConfig(): org.amnezia.awg.config.Config {
-        return configFromAmQuick(amQuick.ifBlank { wgQuick })
-    }
-
-    fun toWgConfig(): Config {
-        return configFromWgQuick(wgQuick)
-    }
-
-    fun copyWithGlobalValues(
-        globalTunnel: TunnelConfig,
-        includeDns: Boolean,
-        includeSpitTunneling: Boolean,
-    ): TunnelConfig {
-        val existingConfig = toAmConfig()
-        val globalConfig = globalTunnel.toAmConfig()
-
-        val newInterfaceBuilder =
-            Interface.Builder().apply {
-                setKeyPair(existingConfig.`interface`.keyPair)
-                setAddresses(existingConfig.`interface`.addresses)
-                setDnsServers(existingConfig.`interface`.dnsServers)
-                setDnsSearchDomains(existingConfig.`interface`.dnsSearchDomains)
-                setExcludedApplications(existingConfig.`interface`.excludedApplications)
-                setIncludedApplications(existingConfig.`interface`.includedApplications)
-                existingConfig.`interface`.listenPort.ifPresent { setListenPort(it) }
-                existingConfig.`interface`.mtu.ifPresent { setMtu(it) }
-                existingConfig.`interface`.junkPacketCount.ifPresent { setJunkPacketCount(it) }
-                existingConfig.`interface`.junkPacketMinSize.ifPresent { setJunkPacketMinSize(it) }
-                existingConfig.`interface`.junkPacketMaxSize.ifPresent { setJunkPacketMaxSize(it) }
-                existingConfig.`interface`.initPacketJunkSize.ifPresent {
-                    setInitPacketJunkSize(it)
-                }
-                existingConfig.`interface`.responsePacketJunkSize.ifPresent {
-                    setResponsePacketJunkSize(it)
-                }
-                existingConfig.`interface`.initPacketMagicHeader.ifPresent {
-                    setInitPacketMagicHeader(it)
-                }
-                existingConfig.`interface`.responsePacketMagicHeader.ifPresent {
-                    setResponsePacketMagicHeader(it)
-                }
-                existingConfig.`interface`.underloadPacketMagicHeader.ifPresent {
-                    setUnderloadPacketMagicHeader(it)
-                }
-                existingConfig.`interface`.transportPacketMagicHeader.ifPresent {
-                    setTransportPacketMagicHeader(it)
-                }
-                existingConfig.`interface`.cookieReplyPacketJunkSize.ifPresent {
-                    setCookieReplyPacketJunkSize(it)
-                }
-                existingConfig.`interface`.transportPacketJunkSize.ifPresent {
-                    setTransportPacketJunkSize(it)
-                }
-                existingConfig.`interface`.specialJunkI1.ifPresent { setSpecialJunkI1(it) }
-                existingConfig.`interface`.specialJunkI2.ifPresent { setSpecialJunkI2(it) }
-                existingConfig.`interface`.specialJunkI3.ifPresent { setSpecialJunkI3(it) }
-                existingConfig.`interface`.specialJunkI4.ifPresent { setSpecialJunkI4(it) }
-                existingConfig.`interface`.specialJunkI5.ifPresent { setSpecialJunkI5(it) }
-                setPreUp(existingConfig.`interface`.preUp)
-                setPostUp(existingConfig.`interface`.postUp)
-                setPreDown(existingConfig.`interface`.preDown)
-                setPostDown(existingConfig.`interface`.postDown)
-
-                if (includeDns) {
-                    setDnsServers(globalConfig.`interface`.dnsServers)
-                    setDnsSearchDomains(globalConfig.`interface`.dnsSearchDomains)
-                }
-                if (includeSpitTunneling) {
-                    setExcludedApplications(globalConfig.`interface`.excludedApplications)
-                    setIncludedApplications(globalConfig.`interface`.includedApplications)
-                }
-            }
-        val newInterface = newInterfaceBuilder.build()
-
-        val newConfigBuilder =
-            org.amnezia.awg.config.Config.Builder().apply {
-                setInterface(newInterface)
-                addPeers(existingConfig.peers)
-            }
-        val newAmConfig = newConfigBuilder.build()
-
-        return copy(
-            wgQuick = newAmConfig.toWgQuickString(true),
-            amQuick = newAmConfig.toAwgQuickString(true, false),
-        )
+    fun getConfig() : Config {
+        return Config.parseQuickString(quickConfig)
     }
 
     companion object {
-        fun configFromWgQuick(wgQuick: String): Config {
-            val inputStream: InputStream = wgQuick.byteInputStream()
-            return inputStream.bufferedReader(StandardCharsets.UTF_8).use { Config.parse(it) }
-        }
-
-        fun configFromAmQuick(amQuick: String): org.amnezia.awg.config.Config {
-            val inputStream: InputStream = amQuick.byteInputStream()
-            return inputStream.bufferedReader(StandardCharsets.UTF_8).use {
-                org.amnezia.awg.config.Config.parse(it)
-            }
-        }
 
         fun tunnelConfFromQuick(amQuick: String, name: String? = null): TunnelConfig {
-            val config = configFromAmQuick(amQuick)
-            val wgQuick = config.toWgQuickString(true)
+            val config = Config.parseQuickString(amQuick)
             return TunnelConfig(
                 name = name ?: config.defaultName(),
-                wgQuick = wgQuick,
-                amQuick = amQuick,
+                quickConfig = amQuick,
             )
         }
 
-        private fun tunnelConfFromAmConfig(
-            config: org.amnezia.awg.config.Config,
-            name: String? = null,
-        ): TunnelConfig {
-            val amQuick = config.toAwgQuickString(true, false)
-            val wgQuick = config.toWgQuickString(true)
-            return TunnelConfig(
-                name = name ?: config.defaultName(),
-                wgQuick = wgQuick,
-                amQuick = amQuick,
-            )
-        }
-
+        // TODO
         fun generateDefaultGlobalConfig(): TunnelConfig {
-            val keyPair = KeyPair()
-            val config =
-                org.amnezia.awg.config.Config.Builder()
-                    .apply {
-                        setInterface(
-                            Interface.Builder()
-                                .apply {
-                                    setKeyPair(keyPair)
-                                    parseAddresses("10.0.0.2/32")
-                                }
-                                .build()
-                        )
-                        addPeer(
-                            Peer.Builder()
-                                .apply {
-                                    setPublicKey(keyPair.publicKey)
-                                    addAllowedIps(listOf(InetNetwork.parse("0.0.0.0/0")))
-                                    setEndpoint(InetEndpoint.parse("server.example.com:51820"))
-                                }
-                                .build()
-                        )
-                    }
-                    .build()
+//            val keyPair = KeyPair()
+//            val config =
+//                org.amnezia.awg.config.Config.Builder()
+//                    .apply {
+//                        setInterface(
+//                            Interface.Builder()
+//                                .apply {
+//                                    setKeyPair(keyPair)
+//                                    parseAddresses("10.0.0.2/32")
+//                                }
+//                                .build()
+//                        )
+//                        addPeer(
+//                            Peer.Builder()
+//                                .apply {
+//                                    setPublicKey(keyPair.publicKey)
+//                                    addAllowedIps(listOf(InetNetwork.parse("0.0.0.0/0")))
+//                                    setEndpoint(InetEndpoint.parse("server.example.com:51820"))
+//                                }
+//                                .build()
+//                        )
+//                    }
+//                    .build()
             return TunnelConfig(
                 name = GLOBAL_CONFIG_NAME,
-                amQuick = config.toAwgQuickString(false, false),
-                wgQuick = config.toWgQuickString(false),
+                quickConfig = "",
             )
         }
 

@@ -7,7 +7,7 @@ pluginManagement {
 	}
 }
 plugins {
-    id("org.gradle.toolchains.foojay-resolver-convention") version "0.10.0"
+    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 
 dependencyResolutionManagement {
@@ -25,3 +25,7 @@ rootProject.name = "WG Tunnel"
 include(":app")
 include(":logcatter")
 include(":networkmonitor")
+include(":tunnel")
+include(":hevtunnel")
+include(":pinger")
+include(":pinger")

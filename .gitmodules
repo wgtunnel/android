@@ -1,0 +1,9 @@
+[submodule "tunnel/tools/wireguard-tools"]
+	path = tunnel/tools/wireguard-tools
+	url = https://git.zx2c4.com/wireguard-tools
+[submodule "hevtunnel/src/main/jni/hev-socks5-tunnel"]
+	path = hevtunnel/src/main/jni/hev-socks5-tunnel
+	url = https://github.com/heiher/hev-socks5-tunnel
+[submodule "tunnel/tools/amneziawg-tools"]
+	path = tunnel/tools/amneziawg-tools
+	url = https://github.com/amnezia-vpn/amneziawg-tools

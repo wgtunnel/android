@@ -49,7 +49,7 @@ class SplitTunnelViewModel(
 
     fun saveSplitTunnelSelection(splitConfig: Pair<SplitOption, Set<String>>) = intent {
         val tunnel = state.tunnel ?: return@intent
-        val config = tunnel.toAmConfig()
+        val config = tunnel.getConfig()
         val (option, pkgs) = splitConfig
         val configProxy = ConfigProxy.from(config)
         val interfaceProxy = InterfaceProxy.from(config.`interface`)
@@ -61,12 +61,11 @@ class SplitTunnelViewModel(
             }
         val updatedInterface =
             interfaceProxy.copy(includedApplications = included, excludedApplications = excluded)
-        val updatedConfig = configProxy.copy(`interface` = updatedInterface)
-        val (wg, am) = updatedConfig.buildConfigs()
+        val updatedProxyConfig = configProxy.copy(`interface` = updatedInterface)
+        val updatedConfig = updatedProxyConfig.buildConfig()
         tunnelRepository.save(
             tunnel.copy(
-                amQuick = am.toAwgQuickString(true, false),
-                wgQuick = wg.toWgQuickString(true),
+                quickConfig = updatedConfig.asQuickString()
             )
         )
         postSideEffect(

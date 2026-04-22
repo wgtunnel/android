@@ -13,10 +13,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import com.zaneschepke.networkmonitor.AndroidNetworkMonitor
+import com.zaneschepke.tunnel.Tunnel
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.data.model.AppMode
 import com.zaneschepke.wireguardautotunnel.data.model.WifiDetectionMethod
-import com.zaneschepke.wireguardautotunnel.domain.state.TunnelState
 import com.zaneschepke.wireguardautotunnel.ui.theme.AlertRed
 import com.zaneschepke.wireguardautotunnel.ui.theme.CoolGray
 import com.zaneschepke.wireguardautotunnel.ui.theme.SilverTree
@@ -85,12 +85,12 @@ fun AppMode.asIcon(): ImageVector {
     }
 }
 
-fun TunnelState.Health.asColor(): Color {
+fun Tunnel.State.asColor(): Color {
     return when (this) {
-        TunnelState.Health.UNKNOWN -> CoolGray
-        TunnelState.Health.UNHEALTHY -> AlertRed
-        TunnelState.Health.HEALTHY -> SilverTree
-        TunnelState.Health.STALE -> Straw
+        Tunnel.State.Down -> CoolGray
+        Tunnel.State.Starting, Tunnel.State.Stopping, Tunnel.State.Up.ResolvingDns -> Straw
+        Tunnel.State.Up.HandshakeFailure -> AlertRed
+        Tunnel.State.Up.Healthy -> SilverTree
     }
 }
 

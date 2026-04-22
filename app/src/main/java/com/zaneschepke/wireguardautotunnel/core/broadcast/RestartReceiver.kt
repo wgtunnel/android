@@ -36,7 +36,8 @@ class RestartReceiver : BroadcastReceiver(), KoinComponent {
                 }
                 Intent.ACTION_MY_PACKAGE_REPLACED -> {
                     Timber.i("Restoring state on package upgrade")
-                    tunnelManager.handleRestore()
+                    // TODO
+//                    tunnelManager.handleRestore()
                     logReader.deleteAndClearLogs()
                     appStateRepository.setShouldShowDonationSnackbar(true)
                 }

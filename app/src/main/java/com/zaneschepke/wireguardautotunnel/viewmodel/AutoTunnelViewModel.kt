@@ -3,6 +3,7 @@ package com.zaneschepke.wireguardautotunnel.viewmodel
 import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
 import androidx.lifecycle.ViewModel
 import com.zaneschepke.networkmonitor.NetworkMonitor
+import com.zaneschepke.tunnel.backend.RootShell
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
 import com.zaneschepke.wireguardautotunnel.data.model.AppMode
@@ -13,7 +14,6 @@ import com.zaneschepke.wireguardautotunnel.domain.repository.GlobalEffectReposit
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.domain.sideeffect.GlobalSideEffect
 import com.zaneschepke.wireguardautotunnel.ui.state.AutoTunnelUiState
-import com.zaneschepke.wireguardautotunnel.util.RootShellUtils
 import com.zaneschepke.wireguardautotunnel.util.StringValue
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
@@ -27,7 +27,7 @@ class AutoTunnelViewModel(
     private val networkMonitor: NetworkMonitor,
     private val globalEffectRepository: GlobalEffectRepository,
     private val tunnelsRepository: TunnelRepository,
-    private val rootShellUtils: RootShellUtils,
+    private val rootShell: RootShell
 ) : ContainerHost<AutoTunnelUiState, Nothing>, ViewModel() {
 
     init {
@@ -152,7 +152,7 @@ class AutoTunnelViewModel(
     fun setWifiDetectionMethod(method: WifiDetectionMethod) = intent {
         when (method) {
             WifiDetectionMethod.ROOT -> {
-                val accepted = rootShellUtils.requestRoot()
+                val accepted = rootShell.requestRootPermission()
                 val message =
                     if (!accepted) StringValue.StringResource(R.string.error_root_denied)
                     else StringValue.StringResource(R.string.root_accepted)

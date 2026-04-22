@@ -47,7 +47,7 @@ fun ConfigScreen(
     val locale = Locale.current.platformLocale
 
     var configProxy by remember {
-        mutableStateOf(uiState.tunnel?.let { ConfigProxy.from(it.toAmConfig()) } ?: ConfigProxy())
+        mutableStateOf(uiState.tunnel?.let { ConfigProxy.from(it.getConfig()) } ?: ConfigProxy())
     }
 
     var tunnelName by remember { mutableStateOf(uiState.tunnel?.name ?: "") }

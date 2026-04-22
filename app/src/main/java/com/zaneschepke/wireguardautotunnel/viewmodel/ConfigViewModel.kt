@@ -7,12 +7,12 @@ import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.domain.repository.GlobalEffectRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.domain.sideeffect.GlobalSideEffect
+import com.zaneschepke.wireguardautotunnel.parser.ConfigParseException
 import com.zaneschepke.wireguardautotunnel.ui.state.ConfigProxy
 import com.zaneschepke.wireguardautotunnel.ui.state.ConfigUiState
 import com.zaneschepke.wireguardautotunnel.util.StringValue
 import com.zaneschepke.wireguardautotunnel.util.extensions.asStringValue
 import kotlinx.coroutines.flow.combine
-import org.amnezia.awg.config.BadConfigException
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.viewmodel.container
 import timber.log.Timber
@@ -29,10 +29,10 @@ class ConfigViewModel(
             ConfigUiState(),
             buildSettings = { repeatOnSubscribedStopTimeout = 5000L },
         ) {
-            combine(tunnelManager.activeTunnels, tunnelRepository.flow) { activeTunnels, tuns ->
+            combine(tunnelManager.backendStatus, tunnelRepository.flow) { backendStatus, tuns ->
                     val tunnel = tuns.firstOrNull { it.id == tunnelId }
                     val tunnelNames = tuns.filter { it.id != tunnelId }.map { it.name }
-                    val isRunning = activeTunnels.containsKey(tunnelId)
+                    val isRunning = backendStatus.activeTunnels.containsKey(tunnelId)
                     state.copy(
                         unavailableNames = tunnelNames,
                         isLoading = false,
@@ -50,18 +50,18 @@ class ConfigViewModel(
                 GlobalSideEffect.Toast(StringValue.StringResource(R.string.tunnel_name_taken))
             )
         runCatching {
-                val (wg, am) = configProxy.buildConfigs()
+                val config = configProxy.buildConfig()
+                val quickConfig = config.asQuickString()
                 val tunnelConfig =
                     if (tunnelId == null) {
                         TunnelConfig.tunnelConfFromQuick(
-                            am.toAwgQuickString(true, false),
+                            quickConfig,
                             tunnelName,
                         )
                     } else {
                         state.tunnel?.copy(
                             name = tunnelName,
-                            amQuick = am.toAwgQuickString(true, false),
-                            wgQuick = wg.toWgQuickString(true),
+                            quickConfig = quickConfig,
                         )
                     }
                 if (tunnelConfig != null) {
@@ -81,8 +81,7 @@ class ConfigViewModel(
                 Timber.e(it)
                 val message =
                     when (it) {
-                        is BadConfigException -> it.asStringValue()
-                        is com.wireguard.config.BadConfigException -> it.asStringValue()
+                        is ConfigParseException -> it.asStringValue()
                         else -> StringValue.StringResource(R.string.unknown_error)
                     }
                 postSideEffect(GlobalSideEffect.Snackbar(message))

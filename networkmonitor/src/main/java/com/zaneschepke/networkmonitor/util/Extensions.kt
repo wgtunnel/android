@@ -10,19 +10,11 @@ import android.net.wifi.WifiManager
 import android.os.Build
 import android.provider.Settings
 import androidx.core.content.ContextCompat
-import com.wireguard.android.util.RootShell
 import com.zaneschepke.networkmonitor.AndroidNetworkMonitor.Companion.ANDROID_UNKNOWN_SSID
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 
-const val WIFI_SSID_SHELL_COMMAND = "cmd wifi status | grep -i 'connected to' | cut -d'\"' -f2"
-
-fun RootShell.getCurrentWifiName(): String {
-    val response = mutableListOf<String>()
-    run(response, WIFI_SSID_SHELL_COMMAND)
-    return response.firstOrNull() ?: ANDROID_UNKNOWN_SSID
-}
 
 @Suppress("DEPRECATION")
 fun WifiManager.getCurrentSecurityType(): WifiSecurityType? {

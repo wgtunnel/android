@@ -6,7 +6,8 @@
 	<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <!--for split tunneling-->
-    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
+        tools:ignore="QueryAllPackagesPermission" />
 
     <!--foreground service special use for non VPN service tunnels, android 14-->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
@@ -238,14 +239,6 @@
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
             </intent-filter>
         </receiver>
-		<receiver
-			android:name=".core.broadcast.KernelReceiver"
-			android:exported="false"
-			android:permission="${applicationId}.permission.CONTROL_TUNNELS">
-			<intent-filter>
-				<action android:name="com.wireguard.android.action.REFRESH_TUNNEL_STATES" />
-			</intent-filter>
-		</receiver>
 		<!--custom security solution for easier user integration-->
 		<receiver
 			android:name=".core.broadcast.RemoteControlReceiver"

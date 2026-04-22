@@ -16,29 +16,37 @@ import com.zaneschepke.wireguardautotunnel.ui.common.sheet.SheetOption
 import com.zaneschepke.wireguardautotunnel.util.Constants
 import com.zaneschepke.wireguardautotunnel.util.FileUtils
 import com.zaneschepke.wireguardautotunnel.util.extensions.hasSAFSupport
+import com.zaneschepke.wireguardautotunnel.util.extensions.toUserFriendlyTimestamp
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LogsBottomSheet(onExport: (file: Uri?) -> Unit, onDelete: () -> Unit, onDismiss: () -> Unit) {
+fun LogsBottomSheet(
+    onExport: (Uri) -> Unit,
+    onDelete: () -> Unit,
+    onCanceled: () -> Unit,
+    onUnsupported: () -> Unit,
+    onDismiss: () -> Unit
+) {
     val context = LocalContext.current
 
-    val selectedTunnelsExportLauncher =
-        rememberFileExportLauncherForResult(
-            mimeType = FileUtils.ZIP_FILE_MIME_TYPE,
-            onResult = { file ->
-                if (file != null) {
-                    onExport(file)
-                } else onDismiss()
-            },
-        )
+    val exportLauncher = rememberFileExportLauncherForResult(
+        mimeType = FileUtils.ZIP_FILE_MIME_TYPE,
+        onSuccess = { uri -> onExport(uri) },
+        onCanceled = onCanceled,
+        onUnsupported = onUnsupported
+    )
 
     fun handleFileExport() {
         if (context.hasSAFSupport(FileUtils.ZIP_FILE_MIME_TYPE)) {
-            selectedTunnelsExportLauncher.launch(
-                "${Constants.BASE_LOG_FILE_NAME}_${BuildConfig.VERSION_NAME}_${BuildConfig.FLAVOR}.zip"
-            )
+            val timestamp = Instant.now().toUserFriendlyTimestamp()
+            val fileName = "${Constants.BASE_LOG_FILE_NAME}_${timestamp}_${BuildConfig.VERSION_NAME}_${BuildConfig.FLAVOR}.zip"
+
+            exportLauncher.launch(fileName)
         } else {
-            onExport(null)
+            onUnsupported()
         }
     }
 
@@ -47,13 +55,13 @@ fun LogsBottomSheet(onExport: (file: Uri?) -> Unit, onDelete: () -> Unit, onDism
             SheetOption(
                 Icons.Outlined.FolderZip,
                 stringResource(R.string.export_logs),
-                onClick = { handleFileExport() },
+                onClick = { handleFileExport() }
             ),
             SheetOption(
                 Icons.Outlined.Delete,
                 stringResource(R.string.delete_logs),
-                onClick = onDelete,
-            ),
+                onClick = onDelete
+            )
         )
     ) {
         onDismiss()

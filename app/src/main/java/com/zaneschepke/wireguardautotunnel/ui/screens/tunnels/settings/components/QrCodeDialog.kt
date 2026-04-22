@@ -3,10 +3,6 @@ package com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.settings.componen
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Check
-import androidx.compose.material.icons.outlined.VpnKey
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -18,7 +14,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.zaneschepke.wireguardautotunnel.MainActivity
 import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.domain.enums.ConfigType
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.util.extensions.isTextTooLargeForQr
 import com.zaneschepke.wireguardautotunnel.util.extensions.setScreenBrightness
@@ -65,42 +60,19 @@ private fun QrCodeAlertDialog(tunnelConfig: TunnelConfig, onDismiss: () -> Unit)
 @Composable
 private fun QrCodeContent(tunnelConfig: TunnelConfig, onDismiss: () -> Unit) {
     val context = LocalContext.current
-    var selectedOption by remember { mutableStateOf(ConfigType.WG) }
 
-    val wgText = remember(tunnelConfig) { tunnelConfig.toWgConfig().toWgQuickString(true) }
-    val amText = remember(tunnelConfig) { tunnelConfig.toAmConfig().toAwgQuickString(true, false) }
+    val isConfigTooLarge by remember(tunnelConfig.quickConfig) { derivedStateOf { tunnelConfig.quickConfig.isTextTooLargeForQr() } }
 
-    val isWgTooLarge by remember(wgText) { derivedStateOf { wgText.isTextTooLargeForQr() } }
-    val isAmTooLarge by remember(amText) { derivedStateOf { amText.isTextTooLargeForQr() } }
-
-    val qrCodeText by
-        remember(selectedOption, wgText, amText) {
-            derivedStateOf {
-                when (selectedOption) {
-                    ConfigType.AM -> amText
-                    ConfigType.WG -> wgText
-                }
-            }
-        }
-
-    LaunchedEffect(isWgTooLarge, isAmTooLarge) {
-        if (isWgTooLarge && isAmTooLarge) {
-            onDismiss()
-            context.showToast(R.string.text_too_large_for_qr)
-        } else if (isAmTooLarge && selectedOption == ConfigType.AM) {
-            selectedOption = ConfigType.WG
-            context.showToast(R.string.text_too_large_for_qr)
-        } else if (isWgTooLarge && selectedOption == ConfigType.WG) {
-            selectedOption = ConfigType.AM
-            context.showToast(R.string.text_too_large_for_qr)
-        }
+    LaunchedEffect(isConfigTooLarge) {
+        onDismiss()
+        context.showToast(R.string.text_too_large_for_qr)
     }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.Top),
     ) {
-        val qrCodePainter = rememberQrCodePainter(data = qrCodeText, options = createQrOptions())
+        val qrCodePainter = rememberQrCodePainter(data = tunnelConfig.quickConfig, options = createQrOptions())
         Image(
             painter = qrCodePainter,
             contentDescription = stringResource(R.string.show_qr),
@@ -110,101 +82,6 @@ private fun QrCodeContent(tunnelConfig: TunnelConfig, onDismiss: () -> Unit) {
                     .padding(16.dp)
                     .background(Color.White),
         )
-        ConfigTypeSelector(
-            selectedOption = selectedOption,
-            onOptionSelected = { newOption ->
-                val isTooLarge =
-                    when (newOption) {
-                        ConfigType.AM -> isAmTooLarge
-                        ConfigType.WG -> isWgTooLarge
-                    }
-                if (isTooLarge) {
-                    context.showToast(R.string.text_too_large_for_qr)
-                } else {
-                    selectedOption = newOption
-                }
-            },
-            isWgTooLarge = isWgTooLarge,
-            isAmTooLarge = isAmTooLarge,
-        )
-    }
-}
-
-@Composable
-private fun ConfigTypeSelector(
-    selectedOption: ConfigType,
-    onOptionSelected: (ConfigType) -> Unit,
-    isWgTooLarge: Boolean,
-    isAmTooLarge: Boolean,
-) {
-    MultiChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp)) {
-        ConfigType.entries.sortedDescending().forEachIndexed { index, entry ->
-            val isActive = selectedOption == entry
-            val isEnabled =
-                when (entry) {
-                    ConfigType.AM -> !isAmTooLarge
-                    ConfigType.WG -> !isWgTooLarge
-                }
-            val typeName =
-                stringResource(
-                    when (entry) {
-                        ConfigType.AM -> R.string.amnezia
-                        ConfigType.WG -> R.string.wireguard
-                    }
-                )
-            val activeContainerColor = Color.White
-            val inactiveContainerColor = Color.White
-            val activeContentColor =
-                if (isEnabled) Color.Black else MaterialTheme.colorScheme.outline
-            val inactiveContentColor =
-                if (isEnabled) Color.Black else MaterialTheme.colorScheme.outline
-            SegmentedButton(
-                shape =
-                    SegmentedButtonDefaults.itemShape(
-                        index = index,
-                        count = ConfigType.entries.size,
-                        baseShape = RoundedCornerShape(8.dp),
-                    ),
-                icon = {
-                    SegmentedButtonDefaults.Icon(
-                        active = isActive,
-                        activeContent = {
-                            Icon(
-                                imageVector = Icons.Outlined.Check,
-                                contentDescription = stringResource(R.string.select),
-                                tint =
-                                    if (isEnabled) MaterialTheme.colorScheme.primary
-                                    else MaterialTheme.colorScheme.outline,
-                                modifier = Modifier.size(SegmentedButtonDefaults.IconSize),
-                            )
-                        },
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.VpnKey,
-                            contentDescription = typeName,
-                            tint =
-                                if (isEnabled) Color.Black else MaterialTheme.colorScheme.outline,
-                            modifier = Modifier.size(SegmentedButtonDefaults.IconSize),
-                        )
-                    }
-                },
-                colors =
-                    SegmentedButtonDefaults.colors(
-                        activeContainerColor = activeContainerColor,
-                        inactiveContainerColor = inactiveContainerColor,
-                        activeContentColor = activeContentColor,
-                        inactiveContentColor = inactiveContentColor,
-                    ),
-                onCheckedChange = { onOptionSelected(entry) },
-                checked = isActive,
-            ) {
-                Text(
-                    text = typeName,
-                    color = if (isEnabled) Color.Black else MaterialTheme.colorScheme.outline,
-                    style = MaterialTheme.typography.labelMedium,
-                )
-            }
-        }
     }
 }
 

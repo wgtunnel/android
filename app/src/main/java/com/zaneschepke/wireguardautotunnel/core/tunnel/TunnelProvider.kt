@@ -1,14 +1,12 @@
 package com.zaneschepke.wireguardautotunnel.core.tunnel
 
-import com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode
-import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
+import com.zaneschepke.tunnel.state.BackendStatus
+import com.zaneschepke.wireguardautotunnel.data.model.AppMode
 import com.zaneschepke.wireguardautotunnel.domain.events.BackendCoreException
 import com.zaneschepke.wireguardautotunnel.domain.events.BackendMessage
+import com.zaneschepke.wireguardautotunnel.domain.model.LockdownSettings
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
-import com.zaneschepke.wireguardautotunnel.domain.state.LogHealthState
-import com.zaneschepke.wireguardautotunnel.domain.state.PingState
-import com.zaneschepke.wireguardautotunnel.domain.state.TunnelState
-import com.zaneschepke.wireguardautotunnel.domain.state.TunnelStatistics
+import com.zaneschepke.wireguardautotunnel.parser.ActiveConfig
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -17,29 +15,17 @@ interface TunnelProvider {
 
     suspend fun stopTunnel(tunnelId: Int)
 
-    suspend fun forceStopTunnel(tunnelId: Int)
-
     suspend fun stopActiveTunnels()
 
-    fun setBackendMode(backendMode: BackendMode)
+    suspend fun setLockDown(settings: LockdownSettings)
 
-    fun getBackendMode(): BackendMode
+    suspend fun disableLockDown()
 
-    suspend fun runningTunnelNames(): Set<String>
+    suspend fun getActiveConfig(tunnelId: Int): ActiveConfig?
 
-    fun handleDnsReresolve(tunnelConfig: TunnelConfig): Boolean
+    suspend fun changeAppMode(newMode: AppMode): Result<Unit>
 
-    fun getStatistics(tunnelId: Int): TunnelStatistics?
-
-    val activeTunnels: StateFlow<Map<Int, TunnelState>>
+    val backendStatus: StateFlow<BackendStatus>
     val errorEvents: SharedFlow<Pair<String?, BackendCoreException>>
     val messageEvents: SharedFlow<Pair<String?, BackendMessage>>
-
-    suspend fun updateTunnelStatus(
-        tunnelId: Int,
-        status: TunnelStatus? = null,
-        stats: TunnelStatistics? = null,
-        pingStates: Map<String, PingState>? = null,
-        logHealthState: LogHealthState? = null,
-    )
 }

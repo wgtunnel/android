@@ -1,7 +1,7 @@
 package com.zaneschepke.wireguardautotunnel.ui.state
 
-import com.wireguard.config.Peer
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
+import com.zaneschepke.wireguardautotunnel.parser.PeerSection
 import com.zaneschepke.wireguardautotunnel.util.extensions.joinAndTrim
 
 data class PeerProxy(
@@ -11,91 +11,33 @@ data class PeerProxy(
     val endpoint: String = "",
     val allowedIps: String = TunnelConfig.ALL_IPS.joinAndTrim(),
 ) {
-    fun toWgPeer(): Peer {
-        return Peer.Builder()
-            .apply {
-                parsePublicKey(publicKey)
-                if (preSharedKey.isNotBlank()) parsePreSharedKey(preSharedKey)
-                if (persistentKeepalive.isNotBlank()) parsePersistentKeepalive(persistentKeepalive)
-                if (endpoint.isNotBlank()) parseEndpoint(endpoint)
-                parseAllowedIPs(allowedIps)
-            }
-            .build()
-    }
 
-    fun toAmPeer(): org.amnezia.awg.config.Peer {
-        return org.amnezia.awg.config.Peer.Builder()
-            .apply {
-                parsePublicKey(publicKey)
-                if (preSharedKey.isNotBlank()) parsePreSharedKey(preSharedKey)
-                if (persistentKeepalive.isNotBlank()) parsePersistentKeepalive(persistentKeepalive)
-                if (endpoint.isNotBlank()) parseEndpoint(endpoint)
-                parseAllowedIPs(allowedIps)
-            }
-            .build()
-    }
+    fun toPeerSection(): PeerSection =
+        PeerSection(
+            publicKey = publicKey.trim(),
+            allowedIPs = allowedIps.ifBlank { null },
+            endpoint = endpoint.ifBlank { null },
+            presharedKey = preSharedKey.ifBlank { null },
+            persistentKeepalive = persistentKeepalive.toIntOrNull(),
+        )
 
-    fun isLanExcluded(): Boolean {
-        return this.allowedIps.contains(TunnelConfig.LAN_BYPASS_ALLOWED_IPS.joinAndTrim())
-    }
+    fun isLanExcluded(): Boolean =
+        this.allowedIps.contains(TunnelConfig.LAN_BYPASS_ALLOWED_IPS.joinAndTrim())
 
-    fun includeLan(): PeerProxy {
-        return this.copy(allowedIps = TunnelConfig.ALL_IPS.joinAndTrim())
-    }
+    fun includeLan(): PeerProxy =
+        this.copy(allowedIps = TunnelConfig.ALL_IPS.joinAndTrim())
 
-    fun excludeLan(): PeerProxy {
-        return this.copy(allowedIps = TunnelConfig.LAN_BYPASS_ALLOWED_IPS.joinAndTrim())
-    }
+    fun excludeLan(): PeerProxy =
+        this.copy(allowedIps = TunnelConfig.LAN_BYPASS_ALLOWED_IPS.joinAndTrim())
 
     companion object {
-        fun from(peer: Peer): PeerProxy {
-            return PeerProxy(
-                publicKey = peer.publicKey.toBase64(),
-                preSharedKey =
-                    if (peer.preSharedKey.isPresent) {
-                        peer.preSharedKey.get().toBase64().trim()
-                    } else {
-                        ""
-                    },
-                persistentKeepalive =
-                    if (peer.persistentKeepalive.isPresent) {
-                        peer.persistentKeepalive.get().toString().trim()
-                    } else {
-                        ""
-                    },
-                endpoint =
-                    if (peer.endpoint.isPresent) {
-                        peer.endpoint.get().toString().trim()
-                    } else {
-                        ""
-                    },
-                allowedIps = peer.allowedIps.joinToString(", ").trim(),
+        fun from(peer: PeerSection): PeerProxy =
+            PeerProxy(
+                publicKey = peer.publicKey,
+                preSharedKey = peer.presharedKey ?: "",
+                persistentKeepalive = peer.persistentKeepalive?.toString() ?: "",
+                endpoint = peer.endpoint ?: "",
+                allowedIps = peer.allowedIPs ?: TunnelConfig.ALL_IPS.joinAndTrim(),
             )
-        }
-
-        fun from(peer: org.amnezia.awg.config.Peer): PeerProxy {
-            return PeerProxy(
-                publicKey = peer.publicKey.toBase64(),
-                preSharedKey =
-                    if (peer.preSharedKey.isPresent) {
-                        peer.preSharedKey.get().toBase64().trim()
-                    } else {
-                        ""
-                    },
-                persistentKeepalive =
-                    if (peer.persistentKeepalive.isPresent) {
-                        peer.persistentKeepalive.get().toString().trim()
-                    } else {
-                        ""
-                    },
-                endpoint =
-                    if (peer.endpoint.isPresent) {
-                        peer.endpoint.get().toString().trim()
-                    } else {
-                        ""
-                    },
-                allowedIps = peer.allowedIps.joinToString(", ").trim(),
-            )
-        }
     }
 }

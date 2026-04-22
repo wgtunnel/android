@@ -10,6 +10,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.zaneschepke.tunnel.Tunnel
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.WireGuardAutoTunnel
 import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
@@ -60,8 +61,8 @@ class TunnelControlTile : TileService(), LifecycleOwner {
         if (isCollecting.compareAndSet(expectedValue = false, newValue = true)) {
             lifecycleScope.launch {
                 repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    tunnelManager.activeTunnels
-                        .distinctUntilChangedBy { it.size }
+                    tunnelManager.backendStatus
+                        .distinctUntilChangedBy { it.activeTunnels.size }
                         .collect { updateTileState() }
                 }
             }
@@ -87,7 +88,7 @@ class TunnelControlTile : TileService(), LifecycleOwner {
             }
 
             val activeTunnels =
-                tunnelManager.activeTunnels.value.filter { it.value.status.isUpOrStarting() }
+                tunnelManager.backendStatus.value.activeTunnels.filter { it.value.state != Tunnel.State.Down }
 
             when {
                 activeTunnels.isNotEmpty() -> {
@@ -139,7 +140,7 @@ class TunnelControlTile : TileService(), LifecycleOwner {
         unlockAndRun {
             lifecycleScope.launch {
                 startLock.withLock {
-                    if (tunnelManager.activeTunnels.value.isNotEmpty())
+                    if (tunnelManager.backendStatus.value.activeTunnels.isNotEmpty())
                         return@launch tunnelManager.stopActiveTunnels()
                     val lastActive = WireGuardAutoTunnel.getLastActiveTunnels()
                     if (lastActive.isEmpty()) {

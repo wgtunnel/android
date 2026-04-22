@@ -24,7 +24,7 @@ class TunnelViewModel(
                     tunnelRepository.userTunnelsFlow.map {
                         it.firstOrNull { tun -> tun.id == tunnelId }
                     },
-                    tunnelManager.activeTunnels.map { it.containsKey(tunnelId) },
+                    tunnelManager.backendStatus.map { it.activeTunnels.containsKey(tunnelId) },
                 ) { tunnel, active ->
                     state.copy(tunnel = tunnel, isActive = active, isLoading = false)
                 }

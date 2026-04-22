@@ -86,7 +86,7 @@ fun ProxySettingsScreen(
 
     sharedViewModel.collectSideEffect { sideEffect ->
         if (sideEffect is LocalSideEffect.SaveChanges) {
-            if (uiState.activeTuns.isNotEmpty()) viewModel.setShowSaveModal(true) else saveChanges()
+            if (uiState.backendStatus.activeTunnels.isNotEmpty()) viewModel.setShowSaveModal(true) else saveChanges()
         }
     }
 

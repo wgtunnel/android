@@ -13,18 +13,16 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Circle
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.zaneschepke.tunnel.Tunnel
+import com.zaneschepke.tunnel.state.ActiveTunnel
 import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.domain.state.TunnelState
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SwitchWithDivider
@@ -72,22 +70,24 @@ fun TunnelList(
         }
         items(uiState.tunnels, key = { it.id }) { tunnel ->
             val tunnelState =
-                remember(uiState.activeTunnels) {
-                    uiState.activeTunnels[tunnel.id] ?: TunnelState()
+                remember(uiState.backendStatus.activeTunnels) {
+                    uiState.backendStatus.activeTunnels[tunnel.id] ?: ActiveTunnel()
                 }
             val selected =
                 remember(uiState.selectedTunnels) {
                     uiState.selectedTunnels.any { it.id == tunnel.id }
                 }
-            var leadingIconColor by
-                remember(
-                    tunnelState.status,
-                    tunnelState.logHealthState,
-                    tunnelState.pingStates,
-                    tunnelState.statistics,
-                ) {
-                    mutableStateOf(tunnelState.health().asColor())
-                }
+
+            // TODO add new pinger to be factored in
+//            var leadingIconColor by
+//                remember(
+//                    tunnelState.status,
+//                    tunnelState.logHealthState,
+//                    tunnelState.pingStates,
+//                    tunnelState.statistics,
+//                ) {
+//                    mutableStateOf(tunnelState.health().asColor())
+//                }
 
             SurfaceRow(
                 modifier = Modifier.animateItem(),
@@ -95,7 +95,7 @@ fun TunnelList(
                     Icon(
                         Icons.Rounded.Circle,
                         contentDescription = stringResource(R.string.tunnel_monitoring),
-                        tint = leadingIconColor,
+                        tint = tunnelState.state.asColor(),
                         modifier = Modifier.size(14.dp),
                     )
                 },
@@ -110,10 +110,9 @@ fun TunnelList(
                 },
                 selected = selected,
                 expandedContent =
-                    if (!tunnelState.status.isDown()) {
+                    if (tunnelState.state !== Tunnel.State.Down) {
                         {
                             TunnelStatisticsRow(
-                                tunnel,
                                 tunnelState,
                                 uiState.isPingEnabled,
                                 uiState.showPingStats,
@@ -123,7 +122,7 @@ fun TunnelList(
                 onLongClick = { viewModel.toggleSelectedTunnel(tunnel.id) },
                 trailing = { modifier ->
                     SwitchWithDivider(
-                        checked = tunnelState.status.isUpOrStarting(),
+                        checked = tunnelState.state !== Tunnel.State.Down,
                         onClick = { checked ->
                             if (checked) viewModel.startTunnel(tunnel)
                             else viewModel.stopTunnel(tunnel)

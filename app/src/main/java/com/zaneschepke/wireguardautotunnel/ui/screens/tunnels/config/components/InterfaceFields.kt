@@ -19,8 +19,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
-import com.wireguard.crypto.KeyPair
 import com.zaneschepke.wireguardautotunnel.R
+import com.zaneschepke.wireguardautotunnel.parser.crypto.Key
 import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
 import com.zaneschepke.wireguardautotunnel.ui.common.functions.rememberClipboardHelper
 import com.zaneschepke.wireguardautotunnel.ui.common.textbox.ConfigurationTextBox
@@ -78,11 +78,12 @@ fun InterfaceFields(
                                     IconButton(
                                         enabled = true,
                                         onClick = {
-                                            val keypair = KeyPair()
+                                            val privateKey = Key.generatePrivateKey()
+                                            val publicKey = Key.generatePublicKey(privateKey)
                                             onInterfaceChange(
                                                 interfaceState.copy(
-                                                    privateKey = keypair.privateKey.toBase64(),
-                                                    publicKey = keypair.publicKey.toBase64(),
+                                                    privateKey = privateKey.toBase64(),
+                                                    publicKey = publicKey.toBase64(),
                                                 )
                                             )
                                         },

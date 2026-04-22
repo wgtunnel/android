@@ -37,7 +37,7 @@ class SettingsViewModel(
                         tunnelsRepository.globalTunnelFlow,
                         tunnelsRepository.userTunnelsFlow,
                         monitoringRepository.flow,
-                        tunnelManager.activeTunnels.map { it.isNotEmpty() }.distinctUntilChanged(),
+                        tunnelManager.backendStatus.map { it.activeTunnels.isNotEmpty() }.distinctUntilChanged(),
                     ) { settings, tunnel, tunnels, monitoring, tunnelActive ->
                         state.copy(
                             settings = settings,

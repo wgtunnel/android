@@ -25,10 +25,10 @@ class ProxySettingsViewModel(
             ProxySettingsUiState(),
             buildSettings = { repeatOnSubscribedStopTimeout = 5000L },
         ) {
-            combine(tunnelManager.activeTunnels, proxySettingsRepository.flow) {
-                    activeTuns,
+            combine(tunnelManager.backendStatus, proxySettingsRepository.flow) {
+                    backendStatus,
                     settings ->
-                    state.copy(proxySettings = settings, isLoading = false, activeTuns = activeTuns)
+                    state.copy(proxySettings = settings, isLoading = false, backendStatus = backendStatus)
                 }
                 .collect { reduce { it } }
         }
@@ -106,7 +106,7 @@ class ProxySettingsViewModel(
 
         proxySettingsRepository.upsert(updated)
 
-        if (state.activeTuns.isNotEmpty()) tunnelManager.restartActiveTunnels()
+        if (state.backendStatus.activeTunnels.isNotEmpty()) tunnelManager.restartActiveTunnels()
 
         postSideEffect(
             GlobalSideEffect.Snackbar(StringValue.StringResource(R.string.config_changes_saved))

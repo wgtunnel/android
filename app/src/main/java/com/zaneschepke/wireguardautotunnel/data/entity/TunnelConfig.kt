@@ -9,14 +9,13 @@ import androidx.room.PrimaryKey
 data class TunnelConfig(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     @ColumnInfo(name = "name") val name: String,
-    @ColumnInfo(name = "wg_quick") val wgQuick: String,
     @ColumnInfo(name = "tunnel_networks", defaultValue = "")
     val tunnelNetworks: Set<String> = setOf(),
     @ColumnInfo(name = "is_mobile_data_tunnel", defaultValue = "false")
     val isMobileDataTunnel: Boolean = false,
     @ColumnInfo(name = "is_primary_tunnel", defaultValue = "false")
     val isPrimaryTunnel: Boolean = false,
-    @ColumnInfo(name = "am_quick", defaultValue = "") val amQuick: String = "",
+    @ColumnInfo(name = "quick_config", defaultValue = "") val quickConfig: String = "",
     @ColumnInfo(name = "is_Active", defaultValue = "false") val isActive: Boolean = false,
     @ColumnInfo(name = "restart_on_ping_failure", defaultValue = "false")
     val restartOnPingFailure: Boolean = false,

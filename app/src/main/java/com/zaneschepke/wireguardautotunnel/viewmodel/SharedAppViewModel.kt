@@ -3,12 +3,12 @@ package com.zaneschepke.wireguardautotunnel.viewmodel
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.wireguard.android.backend.WgQuickBackend
+import com.zaneschepke.tunnel.backend.Backend
+import com.zaneschepke.tunnel.backend.RootShell
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
 import com.zaneschepke.wireguardautotunnel.data.model.AppMode
-import com.zaneschepke.wireguardautotunnel.domain.enums.ConfigType
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppStateRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
@@ -17,13 +17,13 @@ import com.zaneschepke.wireguardautotunnel.domain.repository.MonitoringSettingsR
 import com.zaneschepke.wireguardautotunnel.domain.repository.SelectedTunnelsRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.domain.sideeffect.GlobalSideEffect
+import com.zaneschepke.wireguardautotunnel.parser.ConfigParseException
 import com.zaneschepke.wireguardautotunnel.ui.sideeffect.LocalSideEffect
 import com.zaneschepke.wireguardautotunnel.ui.state.GlobalAppUiState
 import com.zaneschepke.wireguardautotunnel.ui.state.TunnelsUiState
 import com.zaneschepke.wireguardautotunnel.ui.theme.Theme
 import com.zaneschepke.wireguardautotunnel.util.FileUtils
 import com.zaneschepke.wireguardautotunnel.util.LocaleUtil
-import com.zaneschepke.wireguardautotunnel.util.RootShellUtils
 import com.zaneschepke.wireguardautotunnel.util.StringValue
 import com.zaneschepke.wireguardautotunnel.util.extensions.QuickConfig
 import com.zaneschepke.wireguardautotunnel.util.extensions.TunnelName
@@ -33,9 +33,6 @@ import com.zaneschepke.wireguardautotunnel.util.network.NetworkUtils
 import io.ktor.client.HttpClient
 import io.ktor.client.request.prepareGet
 import io.ktor.client.statement.bodyAsText
-import java.io.File
-import java.io.IOException
-import java.time.Instant
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -45,13 +42,14 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.plus
 import kotlinx.coroutines.withContext
-import org.amnezia.awg.config.BadConfigException
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.viewmodel.container
 import timber.log.Timber
 import xyz.teamgravity.pin_lock_compose.PinManager
+import java.io.File
+import java.io.IOException
+import java.time.Instant
 
 class SharedAppViewModel(
     private val appStateRepository: AppStateRepository,
@@ -62,7 +60,7 @@ class SharedAppViewModel(
     private val settingsRepository: GeneralSettingRepository,
     private val selectedTunnelsRepository: SelectedTunnelsRepository,
     monitoringSettingsRepository: MonitoringSettingsRepository,
-    private val rootShellUtils: RootShellUtils,
+    private val rootShell : RootShell,
     private val httpClient: HttpClient,
     private val fileUtils: FileUtils,
     private val networkUtils: NetworkUtils,
@@ -74,14 +72,14 @@ class SharedAppViewModel(
         combine(
                 tunnelRepository.userTunnelsFlow,
                 monitoringSettingsRepository.flow,
-                tunnelManager.activeTunnels,
+                tunnelManager.backendStatus,
                 selectedTunnelsRepository.flow,
-            ) { tunnels, monitoringSettings, activeTuns, selectedTuns ->
+            ) { tunnels, monitoringSettings, backendStatus, selectedTuns ->
                 TunnelsUiState(
                     tunnels = tunnels,
                     isPingEnabled = monitoringSettings.isPingEnabled,
                     showPingStats = monitoringSettings.showDetailedPingStats,
-                    activeTunnels = activeTuns,
+                    backendStatus = backendStatus,
                     selectedTunnels = selectedTuns,
                     isLoading = false,
                 )
@@ -183,13 +181,13 @@ class SharedAppViewModel(
                 }
             }
             AppMode.KERNEL -> {
-                val accepted = rootShellUtils.requestRoot()
+                val accepted = rootShell.requestRootPermission()
                 val message =
                     if (!accepted) StringValue.StringResource(R.string.error_root_denied)
                     else StringValue.StringResource(R.string.root_accepted)
                 postSideEffect(GlobalSideEffect.Snackbar(message))
                 if (!accepted) return@intent
-                if (WgQuickBackend.hasKernelSupport())
+                if (Backend.hasKernelSupport())
                     Timber.i(
                         "Device supports kernel backend. WireGuard module is built in, switching to kernel backend."
                     )
@@ -252,12 +250,11 @@ class SharedAppViewModel(
                         async {
                             val config =
                                 try {
-                                    tunnel.toAmConfig()
+                                    tunnel.getConfig()
                                 } catch (e: Exception) {
                                     null
                                 }
-                            val endpoint =
-                                config?.peers?.firstOrNull()?.endpoint?.orElse(null)?.host
+                            val endpoint = config?.peers?.firstOrNull()?.host
                             if (endpoint != null) {
                                 val latency =
                                     try {
@@ -289,7 +286,7 @@ class SharedAppViewModel(
             postSideEffect(
                 GlobalSideEffect.Snackbar(StringValue.StringResource(R.string.read_failed))
             )
-        } catch (e: BadConfigException) {
+        } catch (e: ConfigParseException) {
             postSideEffect(GlobalSideEffect.Snackbar(e.asStringValue()))
         }
     }
@@ -356,7 +353,7 @@ class SharedAppViewModel(
     }
 
     fun deleteSelectedTunnels() = intent {
-        val activeTunIds = tunnelManager.activeTunnels.firstOrNull()?.map { it.key }
+        val activeTunIds = tunnelManager.backendStatus.firstOrNull()?.activeTunnels?.map { it.key }
         val selectedTuns = tunnelsUiState.value.selectedTunnels
         if (selectedTuns.any { activeTunIds?.contains(it.id) == true })
             return@intent postSideEffect(
@@ -370,26 +367,15 @@ class SharedAppViewModel(
 
     fun copySelectedTunnel() = intent {
         val selected = tunnelsUiState.value.selectedTunnels.firstOrNull() ?: return@intent
-        val copy = TunnelConfig.tunnelConfFromQuick(selected.amQuick, selected.name)
+        val copy = TunnelConfig.tunnelConfFromQuick(selected.quickConfig, selected.name)
         tunnelRepository.saveTunnelsUniquely(listOf(copy), state.tunnelNames.map { it.value })
         clearSelectedTunnels()
     }
 
-    fun exportSelectedTunnels(configType: ConfigType, uri: Uri?) = intent {
+    fun exportSelectedTunnels(uri: Uri?) = intent {
         val selectedTunnels = tunnelsUiState.value.selectedTunnels
-        val (files, shareFileName) =
-            when (configType) {
-                ConfigType.AM ->
-                    Pair(
-                        createAmFiles(selectedTunnels),
-                        "am-export_${Instant.now().epochSecond}.zip",
-                    )
-                ConfigType.WG ->
-                    Pair(
-                        createWgFiles(selectedTunnels),
-                        "wg-export_${Instant.now().epochSecond}.zip",
-                    )
-            }
+        val files = createConfFiles(selectedTunnels)
+        val shareFileName = "wgtunnel-export_${Instant.now().epochSecond}.zip"
         val onFailure = { action: Throwable ->
             intent {
                 postSideEffect(
@@ -420,17 +406,10 @@ class SharedAppViewModel(
             .onFailure(onFailure)
     }
 
-    suspend fun createWgFiles(tunnels: Collection<TunnelConfig>): List<File> =
+    suspend fun createConfFiles(tunnels: Collection<TunnelConfig>): List<File> =
         tunnels.mapNotNull { config ->
-            if (config.wgQuick.isNotBlank()) {
-                fileUtils.createFile(config.name, config.wgQuick)
-            } else null
-        }
-
-    suspend fun createAmFiles(tunnels: Collection<TunnelConfig>): List<File> =
-        tunnels.mapNotNull { config ->
-            if (config.amQuick.isNotBlank()) {
-                fileUtils.createFile(config.name, config.amQuick)
+            if (config.quickConfig.isNotBlank()) {
+                fileUtils.createFile(config.name, config.quickConfig)
             } else null
         }
 }

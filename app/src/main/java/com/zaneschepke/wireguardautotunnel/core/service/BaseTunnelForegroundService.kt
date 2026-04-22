@@ -25,6 +25,7 @@ import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.core.qualifier.named
 import timber.log.Timber
+import kotlin.time.Duration.Companion.milliseconds
 
 abstract class BaseTunnelForegroundService : LifecycleService(), TunnelService {
 
@@ -90,53 +91,46 @@ abstract class BaseTunnelForegroundService : LifecycleService(), TunnelService {
 
     override fun start() {
         lifecycleScope.launch(ioDispatcher) {
-            tunnelManager.activeTunnels.distinctByKeys().collect { activeTunnels ->
-                val activeTunIds = activeTunnels.keys
+            tunnelManager.backendStatus.collect { status ->
+                val activeTunIds = status.activeTunnels.keys
                 val tunnels = tunnelsRepository.getAll()
                 val activeConfigs = tunnels.filter { activeTunIds.contains(it.id) }
 
                 updateServiceNotification(activeConfigs)
-                restartStatsUpdaterIfNeeded(activeConfigs)
+//                restartStatsUpdaterIfNeeded(activeConfigs)
             }
         }
     }
 
-    private fun restartStatsUpdaterIfNeeded(activeConfigs: List<TunnelConfig>) {
-        val single = activeConfigs.singleOrNull()
-
-        if (single == null) {
-            statsJob?.cancel()
-            statsJob = null
-            currentSingleTunnelId = null
-            return
-        }
-
-        if (currentSingleTunnelId == single.id && statsJob?.isActive == true) return
-
-        statsJob?.cancel()
-        statsJob = null
-        currentSingleTunnelId = single.id
-
-        statsJob =
-            lifecycleScope.launch(ioDispatcher) {
-                while (isActive) {
-                    val traffic = readTraffic(single.id)
-
-                    notificationManager.show(
-                        NotificationManager.VPN_NOTIFICATION_ID,
-                        createTunnelNotification(single, consumedTraffic = traffic),
-                    )
-
-                    delay(1000)
-                }
-            }
-    }
-
-    private fun readTraffic(tunnelId: Int): Pair<Long, Long>? {
-        val active = tunnelManager.activeTunnels.value[tunnelId] ?: return null
-        val stats = active.statistics ?: return null
-        return stats.rx() to stats.tx()
-    }
+//    private fun restartStatsUpdaterIfNeeded(activeConfigs: List<TunnelConfig>) {
+//        val single = activeConfigs.singleOrNull()
+//
+//        if (single == null) {
+//            statsJob?.cancel()
+//            statsJob = null
+//            currentSingleTunnelId = null
+//            return
+//        }
+//
+//        if (currentSingleTunnelId == single.id && statsJob?.isActive == true) return
+//
+//        statsJob?.cancel()
+//        statsJob = null
+//        currentSingleTunnelId = single.id
+//
+//        statsJob =
+//            lifecycleScope.launch(ioDispatcher) {
+//                while (isActive) {
+//
+//                    notificationManager.show(
+//                        NotificationManager.VPN_NOTIFICATION_ID,
+//                        createTunnelNotification(single, consumedTraffic = traffic),
+//                    )
+//
+//                    delay(1000.milliseconds)
+//                }
+//            }
+//    }
 
     private fun updateServiceNotification(activeConfigs: List<TunnelConfig>) {
         val notification =

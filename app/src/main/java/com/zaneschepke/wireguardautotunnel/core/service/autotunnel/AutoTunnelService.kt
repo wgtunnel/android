@@ -51,6 +51,7 @@ import kotlinx.coroutines.sync.withLock
 import org.koin.android.ext.android.inject
 import org.koin.core.qualifier.named
 import timber.log.Timber
+import kotlin.time.Duration.Companion.milliseconds
 
 class AutoTunnelService : LifecycleService() {
 
@@ -162,7 +163,7 @@ class AutoTunnelService : LifecycleService() {
                     SettingsChange(appMode, settings, tunnels)
                 }
 
-            val tunnelsFlow = tunnelManager.activeTunnels.map(::ActiveTunnelsChange)
+            val tunnelsFlow = tunnelManager.backendStatus.map(::BackendStatusChange)
 
             var reevaluationJob: Job? = null
 
@@ -170,7 +171,7 @@ class AutoTunnelService : LifecycleService() {
             combine(networkFlow, settingsFlow, tunnelsFlow) { network, settings, tunnels ->
                     autoTunnelStateFlow.update {
                         it.copy(
-                            activeTunnels = tunnels.activeTunnels,
+                            backendStatus = tunnels.backendStatus,
                             networkState = network.networkState,
                             settings = settings.settings,
                             tunnels = settings.tunnels,
@@ -189,7 +190,7 @@ class AutoTunnelService : LifecycleService() {
             // use merge to limit the noise of a combine and also increase the scalability of auto
             // tunnel handling new states
             merge(networkFlow, settingsFlow, tunnelsFlow).collect { change ->
-                if (change !is ActiveTunnelsChange) {
+                if (change !is BackendStatusChange) {
                     Timber.d("New state changed to ${change.javaClass.simpleName}")
                 }
 
@@ -218,8 +219,8 @@ class AutoTunnelService : LifecycleService() {
                             return@collect
                         }
                     }
-                    is ActiveTunnelsChange -> {
-                        autoTunnelStateFlow.update { it.copy(activeTunnels = change.activeTunnels) }
+                    is BackendStatusChange -> {
+                        autoTunnelStateFlow.update { it.copy(backendStatus = change.backendStatus) }
                         return@collect
                     }
                 }
@@ -229,7 +230,7 @@ class AutoTunnelService : LifecycleService() {
                 // re-evaluate network state after a short duration to prevent missed state changes
                 reevaluationJob = launch {
                     val snapshotNetwork = autoTunnelStateFlow.value.networkState
-                    delay(REEVALUATE_CHECK_DELAY)
+                    delay(REEVALUATE_CHECK_DELAY.milliseconds)
                     val currentState = autoTunnelStateFlow.value
                     if (
                         currentState != defaultState && currentState.networkState != snapshotNetwork
@@ -383,7 +384,7 @@ class AutoTunnelService : LifecycleService() {
             .map { it.debounceDelaySeconds.toMillis() }
             .distinctUntilChanged()
             .flatMapLatest { debounceMillis ->
-                networkMonitor.connectivityStateFlow.debounce(debounceMillis)
+                networkMonitor.connectivityStateFlow.debounce(debounceMillis.milliseconds)
             }
     }
 
