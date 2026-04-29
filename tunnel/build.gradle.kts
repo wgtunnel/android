@@ -66,7 +66,7 @@ android {
 
 dependencies {
     implementation(project(":hevtunnel"))
-    implementation(project(":pinger"))
+    api(project(":pinger"))
     implementation(project(":networkmonitor"))
 
     implementation(libs.androidx.lifecycle.service)
@@ -77,6 +77,10 @@ dependencies {
     implementation(libs.libsu)
 
     implementation(libs.timber)
+
+    implementation(platform(libs.koin.bom))
+    implementation(libs.koin.core)
+    implementation(libs.koin.android)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

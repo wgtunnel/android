@@ -1,11 +1,9 @@
 package com.zaneschepke.tunnel.features
 
-import com.zaneschepke.tunnel.model.BackendMode
-import com.zaneschepke.tunnel.model.RunningTunnel
 import com.zaneschepke.wireguardautotunnel.parser.ActiveConfig
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import timber.log.Timber
 import kotlin.time.Duration.Companion.seconds
 
@@ -13,8 +11,8 @@ class ActiveConfigFeature {
 
     suspend fun monitor(
         tunnelId: Int,
-        getRawActiveConfig: (Int) -> String?,
-        statusUpdater: (Int, ActiveConfig?) -> Unit
+        getRawActiveConfig: suspend (Int) -> String?,
+        statusUpdater: suspend (Int, ActiveConfig?) -> Unit
     ) = coroutineScope {
         while (isActive) {
             try {

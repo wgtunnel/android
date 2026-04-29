@@ -3,7 +3,11 @@ package com.zaneschepke.wireguardautotunnel
 import android.app.Application
 import android.os.StrictMode
 import com.zaneschepke.logcatter.LogReader
+import com.zaneschepke.tunnel.backend.Backend
+import com.zaneschepke.tunnel.model.DnsBoostrapConfig
+import com.zaneschepke.tunnel.model.DnsBoostrapMode
 import com.zaneschepke.wireguardautotunnel.core.notification.NotificationMonitor
+import com.zaneschepke.wireguardautotunnel.data.model.DnsProtocol
 import com.zaneschepke.wireguardautotunnel.di.Dispatcher
 import com.zaneschepke.wireguardautotunnel.di.Scope
 import com.zaneschepke.wireguardautotunnel.di.appModule
@@ -12,6 +16,7 @@ import com.zaneschepke.wireguardautotunnel.di.dispatchersModule
 import com.zaneschepke.wireguardautotunnel.di.networkModule
 import com.zaneschepke.wireguardautotunnel.di.tunnelModule
 import com.zaneschepke.wireguardautotunnel.di.workerModule
+import com.zaneschepke.wireguardautotunnel.domain.repository.DnsSettingsRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.MonitoringSettingsRepository
 import com.zaneschepke.wireguardautotunnel.util.ReleaseTree
 import kotlinx.coroutines.CoroutineDispatcher
@@ -25,6 +30,7 @@ import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.androidx.workmanager.koin.workManagerFactory
+import org.koin.core.annotation.KoinViewModelScopeApi
 import org.koin.core.component.KoinComponent
 import org.koin.core.context.GlobalContext.startKoin
 import org.koin.core.lazyModules
@@ -39,8 +45,12 @@ class WireGuardAutoTunnel : Application(), KoinComponent {
     private val logReader: LogReader by inject()
 
     private val monitoringRepository: MonitoringSettingsRepository by inject()
+    private val dnsSettingRepository: DnsSettingsRepository by inject()
     private val notificationMonitor: NotificationMonitor by inject()
 
+    private val backend: Backend by inject()
+
+    @OptIn(KoinViewModelScopeApi::class)
     override fun onCreate() {
         super.onCreate()
         startKoin {
@@ -54,14 +64,14 @@ class WireGuardAutoTunnel : Application(), KoinComponent {
         instance = this
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
-            StrictMode.setThreadPolicy(
-                StrictMode.ThreadPolicy.Builder()
-                    .detectAll()
-                    .penaltyLog()
-                    .penaltyFlashScreen()
-                    .build()
-            )
-            StrictMode.setVmPolicy(StrictMode.VmPolicy.Builder().detectAll().penaltyLog().build())
+//            StrictMode.setThreadPolicy(
+//                StrictMode.ThreadPolicy.Builder()
+//                    .detectAll()
+//                    .penaltyLog()
+//                    .penaltyFlashScreen()
+//                    .build()
+//            )
+//            StrictMode.setVmPolicy(StrictMode.VmPolicy.Builder().detectAll().penaltyLog().build())
         } else {
             Timber.plant(ReleaseTree())
         }
@@ -79,6 +89,16 @@ class WireGuardAutoTunnel : Application(), KoinComponent {
                     }
             }
             launch { notificationMonitor.handleApplicationNotifications() }
+            launch {
+                val dnsSettings = dnsSettingRepository.getDnsSettings()
+                val dnsBoostrapMode = when(dnsSettings.dnsProtocol) {
+                    DnsProtocol.SYSTEM -> DnsBoostrapMode.System
+                    DnsProtocol.DOH -> DnsBoostrapMode.Custom(DnsBoostrapConfig.DoH(
+                        dnsSettings.dnsEndpoint,
+                    ))
+                }
+                backend.setBootstrapDnsMode(dnsBoostrapMode)
+            }
         }
     }
 

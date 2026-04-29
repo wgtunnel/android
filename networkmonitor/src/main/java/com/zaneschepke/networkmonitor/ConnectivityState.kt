@@ -9,7 +9,8 @@ data class ConnectivityState(
     val locationServicesEnabled: Boolean,
     val vpnState: VpnState,
     val effectiveDnsInfo: DnsInfo = DnsInfo(),
-    val underlyingDnsInfo: DnsInfo = DnsInfo()
+    val underlyingDnsInfo: DnsInfo = DnsInfo(),
+    val hasIpv6: Boolean = false
 ) {
     fun hasInternet(): Boolean = activeNetwork !is ActiveNetwork.Disconnected
 

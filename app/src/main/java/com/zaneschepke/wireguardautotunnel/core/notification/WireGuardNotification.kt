@@ -112,10 +112,10 @@ class WireGuardNotification(override val context: Context) : NotificationManager
                 PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
             )
         return NotificationCompat.Action.Builder(
-                R.drawable.ic_notification,
-                notificationAction.title(context),
-                pendingIntent,
-            )
+            R.drawable.ic_notification,
+            notificationAction.title(context),
+            pendingIntent,
+        )
             .build()
     }
 
@@ -156,19 +156,19 @@ class WireGuardNotification(override val context: Context) : NotificationManager
         return when (this) {
             NotificationChannels.VPN -> {
                 NotificationChannel(
-                        context.getString(R.string.vpn_channel_id),
-                        context.getString(R.string.vpn_channel_name),
-                        importance,
-                    )
+                    context.getString(R.string.vpn_channel_id),
+                    context.getString(R.string.vpn_channel_name),
+                    importance,
+                )
                     .apply { description = context.getString(R.string.vpn_channel_description) }
             }
 
             NotificationChannels.AUTO_TUNNEL -> {
                 NotificationChannel(
-                        context.getString(R.string.auto_tunnel_channel_id),
-                        context.getString(R.string.auto_tunnel_channel_name),
-                        importance,
-                    )
+                    context.getString(R.string.auto_tunnel_channel_id),
+                    context.getString(R.string.auto_tunnel_channel_name),
+                    importance,
+                )
                     .apply {
                         description = context.getString(R.string.auto_tunnel_channel_description)
                     }

@@ -78,7 +78,7 @@ fun SettingsScreen(
     var showAppModeSheet by rememberSaveable { mutableStateOf(false) }
 
     val appMode = uiState.settings.appMode
-    val dnsEnabled by rememberSaveable(appMode) { mutableStateOf(appMode != AppMode.KERNEL) }
+    val dnsEnabled by rememberSaveable(appMode) { mutableStateOf(true) }
 
     val showModeDivider by
         remember(appMode) {

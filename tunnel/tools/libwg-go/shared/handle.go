@@ -16,21 +16,6 @@ var (
 	nextHandle  int32 = 0
 )
 
-//export GoGenerateUniqueHandle
-func GoGenerateUniqueHandle(out *C.int32_t) C.int {
-	h, err := GenerateUniqueHandle()
-	if err != nil {
-		return -1
-	}
-	*out = C.int32_t(h)
-	return 0
-}
-
-//export GoReleaseHandle
-func GoReleaseHandle(handle C.int32_t) {
-	ReleaseHandle(int32(handle))
-}
-
 // GenerateUniqueHandle returns a globally unique handle across all backends.
 func GenerateUniqueHandle() (int32, error) {
 	handleMu.Lock()

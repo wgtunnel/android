@@ -29,16 +29,4 @@ object VpnBackend {
     external fun awgUpdateTunnelPeers(handle: Int, settings: String): Int
 
     external fun awgVersion(): String
-
-    /**
-     * Generates a globally unique handle across VPN, Proxy, and Kernel backends.
-     * Call this instead of the old GenerateHandle in Go.
-     */
-    external fun awgGenerateHandle(): Int
-
-    /**
-     * Releases a handle so it can be reused.
-     * Call this when a tunnel is fully torn down.
-     */
-    external fun awgReleaseHandle(handle: Int)
 }

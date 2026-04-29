@@ -142,6 +142,20 @@ class AndroidNetworkMonitor(
         return linkProperties.dnsServers.map { it.hostAddress }
     }
 
+    private fun hasIpv6Capability(network: Network?): Boolean {
+        if (network == null) return false
+
+        val linkProperties = connectivityManager?.getLinkProperties(network)
+            ?: return false
+
+        return linkProperties.linkAddresses.any { linkAddr ->
+            val addr = linkAddr.address
+            addr is java.net.Inet6Address &&
+                    !addr.isLoopbackAddress &&      // exclude ::1
+                    !addr.isLinkLocalAddress        // exclude fe80::
+        }
+    }
+
     // recreate defaultNetwork flow on permission/detection method changes to get newly available
     // network info
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -556,8 +570,8 @@ class AndroidNetworkMonitor(
                 locationServicesEnabled = permissions.locationServicesEnabled,
                 vpnState = vpnState,
                 effectiveDnsInfo = effectiveDns,
-                underlyingDnsInfo = underlyingDns
-            )
+                underlyingDnsInfo = underlyingDns,
+                hasIpv6 = hasIpv6Capability(underlyingNetwork))
             }
             .distinctUntilChanged()
             .debounce { 300L }
@@ -660,7 +674,6 @@ class AndroidNetworkMonitor(
                 permissionReceiver?.let { appContext.unregisterReceiver(it) }
                 locationServicesReceiver?.let { appContext.unregisterReceiver(it) }
                 airplaneReceiver?.let { appContext.unregisterReceiver(it) }
-
                 defaultNetworkCallback?.let { connectivityManager?.unregisterNetworkCallback(it) }
                 wifiCallback?.let { connectivityManager?.unregisterNetworkCallback(it) }
                 cellularCallback?.let { connectivityManager?.unregisterNetworkCallback(it) }

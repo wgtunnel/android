@@ -89,15 +89,3 @@ int ret = awgUpdateTunnelPeers(handle, (struct go_string){
 (*env)->ReleaseStringUTFChars(env, settings, settings_str);
 return ret;
 }
-
-JNIEXPORT jint JNICALL Java_com_zaneschepke_tunnel_VpnBackend_awgGenerateHandle(JNIEnv *env, jclass clazz) {
-int32_t handle;
-if (GoGenerateUniqueHandle(&handle) != 0) {
-return -1;
-}
-return (jint)handle;
-}
-
-JNIEXPORT void JNICALL Java_com_zaneschepke_tunnel_VpnBackend_awgReleaseHandle(JNIEnv *env, jclass clazz, jint handle) {
-GoReleaseHandle((int32_t)handle);
-}

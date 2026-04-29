@@ -6,7 +6,7 @@ Tunnel {
     val name: String
     val isMetered: Boolean
 
-    val preferIpv6: Boolean
+    val ipStrategy: IpStrategy
     val features: Set<Feature>
 
     fun updateState(state: State)
@@ -27,18 +27,20 @@ Tunnel {
         data object Stopping : State
     }
 
+    sealed interface IpStrategy {
+        data object Ipv4Only : IpStrategy
+
+        data class PreferIpv6(
+            val fallbackToIpv4Enabled: Boolean = true,
+            val recoveryEnabled: Boolean = true
+        ) : IpStrategy
+    }
+
     sealed interface Feature {
         data object DynamicDNS : Feature
 
         data class ActiveConfigMonitor(
             val intervalSeconds: Int = 1
-        ) : Feature
-
-        data class PingMonitor(
-            val intervalSeconds: Int = 30,
-            val attempts: Int = 3,
-            val timeoutSeconds: Int? = null,
-            val target: String? = null,
         ) : Feature
     }
 }

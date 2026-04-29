@@ -67,7 +67,7 @@ class TunnelManager(
                 com.zaneschepke.tunnel.model.BackendMode.Proxy.Standard(config, proxySettings.toProxyConfig())
             }
             AppMode.LOCK_DOWN -> com.zaneschepke.tunnel.model.BackendMode.Proxy.KillSwitchPrimary(config)
-            AppMode.KERNEL -> com.zaneschepke.tunnel.model.BackendMode.Kernel(config)
+            else -> com.zaneschepke.tunnel.model.BackendMode.Vpn(config)
         }
         return backend.start(
             object : Tunnel {
@@ -77,10 +77,12 @@ class TunnelManager(
                     get() = tunnelConfig.name
                 override val isMetered: Boolean
                     get() = tunnelConfig.isMetered
+                override val ipStrategy: Tunnel.IpStrategy
+                    get() = Tunnel.IpStrategy.PreferIpv6(true, true)
 
                 // TODO
                 override val features: Set<Tunnel.Feature>
-                    get() = emptySet()
+                    get() = setOf(Tunnel.Feature.ActiveConfigMonitor(), Tunnel.Feature.DynamicDNS)
 
                 override fun updateState(state: Tunnel.State) {
                     // nothing to do here

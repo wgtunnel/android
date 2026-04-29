@@ -1,6 +1,7 @@
 package com.zaneschepke.tunnel.util
 
 import android.os.Build
+import com.zaneschepke.networkmonitor.ActiveNetwork
 import com.zaneschepke.tunnel.model.DnsConfig
 import java.net.Inet4Address
 import java.net.InetAddress
@@ -58,5 +59,12 @@ fun String.parseDns(): DnsConfig {
     }
 
     return DnsConfig(servers, domains)
+}
+
+fun ActiveNetwork.key(): String = when (this) {
+    is ActiveNetwork.Wifi -> "wifi:$networkId"
+    is ActiveNetwork.Cellular -> "cellular"
+    is ActiveNetwork.Ethernet -> "ethernet"
+    ActiveNetwork.Disconnected -> "none"
 }
 

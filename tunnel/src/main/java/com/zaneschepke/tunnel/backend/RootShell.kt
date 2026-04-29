@@ -4,7 +4,10 @@ import android.content.Context
 import com.topjohnwu.superuser.Shell
 import com.zaneschepke.tunnel.model.ShellResult
 import com.zaneschepke.tunnel.util.RootShellException
+import timber.log.Timber
 import java.io.File
+import java.io.InputStream
+import java.io.OutputStream
 
 class RootShell(private val context: Context) {
 
@@ -92,5 +95,35 @@ class RootShell(private val context: Context) {
             }
             initialized = false
         }
+    }
+
+    fun execStreaming(command: String, onLine: (String) -> Unit) {
+        start()
+
+        val shell = Shell.getShell()
+
+        shell.submitTask(object : Shell.Task {
+            override fun run(
+                stdin: OutputStream,
+                stdout: InputStream,
+                stderr: InputStream
+            ) {
+                try {
+                    val reader = stdout.bufferedReader()
+                    var line: String?
+                    while (true) {
+                        line = reader.readLine() ?: break
+                        onLine(line)
+                    }
+                } catch (e: Exception) {
+                    // Normal when coroutine is cancelled or shell dies
+                    Timber.w(e, "Streaming command ended: $command")
+                }
+            }
+
+            override fun shellDied() {
+                Timber.w("Root shell died during streaming command")
+            }
+        })
     }
 }

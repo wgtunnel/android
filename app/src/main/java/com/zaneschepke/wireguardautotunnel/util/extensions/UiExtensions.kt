@@ -22,7 +22,9 @@ import com.zaneschepke.wireguardautotunnel.ui.theme.CoolGray
 import com.zaneschepke.wireguardautotunnel.ui.theme.SilverTree
 import com.zaneschepke.wireguardautotunnel.ui.theme.Straw
 import java.util.Locale
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 fun WifiDetectionMethod.asTitleString(context: Context): String {
     return when (this) {
@@ -94,34 +96,36 @@ fun Tunnel.State.asColor(): Color {
     }
 }
 
-fun Long.localizedDuration(locale: Locale = Locale.getDefault()): String {
-    require(this >= 0L) { "Duration cannot be negative" }
+fun Duration.localized(locale: Locale = Locale.getDefault()): String {
+    require(this >= Duration.ZERO) { "Duration cannot be negative" }
 
-    val duration = this.milliseconds
-
-    if (duration < 1000.milliseconds) {
+    if (this < 1.seconds) {
         return MeasureFormat.getInstance(locale, MeasureFormat.FormatWidth.SHORT)
             .format(Measure(0, MeasureUnit.SECOND))
     }
 
-    val totalSeconds = duration.inWholeSeconds
-
-    val days = totalSeconds / 86_400
-    val hours = (totalSeconds % 86_400) / 3_600
-    val minutes = (totalSeconds % 3_600) / 60
-    val seconds = totalSeconds % 60
-
     val measures = buildList {
-        if (days > 0) add(Measure(days, MeasureUnit.DAY))
-        if (hours > 0) add(Measure(hours, MeasureUnit.HOUR))
-        if (minutes > 0) add(Measure(minutes, MeasureUnit.MINUTE))
-        if (seconds > 0) add(Measure(seconds, MeasureUnit.SECOND))
+        if (inWholeDays > 0) add(Measure(inWholeDays, MeasureUnit.DAY))
+        if (inWholeHours % 24 > 0) add(Measure(inWholeHours % 24, MeasureUnit.HOUR))
+        if (inWholeMinutes % 60 > 0) add(Measure(inWholeMinutes % 60, MeasureUnit.MINUTE))
+        if (inWholeSeconds % 60 > 0) add(Measure(inWholeSeconds % 60, MeasureUnit.SECOND))
     }
 
     return MeasureFormat.getInstance(locale, MeasureFormat.FormatWidth.SHORT)
         .formatMeasures(*measures.toTypedArray())
 }
 
-fun Long.millisAgo(): Long {
-    return System.currentTimeMillis() - this
+fun Long?.toAgoDisplay(currentTimeMillis: Long = System.currentTimeMillis()): String? {
+    val timestamp = this ?: return null
+    if (timestamp <= 0L) return null
+
+    val nowSeconds = currentTimeMillis / 1000
+    val secondsAgo = (nowSeconds - timestamp).coerceAtLeast(0L)
+
+    return secondsAgo.seconds.localized()
+}
+
+fun Long.toUptimeDisplay(currentTimeMillis: Long = System.currentTimeMillis()): String {
+    val elapsedMillis = (currentTimeMillis - this).coerceAtLeast(0L)
+    return elapsedMillis.milliseconds.localized()
 }

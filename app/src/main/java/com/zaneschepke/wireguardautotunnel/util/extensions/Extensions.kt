@@ -5,6 +5,8 @@ import kotlin.math.roundToInt
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 
 fun <T> List<T>.update(index: Int, item: T): List<T> = toMutableList().apply { this[index] = item }
 
@@ -30,4 +32,8 @@ fun Instant.toUserFriendlyTimestamp(): String =
         .ofPattern("yyyy-MM-dd_HH-mm-ss")
         .withZone(ZoneId.systemDefault())
         .format(this)
+
+fun Long.secondsAgo(): Duration {
+    return (System.currentTimeMillis() - (this * 1000L)).milliseconds
+}
 

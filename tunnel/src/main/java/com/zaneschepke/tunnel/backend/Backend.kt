@@ -2,8 +2,7 @@ package com.zaneschepke.tunnel.backend
 
 import com.zaneschepke.tunnel.Tunnel
 import com.zaneschepke.tunnel.model.BackendMode
-import com.zaneschepke.tunnel.model.DnsBoostrapConfig
-import com.zaneschepke.tunnel.model.DnsConfig
+import com.zaneschepke.tunnel.model.DnsBoostrapMode
 import com.zaneschepke.tunnel.model.KillSwitchConfig
 import com.zaneschepke.tunnel.state.BackendStatus
 import com.zaneschepke.wireguardautotunnel.parser.ActiveConfig
@@ -23,7 +22,7 @@ interface Backend {
 
     suspend fun disableKillSwitch(): Result<Unit>
 
-    suspend fun setBootstrapDnsConfig(config : DnsBoostrapConfig)
+    suspend fun setBootstrapDnsMode(mode : DnsBoostrapMode)
 
     suspend fun getActiveConfig(id: Int): Result<ActiveConfig?>
 

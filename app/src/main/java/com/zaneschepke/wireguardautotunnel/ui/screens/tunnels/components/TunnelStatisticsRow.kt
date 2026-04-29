@@ -20,8 +20,8 @@ import com.zaneschepke.tunnel.state.ActiveTunnel
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.common.label.lowercaseLabel
 import com.zaneschepke.wireguardautotunnel.util.extensions.abbreviateKey
-import com.zaneschepke.wireguardautotunnel.util.extensions.localizedDuration
-import com.zaneschepke.wireguardautotunnel.util.extensions.millisAgo
+import com.zaneschepke.wireguardautotunnel.util.extensions.toAgoDisplay
+import com.zaneschepke.wireguardautotunnel.util.extensions.toUptimeDisplay
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -37,13 +37,13 @@ fun TunnelStatisticsRow(
     val locale = Locale.current.platformLocale
 
     var currentTimeMillis by remember { mutableLongStateOf(System.currentTimeMillis()) }
+
     LaunchedEffect(Unit) {
         while (true) {
             delay(1000L.milliseconds)
             currentTimeMillis = System.currentTimeMillis()
         }
     }
-
     val activeConfig = activeTunnel.activeConfig
     val peerText = lowercaseLabel(stringResource(R.string.peer))
     val handshakeText = lowercaseLabel(stringResource(R.string.handshake))
@@ -56,19 +56,26 @@ fun TunnelStatisticsRow(
             verticalArrangement = Arrangement.spacedBy(10.dp),
             horizontalAlignment = Alignment.Start,
         ) {
-            // TODO add uptime
-//            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-//                Row(
-//                    verticalAlignment = Alignment.CenterVertically,
-//                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-//                ) {
-//                    Text(
-//                        "uptime: ${tunnelState.uptime().localizedDuration(locale)}",
-//                        style = textStyle,
-//                        color = textColor,
-//                    )
-//                }
-//            }
+            activeTunnel.uptime?.let { startTime ->
+                val uptimeText by remember(startTime, currentTimeMillis) {
+                    derivedStateOf {
+                        startTime.toUptimeDisplay(currentTimeMillis)
+                    }
+                }
+
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    ) {
+                        Text(
+                            "uptime: $uptimeText",
+                            style = textStyle,
+                            color = textColor,
+                        )
+                    }
+                }
+            }
 
             config.peers.forEach { activePeer ->
                 key(activePeer) {
@@ -89,18 +96,9 @@ fun TunnelStatisticsRow(
                                 activePeer.txBytes?.let { Formatter.formatFileSize(context, it) }
                             }
                         }
-                    val handshake by
-                        remember(activePeer) {
-                            derivedStateOf {
-                                activePeer.lastHandshakeSeconds?.let { lastHandshake ->
-                                    if (lastHandshake == 0L) null
-                                    else lastHandshake.millisAgo().localizedDuration(locale)
-                                }
-                            }
-                        }
                     //TODO ping stuff
 //                    val pingState by
-//                        remember(tunnelState.pingStates) {
+//                        remember(activeConfig.pingStates) {
 //                            derivedStateOf {
 //                                tunnelState.pingStates?.getOrDefault(peerBase64, null)
 //                            }
@@ -164,7 +162,7 @@ fun TunnelStatisticsRow(
                             horizontalArrangement = Arrangement.spacedBy(16.dp),
                         ) {
                             Text(
-                                "$handshakeText: ${handshake?.let { lowercaseLabel(it) } ?: neverText}",
+                                "$handshakeText: ${activePeer.lastHandshakeSeconds?.toAgoDisplay() ?: neverText}",
                                 style = textStyle,
                                 color = textColor,
                             )
@@ -181,7 +179,7 @@ fun TunnelStatisticsRow(
                                 )
                             }
                         }
-//                        AnimatedVisibility(visible = pingState != null && pingEnabled) {
+//                        AnimatedVisibility(visible = activeTunnel.pingStats != null && pingEnabled) {
 //                            pingState?.let {
 //                                val reachableText =
 //                                    lowercaseLabel(
