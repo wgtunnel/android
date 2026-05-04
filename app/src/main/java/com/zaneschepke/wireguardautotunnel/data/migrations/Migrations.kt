@@ -29,7 +29,7 @@ val MIGRATION_23_24 =
                 `theme` TEXT NOT NULL DEFAULT 'AUTOMATIC',
                 `locale` TEXT,
                 `remote_key` TEXT,
-                `is_remote_control_enabled` INTEGER NOT NULL DEFAULT 0,
+                `is_remote_control_enabled` INTEGER NOT NULL DEFAULT 1,
                 `is_pin_lock_enabled` INTEGER NOT NULL DEFAULT 0,
                 `is_always_on_vpn_enabled` INTEGER NOT NULL DEFAULT 0,
                 `is_lan_on_kill_switch_enabled` INTEGER NOT NULL DEFAULT 0
@@ -249,7 +249,7 @@ val MIGRATION_23_24 =
                         val currentTheme = preferences[theme] ?: "AUTOMATIC"
                         val currentLocale = preferences[locale]
                         val currentRemoteKey = preferences[remoteKey]
-                        val isRemoteEnabled = preferences[isRemoteControlEnabled] ?: false
+                        val isRemoteEnabled = preferences[isRemoteControlEnabled] ?: true
                         val isPinLockEnabled = preferences[pinLockEnabled] ?: false
                         val detailedPingStats = preferences[showDetailedPingStats] ?: false
                         val localLogs = preferences[isLocalLogsEnabled] ?: false
@@ -361,7 +361,7 @@ val MIGRATION_25_26 =
                     `theme` TEXT NOT NULL DEFAULT 'AUTOMATIC',
                     `locale` TEXT,
                     `remote_key` TEXT,
-                    `is_remote_control_enabled` INTEGER NOT NULL DEFAULT 0,
+                    `is_remote_control_enabled` INTEGER NOT NULL DEFAULT 1,
                     `is_pin_lock_enabled` INTEGER NOT NULL DEFAULT 0,
                     `is_always_on_vpn_enabled` INTEGER NOT NULL DEFAULT 0,
                     `custom_split_packages` TEXT NOT NULL DEFAULT '{}'

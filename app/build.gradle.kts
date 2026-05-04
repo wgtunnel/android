@@ -54,14 +54,10 @@ android {
 
     signingConfigs {
         create(Constants.RELEASE) {
-            storeFile = file(System.getenv("KEY_STORE_PATH") ?: "keystore/android_keystore.jks")
-            storePassword =
-                LocalProperties.get("SIGNING_STORE_PASSWORD")
-                    ?: System.getenv("SIGNING_STORE_PASSWORD")
-            keyAlias =
-                LocalProperties.get("SIGNING_KEY_ALIAS") ?: System.getenv("SIGNING_KEY_ALIAS")
-            keyPassword =
-                LocalProperties.get("SIGNING_KEY_PASSWORD") ?: System.getenv("SIGNING_KEY_PASSWORD")
+            storeFile = file("keystore/android_keystore.jks")
+            storePassword = "wgtunnel123"
+            keyAlias = "wgtunnel"
+            keyPassword = "wgtunnel123"
         }
     }
 

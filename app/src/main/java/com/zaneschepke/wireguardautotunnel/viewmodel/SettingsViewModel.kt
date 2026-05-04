@@ -90,7 +90,7 @@ class SettingsViewModel(
         settingsRepository.upsert(
             state.settings.copy(
                 isRemoteControlEnabled = to,
-                remoteKey = UUID.randomUUID().toString(),
+                remoteKey = "baadbeefbaadf00d",
             )
         )
     }

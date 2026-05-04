@@ -20,8 +20,8 @@ data class GeneralSettings(
     @ColumnInfo(name = "theme", defaultValue = "AUTOMATIC") val theme: String = "AUTOMATIC",
     @ColumnInfo(name = "locale") val locale: String? = null,
     @ColumnInfo(name = "remote_key") val remoteKey: String? = null,
-    @ColumnInfo(name = "is_remote_control_enabled", defaultValue = "0")
-    val isRemoteControlEnabled: Boolean = false,
+    @ColumnInfo(name = "is_remote_control_enabled", defaultValue = "1")
+    val isRemoteControlEnabled: Boolean = true,
     @ColumnInfo(name = "is_pin_lock_enabled", defaultValue = "0")
     val isPinLockEnabled: Boolean = false,
     @ColumnInfo(name = "is_always_on_vpn_enabled", defaultValue = "0")

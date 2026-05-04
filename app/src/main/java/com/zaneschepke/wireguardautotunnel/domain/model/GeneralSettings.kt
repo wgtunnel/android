@@ -13,7 +13,7 @@ data class GeneralSettings(
     val theme: Theme = Theme.AUTOMATIC,
     val locale: String? = null,
     val remoteKey: String? = null,
-    val isRemoteControlEnabled: Boolean = false,
+    val isRemoteControlEnabled: Boolean = true,
     val isPinLockEnabled: Boolean = false,
     val isAlwaysOnVpnEnabled: Boolean = false,
     val isKillSwitchMetered: Boolean = true,
