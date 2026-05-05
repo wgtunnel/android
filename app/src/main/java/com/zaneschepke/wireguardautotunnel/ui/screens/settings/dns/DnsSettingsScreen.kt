@@ -10,6 +10,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Cloud
 import androidx.compose.material.icons.outlined.Dns
+import androidx.compose.material.icons.outlined.Security
+import androidx.compose.material.icons.outlined.FamilyRestroom
+import androidx.compose.material.icons.outlined.Block
+import androidx.compose.material.icons.outlined.Public
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -60,16 +64,55 @@ fun DnsSettingsScreen(viewModel: DnsViewModel = koinViewModel()) {
                 optionToString = { (it ?: DnsProtocol.SYSTEM).asString(context) },
             )
             AnimatedVisibility(dnsUiState.dnsSettings.dnsProtocol != DnsProtocol.SYSTEM) {
-                LabelledDropdown(
-                    title = stringResource(R.string.dns_provider),
-                    leading = { Icon(Icons.Outlined.Cloud, contentDescription = null) },
-                    currentValue =
-                        dnsUiState.dnsSettings.dnsEndpoint?.let { DnsProvider.fromAddress(it) }
-                            ?: DnsProvider.CLOUDFLARE,
-                    onSelected = { selected -> selected?.let { viewModel.setDnsProvider(it) } },
-                    options = DnsProvider.entries,
-                    optionToString = { it?.name ?: DnsProvider.CLOUDFLARE.name },
-                )
+                Column {
+                    GroupLabel("Категория DNS", Modifier.padding(horizontal = 16.dp))
+                    LabelledDropdown(
+                        title = "Выберите категорию",
+                        leading = { Icon(Icons.Outlined.Public, contentDescription = null) },
+                        currentValue = "all",
+                        onSelected = { /* Category filtering can be implemented here */ },
+                        options = listOf("all", "security", "family", "ads", "russia"),
+                        optionToString = { 
+                            when (it) {
+                                "all" -> "Все провайдеры"
+                                "security" -> "Безопасность (антивирус)"
+                                "family" -> "Семейный (блокировка 18+)"
+                                "ads" -> "Блокировка рекламы"
+                                "russia" -> "РФ (обход геоблоков)"
+                                else -> it ?: "Все"
+                            }
+                        },
+                    )
+                    
+                    LabelledDropdown(
+                        title = stringResource(R.string.dns_provider),
+                        leading = { 
+                            when {
+                                (dnsUiState.dnsSettings.dnsEndpoint?.let { DnsProvider.fromAddress(it) } 
+                                    ?: DnsProvider.CLOUDFLARE).name.contains("SECURITY") ||
+                                    (dnsUiState.dnsSettings.dnsEndpoint?.let { DnsProvider.fromAddress(it) } 
+                                    ?: DnsProvider.CLOUDFLARE).name.contains("MALWARE") -> 
+                                        Icon(Icons.Outlined.Security, contentDescription = null)
+                                (dnsUiState.dnsSettings.dnsEndpoint?.let { DnsProvider.fromAddress(it) } 
+                                    ?: DnsProvider.CLOUDFLARE).name.contains("FAMILY") -> 
+                                        Icon(Icons.Outlined.FamilyRestroom, contentDescription = null)
+                                (dnsUiState.dnsSettings.dnsEndpoint?.let { DnsProvider.fromAddress(it) } 
+                                    ?: DnsProvider.CLOUDFLARE).name.contains("ADS") -> 
+                                        Icon(Icons.Outlined.Block, contentDescription = null)
+                                else -> Icon(Icons.Outlined.Cloud, contentDescription = null)
+                            }
+                        },
+                        currentValue =
+                            dnsUiState.dnsSettings.dnsEndpoint?.let { DnsProvider.fromAddress(it) }
+                                ?: DnsProvider.CLOUDFLARE,
+                        onSelected = { selected -> selected?.let { viewModel.setDnsProvider(it) } },
+                        options = DnsProvider.entries,
+                        optionToString = { 
+                            val provider = it ?: DnsProvider.CLOUDFLARE
+                            "${provider.name.replace("_", " ").capitalize(locale)} - ${provider.description}"
+                        },
+                    )
+                }
             }
         }
         Column {
@@ -92,6 +135,22 @@ fun DnsSettingsScreen(viewModel: DnsViewModel = koinViewModel()) {
                 onClick = {
                     dnsUiState.globalConfig?.let { navController.push(Route.ConfigGlobal(it.id)) }
                 },
+            )
+        }
+        
+        // Информация о блокировке
+        Column(modifier = Modifier.padding(16.dp)) {
+            GroupLabel("Функции блокировки")
+            androidx.compose.material3.Text(
+                text = "Выберите DNS с функциями блокировки:\n" +
+                       "• AdGuard/Control D - реклама и трекеры\n" +
+                       "• Cloudflare Security/Quad9 - malware и фишинг\n" +
+                       "• Семейные DNS - взрослый контент\n" +
+                       "• AstraCat/GeoHide/Mafioznik - обход блокировок в РФ",
+                style = androidx.compose.ui.text.TextStyle(
+                    fontSize = androidx.compose.ui.unit.TextUnit.Companion.Sp(14f)
+                ),
+                modifier = Modifier.padding(top = 8.dp)
             )
         }
     }
