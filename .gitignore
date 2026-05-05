@@ -5,22 +5,23 @@
 *.obj
 *.out
 build/
-target/
+dist/
 
 # Dependencies
 .gradle/
-__pycache__/
-.mypy_cache/
-.pytest_cache/
 node_modules/
 venv/
 .venv/
-dist/
+__pycache__/
+.mypy_cache/
+.pytest_cache/
+target/
 
 # Logs and temp files
 *.log
 *.tmp
 *.swp
+*.swo
 
 # Environment
 .env
@@ -35,10 +36,10 @@ dist/
 .DS_Store
 Thumbs.db
 
-# Coverage
+# Coverage reports
 coverage/
 htmlcov/
-.coverage
+*.coverage
 
 # Compressed files
 *.zip
