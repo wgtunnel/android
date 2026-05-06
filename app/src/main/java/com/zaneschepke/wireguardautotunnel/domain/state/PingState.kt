@@ -1,6 +1,7 @@
 package com.zaneschepke.wireguardautotunnel.domain.state
 
 import com.zaneschepke.wireguardautotunnel.core.tunnel.handler.TunnelMonitorHandler.Companion.CLOUDFLARE_IPV4_IP
+import com.zaneschepke.wireguardautotunnel.util.network.NetworkUtils
 
 enum class FailureReason {
     NoConnectivity,
@@ -8,6 +9,9 @@ enum class FailureReason {
     NoResolvedEndpoint,
     Timeout,
     Unknown,
+    DnsBlocked,      // НОВОЕ
+    ProxyAuthFailed, // НОВОЕ
+    PortBlocked      // НОВОЕ
 }
 
 data class PingState(
@@ -23,4 +27,5 @@ data class PingState(
     val lastPingAttemptMillis: Long? = null,
     val failureReason: FailureReason? = null,
     val pingTarget: String = CLOUDFLARE_IPV4_IP,
+    val pingMethod: String? = null  // НОВОЕ ПОЛЕ
 )
