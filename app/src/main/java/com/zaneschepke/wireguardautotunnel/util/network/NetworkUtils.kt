@@ -283,5 +283,96 @@ class NetworkUtils(private val ioDispatcher: CoroutineDispatcher) {
             stats.isReachable = false
         }
         return stats
+    suspend fun checkDnsServerReachability(
+    server: DnsServer,
+    timeoutMillis: Long = 3000
+): Boolean {
+    return withContext(ioDispatcher) {
+        try {
+            when (server.protocol) {
+                DnsProtocol.IPv4, DnsProtocol.IPv6 -> {
+                    // Проверяем через TCP подключение к порту 53
+                    val port = server.port ?: 53
+                    isTcpReachable(server.address, port, timeoutMillis)
+                }
+                DnsProtocol.DoH -> {
+                    // Проверяем через HTTPS запрос
+                    val client = HttpClient(CIO) {
+                        engine {
+                            connectTimeout = timeoutMillis
+                            socketTimeout = timeoutMillis
+                        }
+                    }
+                    try {
+                        val response = client.get(server.address) {
+                            timeout {
+                                requestTimeoutMillis = timeoutMillis
+                            }
+                        }
+                        response.status.isSuccess()
+                    } catch (e: Exception) {
+                        false
+                    }
+                }
+                DnsProtocol.DoT -> {
+                    // Проверяем через TCP к порту 853
+                    val port = server.port ?: 853
+                    isTcpReachable(server.address, port, timeoutMillis)
+                }
+                else -> false
+            }
+        } catch (e: Exception) {
+            Timber.e(e, "DNS server check failed for ${server.name}")
+            false
+        }
     }
+}
+
+/**
+ * Получение списка доступных DNS серверов
+ */
+fun getAvailableDnsServers(): List<DnsServer> {
+    return listOf(
+        // IPv4
+        DnsServer("Cloudflare IPv4", DnsProtocol.IPv4, "1.1.1.1", 53, false, true),
+        DnsServer("Google IPv4", DnsProtocol.IPv4, "8.8.8.8", 53, false, true),
+        DnsServer("Quad9 IPv4", DnsProtocol.IPv4, "9.9.9.9", 53, false, true),
+        DnsServer("1.1.1.2 - Cloudflare Malware", DnsProtocol.IPv4, "1.1.1.2", 53, false, true),
+        DnsServer("1.1.1.3 - Cloudflare Family", DnsProtocol.IPv4, "1.1.1.3", 53, false, true),
+
+        // IPv6
+        DnsServer("Cloudflare IPv6", DnsProtocol.IPv6, "2606:4700:4700::1111", 53, false, true),
+        DnsServer("Google IPv6", DnsProtocol.IPv6, "2001:4860:4860::8888", 53, false, true),
+        DnsServer("Quad9 IPv6", DnsProtocol.IPv6, "2620:fe::fe", 53, false, true),
+
+        // DoH
+        DnsServer("Cloudflare DoH", DnsProtocol.DoH, "https://dns.cloudflare.com/dns-query", null, false, true),
+        DnsServer("Google DoH", DnsProtocol.DoH, "https://dns.google/dns-query", null, false, true),
+        DnsServer("Quad9 DoH", DnsProtocol.DoH, "https://dns.quad9.net/dns-query", null, false, true),
+        DnsServer("AdGuard DoH", DnsProtocol.DoH, "https://dns.adguard-dns.com/dns-query", null, false, true),
+        DnsServer("NextDNS DoH", DnsProtocol.DoH, "https://dns.nextdns.io", null, false, true),
+
+        // DoT
+        DnsServer("Cloudflare DoT", DnsProtocol.DoT, "1.1.1.1", 853, false, true),
+        DnsServer("Google DoT", DnsProtocol.DoT, "8.8.8.8", 853, false, true),
+        DnsServer("Quad9 DoT", DnsProtocol.DoT, "9.9.9.9", 853, false, true),
+
+        // ODoH
+        DnsServer("Cloudflare ODoH", DnsProtocol.ODoH, "https://odoh.cloudflare-dns.com", null, false, true),
+
+        // DNSCrypt
+        DnsServer("Cloudflare DNSCrypt", DnsProtocol.DNSCrypt, "2.dnscrypt-cert.cloudflare-dns.com", 443, false, true),
+
+        // Русские DNS для обхода геоблока
+        DnsServer("Astracat IPv4", DnsProtocol.IPv4, "45.153.198.137", 53, false, false),
+        DnsServer("Astracat IPv6", DnsProtocol.IPv6, "2a0e:f9e0:4700:1::1", 53, false, false),
+        DnsServer("geohide IPv4", DnsProtocol.IPv4, "80.241.210.53", 53, false, false),
+        DnsServer("geohide IPv6", DnsProtocol.IPv6, "2a0e:f9e0:4700:2::1", 53, false, false),
+        DnsServer("Xbox IPv4", DnsProtocol.IPv4, "104.28.29.53", 53, false, false),
+        DnsServer("Xbox IPv6", DnsProtocol.IPv6, "2620:1ec:c::10", 53, false, false),
+        DnsServer("mafioznik IPv4", DnsProtocol.IPv4, "185.185.128.185", 53, false, false),
+        DnsServer("Yandex IPv4", DnsProtocol.IPv4, "77.88.8.8", 53, false, false),
+        DnsServer("Yandex Safe IPv4", DnsProtocol.IPv4, "77.88.8.88", 53, false, false),
+        DnsServer("Yandex IPv6", DnsProtocol.IPv6, "2a02:6b8::feed:0ff", 53, false, false),
+    )
 }
