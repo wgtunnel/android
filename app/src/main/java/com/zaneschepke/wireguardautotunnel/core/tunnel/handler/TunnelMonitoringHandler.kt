@@ -175,7 +175,6 @@ class TunnelMonitorHandler(
             .collectLatest { (appMode, settings) ->
                 if (!settings.isPingEnabled) return@collectLatest
                 // TODO for now until we get monitoring for these modes
-                if (appMode == AppMode.LOCK_DOWN || appMode == AppMode.PROXY) return@collectLatest
 
                 Timber.d("Starting pinger for ${tunnelConfig.name} with settings")
 
