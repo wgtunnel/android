@@ -7,7 +7,11 @@ import com.zaneschepke.wireguardautotunnel.util.NumberUtils
 import com.zaneschepke.wireguardautotunnel.util.StringValue
 
 fun ConfigParseException.asStringValue(): StringValue {
-    return StringValue.StringResource(R.string.config_error_template, this.errorType.name, this.field)
+    return StringValue.StringResource(
+        R.string.config_error_template,
+        this.errorType.name,
+        this.field,
+    )
 }
 
 fun Config.defaultName(): String {

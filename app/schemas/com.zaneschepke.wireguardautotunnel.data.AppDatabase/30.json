@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 30,
-    "identityHash": "d989b6fbb350622688984608771317d7",
+    "identityHash": "b16ff9cb760eb3cbc5d38edc837e3766",
     "entities": [
       {
         "tableName": "tunnel_config",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `tunnel_networks` TEXT NOT NULL DEFAULT '', `is_mobile_data_tunnel` INTEGER NOT NULL DEFAULT false, `is_primary_tunnel` INTEGER NOT NULL DEFAULT false, `quick_config` TEXT NOT NULL DEFAULT '', `is_Active` INTEGER NOT NULL DEFAULT false, `restart_on_ping_failure` INTEGER NOT NULL DEFAULT false, `ping_target` TEXT DEFAULT null, `is_ethernet_tunnel` INTEGER NOT NULL DEFAULT false, `is_ipv4_preferred` INTEGER NOT NULL DEFAULT true, `position` INTEGER NOT NULL DEFAULT 0, `auto_tunnel_apps` TEXT NOT NULL DEFAULT '[]', `is_metered` INTEGER NOT NULL DEFAULT false)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `tunnel_networks` TEXT NOT NULL DEFAULT '', `is_mobile_data_tunnel` INTEGER NOT NULL DEFAULT false, `is_primary_tunnel` INTEGER NOT NULL DEFAULT false, `quick_config` TEXT NOT NULL DEFAULT '', `dynamic_dns` INTEGER NOT NULL DEFAULT false, `is_ethernet_tunnel` INTEGER NOT NULL DEFAULT false, `prefer_ipv6` INTEGER NOT NULL DEFAULT false, `position` INTEGER NOT NULL DEFAULT 0, `auto_tunnel_apps` TEXT NOT NULL DEFAULT '[]', `is_metered` INTEGER NOT NULL DEFAULT false, `ipv4_fallback` INTEGER NOT NULL DEFAULT false, `ipv6_restore` INTEGER NOT NULL DEFAULT false)",
         "fields": [
           {
             "fieldPath": "id",
@@ -49,24 +49,11 @@
             "defaultValue": "''"
           },
           {
-            "fieldPath": "isActive",
-            "columnName": "is_Active",
+            "fieldPath": "dynamicDnsEnabled",
+            "columnName": "dynamic_dns",
             "affinity": "INTEGER",
             "notNull": true,
             "defaultValue": "false"
-          },
-          {
-            "fieldPath": "restartOnPingFailure",
-            "columnName": "restart_on_ping_failure",
-            "affinity": "INTEGER",
-            "notNull": true,
-            "defaultValue": "false"
-          },
-          {
-            "fieldPath": "pingTarget",
-            "columnName": "ping_target",
-            "affinity": "TEXT",
-            "defaultValue": "null"
           },
           {
             "fieldPath": "isEthernetTunnel",
@@ -76,11 +63,11 @@
             "defaultValue": "false"
           },
           {
-            "fieldPath": "isIpv4Preferred",
-            "columnName": "is_ipv4_preferred",
+            "fieldPath": "isIpv6Preferred",
+            "columnName": "prefer_ipv6",
             "affinity": "INTEGER",
             "notNull": true,
-            "defaultValue": "true"
+            "defaultValue": "false"
           },
           {
             "fieldPath": "position",
@@ -99,6 +86,20 @@
           {
             "fieldPath": "isMetered",
             "columnName": "is_metered",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "false"
+          },
+          {
+            "fieldPath": "ipv4FallbackEnabled",
+            "columnName": "ipv4_fallback",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "false"
+          },
+          {
+            "fieldPath": "ipv6RestoreEnabled",
+            "columnName": "ipv6_restore",
             "affinity": "INTEGER",
             "notNull": true,
             "defaultValue": "false"
@@ -176,7 +177,7 @@
       },
       {
         "tableName": "general_settings",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `is_shortcuts_enabled` INTEGER NOT NULL DEFAULT 0, `is_restore_on_boot_enabled` INTEGER NOT NULL DEFAULT 0, `is_multi_tunnel_enabled` INTEGER NOT NULL DEFAULT 0, `global_split_tunnel_enabled` INTEGER NOT NULL DEFAULT 0, `app_mode` INTEGER NOT NULL DEFAULT 0, `theme` TEXT NOT NULL DEFAULT 'AUTOMATIC', `locale` TEXT, `remote_key` TEXT, `is_remote_control_enabled` INTEGER NOT NULL DEFAULT 0, `is_pin_lock_enabled` INTEGER NOT NULL DEFAULT 0, `is_always_on_vpn_enabled` INTEGER NOT NULL DEFAULT 0, `already_donated` INTEGER NOT NULL DEFAULT 0)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `is_shortcuts_enabled` INTEGER NOT NULL DEFAULT 0, `is_restore_on_boot_enabled` INTEGER NOT NULL DEFAULT 0, `is_multi_tunnel_enabled` INTEGER NOT NULL DEFAULT 0, `global_split_tunnel_enabled` INTEGER NOT NULL DEFAULT 0, `app_mode` INTEGER NOT NULL DEFAULT 0, `theme` TEXT NOT NULL DEFAULT 'AUTOMATIC', `locale` TEXT, `remote_key` TEXT, `is_remote_control_enabled` INTEGER NOT NULL DEFAULT 0, `is_pin_lock_enabled` INTEGER NOT NULL DEFAULT 0, `is_always_on_vpn_enabled` INTEGER NOT NULL DEFAULT 0, `already_donated` INTEGER NOT NULL DEFAULT 0, `screen_recording_security` INTEGER NOT NULL DEFAULT 0)",
         "fields": [
           {
             "fieldPath": "id",
@@ -213,7 +214,7 @@
             "defaultValue": "0"
           },
           {
-            "fieldPath": "appMode",
+            "fieldPath": "tunnelMode",
             "columnName": "app_mode",
             "affinity": "INTEGER",
             "notNull": true,
@@ -260,6 +261,13 @@
           {
             "fieldPath": "alreadyDonated",
             "columnName": "already_donated",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "screenRecordingSecurityEnabled",
+            "columnName": "screen_recording_security",
             "affinity": "INTEGER",
             "notNull": true,
             "defaultValue": "0"
@@ -511,7 +519,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd989b6fbb350622688984608771317d7')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b16ff9cb760eb3cbc5d38edc837e3766')"
     ]
   }
 }

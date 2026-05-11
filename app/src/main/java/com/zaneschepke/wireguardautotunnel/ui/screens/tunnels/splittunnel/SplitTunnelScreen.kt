@@ -48,20 +48,20 @@ fun SplitTunnelScreen(
 
     val conf by remember(effectiveTunnel) { derivedStateOf { effectiveTunnel.getConfig() } }
 
-    var splitConfig by remember(conf) {
-        mutableStateOf<Pair<SplitOption, Set<String>>>(
-            when {
-                conf.`interface`.allExcludedApps.isNotEmpty() ->
-                    SplitOption.EXCLUDE to conf.`interface`.allExcludedApps.toSet()
+    var splitConfig by
+        remember(conf) {
+            mutableStateOf<Pair<SplitOption, Set<String>>>(
+                when {
+                    conf.`interface`.allExcludedApps.isNotEmpty() ->
+                        SplitOption.EXCLUDE to conf.`interface`.allExcludedApps.toSet()
 
-                conf.`interface`.allIncludedApps.isNotEmpty() ->
-                    SplitOption.INCLUDE to conf.`interface`.allIncludedApps.toSet()
+                    conf.`interface`.allIncludedApps.isNotEmpty() ->
+                        SplitOption.INCLUDE to conf.`interface`.allIncludedApps.toSet()
 
-                else ->
-                    SplitOption.ALL to emptySet()
-            }
-        )
-    }
+                    else -> SplitOption.ALL to emptySet()
+                }
+            )
+        }
 
     sharedViewModel.collectSideEffect { sideEffect ->
         if (sideEffect is LocalSideEffect.SaveChanges)

@@ -62,7 +62,7 @@ func awgTurnOn(interfaceName string, tunFd int32, settings string, uapiPath stri
 	handle, err2 := shared.GenerateUniqueHandle()
 
 	statusCB := func(code device.StatusCode) {
-		go C.awgNotifyStatus(C.int32_t(handle), C.CString(interfaceName), C.int32_t(code))
+		go C.awgNotifyStatus(C.int32_t(handle), C.int32_t(code))
 	}
 
 	tunDevice := device.NewDevice(tunnel, conn.NewStdNetBind(), shared.NewLogger("Tun/"+interfaceName), conf.Device.DomainBlockingEnabled, statusCB)
@@ -168,6 +168,12 @@ func awgTurnOff(tunnelHandle int32) {
 		shared.LogError(tag, "Tunnel is not up")
 		return
 	}
+
+	go C.awgNotifyStatus(
+		C.int32_t(tunnelHandle),
+		C.int32_t(shared.StatusStop),
+	)
+
 	delete(tunnelHandles, tunnelHandle)
 	if handle.uapi != nil {
 		handle.uapi.Close()

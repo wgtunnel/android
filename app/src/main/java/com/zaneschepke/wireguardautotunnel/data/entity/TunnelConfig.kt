@@ -16,18 +16,19 @@ data class TunnelConfig(
     @ColumnInfo(name = "is_primary_tunnel", defaultValue = "false")
     val isPrimaryTunnel: Boolean = false,
     @ColumnInfo(name = "quick_config", defaultValue = "") val quickConfig: String = "",
-    @ColumnInfo(name = "is_Active", defaultValue = "false") val isActive: Boolean = false,
-    @ColumnInfo(name = "restart_on_ping_failure", defaultValue = "false")
-    val restartOnPingFailure: Boolean = false,
-    @ColumnInfo(name = "ping_target", defaultValue = "null") var pingTarget: String? = null,
+    @ColumnInfo(name = "dynamic_dns", defaultValue = "false")
+    val dynamicDnsEnabled: Boolean = false,
     @ColumnInfo(name = "is_ethernet_tunnel", defaultValue = "false")
     val isEthernetTunnel: Boolean = false,
-    @ColumnInfo(name = "is_ipv4_preferred", defaultValue = "true")
-    val isIpv4Preferred: Boolean = true,
+    @ColumnInfo(name = "prefer_ipv6", defaultValue = "false") val isIpv6Preferred: Boolean = false,
     @ColumnInfo(name = "position", defaultValue = "0") val position: Int = 0,
     @ColumnInfo(name = "auto_tunnel_apps", defaultValue = "[]")
     val autoTunnelApps: Set<String> = emptySet(),
     @ColumnInfo(name = "is_metered", defaultValue = "false") val isMetered: Boolean = false,
+    @ColumnInfo(name = "ipv4_fallback", defaultValue = "false")
+    val ipv4FallbackEnabled: Boolean = false,
+    @ColumnInfo(name = "ipv6_restore", defaultValue = "false")
+    val ipv6RestoreEnabled: Boolean = false,
 ) {
     companion object {
         const val GLOBAL_CONFIG_NAME = "4675ab06-903a-438b-8485-6ea4187a9512"

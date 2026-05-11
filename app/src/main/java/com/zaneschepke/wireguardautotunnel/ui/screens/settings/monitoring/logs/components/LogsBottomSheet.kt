@@ -18,8 +18,6 @@ import com.zaneschepke.wireguardautotunnel.util.FileUtils
 import com.zaneschepke.wireguardautotunnel.util.extensions.hasSAFSupport
 import com.zaneschepke.wireguardautotunnel.util.extensions.toUserFriendlyTimestamp
 import java.time.Instant
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -28,21 +26,23 @@ fun LogsBottomSheet(
     onDelete: () -> Unit,
     onCanceled: () -> Unit,
     onUnsupported: () -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
 ) {
     val context = LocalContext.current
 
-    val exportLauncher = rememberFileExportLauncherForResult(
-        mimeType = FileUtils.ZIP_FILE_MIME_TYPE,
-        onSuccess = { uri -> onExport(uri) },
-        onCanceled = onCanceled,
-        onUnsupported = onUnsupported
-    )
+    val exportLauncher =
+        rememberFileExportLauncherForResult(
+            mimeType = FileUtils.ZIP_FILE_MIME_TYPE,
+            onSuccess = { uri -> onExport(uri) },
+            onCanceled = onCanceled,
+            onUnsupported = onUnsupported,
+        )
 
     fun handleFileExport() {
         if (context.hasSAFSupport(FileUtils.ZIP_FILE_MIME_TYPE)) {
             val timestamp = Instant.now().toUserFriendlyTimestamp()
-            val fileName = "${Constants.BASE_LOG_FILE_NAME}_${timestamp}_${BuildConfig.VERSION_NAME}_${BuildConfig.FLAVOR}.zip"
+            val fileName =
+                "${Constants.BASE_LOG_FILE_NAME}_${timestamp}_${BuildConfig.VERSION_NAME}_${BuildConfig.FLAVOR}.zip"
 
             exportLauncher.launch(fileName)
         } else {
@@ -55,13 +55,13 @@ fun LogsBottomSheet(
             SheetOption(
                 Icons.Outlined.FolderZip,
                 stringResource(R.string.export_logs),
-                onClick = { handleFileExport() }
+                onClick = { handleFileExport() },
             ),
             SheetOption(
                 Icons.Outlined.Delete,
                 stringResource(R.string.delete_logs),
-                onClick = onDelete
-            )
+                onClick = onDelete,
+            ),
         )
     ) {
         onDismiss()

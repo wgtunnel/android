@@ -4,10 +4,7 @@ import android.content.Context
 import com.topjohnwu.superuser.Shell
 import com.zaneschepke.tunnel.model.ShellResult
 import com.zaneschepke.tunnel.util.RootShellException
-import timber.log.Timber
 import java.io.File
-import java.io.InputStream
-import java.io.OutputStream
 
 class RootShell(private val context: Context) {
 
@@ -23,11 +20,11 @@ class RootShell(private val context: Context) {
         export CALLING_PACKAGE='$$packageName'
         export PATH="$$binPath:$PATH"
         export TMPDIR='$$tmpPath'
-        """.trimIndent()
+        """
+            .trimIndent()
     }
 
-    @Volatile
-    private var initialized = false
+    @Volatile private var initialized = false
 
     init {
         ensureDirs()
@@ -80,50 +77,15 @@ class RootShell(private val context: Context) {
 
         val result = Shell.cmd(*command).exec()
 
-        return ShellResult(
-            code = result.code,
-            stdout = result.out,
-            stderr = result.err
-        )
+        return ShellResult(code = result.code, stdout = result.out, stderr = result.err)
     }
 
     fun stop() {
         if (initialized) {
             try {
                 Shell.getShell().waitAndClose()
-            } catch (_: Exception) {
-            }
+            } catch (_: Exception) {}
             initialized = false
         }
-    }
-
-    fun execStreaming(command: String, onLine: (String) -> Unit) {
-        start()
-
-        val shell = Shell.getShell()
-
-        shell.submitTask(object : Shell.Task {
-            override fun run(
-                stdin: OutputStream,
-                stdout: InputStream,
-                stderr: InputStream
-            ) {
-                try {
-                    val reader = stdout.bufferedReader()
-                    var line: String?
-                    while (true) {
-                        line = reader.readLine() ?: break
-                        onLine(line)
-                    }
-                } catch (e: Exception) {
-                    // Normal when coroutine is cancelled or shell dies
-                    Timber.w(e, "Streaming command ended: $command")
-                }
-            }
-
-            override fun shellDied() {
-                Timber.w("Root shell died during streaming command")
-            }
-        })
     }
 }

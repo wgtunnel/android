@@ -13,32 +13,33 @@ data class ProxySettings(
 ) {
 
     fun toProxyConfig(): ProxyConfig {
-        val socks5 = if (socks5ProxyEnabled) {
-            parseAddress(socks5ProxyBindAddress ?: DEFAULT_SOCKS_BIND_ADDRESS)?.let { (host, port) ->
-                ProxyConfig.Socks5(
-                    host = host,
-                    port = port,
-                    username = proxyUsername,
-                    password = proxyPassword
-                )
-            }
-        } else null
+        val socks5 =
+            if (socks5ProxyEnabled) {
+                parseAddress(socks5ProxyBindAddress ?: DEFAULT_SOCKS_BIND_ADDRESS)?.let {
+                    (host, port) ->
+                    ProxyConfig.Socks5(
+                        host = host,
+                        port = port,
+                        username = proxyUsername,
+                        password = proxyPassword,
+                    )
+                }
+            } else null
 
-        val http = if (httpProxyEnabled) {
-            parseAddress(httpProxyBindAddress ?: DEFAULT_HTTP_BIND_ADDRESS)?.let { (host, port) ->
-                ProxyConfig.Http(
-                    host = host,
-                    port = port,
-                    username = proxyUsername,
-                    password = proxyPassword
-                )
-            }
-        } else null
+        val http =
+            if (httpProxyEnabled) {
+                parseAddress(httpProxyBindAddress ?: DEFAULT_HTTP_BIND_ADDRESS)?.let { (host, port)
+                    ->
+                    ProxyConfig.Http(
+                        host = host,
+                        port = port,
+                        username = proxyUsername,
+                        password = proxyPassword,
+                    )
+                }
+            } else null
 
-        return ProxyConfig(
-            socks5 = socks5,
-            http = http
-        )
+        return ProxyConfig(socks5 = socks5, http = http)
     }
 
     private fun parseAddress(address: String): Pair<String, Int>? {

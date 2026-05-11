@@ -12,43 +12,21 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.animation.togetherWith
+import androidx.compose.animation.*
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.consumeWindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.surfaceColorAtElevation
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.LinkAnnotation
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextLinkStyles
-import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.*
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.withLink
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -61,7 +39,7 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.zaneschepke.networkmonitor.NetworkMonitor
 import com.zaneschepke.wireguardautotunnel.data.AppDatabase
-import com.zaneschepke.wireguardautotunnel.data.model.AppMode
+import com.zaneschepke.wireguardautotunnel.data.model.TunnelMode
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppStateRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
@@ -94,28 +72,24 @@ import com.zaneschepke.wireguardautotunnel.ui.screens.settings.appearance.langua
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.dns.DnsSettingsScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.integrations.AndroidIntegrationsScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.lockdown.LockdownSettingsScreen
-import com.zaneschepke.wireguardautotunnel.ui.screens.settings.monitoring.TunnelMonitoringScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.monitoring.logs.LogsScreen
-import com.zaneschepke.wireguardautotunnel.ui.screens.settings.monitoring.ping.PingTargetScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.support.SupportScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.support.donate.DonateScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.support.donate.crypto.AddressesScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.support.license.LicenseScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.TunnelsScreen
-import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.config.ConfigScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.settings.TunnelSettingsScreen
+import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.settings.config.ConfigScreen
+import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.settings.config.edit.ConfigEditScreen
+import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.settings.ipv6.IPv6Screen
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.sort.SortScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.splittunnel.SplitTunnelScreen
 import com.zaneschepke.wireguardautotunnel.ui.theme.AlertRed
 import com.zaneschepke.wireguardautotunnel.ui.theme.OffWhite
 import com.zaneschepke.wireguardautotunnel.ui.theme.WireguardAutoTunnelTheme
 import com.zaneschepke.wireguardautotunnel.util.LocaleUtil
-import com.zaneschepke.wireguardautotunnel.util.extensions.installApk
-import com.zaneschepke.wireguardautotunnel.util.extensions.isRunningOnTv
-import com.zaneschepke.wireguardautotunnel.util.extensions.openWebUrl
-import com.zaneschepke.wireguardautotunnel.util.extensions.restartApp
-import com.zaneschepke.wireguardautotunnel.util.extensions.showToast
-import com.zaneschepke.wireguardautotunnel.viewmodel.ConfigViewModel
+import com.zaneschepke.wireguardautotunnel.util.extensions.*
+import com.zaneschepke.wireguardautotunnel.viewmodel.ConfigEditViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.SharedAppViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.SplitTunnelViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.TunnelViewModel
@@ -170,8 +144,8 @@ class MainActivity : AppCompatActivity() {
             val snackbarState = rememberCustomSnackbarState()
             var showVpnPermissionDialog by remember { mutableStateOf(false) }
             var vpnPermissionDenied by remember { mutableStateOf(false) }
-            var requestingAppMode by remember {
-                mutableStateOf<Pair<AppMode?, TunnelConfig?>>(Pair(null, null))
+            var requestingTunnelMode by remember {
+                mutableStateOf<Pair<TunnelMode?, TunnelConfig?>>(Pair(null, null))
             }
 
             val startingStack = buildList {
@@ -201,14 +175,14 @@ class MainActivity : AppCompatActivity() {
                         } else {
                             vpnPermissionDenied = false
                             showVpnPermissionDialog = false
-                            val (appMode, config) = requestingAppMode
+                            val (appMode, config) = requestingTunnelMode
                             when (appMode) {
-                                AppMode.VPN -> if (config != null) viewModel.startTunnel(config)
-                                AppMode.LOCK_DOWN -> viewModel.setAppMode(AppMode.LOCK_DOWN)
+                                TunnelMode.VPN -> if (config != null) viewModel.startTunnel(config)
+                                TunnelMode.LOCK_DOWN -> viewModel.setAppMode(TunnelMode.LOCK_DOWN)
                                 else -> Unit
                             }
                         }
-                        requestingAppMode = Pair(null, null)
+                        requestingTunnelMode = Pair(null, null)
                     },
                 )
 
@@ -218,7 +192,8 @@ class MainActivity : AppCompatActivity() {
                         GlobalSideEffect.ConfigChanged -> restartApp()
                         GlobalSideEffect.PopBackStack -> navController.pop()
                         is GlobalSideEffect.RequestVpnPermission -> {
-                            requestingAppMode = Pair(sideEffect.requestingMode, sideEffect.config)
+                            requestingTunnelMode =
+                                Pair(sideEffect.requestingMode, sideEffect.config)
                             vpnActivity.launch(VpnService.prepare(this@MainActivity))
                         }
 
@@ -332,7 +307,7 @@ class MainActivity : AppCompatActivity() {
                             )
 
                         Box(modifier = Modifier.fillMaxSize()) {
-                            if (uiState.appMode == AppMode.LOCK_DOWN) {
+                            if (uiState.tunnelMode == TunnelMode.LOCK_DOWN) {
                                 AppAlertBanner(
                                     stringResource(R.string.locked_down)
                                         .uppercase(Locale.current.platformLocale),
@@ -438,6 +413,13 @@ class MainActivity : AppCompatActivity() {
                                                         )
                                                     TunnelSettingsScreen(viewModel)
                                                 }
+                                                entry<Route.Config> { key ->
+                                                    val viewModel: TunnelViewModel =
+                                                        koinViewModel(
+                                                            parameters = { parametersOf(key.id) }
+                                                        )
+                                                    ConfigScreen(viewModel, key.live)
+                                                }
                                                 entry<Route.SplitTunnel> { key ->
                                                     val viewModel: SplitTunnelViewModel =
                                                         koinViewModel(
@@ -445,12 +427,12 @@ class MainActivity : AppCompatActivity() {
                                                         )
                                                     SplitTunnelScreen(viewModel)
                                                 }
-                                                entry<Route.Config> { key ->
-                                                    val viewModel: ConfigViewModel =
+                                                entry<Route.ConfigEdit> { key ->
+                                                    val viewModel: ConfigEditViewModel =
                                                         koinViewModel(
                                                             parameters = { parametersOf(key.id) }
                                                         )
-                                                    ConfigScreen(viewModel)
+                                                    ConfigEditScreen(viewModel)
                                                 }
                                                 entry<Route.LocationDisclosure> {
                                                     LocationDisclosureScreen()
@@ -466,19 +448,16 @@ class MainActivity : AppCompatActivity() {
                                                     WifiDetectionMethodScreen()
                                                 }
                                                 entry<Route.Settings> { SettingsScreen() }
-                                                entry<Route.TunnelMonitoring> {
-                                                    TunnelMonitoringScreen()
-                                                }
                                                 entry<Route.AndroidIntegrations> {
                                                     AndroidIntegrationsScreen()
                                                 }
                                                 entry<Route.Dns> { DnsSettingsScreen() }
                                                 entry<Route.ConfigGlobal> { key ->
-                                                    val viewModel: ConfigViewModel =
+                                                    val viewModel: ConfigEditViewModel =
                                                         koinViewModel(
                                                             parameters = { parametersOf(key.id) }
                                                         )
-                                                    ConfigScreen(viewModel)
+                                                    ConfigEditScreen(viewModel)
                                                 }
                                                 entry<Route.SplitTunnelGlobal> { key ->
                                                     val viewModel: SplitTunnelViewModel =
@@ -486,6 +465,13 @@ class MainActivity : AppCompatActivity() {
                                                             parameters = { parametersOf(key.id) }
                                                         )
                                                     SplitTunnelScreen(viewModel)
+                                                }
+                                                entry<Route.IPv6> { key ->
+                                                    val viewModel: TunnelViewModel =
+                                                        koinViewModel(
+                                                            parameters = { parametersOf(key.id) }
+                                                        )
+                                                    IPv6Screen(viewModel)
                                                 }
                                                 entry<Route.LockdownSettings> {
                                                     LockdownSettingsScreen()
@@ -502,7 +488,6 @@ class MainActivity : AppCompatActivity() {
                                                 entry<Route.PreferredTunnel> { key ->
                                                     PreferredTunnelScreen(key.tunnelNetwork)
                                                 }
-                                                entry<Route.PingTarget> { PingTargetScreen() }
                                             },
                                     )
                                 }
@@ -514,70 +499,54 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        networkMonitor.checkPermissionsAndUpdateState()
-        WireGuardAutoTunnel.setUiActive(true)
-    }
-
-    override fun onPause() {
-        super.onPause()
-        WireGuardAutoTunnel.setUiActive(false)
-    }
-
-    fun performBackup() =
-        lifecycleScope.launch {
-            // reset active tuns before backup to prevent trying to start them without permission on
-            // restore
-            tunnelRepository.resetActiveTunnels()
-            roomBackup
-                .database(appDatabase)
-                .backupLocation(RoomBackup.BACKUP_FILE_LOCATION_CUSTOM_DIALOG)
-                .enableLogDebug(true)
-                .maxFileCount(5)
-                .apply {
-                    onCompleteListener { success, _, _ ->
-                        lifecycleScope.launch {
-                            if (success) {
-                                showToast(
-                                    getString(
-                                        R.string.backup_success,
-                                        getString(R.string.restarting_app),
-                                    )
+    fun performBackup() = lifecycleScope.launch {
+        roomBackup
+            .database(appDatabase)
+            .backupLocation(RoomBackup.BACKUP_FILE_LOCATION_CUSTOM_DIALOG)
+            .enableLogDebug(true)
+            .maxFileCount(5)
+            .apply {
+                onCompleteListener { success, _, _ ->
+                    lifecycleScope.launch {
+                        if (success) {
+                            showToast(
+                                getString(
+                                    R.string.backup_success,
+                                    getString(R.string.restarting_app),
                                 )
-                                restartApp()
-                            } else {
-                                showToast(R.string.backup_failed)
-                            }
+                            )
+                            restartApp()
+                        } else {
+                            showToast(R.string.backup_failed)
                         }
                     }
                 }
-                .backup()
-        }
+            }
+            .backup()
+    }
 
-    fun performRestore() =
-        lifecycleScope.launch {
-            roomBackup
-                .database(appDatabase)
-                .enableLogDebug(true)
-                .backupLocation(RoomBackup.BACKUP_FILE_LOCATION_CUSTOM_DIALOG)
-                .apply {
-                    onCompleteListener { success, _, _ ->
-                        lifecycleScope.launch {
-                            if (success) {
-                                showToast(
-                                    getString(
-                                        R.string.restore_success,
-                                        getString(R.string.restarting_app),
-                                    )
+    fun performRestore() = lifecycleScope.launch {
+        roomBackup
+            .database(appDatabase)
+            .enableLogDebug(true)
+            .backupLocation(RoomBackup.BACKUP_FILE_LOCATION_CUSTOM_DIALOG)
+            .apply {
+                onCompleteListener { success, _, _ ->
+                    lifecycleScope.launch {
+                        if (success) {
+                            showToast(
+                                getString(
+                                    R.string.restore_success,
+                                    getString(R.string.restarting_app),
                                 )
-                                restartApp()
-                            } else {
-                                showToast(R.string.restore_failed)
-                            }
+                            )
+                            restartApp()
+                        } else {
+                            showToast(R.string.restore_failed)
                         }
                     }
                 }
-                .restore()
-        }
+            }
+            .restore()
+    }
 }

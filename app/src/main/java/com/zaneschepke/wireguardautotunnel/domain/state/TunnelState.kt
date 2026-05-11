@@ -1,15 +1,15 @@
-//package com.zaneschepke.wireguardautotunnel.domain.state
+// package com.zaneschepke.wireguardautotunnel.domain.state
 //
-//import com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode
-//import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
+// import com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode
+// import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelStatus
 //
-//data class TunnelState(
+// data class TunnelState(
 //    val status: TunnelStatus = TunnelStatus.Down,
 //    val backendState: BackendMode = BackendMode.Inactive,
 //    val statistics: TunnelStatistics? = null,
 //    val pingStates: Map<String, PingState>? = null,
 //    val logHealthState: LogHealthState? = null,
-//) {
+// ) {
 //
 //    fun health(): Health {
 //        if (status !is TunnelStatus.Up) return Health.UNKNOWN
@@ -65,4 +65,4 @@
 //        const val LOG_HEALTH_SUCCESS_TIMEOUT_MS = 2 * 60 * 1000L // 2 minutes
 //        const val STATS_HEALTH_SUCCESS_TIMEOUT_MS = 15 * 1000L // 15 sec
 //    }
-//}
+// }

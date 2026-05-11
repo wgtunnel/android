@@ -4,89 +4,118 @@ import android.content.Intent
 import android.os.Build
 import android.os.ParcelFileDescriptor
 import android.system.OsConstants
+import androidx.core.app.ServiceCompat
 import com.zaneschepke.hevtunnel.HevTunnelConfig
 import com.zaneschepke.hevtunnel.TProxyService
 import com.zaneschepke.tunnel.ProxyBackend
 import com.zaneschepke.tunnel.Tunnel
+import com.zaneschepke.tunnel.backend.Backend
 import com.zaneschepke.tunnel.backend.KillSwitch
+import com.zaneschepke.tunnel.backend.ServiceHolder.Companion.DEFAULT_MTU
+import com.zaneschepke.tunnel.backend.ServiceHolder.Companion.alwaysOnCallback
+import com.zaneschepke.tunnel.backend.ServiceHolder.Companion.vpnService
 import com.zaneschepke.tunnel.backend.SocketProtector
-import com.zaneschepke.tunnel.backend.TunnelBackend.Companion.DEFAULT_MTU
-import com.zaneschepke.tunnel.backend.TunnelBackend.Companion.alwaysOnCallback
-import com.zaneschepke.tunnel.backend.TunnelBackend.Companion.vpnService
+import com.zaneschepke.tunnel.model.BackendMode
 import com.zaneschepke.tunnel.model.KillSwitchConfig
 import com.zaneschepke.tunnel.util.parseDns
 import com.zaneschepke.tunnel.util.parseInetNetwork
 import com.zaneschepke.wireguardautotunnel.parser.Config
-import kotlinx.coroutines.*
-import timber.log.Timber
 import java.io.IOException
 import java.net.ServerSocket
 import java.util.*
 import java.util.concurrent.CompletableFuture
+import kotlinx.coroutines.*
+import org.koin.java.KoinJavaComponent.inject
+import timber.log.Timber
 
 class VpnService : android.net.VpnService(), KillSwitch, SocketProtector {
+
+    private val backend: Backend by inject(Backend::class.java)
 
     private val defaultPass = UUID.randomUUID().toString()
 
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private var hevBridgeJob: Job? = null
-    private var fd : ParcelFileDescriptor? = null
+    private var fd: ParcelFileDescriptor? = null
 
-    val builder : Builder
+    val builder: Builder
         get() = Builder()
 
     override fun onCreate() {
         vpnService.complete(this)
         // We call this for all backend modes as it is shared for bootstrapping bypass
         ProxyBackend.setSocketProtector(this)
+
+        launchForegroundNotification()
         super.onCreate()
+    }
+
+    fun launchForegroundNotification() {
+        ServiceCompat.startForeground(
+            this,
+            backend.notificationProvider.vpnNotificationId,
+            backend.notificationProvider.vpnInitNotification,
+            SYSTEM_EXEMPT_SERVICE_TYPE_ID,
+        )
     }
 
     override fun onDestroy() {
         Timber.d("VpnService destroyed")
 
+        ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
+
         ProxyBackend.setSocketProtector(null)
+
+        disableKillSwitch()
+        hevBridgeJob?.cancel()
+
+        serviceScope.launch {
+            backend.stopAllOfType(BackendMode.Vpn::class)
+            backend.stopAllOfType(BackendMode.Proxy.KillSwitchPrimary::class)
+            serviceScope.cancel()
+        }
 
         if (!vpnService.isDone) {
             vpnService.cancel(false)
         }
         vpnService = CompletableFuture<VpnService>()
-        disableKillSwitch()
-        hevBridgeJob?.cancel()
 
         super.onDestroy()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         vpnService.complete(this)
-        if (intent == null || intent.component == null || (intent.component!!
-                .packageName != packageName)
+        launchForegroundNotification()
+
+        // Service restarted by system or Always-on VPN started
+        if (
+            intent == null ||
+                intent.component == null ||
+                (intent.component!!.packageName != packageName)
         ) {
-            Timber.d("Service started by Always-on VPN feature")
+            Timber.d("VpnService started by system")
             alwaysOnCallback?.alwaysOnTriggered()
         }
-        return super.onStartCommand(intent, flags, startId)
+        return START_STICKY
     }
 
-    private fun startHevBridge() : Job {
+    private fun startHevBridge(): Job {
         val job = serviceScope.launch {
             try {
                 val port = getAvailablePort()
                 val fd = fd ?: throw IOException("No VPN interface fd available")
-                val config = HevTunnelConfig(
-                    port = port,
-                    mtu = DEFAULT_MTU,
-                    ipv4 = IPV4_INTERFACE_ADDRESS,
-                    ipv6 = IPV6_INTERFACE_ADDRESS,
-                    address = LOCALHOST,
-                    username = DEFAULT_USERNAME,
-                    password = defaultPass
-                )
+                val config =
+                    HevTunnelConfig(
+                        port = port,
+                        mtu = DEFAULT_MTU,
+                        ipv4 = IPV4_INTERFACE_ADDRESS,
+                        ipv6 = IPV6_INTERFACE_ADDRESS,
+                        address = LOCALHOST,
+                        username = DEFAULT_USERNAME,
+                        password = defaultPass,
+                    )
                 val hevConfigFile = TProxyService.createHevTunnelConfig(config, this@VpnService)
-                TProxyService.TProxyStartService(
-                    hevConfigFile.absolutePath,
-                    fd.fd
-                )
+                TProxyService.TProxyStartService(hevConfigFile.absolutePath, fd.fd)
             } catch (e: IOException) {
                 Timber.e(e)
             }
@@ -112,79 +141,77 @@ class VpnService : android.net.VpnService(), KillSwitch, SocketProtector {
     }
 
     override fun setKillSwitch(config: KillSwitchConfig?) {
-        if(config == null) return disableKillSwitch()
-        fd = builder.apply {
-            setSession(LOCKDOWN_SESSION_NAME)
-            addAddress(IPV4_INTERFACE_ADDRESS, 32)
-            if(config.dualStack) addAddress(IPV6_INTERFACE_ADDRESS, 128)
-            if(config.allowedIps.isEmpty()) {
-                addRoute(IPV4_DEFAULT_ROUTE, 0)
-            } else {
-                config.allowedIps.forEach { net ->
-                    Timber.d("Adding allowedIp to kill switch: $net")
-                    val (address, prefix) = net.parseInetNetwork()
-                    addRoute(address, prefix)
+        if (config == null) return disableKillSwitch()
+        fd =
+            builder
+                .apply {
+                    setSession(LOCKDOWN_SESSION_NAME)
+                    addAddress(IPV4_INTERFACE_ADDRESS, 32)
+                    if (config.dualStack) addAddress(IPV6_INTERFACE_ADDRESS, 128)
+                    if (config.allowedIps.isEmpty()) {
+                        addRoute(IPV4_DEFAULT_ROUTE, 0)
+                    } else {
+                        config.allowedIps.forEach { net ->
+                            Timber.d("Adding allowedIp to kill switch: $net")
+                            val (address, prefix) = net.parseInetNetwork()
+                            addRoute(address, prefix)
+                        }
+                    }
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        builder.setMetered(config.metered)
+                    }
+                    addRoute(IPV6_DEFAULT_ROUTE, 0)
+                    setMtu(DEFAULT_MTU)
+                    addDnsServer(DEFAULT_DNS_SERVER)
                 }
-            }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                builder.setMetered(config.metered)
-            }
-            addRoute(IPV6_DEFAULT_ROUTE, 0)
-            setMtu(DEFAULT_MTU)
-            addDnsServer(DEFAULT_DNS_SERVER)
-        }.establish()
-
-        if(fd == null) {
-            // TODO throw exception, failed to start kill switch
-        }
+                .establish()
     }
 
     fun createTunInterface(tunnel: Tunnel, config: Config): ParcelFileDescriptor? {
-        return builder.apply {
-            setSession(tunnel.name)
+        return builder
+            .apply {
+                setSession(tunnel.name)
 
-            // Applications
-            config.`interface`.includedApplications?.forEach { addAllowedApplication(it) }
-            config.`interface`.excludedApplications?.forEach { addDisallowedApplication(it) }
+                config.`interface`.includedApplications?.forEach { addAllowedApplication(it) }
+                config.`interface`.excludedApplications?.forEach { addDisallowedApplication(it) }
 
-            // Interface addresses
-            config.`interface`.address?.split(",")?.forEach { rawAddress ->
-                val (address, prefixLength) = rawAddress.parseInetNetwork()
-                addAddress(address, prefixLength)
-            }
-
-            // DNS
-            config.`interface`.dns?.let { rawDns ->
-                val dnsConfig = rawDns.parseDns()
-                dnsConfig.dnsServers.forEach { addDnsServer(it) }
-                dnsConfig.searchDomains.forEach { addSearchDomain(it) }
-            }
-
-            config.peers.forEach { peer ->
-                peer.allowedIPs?.split(",")?.forEach { entry ->
-                    val (address, prefix) = entry.parseInetNetwork()
-                    Timber.d("Adding route from config: $address/$prefix")
-                    addRoute(address, prefix)
+                config.`interface`.address?.split(",")?.forEach { rawAddress ->
+                    val (address, prefixLength) = rawAddress.parseInetNetwork()
+                    addAddress(address, prefixLength)
                 }
+
+                config.`interface`.dns?.let { rawDns ->
+                    val dnsConfig = rawDns.parseDns()
+                    dnsConfig.dnsServers.forEach { addDnsServer(it) }
+                    dnsConfig.searchDomains.forEach { addSearchDomain(it) }
+                }
+
+                config.peers.forEach { peer ->
+                    peer.allowedIPs?.split(",")?.forEach { entry ->
+                        val (address, prefix) = entry.parseInetNetwork()
+                        Timber.d("Adding route from config: $address/$prefix")
+                        addRoute(address, prefix)
+                    }
+                }
+
+                allowFamily(OsConstants.AF_INET)
+                allowFamily(OsConstants.AF_INET6)
+
+                val mtu = config.`interface`.mtu ?: DEFAULT_MTU
+                setMtu(mtu)
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    setMetered(tunnel.isMetered)
+                }
+
+                setUnderlyingNetworks(null)
+                setBlocking(true)
             }
-
-            allowFamily(OsConstants.AF_INET)
-            allowFamily(OsConstants.AF_INET6)
-
-            val mtu = config.`interface`.mtu ?: DEFAULT_MTU
-            setMtu(mtu)
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                setMetered(tunnel.isMetered)
-            }
-
-            setUnderlyingNetworks(null)
-            setBlocking(true)
-        }.establish()
+            .establish()
     }
 
     override fun startHevSocks5Bridge() {
-        if(hevBridgeJob != null) return
+        if (hevBridgeJob != null) return
         hevBridgeJob = startHevBridge()
     }
 
@@ -195,12 +222,13 @@ class VpnService : android.net.VpnService(), KillSwitch, SocketProtector {
 
     override fun bypass(fd: Int): Int {
         Timber.d("Bypassing VPN fd: $fd")
-        val bypassed = try {
-            if (protect(fd)) 1 else 0
-        } catch (e: Exception) {
-            Timber.e(e, "Failed to protect VPN fd")
-            0
-        }
+        val bypassed =
+            try {
+                if (protect(fd)) 1 else 0
+            } catch (e: Exception) {
+                Timber.e(e, "Failed to protect VPN fd")
+                0
+            }
         Timber.d("Socket protected result: $fd")
         return bypassed
     }
@@ -219,6 +247,6 @@ class VpnService : android.net.VpnService(), KillSwitch, SocketProtector {
         private const val IPV6_DEFAULT_ROUTE = "::"
         private const val DEFAULT_DNS_SERVER = "1.1.1.1"
 
-
+        private const val SYSTEM_EXEMPT_SERVICE_TYPE_ID = 1 shl 10
     }
 }

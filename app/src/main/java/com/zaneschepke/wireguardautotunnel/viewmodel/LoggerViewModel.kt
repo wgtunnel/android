@@ -12,11 +12,11 @@ import com.zaneschepke.wireguardautotunnel.util.Constants
 import com.zaneschepke.wireguardautotunnel.util.FileUtils
 import com.zaneschepke.wireguardautotunnel.util.StringValue
 import com.zaneschepke.wireguardautotunnel.util.extensions.toUserFriendlyTimestamp
+import java.time.Instant
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.viewmodel.container
 import timber.log.Timber
-import java.time.Instant
 
 class LoggerViewModel(
     private val logReader: LogReader,
@@ -58,9 +58,10 @@ class LoggerViewModel(
         }
 
         val timestamp = Instant.now().toUserFriendlyTimestamp()
-        val result = fileUtils.createNewShareFile(
-            "${Constants.BASE_LOG_FILE_NAME}_${timestamp}_${BuildConfig.VERSION_NAME}_${BuildConfig.FLAVOR}.zip"
-        )
+        val result =
+            fileUtils.createNewShareFile(
+                "${Constants.BASE_LOG_FILE_NAME}_${timestamp}_${BuildConfig.VERSION_NAME}_${BuildConfig.FLAVOR}.zip"
+            )
 
         val onFailure = { action: Throwable ->
             Timber.e(action)
@@ -69,7 +70,7 @@ class LoggerViewModel(
                     GlobalSideEffect.Toast(
                         StringValue.StringResource(
                             R.string.export_failed,
-                            ": ${action.localizedMessage}"
+                            ": ${action.localizedMessage}",
                         )
                     )
                 )
@@ -88,7 +89,7 @@ class LoggerViewModel(
                     if (file.exists()) file.delete()
                 }
             },
-            onFailure = onFailure
+            onFailure = onFailure,
         )
     }
 

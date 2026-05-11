@@ -1,16 +1,16 @@
 package com.zaneschepke.tunnel.util
 
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import timber.log.Timber
-import kotlin.time.Duration.Companion.milliseconds
 
 suspend fun exponentialBackoffForever(
     initialDelayMs: Long = 500,
     factor: Double = 2.0,
     maxDelayMs: Long = 30_000,
-    block: suspend () -> Unit
+    block: suspend () -> Unit,
 ) = coroutineScope {
     var delayMs = initialDelayMs
 
@@ -24,9 +24,7 @@ suspend fun exponentialBackoffForever(
 
             delay(delayMs.milliseconds)
 
-            delayMs = (delayMs * factor)
-                .toLong()
-                .coerceAtMost(maxDelayMs)
+            delayMs = (delayMs * factor).toLong().coerceAtMost(maxDelayMs)
         }
     }
 }

@@ -1,11 +1,8 @@
 package com.zaneschepke.tunnel.model
 
-data class ProxyConfig(
-    val socks5: Socks5? = null,
-    val http: Http? = null
-) {
+data class ProxyConfig(val socks5: Socks5? = null, val http: Http? = null) {
 
-    fun toWireProxyString(): String = buildString {
+    fun toQuickString(): String = buildString {
         socks5?.let {
             appendLine("[Socks5]")
             appendLine("BindAddress = ${it.host}:${it.port}")
@@ -29,13 +26,13 @@ data class ProxyConfig(
         val host: String = "127.0.0.1",
         val port: Int,
         val username: String? = null,
-        val password: String? = null
+        val password: String? = null,
     )
 
     data class Http(
         val host: String = "127.0.0.1",
         val port: Int,
         val username: String? = null,
-        val password: String? = null
+        val password: String? = null,
     )
 }

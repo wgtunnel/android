@@ -46,13 +46,12 @@ class LogcatManager(pid: Int, logDir: String, maxFileSize: Long, maxFolderSize: 
         mutex.withLock {
             if (isStarted) return
             stopInternal()
-            logJob =
-                logScope.launch {
-                    logcatReader.readLogs().collect { logMessage ->
-                        _bufferedLogs.emit(logMessage)
-                        _liveLogs.emit(logMessage)
-                    }
+            logJob = logScope.launch {
+                logcatReader.readLogs().collect { logMessage ->
+                    _bufferedLogs.emit(logMessage)
+                    _liveLogs.emit(logMessage)
                 }
+            }
             isStarted = true
         }
     }

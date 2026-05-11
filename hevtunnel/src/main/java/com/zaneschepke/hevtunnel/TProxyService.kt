@@ -13,20 +13,18 @@ object TProxyService {
         System.loadLibrary("hev-socks5-tunnel")
     }
 
-    @JvmStatic
-    external fun TProxyStartService(config_path: String?, fd: Int)
+    @JvmStatic external fun TProxyStartService(config_path: String?, fd: Int)
 
-    @JvmStatic
-    external fun TProxyStopService()
+    @JvmStatic external fun TProxyStopService()
 
-    @JvmStatic
-    external fun TProxyGetStats(): LongArray?
+    @JvmStatic external fun TProxyGetStats(): LongArray?
 
     @Throws(IOException::class)
     fun createHevTunnelConfig(config: HevTunnelConfig, context: Context): File {
         val tproxyFile = File(context.cacheDir, HEV_CONFIG_FILE_NAME)
 
-        val hevConf = """
+        val hevConf =
+            """
         misc:
           task-stack-size: $TASK_STACK_SIZE
         tunnel:
@@ -39,11 +37,10 @@ object TProxyService {
           username: '${config.username}'
           password: '${config.password}'
           udp: 'udp'
-    """.trimIndent()
+    """
+                .trimIndent()
 
-        FileOutputStream(tproxyFile, false).use { fos ->
-            fos.write(hevConf.toByteArray())
-        }
+        FileOutputStream(tproxyFile, false).use { fos -> fos.write(hevConf.toByteArray()) }
 
         return tproxyFile
     }

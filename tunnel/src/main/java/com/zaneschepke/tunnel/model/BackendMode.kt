@@ -9,26 +9,16 @@ sealed class BackendMode {
 
     sealed class Proxy : BackendMode() {
 
-        data class Standard(
-            override val config: Config,
-            val proxyConfig: ProxyConfig
-        ) : Proxy() {
-            override fun withConfig(config: Config) =
-                copy(config = config)
+        data class Standard(override val config: Config, val proxyConfig: ProxyConfig) : Proxy() {
+            override fun withConfig(config: Config) = copy(config = config)
         }
 
-        data class KillSwitchPrimary(
-            override val config: Config
-        ) : Proxy() {
-            override fun withConfig(config: Config) =
-                copy(config = config)
+        data class KillSwitchPrimary(override val config: Config) : Proxy() {
+            override fun withConfig(config: Config) = copy(config = config)
         }
     }
 
-    data class Vpn(
-        override val config: Config
-    ) : BackendMode() {
-        override fun withConfig(config: Config) =
-            copy(config = config)
+    data class Vpn(override val config: Config) : BackendMode() {
+        override fun withConfig(config: Config) = copy(config = config)
     }
 }

@@ -32,10 +32,9 @@ class KtorGitHubApi(private val client: HttpClient) : GitHubApi {
                 client.get("https://api.github.com/repos/$owner/$repo/releases").body()
 
             // Find the first release with "nightly" in the tag_name (case-insensitive)
-            val nightlyRelease =
-                releases.firstOrNull { release ->
-                    release.tagName.contains("nightly", ignoreCase = true)
-                }
+            val nightlyRelease = releases.firstOrNull { release ->
+                release.tagName.contains("nightly", ignoreCase = true)
+            }
 
             if (nightlyRelease != null) {
                 Result.success(nightlyRelease)

@@ -7,6 +7,7 @@ import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.Sort
 import androidx.compose.material.icons.outlined.ContentPasteGo
 import androidx.compose.material.icons.outlined.CopyAll
+import androidx.compose.material.icons.outlined.RemoveRedEye
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -100,6 +101,16 @@ fun currentRouteAsNavbarState(
                         },
                         showBottomItems = true,
                         topTitle = context.getString(R.string.dns_settings),
+                        topTrailing = {
+                            IconButton(
+                                onClick = {
+                                    keyboardController?.hide()
+                                    sharedViewModel.postSideEffect(LocalSideEffect.SaveChanges)
+                                }
+                            ) {
+                                Icon(Icons.Rounded.Save, stringResource(R.string.save))
+                            }
+                        },
                     )
                 Language ->
                     NavbarState(
@@ -247,10 +258,10 @@ fun currentRouteAsNavbarState(
                             }
                         },
                     )
-                is Config,
+                is ConfigEdit,
                 is ConfigGlobal -> {
                     val tunnelName =
-                        if (route is Config) globalState.tunnelNames[route.id]
+                        if (route is ConfigEdit) globalState.tunnelNames[route.id]
                         else context.getString(R.string.global_dns_servers)
                     NavbarState(
                         topLeading = {
@@ -334,19 +345,6 @@ fun currentRouteAsNavbarState(
                         topTitle = context.getString(R.string.android_integrations),
                         showBottomItems = true,
                     )
-                TunnelMonitoring ->
-                    NavbarState(
-                        topLeading = {
-                            IconButton(onClick = { navController.pop() }) {
-                                Icon(
-                                    Icons.AutoMirrored.Rounded.ArrowBack,
-                                    stringResource(R.string.back),
-                                )
-                            }
-                        },
-                        topTitle = context.getString(R.string.ping_monitor),
-                        showBottomItems = true,
-                    )
                 is TunnelSettings -> {
                     val tunnelName = globalState.tunnelNames[route.id]
                     NavbarState(
@@ -360,20 +358,6 @@ fun currentRouteAsNavbarState(
                         },
                         showBottomItems = true,
                         topTitle = tunnelName ?: "",
-                        topTrailing = {
-                            Row {
-                                IconButton(
-                                    onClick = {
-                                        sharedViewModel.postSideEffect(LocalSideEffect.Modal.QR)
-                                    }
-                                ) {
-                                    Icon(Icons.Rounded.QrCode2, stringResource(R.string.show_qr))
-                                }
-                                IconButton(onClick = { navController.push(Config(route.id)) }) {
-                                    Icon(Icons.Rounded.Edit, stringResource(R.string.edit_tunnel))
-                                }
-                            }
-                        },
                     )
                 }
                 Tunnels -> {
@@ -554,6 +538,71 @@ fun currentRouteAsNavbarState(
                         topTitle = context.getString(R.string.ping_target),
                         showBottomItems = true,
                     )
+                is Config -> {
+                    val tunnelName = globalState.tunnelNames[route.id] ?: ""
+                    NavbarState(
+                        topLeading = {
+                            IconButton(onClick = { navController.pop() }) {
+                                Icon(
+                                    Icons.AutoMirrored.Rounded.ArrowBack,
+                                    stringResource(R.string.back),
+                                )
+                            }
+                        },
+                        topTrailing = {
+                            Row {
+                                IconButton(
+                                    onClick = {
+                                        sharedViewModel.postSideEffect(
+                                            LocalSideEffect.ShowSensitive
+                                        )
+                                    }
+                                ) {
+                                    Icon(
+                                        Icons.Outlined.RemoveRedEye,
+                                        stringResource(R.string.toggle_sensitive_data_visibility),
+                                    )
+                                }
+                                if (!route.live) {
+                                    IconButton(
+                                        onClick = {
+                                            sharedViewModel.postSideEffect(LocalSideEffect.Modal.QR)
+                                        }
+                                    ) {
+                                        Icon(
+                                            Icons.Rounded.QrCode2,
+                                            stringResource(R.string.show_qr),
+                                        )
+                                    }
+                                    IconButton(
+                                        onClick = { navController.push(ConfigEdit(route.id)) }
+                                    ) {
+                                        Icon(
+                                            Icons.Rounded.Edit,
+                                            stringResource(R.string.edit_tunnel),
+                                        )
+                                    }
+                                }
+                            }
+                        },
+                        topTitle = tunnelName,
+                        showBottomItems = true,
+                    )
+                }
+                is IPv6 -> {
+                    NavbarState(
+                        topLeading = {
+                            IconButton(onClick = { navController.pop() }) {
+                                Icon(
+                                    Icons.AutoMirrored.Rounded.ArrowBack,
+                                    stringResource(R.string.back),
+                                )
+                            }
+                        },
+                        topTitle = context.getString(R.string.ipv6_settings),
+                        showBottomItems = true,
+                    )
+                }
                 null -> NavbarState()
             }
         }

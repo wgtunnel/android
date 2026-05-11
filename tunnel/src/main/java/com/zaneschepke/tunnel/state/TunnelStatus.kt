@@ -2,9 +2,7 @@ package com.zaneschepke.tunnel.state
 
 import com.zaneschepke.tunnel.Tunnel
 
-data class TunnelStatus(
-    val handle: Int, val interfaceName: String, val statusCode: Int
-) {
+data class TunnelStatus(val handle: Int, val statusCode: Int) {
     // maps to native side status codes
     fun asTunnelState(): Tunnel.State {
         return when (statusCode) {

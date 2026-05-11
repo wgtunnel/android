@@ -131,10 +131,53 @@ class GlobalsMigration : AutoMigrationSpec
 @DeleteColumn(tableName = "general_settings", columnName = "custom_split_packages")
 class DonationMigration : AutoMigrationSpec
 
-@DeleteColumn(tableName = "tunnel_config", columnName = "wg_quick")
-@RenameColumn(
-    tableName = "tunnel_config",
-    fromColumnName = "am_quick",
-    toColumnName = "quick_config"
+@RenameColumn.Entries(
+    RenameColumn(
+        tableName = "tunnel_config",
+        fromColumnName = "is_ipv4_preferred",
+        toColumnName = "prefer_ipv6",
+    ),
+    RenameColumn(
+        tableName = "tunnel_config",
+        fromColumnName = "am_quick",
+        toColumnName = "quick_config",
+    ),
+    RenameColumn(
+        tableName = "tunnel_config",
+        fromColumnName = "restart_on_ping_failure",
+        toColumnName = "dynamic_dns",
+    ),
 )
-class SingleConfigMigration : AutoMigrationSpec
+@DeleteColumn.Entries(
+    DeleteColumn(tableName = "tunnel_config", columnName = "wg_quick"),
+    DeleteColumn(tableName = "tunnel_config", columnName = "ping_target"),
+    DeleteColumn(tableName = "tunnel_config", columnName = "is_Active"),
+)
+class SingleConfigMigration : AutoMigrationSpec {
+
+    override fun onPostMigrate(db: SupportSQLiteDatabase) {
+
+        db.execSQL(
+            """
+            UPDATE tunnel_config
+            SET prefer_ipv6 = CASE
+                WHEN is_ipv4_preferred = 1 THEN 0
+                WHEN is_ipv4_preferred = 0 THEN 1
+                ELSE 0
+            END
+            """
+                .trimIndent()
+        )
+
+        db.execSQL(
+            """
+            UPDATE general_settings
+            SET app_mode = CASE app_mode
+                WHEN 3 THEN 0
+                ELSE app_mode
+            END
+            """
+                .trimIndent()
+        )
+    }
+}

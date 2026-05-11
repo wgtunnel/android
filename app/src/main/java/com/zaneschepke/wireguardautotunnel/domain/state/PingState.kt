@@ -1,16 +1,17 @@
-//package com.zaneschepke.wireguardautotunnel.domain.state
+// package com.zaneschepke.wireguardautotunnel.domain.state
 //
-//import com.zaneschepke.wireguardautotunnel.core.tunnel.handler.TunnelMonitorHandler.Companion.CLOUDFLARE_IPV4_IP
+// import
+// com.zaneschepke.wireguardautotunnel.core.tunnel.handler.TunnelMonitorHandler.Companion.CLOUDFLARE_IPV4_IP
 //
-//enum class FailureReason {
+// enum class FailureReason {
 //    NoConnectivity,
 //    PingFailed,
 //    NoResolvedEndpoint,
 //    Timeout,
 //    Unknown,
-//}
+// }
 //
-//data class PingState(
+// data class PingState(
 //    val transmitted: Int = 0,
 //    val received: Int = 0,
 //    val packetLoss: Double = 0.0,
@@ -23,4 +24,4 @@
 //    val lastPingAttemptMillis: Long? = null,
 //    val failureReason: FailureReason? = null,
 //    val pingTarget: String = CLOUDFLARE_IPV4_IP,
-//)
+// )

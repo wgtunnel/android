@@ -10,7 +10,7 @@ data class ConnectivityState(
     val vpnState: VpnState,
     val effectiveDnsInfo: DnsInfo = DnsInfo(),
     val underlyingDnsInfo: DnsInfo = DnsInfo(),
-    val hasIpv6: Boolean = false
+    val hasIpv6: Boolean = false,
 ) {
     fun hasInternet(): Boolean = activeNetwork !is ActiveNetwork.Disconnected
 
@@ -35,22 +35,27 @@ data class ConnectivityState(
 data class Permissions(val locationServicesEnabled: Boolean, val locationPermissionGranted: Boolean)
 
 sealed class ActiveNetwork {
+    fun key(): String {
+        return when (this) {
+            is Wifi -> "wifi:${networkId}"
+            is Cellular -> "cell:${network?.hashCode() ?: 0}"
+            is Ethernet -> "eth:${network?.hashCode() ?: 0}"
+            Disconnected -> "none"
+        }
+    }
+
     data object Disconnected : ActiveNetwork()
 
     data class Wifi(
         val ssid: String,
         val securityType: WifiSecurityType?,
         val networkId: String,
-        val network: Network?
+        val network: Network?,
     ) : ActiveNetwork()
 
-    data class Cellular(
-        val network: Network?
-    ) : ActiveNetwork()
+    data class Cellular(val network: Network?) : ActiveNetwork()
 
-    data class Ethernet(
-        val network: Network?
-    ) : ActiveNetwork()
+    data class Ethernet(val network: Network?) : ActiveNetwork()
 }
 
 sealed interface VpnState {

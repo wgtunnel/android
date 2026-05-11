@@ -1,7 +1,6 @@
 package com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.components
 
 import android.text.format.Formatter
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowDownward
@@ -22,15 +21,11 @@ import com.zaneschepke.wireguardautotunnel.ui.common.label.lowercaseLabel
 import com.zaneschepke.wireguardautotunnel.util.extensions.abbreviateKey
 import com.zaneschepke.wireguardautotunnel.util.extensions.toAgoDisplay
 import com.zaneschepke.wireguardautotunnel.util.extensions.toUptimeDisplay
-import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.milliseconds
+import kotlinx.coroutines.delay
 
 @Composable
-fun TunnelStatisticsRow(
-    activeTunnel: ActiveTunnel,
-    pingEnabled: Boolean,
-    showDetailedStats: Boolean,
-) {
+fun TunnelStatisticsRow(activeTunnel: ActiveTunnel) {
     val context = LocalContext.current
     val textStyle = MaterialTheme.typography.bodySmall
     val textColor = MaterialTheme.colorScheme.outline
@@ -57,33 +52,24 @@ fun TunnelStatisticsRow(
             horizontalAlignment = Alignment.Start,
         ) {
             activeTunnel.uptime?.let { startTime ->
-                val uptimeText by remember(startTime, currentTimeMillis) {
-                    derivedStateOf {
-                        startTime.toUptimeDisplay(currentTimeMillis)
+                val uptimeText by
+                    remember(startTime, currentTimeMillis) {
+                        derivedStateOf { startTime.toUptimeDisplay(currentTimeMillis) }
                     }
-                }
 
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(16.dp),
                     ) {
-                        Text(
-                            "uptime: $uptimeText",
-                            style = textStyle,
-                            color = textColor,
-                        )
+                        Text("uptime: $uptimeText", style = textStyle, color = textColor)
                     }
                 }
             }
 
             config.peers.forEach { activePeer ->
                 key(activePeer) {
-                    val endpoint by remember(activePeer) {
-                        derivedStateOf {
-                            activePeer.endpoint
-                        }
-                    }
+                    val endpoint by remember(activePeer) { derivedStateOf { activePeer.endpoint } }
                     val formattedRx by
                         remember(activePeer) {
                             derivedStateOf {
@@ -96,22 +82,6 @@ fun TunnelStatisticsRow(
                                 activePeer.txBytes?.let { Formatter.formatFileSize(context, it) }
                             }
                         }
-                    //TODO ping stuff
-//                    val pingState by
-//                        remember(activeConfig.pingStates) {
-//                            derivedStateOf {
-//                                tunnelState.pingStates?.getOrDefault(peerBase64, null)
-//                            }
-//                        }
-//                    val lastPingedSeconds by
-//                        remember(pingState, currentTimeMillis) {
-//                            derivedStateOf {
-//                                pingState
-//                                    ?.lastSuccessfulPingMillis
-//                                    ?.millisAgo()
-//                                    ?.localizedDuration(locale)
-//                            }
-//                        }
 
                     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         Row(
@@ -167,129 +137,6 @@ fun TunnelStatisticsRow(
                                 color = textColor,
                             )
                         }
-                        AnimatedVisibility(visible = endpoint != null) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                            ) {
-                                Text(
-                                    "$endpointText: $endpoint",
-                                    style = textStyle,
-                                    color = textColor,
-                                )
-                            }
-                        }
-//                        AnimatedVisibility(visible = activeTunnel.pingStats != null && pingEnabled) {
-//                            pingState?.let {
-//                                val reachableText =
-//                                    lowercaseLabel(
-//                                        stringResource(
-//                                            R.string.reachable_template,
-//                                            stringResource(
-//                                                if (it.isReachable) R.string._true
-//                                                else R.string._false
-//                                            ),
-//                                        )
-//                                    )
-//                                val pingTargetText =
-//                                    lowercaseLabel(
-//                                        stringResource(
-//                                            R.string.ping_target_template,
-//                                            it.pingTarget,
-//                                        )
-//                                    )
-//                                val latencyText =
-//                                    lowercaseLabel(
-//                                        stringResource(R.string.latency_template, it.rttAvg)
-//                                    )
-//                                val jitterText =
-//                                    lowercaseLabel(
-//                                        stringResource(R.string.jitter_template, it.rttStddev)
-//                                    )
-//                                val packetsSentText =
-//                                    lowercaseLabel(
-//                                        stringResource(
-//                                            R.string.packets_sent_template,
-//                                            it.transmitted,
-//                                        )
-//                                    )
-//                                val packetLossText =
-//                                    lowercaseLabel(
-//                                        stringResource(
-//                                            R.string.packet_loss_template,
-//                                            it.packetLoss,
-//                                        )
-//                                    )
-//                                val pingSuccessText =
-//                                    lowercaseLabel(
-//                                        stringResource(
-//                                            R.string.ping_success_template,
-//                                            lastPingedSeconds?.let { sec ->
-//                                                lowercaseLabel(sec)
-//                                            } ?: neverText,
-//                                        )
-//                                    )
-//                                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-//                                    Row(
-//                                        verticalAlignment = Alignment.CenterVertically,
-//                                        horizontalArrangement = Arrangement.spacedBy(16.dp),
-//                                    ) {
-//                                        Text(
-//                                            reachableText,
-//                                            style = textStyle,
-//                                            color = textColor,
-//                                        )
-//                                        Text(
-//                                            pingTargetText,
-//                                            style = textStyle,
-//                                            color = textColor,
-//                                        )
-//                                    }
-//                                    if (showDetailedStats) {
-//                                        Row(
-//                                            verticalAlignment = Alignment.CenterVertically,
-//                                            horizontalArrangement = Arrangement.spacedBy(16.dp),
-//                                        ) {
-//                                            Text(
-//                                                latencyText,
-//                                                style = textStyle,
-//                                                color = textColor,
-//                                            )
-//                                            Text(
-//                                                jitterText,
-//                                                style = textStyle,
-//                                                color = textColor,
-//                                            )
-//                                        }
-//                                        Row(
-//                                            verticalAlignment = Alignment.CenterVertically,
-//                                            horizontalArrangement = Arrangement.spacedBy(16.dp),
-//                                        ) {
-//                                            Text(
-//                                                packetsSentText,
-//                                                style = textStyle,
-//                                                color = textColor,
-//                                            )
-//                                            Text(
-//                                                packetLossText,
-//                                                style = textStyle,
-//                                                color = textColor,
-//                                            )
-//                                        }
-//                                        Row(
-//                                            verticalAlignment = Alignment.CenterVertically,
-//                                            horizontalArrangement = Arrangement.spacedBy(16.dp),
-//                                        ) {
-//                                            Text(
-//                                                pingSuccessText,
-//                                                style = textStyle,
-//                                                color = textColor,
-//                                            )
-//                                        }
-//                                    }
-//                                }
-//                            }
-//                        }
                     }
                 }
             }

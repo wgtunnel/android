@@ -4,7 +4,6 @@ import com.zaneschepke.wireguardautotunnel.parser.Config
 import com.zaneschepke.wireguardautotunnel.parser.InterfaceSection
 import com.zaneschepke.wireguardautotunnel.util.extensions.ifNotBlank
 import com.zaneschepke.wireguardautotunnel.util.extensions.joinAndTrim
-import com.zaneschepke.wireguardautotunnel.util.extensions.toTrimmedList
 import java.util.Base64
 
 data class InterfaceProxy(
@@ -38,28 +37,28 @@ data class InterfaceProxy(
     val i5: String = "",
 ) {
 
-    fun hasScripts(): Boolean =
-        listOf(preUp, postUp, preDown, postDown).any { it.isNotBlank() }
+    fun hasScripts(): Boolean = listOf(preUp, postUp, preDown, postDown).any { it.isNotBlank() }
 
     fun isAmneziaEnabled(): Boolean {
         return listOf(
-            junkPacketCount,
-            junkPacketMinSize,
-            junkPacketMaxSize,
-            initPacketJunkSize,
-            transportPacketJunkSize,
-            cookiePacketJunkSize,
-            responsePacketJunkSize,
-            initPacketMagicHeader,
-            responsePacketMagicHeader,
-            underloadPacketMagicHeader,
-            transportPacketMagicHeader,
-            i1,
-            i2,
-            i3,
-            i4,
-            i5,
-        ).any { it.isNotBlank() }
+                junkPacketCount,
+                junkPacketMinSize,
+                junkPacketMaxSize,
+                initPacketJunkSize,
+                transportPacketJunkSize,
+                cookiePacketJunkSize,
+                responsePacketJunkSize,
+                initPacketMagicHeader,
+                responsePacketMagicHeader,
+                underloadPacketMagicHeader,
+                transportPacketMagicHeader,
+                i1,
+                i2,
+                i3,
+                i4,
+                i5,
+            )
+            .any { it.isNotBlank() }
     }
 
     fun toAmneziaCompatibilityConfig(): InterfaceProxy {
@@ -107,11 +106,11 @@ data class InterfaceProxy(
     // TODO fix this later when we get amnezia to properly return 0
     fun isAmneziaCompatibilityModeSet(): Boolean {
         return (initPacketJunkSize.toIntOrNull() ?: 0) == 0 &&
-                (responsePacketJunkSize.toIntOrNull() ?: 0) == 0 &&
-                initPacketMagicHeader.toLongOrNull() == 1L &&
-                responsePacketMagicHeader.toLongOrNull() == 2L &&
-                underloadPacketMagicHeader.toLongOrNull() == 3L &&
-                transportPacketMagicHeader.toLongOrNull() == 4L
+            (responsePacketJunkSize.toIntOrNull() ?: 0) == 0 &&
+            initPacketMagicHeader.toLongOrNull() == 1L &&
+            responsePacketMagicHeader.toLongOrNull() == 2L &&
+            underloadPacketMagicHeader.toLongOrNull() == 3L &&
+            transportPacketMagicHeader.toLongOrNull() == 4L
     }
 
     fun isCompatibleWithStandardWireGuard(): Boolean {
@@ -260,13 +259,14 @@ data class InterfaceProxy(
 
     companion object {
         fun from(i: InterfaceSection): InterfaceProxy {
-            val pubKey = if (i.privateKey.isNotBlank()) {
-                try {
-                    Config.generatePublicKeyFromPrivateKey(i.privateKey)
-                } catch (e: Exception) {
-                    ""
-                }
-            } else ""
+            val pubKey =
+                if (i.privateKey.isNotBlank()) {
+                    try {
+                        Config.generatePublicKeyFromPrivateKey(i.privateKey)
+                    } catch (e: Exception) {
+                        ""
+                    }
+                } else ""
 
             return InterfaceProxy(
                 privateKey = i.privateKey,

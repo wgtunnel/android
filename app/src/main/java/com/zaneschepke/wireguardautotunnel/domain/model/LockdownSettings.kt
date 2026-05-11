@@ -8,11 +8,11 @@ data class LockdownSettings(
     val metered: Boolean = false,
     val dualStack: Boolean = false,
 ) {
-    fun toKillSwitchConfig() : KillSwitchConfig {
+    fun toKillSwitchConfig(): KillSwitchConfig {
         return KillSwitchConfig(
-            allowedIps = if(bypassLan) TunnelConfig.LAN_BYPASS_ALLOWED_IPS else emptySet(),
+            allowedIps = if (bypassLan) TunnelConfig.LAN_BYPASS_ALLOWED_IPS else emptySet(),
             metered = metered,
-            dualStack = dualStack
+            dualStack = dualStack,
         )
     }
 }

@@ -12,7 +12,6 @@ import androidx.compose.material.icons.automirrored.outlined.ViewQuilt
 import androidx.compose.material.icons.outlined.Android
 import androidx.compose.material.icons.outlined.Dns
 import androidx.compose.material.icons.outlined.ExpandMore
-import androidx.compose.material.icons.outlined.NetworkPing
 import androidx.compose.material.icons.outlined.Pin
 import androidx.compose.material.icons.outlined.SettingsBackupRestore
 import androidx.compose.material.icons.outlined.ViewHeadline
@@ -37,7 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.MainActivity
 import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.data.model.AppMode
+import com.zaneschepke.wireguardautotunnel.data.model.TunnelMode
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SheetButtonWithDivider
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
@@ -77,12 +76,12 @@ fun SettingsScreen(
     var showBackupSheet by rememberSaveable { mutableStateOf(false) }
     var showAppModeSheet by rememberSaveable { mutableStateOf(false) }
 
-    val appMode = uiState.settings.appMode
+    val appMode = uiState.settings.tunnelMode
     val dnsEnabled by rememberSaveable(appMode) { mutableStateOf(true) }
 
     val showModeDivider by
         remember(appMode) {
-            derivedStateOf { appMode == AppMode.PROXY || appMode == AppMode.LOCK_DOWN }
+            derivedStateOf { appMode == TunnelMode.PROXY || appMode == TunnelMode.LOCK_DOWN }
         }
 
     fun performBackupRestore(action: () -> Unit) {
@@ -100,7 +99,7 @@ fun SettingsScreen(
             showBackupSheet = false
         }
     if (showAppModeSheet)
-        AppModeBottomSheet(sharedViewModel::setAppMode, uiState.settings.appMode) {
+        AppModeBottomSheet(sharedViewModel::setAppMode, uiState.settings.tunnelMode) {
             showAppModeSheet = false
         }
 
@@ -129,10 +128,9 @@ fun SettingsScreen(
                 },
                 onClick = {
                     when (appMode) {
-                        AppMode.PROXY -> navController.push(Route.ProxySettings)
-                        AppMode.LOCK_DOWN -> navController.push(Route.LockdownSettings)
-                        AppMode.KERNEL,
-                        AppMode.VPN -> showAppModeSheet = true
+                        TunnelMode.PROXY -> navController.push(Route.ProxySettings)
+                        TunnelMode.LOCK_DOWN -> navController.push(Route.LockdownSettings)
+                        TunnelMode.VPN -> showAppModeSheet = true
                     }
                 },
             )
@@ -165,22 +163,22 @@ fun SettingsScreen(
                         Icons.AutoMirrored.Outlined.CallSplit,
                         contentDescription = null,
                         tint =
-                            if (globalUiState.appMode == AppMode.PROXY) Disabled
+                            if (globalUiState.tunnelMode == TunnelMode.PROXY) Disabled
                             else MaterialTheme.colorScheme.onSurface,
                     )
                 },
-                enabled = globalUiState.appMode != AppMode.PROXY,
+                enabled = globalUiState.tunnelMode != TunnelMode.PROXY,
                 title = stringResource(R.string.global_split_tunneling),
                 trailing = { modifier ->
                     SwitchWithDivider(
                         checked = uiState.settings.isGlobalSplitTunnelEnabled,
                         onClick = { viewModel.setGlobalSplitTunneling(it) },
                         modifier = modifier,
-                        enabled = globalUiState.appMode != AppMode.PROXY,
+                        enabled = globalUiState.tunnelMode != TunnelMode.PROXY,
                     )
                 },
                 description =
-                    if (globalUiState.appMode == AppMode.PROXY) {
+                    if (globalUiState.tunnelMode == TunnelMode.PROXY) {
                         {
                             DescriptionText(
                                 stringResource(R.string.unavailable_in_mode),
@@ -204,38 +202,6 @@ fun SettingsScreen(
             GroupLabel(
                 stringResource(R.string.monitoring),
                 modifier = Modifier.padding(horizontal = 16.dp),
-            )
-            SurfaceRow(
-                leading = {
-                    Icon(
-                        Icons.Outlined.NetworkPing,
-                        contentDescription = null,
-                        tint =
-                            if (globalUiState.appMode != AppMode.PROXY)
-                                MaterialTheme.colorScheme.onSurface
-                            else Disabled,
-                    )
-                },
-                title = stringResource(R.string.ping_monitor),
-                enabled = globalUiState.appMode != AppMode.PROXY,
-                description =
-                    if (globalUiState.appMode == AppMode.PROXY) {
-                        {
-                            DescriptionText(
-                                stringResource(R.string.unavailable_in_mode),
-                                disabled = true,
-                            )
-                        }
-                    } else null,
-                trailing = { modifier ->
-                    SwitchWithDivider(
-                        checked = uiState.monitoring.isPingEnabled,
-                        onClick = { viewModel.setPingEnabled(it) },
-                        enabled = globalUiState.appMode != AppMode.PROXY,
-                        modifier = modifier,
-                    )
-                },
-                onClick = { navController.push(Route.TunnelMonitoring) },
             )
             SurfaceRow(
                 leading = { Icon(Icons.Outlined.ViewHeadline, contentDescription = null) },

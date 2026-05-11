@@ -1,7 +1,6 @@
 package com.zaneschepke.tunnel
 
-interface
-Tunnel {
+interface Tunnel {
     val id: Int
     val name: String
     val isMetered: Boolean
@@ -32,15 +31,13 @@ Tunnel {
 
         data class PreferIpv6(
             val fallbackToIpv4Enabled: Boolean = true,
-            val recoveryEnabled: Boolean = true
+            val recoveryEnabled: Boolean = true,
         ) : IpStrategy
     }
 
     sealed interface Feature {
         data object DynamicDNS : Feature
 
-        data class ActiveConfigMonitor(
-            val intervalSeconds: Int = 1
-        ) : Feature
+        data class ActiveConfigMonitor(val intervalSeconds: Int = 1) : Feature
     }
 }

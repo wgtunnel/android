@@ -36,7 +36,11 @@ sealed class Route : NavKey {
 
     @Keep @Serializable data class TunnelSettings(val id: Int) : Route()
 
-    @Keep @Serializable data class Config(val id: Int?) : Route()
+    @Keep @Serializable data class Config(val id: Int, val live: Boolean = false) : Route()
+
+    @Keep @Serializable data class IPv6(val id: Int) : Route()
+
+    @Keep @Serializable data class ConfigEdit(val id: Int?) : Route()
 
     @Keep @Serializable data class SplitTunnel(val id: Int) : Route()
 
@@ -47,8 +51,6 @@ sealed class Route : NavKey {
     @Keep @Serializable data object Sort : Route()
 
     @Keep @Serializable data object Settings : Route()
-
-    @Keep @Serializable data object TunnelMonitoring : Route()
 
     @Keep @Serializable data object AndroidIntegrations : Route()
 
@@ -108,8 +110,10 @@ enum class Tab(
                 is Route.Tunnels,
                 Route.Sort,
                 is Route.TunnelSettings,
-                is Route.Config,
+                is Route.ConfigEdit,
                 is Route.Lock,
+                is Route.Config,
+                is Route.IPv6,
                 is Route.SplitTunnel -> TUNNELS
                 is Route.AutoTunnel,
                 Route.AdvancedAutoTunnel,
@@ -118,7 +122,6 @@ enum class Tab(
                 is Route.PreferredTunnel,
                 Route.LocationDisclosure -> AUTOTUNNEL
                 is Route.Settings,
-                Route.TunnelMonitoring,
                 Route.AndroidIntegrations,
                 Route.Dns,
                 is Route.SplitTunnelGlobal,

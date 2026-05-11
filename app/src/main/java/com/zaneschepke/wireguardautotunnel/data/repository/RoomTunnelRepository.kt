@@ -25,6 +25,14 @@ class RoomTunnelRepository(private val tunnelConfigDao: TunnelConfigDao) : Tunne
         return tunnelConfigDao.getAll().map { it.toDomain() }
     }
 
+    override suspend fun setMetered(tunnelId: Int, value: Boolean) {
+        tunnelConfigDao.setMetered(tunnelId, value)
+    }
+
+    override suspend fun setDynamicDns(tunnelId: Int, value: Boolean) {
+        tunnelConfigDao.setDynamicDns(tunnelId, value)
+    }
+
     override suspend fun save(tunnelConfig: Domain) {
         tunnelConfigDao.upsert(tunnelConfig.toEntity())
     }
@@ -36,10 +44,6 @@ class RoomTunnelRepository(private val tunnelConfigDao: TunnelConfigDao) : Tunne
     override suspend fun updatePrimaryTunnel(tunnelConfig: Domain?) {
         tunnelConfigDao.resetPrimaryTunnel()
         tunnelConfig?.let { save(it.copy(isPrimaryTunnel = true)) }
-    }
-
-    override suspend fun resetActiveTunnels() {
-        tunnelConfigDao.resetActiveTunnels()
     }
 
     override suspend fun updateMobileDataTunnel(tunnelConfig: Domain?) {
@@ -60,16 +64,8 @@ class RoomTunnelRepository(private val tunnelConfigDao: TunnelConfigDao) : Tunne
         return tunnelConfigDao.getById(id.toLong())?.toDomain()
     }
 
-    override suspend fun getActive(): List<Domain> {
-        return tunnelConfigDao.getActive().map { it.toDomain() }
-    }
-
     override suspend fun getDefaultTunnel(): Domain? {
         return tunnelConfigDao.getDefaultTunnel()?.toDomain()
-    }
-
-    override suspend fun getStartTunnel(): Domain? {
-        return tunnelConfigDao.getStartTunnel()?.toDomain()
     }
 
     override suspend fun count(): Int {

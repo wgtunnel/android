@@ -24,8 +24,7 @@ data class PeerProxy(
     fun isLanExcluded(): Boolean =
         this.allowedIps.contains(TunnelConfig.LAN_BYPASS_ALLOWED_IPS.joinAndTrim())
 
-    fun includeLan(): PeerProxy =
-        this.copy(allowedIps = TunnelConfig.ALL_IPS.joinAndTrim())
+    fun includeLan(): PeerProxy = this.copy(allowedIps = TunnelConfig.ALL_IPS.joinAndTrim())
 
     fun excludeLan(): PeerProxy =
         this.copy(allowedIps = TunnelConfig.LAN_BYPASS_ALLOWED_IPS.joinAndTrim())

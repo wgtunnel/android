@@ -1,7 +1,12 @@
 package com.zaneschepke.wireguardautotunnel.domain.model
 
+import com.zaneschepke.tunnel.Tunnel
 import com.zaneschepke.wireguardautotunnel.data.entity.TunnelConfig.Companion.GLOBAL_CONFIG_NAME
 import com.zaneschepke.wireguardautotunnel.parser.Config
+import com.zaneschepke.wireguardautotunnel.parser.InterfaceSection
+import com.zaneschepke.wireguardautotunnel.parser.PeerSection
+import com.zaneschepke.wireguardautotunnel.parser.crypto.Key
+import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.settings.config.edit.components.InterfaceSection
 import com.zaneschepke.wireguardautotunnel.util.extensions.defaultName
 
 data class TunnelConfig(
@@ -11,82 +16,76 @@ data class TunnelConfig(
     val isMobileDataTunnel: Boolean = false,
     val isPrimaryTunnel: Boolean = false,
     val quickConfig: String = "",
-    val isActive: Boolean = false,
-    val restartOnPingFailure: Boolean = false,
+    val dynamicDnsEnabled: Boolean = false,
     val pingTarget: String? = null,
     val isEthernetTunnel: Boolean = false,
-    val isIpv4Preferred: Boolean = true,
+    val isIpv6Preferred: Boolean = false,
     val position: Int = 0,
     val autoTunnelApps: Set<String> = setOf(),
     val isMetered: Boolean = false,
+    val ipv4FallbackEnabled: Boolean = false,
+    val ipv6RestoreEnabled: Boolean = false,
 ) {
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is TunnelConfig) return false
-        return id == other.id &&
-            name == other.name &&
-            quickConfig == other.quickConfig &&
-            isPrimaryTunnel == other.isPrimaryTunnel &&
-            isMobileDataTunnel == other.isMobileDataTunnel &&
-            isEthernetTunnel == other.isEthernetTunnel &&
-            pingTarget == other.pingTarget &&
-            restartOnPingFailure == other.restartOnPingFailure &&
-            tunnelNetworks == other.tunnelNetworks &&
-            isIpv4Preferred == other.isIpv4Preferred &&
-            isMetered == other.isMetered
-    }
-
-    override fun hashCode(): Int {
-        var result = id
-        result = 31 * result + name.hashCode()
-        result = 31 * result + quickConfig.hashCode()
-        return result
-    }
-
-    fun getConfig() : Config {
+    fun getConfig(): Config {
         return Config.parseQuickString(quickConfig)
+    }
+
+    fun toBackendTunnel(): Tunnel = BackendTunnel(this)
+
+    private class BackendTunnel(private val config: TunnelConfig) : Tunnel {
+
+        override val id: Int
+            get() = config.id
+
+        override val name: String
+            get() = config.name
+
+        override val isMetered: Boolean
+            get() = config.isMetered
+
+        override val ipStrategy: Tunnel.IpStrategy
+            get() =
+                Tunnel.IpStrategy.PreferIpv6(
+                    fallbackToIpv4Enabled = config.ipv4FallbackEnabled,
+                    recoveryEnabled = config.ipv6RestoreEnabled,
+                )
+
+        override val features: Set<Tunnel.Feature>
+            get() = buildSet {
+                add(Tunnel.Feature.ActiveConfigMonitor())
+
+                if (config.dynamicDnsEnabled) {
+                    add(Tunnel.Feature.DynamicDNS)
+                }
+            }
+
+        override fun updateState(state: Tunnel.State) = Unit
     }
 
     companion object {
 
         fun tunnelConfFromQuick(amQuick: String, name: String? = null): TunnelConfig {
             val config = Config.parseQuickString(amQuick)
-            return TunnelConfig(
-                name = name ?: config.defaultName(),
-                quickConfig = amQuick,
-            )
+            return TunnelConfig(name = name ?: config.defaultName(), quickConfig = amQuick)
         }
 
-        // TODO
         fun generateDefaultGlobalConfig(): TunnelConfig {
-//            val keyPair = KeyPair()
-//            val config =
-//                org.amnezia.awg.config.Config.Builder()
-//                    .apply {
-//                        setInterface(
-//                            Interface.Builder()
-//                                .apply {
-//                                    setKeyPair(keyPair)
-//                                    parseAddresses("10.0.0.2/32")
-//                                }
-//                                .build()
-//                        )
-//                        addPeer(
-//                            Peer.Builder()
-//                                .apply {
-//                                    setPublicKey(keyPair.publicKey)
-//                                    addAllowedIps(listOf(InetNetwork.parse("0.0.0.0/0")))
-//                                    setEndpoint(InetEndpoint.parse("server.example.com:51820"))
-//                                }
-//                                .build()
-//                        )
-//                    }
-//                    .build()
-            return TunnelConfig(
-                name = GLOBAL_CONFIG_NAME,
-                quickConfig = "",
-            )
+            val privateKey: String = Key.generatePrivateKey().toBase64()
+            val publicKey = Config.generatePublicKeyFromPrivateKey(privateKey)
+            val config =
+                Config(
+                    `interface` =
+                        InterfaceSection(address = "10.0.0.2/32", privateKey = privateKey),
+                    peers =
+                        listOf(
+                            PeerSection(
+                                publicKey = publicKey,
+                                endpoint = "server.example.com:51820",
+                                allowedIPs = "0.0.0.0/0",
+                            )
+                        ),
+                )
+            return TunnelConfig(name = GLOBAL_CONFIG_NAME, quickConfig = config.asQuickString())
         }
 
         private const val IPV6_ALL_NETWORKS = "::/0"

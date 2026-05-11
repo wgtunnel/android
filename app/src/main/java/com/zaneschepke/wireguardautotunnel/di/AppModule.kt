@@ -4,10 +4,10 @@ import android.content.Context
 import android.os.PowerManager
 import com.zaneschepke.logcatter.LogReader
 import com.zaneschepke.logcatter.LogcatReader
-import com.zaneschepke.wireguardautotunnel.core.notification.NotificationManager
-import com.zaneschepke.wireguardautotunnel.core.notification.NotificationMonitor
-import com.zaneschepke.wireguardautotunnel.core.notification.WireGuardNotification
+import com.zaneschepke.wireguardautotunnel.core.notification.AndroidNotificationService
+import com.zaneschepke.wireguardautotunnel.core.notification.NotificationService
 import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
+import com.zaneschepke.wireguardautotunnel.core.service.autotunnel.AutoTunnelStateHolder
 import com.zaneschepke.wireguardautotunnel.core.shortcut.DynamicShortcutManager
 import com.zaneschepke.wireguardautotunnel.core.shortcut.ShortcutManager
 import com.zaneschepke.wireguardautotunnel.domain.repository.GlobalEffectRepository
@@ -38,17 +38,8 @@ val appModule = module {
     single<PowerManager> {
         androidContext().getSystemService(Context.POWER_SERVICE) as PowerManager
     }
-    singleOf(::NotificationMonitor)
-    singleOf(::WireGuardNotification) bind NotificationManager::class
-    single {
-        ServiceManager(
-            androidContext(),
-            get(named(Dispatcher.IO)),
-            get(named(Scope.APPLICATION)),
-            get(named(Dispatcher.MAIN)),
-            get(),
-        )
-    }
+    singleOf(::AndroidNotificationService) bind NotificationService::class
+    single { ServiceManager(androidContext()) }
 
     singleOf(::GlobalEffectRepository)
 
@@ -59,7 +50,7 @@ val appModule = module {
     single { NetworkUtils(get(named(Dispatcher.IO))) }
 
     viewModelOf(::AutoTunnelViewModel)
-    viewModel { (id: Int?) -> ConfigViewModel(get(), get(), get(), id) }
+    viewModel { (id: Int?) -> ConfigEditViewModel(get(), get(), get(), id) }
     viewModelOf(::DnsViewModel)
     viewModelOf(::LicenseViewModel)
     viewModelOf(::LockdownViewModel)
@@ -71,4 +62,6 @@ val appModule = module {
     viewModel { (id: Int) -> SplitTunnelViewModel(get(), get(), get(), id) }
     viewModel { SupportViewModel(get(), get(named(Dispatcher.MAIN)), get()) }
     viewModel { (id: Int) -> TunnelViewModel(get(), get(), id) }
+
+    singleOf(::AutoTunnelStateHolder)
 }

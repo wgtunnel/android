@@ -31,11 +31,10 @@ import com.zaneschepke.wireguardautotunnel.util.extensions.toUserFriendlyTimesta
 import com.zaneschepke.wireguardautotunnel.viewmodel.SharedAppViewModel
 import io.github.g00fy2.quickie.QRResult
 import io.github.g00fy2.quickie.ScanQRCode
+import java.time.Instant
 import org.koin.compose.viewmodel.koinActivityViewModel
 import org.orbitmvi.orbit.compose.collectSideEffect
 import timber.log.Timber
-import java.time.Instant
-import kotlin.time.Clock
 
 @Composable
 fun TunnelsScreen(sharedViewModel: SharedAppViewModel = koinActivityViewModel()) {
@@ -47,19 +46,18 @@ fun TunnelsScreen(sharedViewModel: SharedAppViewModel = koinActivityViewModel())
 
     if (uiState.isLoading) return
 
-    val selectedTunnelsExportLauncher = rememberFileExportLauncherForResult(
-        onSuccess = { uri ->
-            sharedViewModel.exportSelectedTunnels(uri)
-        },
-        onCanceled = {
-            sharedViewModel.showToast(StringValue.StringResource(R.string.export_canceled))
-        },
-        onUnsupported = {
-            sharedViewModel.showSnackMessage(
-                StringValue.StringResource(R.string.export_unsupported)
-            )
-        }
-    )
+    val selectedTunnelsExportLauncher =
+        rememberFileExportLauncherForResult(
+            onSuccess = { uri -> sharedViewModel.exportSelectedTunnels(uri) },
+            onCanceled = {
+                sharedViewModel.showToast(StringValue.StringResource(R.string.export_canceled))
+            },
+            onUnsupported = {
+                sharedViewModel.showSnackMessage(
+                    StringValue.StringResource(R.string.export_unsupported)
+                )
+            },
+        )
 
     var showImportSheet by rememberSaveable { mutableStateOf(false) }
     var showDeleteModal by rememberSaveable { mutableStateOf(false) }
@@ -153,7 +151,7 @@ fun TunnelsScreen(sharedViewModel: SharedAppViewModel = koinActivityViewModel())
                     if (result != null) sharedViewModel.importFromClipboard(result)
                 }
             },
-            onManualImportClick = { navController.push(Route.Config(null)) },
+            onManualImportClick = { navController.push(Route.ConfigEdit(null)) },
             onUrlClick = { showUrlDialog = true },
         )
     }

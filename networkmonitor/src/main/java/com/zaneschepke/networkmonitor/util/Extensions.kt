@@ -15,7 +15,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 
-
 @Suppress("DEPRECATION")
 fun WifiManager.getCurrentSecurityType(): WifiSecurityType? {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {

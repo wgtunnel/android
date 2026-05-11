@@ -125,7 +125,7 @@ fun AutoTunnelScreen(
             fun onAutoTunnelClick() {
                 if (!globalUiState.isBatteryOptimizationShown)
                     return requestDisableBatteryOptimizations()
-                viewModel.toggleAutoTunnel(globalUiState.appMode)
+                viewModel.toggleAutoTunnel(globalUiState.tunnelMode)
             }
 
             SurfaceRow(

@@ -247,13 +247,13 @@ JNIEXPORT void JNICALL Java_com_zaneschepke_tunnel_VpnBackend_awgSetStatusCallba
         g_statusCallbackObj = (*env)->NewGlobalRef(env, callback);
         jclass callbackClass = (*env)->GetObjectClass(env, callback);
         if (callbackClass != NULL) {
-            // NEW signature: (I Ljava/lang/String; I)V
+            // UPDATED signature: (II)V  → only handle + statusCode
             g_statusCallbackMethod = (*env)->GetMethodID(env, callbackClass,
-                "onStatusChanged", "(ILjava/lang/String;I)V");
+                "onStatusChanged", "(II)V");
             (*env)->DeleteLocalRef(env, callbackClass);
         }
         if (g_statusCallbackMethod != NULL) {
-            LOGD("JNI: Status callback SUCCESSFULLY REGISTERED");
+            LOGD("JNI: Status callback SUCCESSFULLY REGISTERED (2-param)");
         } else {
             LOGE("JNI: FAILED to get onStatusChanged method ID");
         }
@@ -264,7 +264,7 @@ JNIEXPORT void JNICALL Java_com_zaneschepke_tunnel_VpnBackend_awgSetStatusCallba
 
 
 /* Helper that both VPN and Proxy Go code will call (modelled exactly after your bypass_socket) */
-void awgNotifyStatus(int32_t handle, const char* interfaceName, int32_t code) {
+void awgNotifyStatus(int32_t handle, int32_t code) {
     JNIEnv *env = NULL;
     jboolean attached = JNI_FALSE;
 
@@ -286,20 +286,15 @@ void awgNotifyStatus(int32_t handle, const char* interfaceName, int32_t code) {
 
     if ((*env)->ExceptionCheck(env)) (*env)->ExceptionClear(env);
 
-    jstring jInterfaceName = (*env)->NewStringUTF(env, interfaceName ? interfaceName : "");
-
     (*env)->CallVoidMethod(env, g_statusCallbackObj, g_statusCallbackMethod,
-            (jint)handle, jInterfaceName, (jint)code);
+            (jint)handle, (jint)code);
 
     if ((*env)->ExceptionCheck(env)) {
         (*env)->ExceptionDescribe(env);
         (*env)->ExceptionClear(env);
     }
 
-    (*env)->DeleteLocalRef(env, jInterfaceName);
-
     if (attached) {
         (*g_jvm)->DetachCurrentThread(g_jvm);
     }
 }
-

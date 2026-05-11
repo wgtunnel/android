@@ -2,8 +2,7 @@ package com.zaneschepke.wireguardautotunnel.viewmodel
 
 import androidx.lifecycle.ViewModel
 import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
-import com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode
+import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelProvider
 import com.zaneschepke.wireguardautotunnel.domain.model.LockdownSettings
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.domain.repository.GlobalEffectRepository
@@ -16,7 +15,7 @@ import org.orbitmvi.orbit.viewmodel.container
 
 class LockdownViewModel(
     private val lockdownSettingsRepository: LockdownSettingsRepository,
-    private val tunnelManager: TunnelManager,
+    private val tunnelProvider: TunnelProvider,
     private val globalEffectRepository: GlobalEffectRepository,
 ) : ContainerHost<LockdownSettingsUiState, Nothing>, ViewModel() {
 
@@ -34,10 +33,10 @@ class LockdownViewModel(
         reduce { state.copy(showSaveModal = false) }
         lockdownSettingsRepository.upsert(lockdownSettings)
 
-        tunnelManager.disableLockDown()
+        tunnelProvider.disableLockDown()
         val allowedIps =
             if (lockdownSettings.bypassLan) TunnelConfig.LAN_BYPASS_ALLOWED_IPS else emptySet()
-        tunnelManager.setLockDown(lockdownSettings)
+        tunnelProvider.setLockDown(lockdownSettings)
 
         postSideEffect(GlobalSideEffect.PopBackStack)
         postSideEffect(

@@ -34,7 +34,7 @@ class DynamicShortcutManager(
                 intent =
                     Intent(context, ShortcutsActivity::class.java).apply {
                         putExtra("className", "WireGuardTunnelService")
-                        action = ShortcutsActivity.Action.STOP.name
+                        action = ShortcutContract.Action.STOP.name
                     },
                 shortcutIcon = R.drawable.vpn_off,
             ),
@@ -45,7 +45,7 @@ class DynamicShortcutManager(
                 intent =
                     Intent(context, ShortcutsActivity::class.java).apply {
                         putExtra("className", "WireGuardTunnelService")
-                        action = ShortcutsActivity.Action.START.name
+                        action = ShortcutContract.Action.START.name
                     },
                 shortcutIcon = R.drawable.vpn_on,
             ),
@@ -56,7 +56,7 @@ class DynamicShortcutManager(
                 intent =
                     Intent(context, ShortcutsActivity::class.java).apply {
                         putExtra("className", "WireGuardConnectivityWatcherService")
-                        action = ShortcutsActivity.Action.START.name
+                        action = ShortcutContract.Action.START.name
                     },
                 shortcutIcon = R.drawable.auto_play,
             ),
@@ -67,7 +67,7 @@ class DynamicShortcutManager(
                 intent =
                     Intent(context, ShortcutsActivity::class.java).apply {
                         putExtra("className", "WireGuardConnectivityWatcherService")
-                        action = ShortcutsActivity.Action.STOP.name
+                        action = ShortcutContract.Action.STOP.name
                     },
                 shortcutIcon = R.drawable.auto_pause,
             ),

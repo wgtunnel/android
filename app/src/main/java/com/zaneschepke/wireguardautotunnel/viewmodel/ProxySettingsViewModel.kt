@@ -2,7 +2,7 @@ package com.zaneschepke.wireguardautotunnel.viewmodel
 
 import androidx.lifecycle.ViewModel
 import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
+import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelProvider
 import com.zaneschepke.wireguardautotunnel.domain.model.ProxySettings
 import com.zaneschepke.wireguardautotunnel.domain.repository.GlobalEffectRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.ProxySettingsRepository
@@ -17,7 +17,7 @@ import org.orbitmvi.orbit.viewmodel.container
 class ProxySettingsViewModel(
     private val proxySettingsRepository: ProxySettingsRepository,
     private val globalEffectRepository: GlobalEffectRepository,
-    private val tunnelManager: TunnelManager,
+    private val tunnelProvider: TunnelProvider,
 ) : ContainerHost<ProxySettingsUiState, Nothing>, ViewModel() {
 
     override val container =
@@ -25,10 +25,14 @@ class ProxySettingsViewModel(
             ProxySettingsUiState(),
             buildSettings = { repeatOnSubscribedStopTimeout = 5000L },
         ) {
-            combine(tunnelManager.backendStatus, proxySettingsRepository.flow) {
+            combine(tunnelProvider.backendStatus, proxySettingsRepository.flow) {
                     backendStatus,
                     settings ->
-                    state.copy(proxySettings = settings, isLoading = false, backendStatus = backendStatus)
+                    state.copy(
+                        proxySettings = settings,
+                        isLoading = false,
+                        backendStatus = backendStatus,
+                    )
                 }
                 .collect { reduce { it } }
         }
@@ -106,7 +110,9 @@ class ProxySettingsViewModel(
 
         proxySettingsRepository.upsert(updated)
 
-        if (state.backendStatus.activeTunnels.isNotEmpty()) tunnelManager.restartActiveTunnels()
+        // TODO
+        //        if (state.backendStatus.activeTunnels.isNotEmpty())
+        // tunnelBackendProvider.restartActiveTunnels()
 
         postSideEffect(
             GlobalSideEffect.Snackbar(StringValue.StringResource(R.string.config_changes_saved))

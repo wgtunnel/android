@@ -12,7 +12,7 @@ class Socks5SocketFactory(
     private val proxyHost: String,
     private val proxyPort: Int,
     private val username: String?,
-    private val password: String?
+    private val password: String?,
 ) : SocketFactory() {
 
     private val proxyAddress = InetSocketAddress(proxyHost, proxyPort)
@@ -23,7 +23,12 @@ class Socks5SocketFactory(
         return createSocks5Socket(host ?: throw IOException("Host is required"), port)
     }
 
-    override fun createSocket(host: String?, port: Int, localHost: InetAddress?, localPort: Int): Socket {
+    override fun createSocket(
+        host: String?,
+        port: Int,
+        localHost: InetAddress?,
+        localPort: Int,
+    ): Socket {
         val socket = createSocks5Socket(host ?: throw IOException("Host is required"), port)
         if (localHost != null) socket.bind(InetSocketAddress(localHost, localPort))
         return socket
@@ -38,7 +43,7 @@ class Socks5SocketFactory(
         address: InetAddress?,
         port: Int,
         localAddress: InetAddress?,
-        localPort: Int
+        localPort: Int,
     ): Socket {
         if (address == null) throw IOException("Host address is required")
         val socket = createSocks5Socket(address.hostAddress, port)
@@ -70,7 +75,8 @@ class Socks5SocketFactory(
         val method = input.readUnsignedByte()
 
         if (method == 0x02) {
-            if (username == null || password == null) throw IOException("SOCKS5 requires credentials")
+            if (username == null || password == null)
+                throw IOException("SOCKS5 requires credentials")
             output.writeByte(0x01) // auth version
             val u = username.toByteArray(Charsets.UTF_8)
             output.writeByte(u.size)

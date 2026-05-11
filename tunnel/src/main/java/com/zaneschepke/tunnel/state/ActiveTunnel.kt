@@ -8,11 +8,11 @@ import com.zaneschepke.wireguardautotunnel.parser.ActiveConfig
 data class ActiveTunnel(
     val state: Tunnel.State = Tunnel.State.Down,
     val lastStateChangeMs: Long = System.currentTimeMillis(),
+    val lastHealthChangeMs: Long = 0L,
     val interfaceName: String? = null,
     val activeConfig: ActiveConfig? = null,
     val pingStats: PingStats? = null,
+    val resolvingDns: Boolean = false,
     val mode: BackendMode? = null,
     val uptime: Long? = null,
-    // TODO only for kernel mode, need to add peer identifier to callback for userspace support
-    val handshakeHealthy: Map<String, Boolean> = emptyMap()
 )

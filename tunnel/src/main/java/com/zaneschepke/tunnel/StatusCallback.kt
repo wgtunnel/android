@@ -1,6 +1,6 @@
 package com.zaneschepke.tunnel
 
-fun interface StatusCallback {
+internal fun interface StatusCallback {
 
-    fun onStatusChanged(handle: Int, interfaceName: String, statusCode: Int)
+    fun onStatusChanged(handle: Int, statusCode: Int)
 }

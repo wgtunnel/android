@@ -2,7 +2,7 @@ package com.zaneschepke.tunnel
 
 import timber.log.Timber
 
-object VpnBackend {
+internal object VpnBackend {
 
     fun setStatusCallback(callback: StatusCallback?) {
         Timber.d("setStatusCallback called with ${if (callback != null) "callback" else "null"}")
@@ -19,12 +19,7 @@ object VpnBackend {
 
     external fun awgTurnOff(handle: Int)
 
-    external fun awgTurnOn(
-        ifName: String,
-        tunFd: Int,
-        settings: String,
-        uapiPath: String
-    ): Int
+    external fun awgTurnOn(ifName: String, tunFd: Int, settings: String, uapiPath: String): Int
 
     external fun awgUpdateTunnelPeers(handle: Int, settings: String): Int
 

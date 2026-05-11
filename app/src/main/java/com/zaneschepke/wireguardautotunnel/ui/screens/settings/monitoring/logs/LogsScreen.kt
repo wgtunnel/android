@@ -87,16 +87,18 @@ fun LogsScreen(
                 showLogsSheet = false
             },
             onCanceled = {
-                sharedViewModel.showSnackMessage(StringValue.StringResource(R.string.export_canceled))
+                sharedViewModel.showSnackMessage(
+                    StringValue.StringResource(R.string.export_canceled)
+                )
                 showLogsSheet = false
             },
             onUnsupported = {
-                sharedViewModel.showSnackMessage(StringValue.StringResource(R.string.export_unsupported))
+                sharedViewModel.showSnackMessage(
+                    StringValue.StringResource(R.string.export_unsupported)
+                )
                 showLogsSheet = false
             },
-            onDismiss = {
-                showLogsSheet = false
-            }
+            onDismiss = { showLogsSheet = false },
         )
     }
 

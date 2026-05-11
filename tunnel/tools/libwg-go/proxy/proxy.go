@@ -75,7 +75,7 @@ func awgStartProxy(interfaceName string, config string, uapiPath string, bypass 
 	}
 
 	statusCB := func(code device.StatusCode) {
-		go C.awgNotifyStatus(C.int32_t(handle), C.CString(interfaceName), C.int32_t(code))
+		go C.awgNotifyStatus(C.int32_t(handle), C.int32_t(code))
 	}
 
 	dev := device.NewDevice(tun, stdBind, shared.NewLogger("Tun/"+interfaceName), conf.Device.DomainBlockingEnabled, statusCB)
@@ -247,6 +247,11 @@ func awgTurnProxyTunnelOff(virtualTunnelHandle int32) {
 	if virtualTun.Dev != nil {
 		virtualTun.Dev.Close()
 	}
+
+	go C.awgNotifyStatus(
+		C.int32_t(virtualTunnelHandle),
+		C.int32_t(shared.StatusStop),
+	)
 
 	delete(virtualTunnelHandles, virtualTunnelHandle)
 	shared.ReleaseHandle(virtualTunnelHandle)

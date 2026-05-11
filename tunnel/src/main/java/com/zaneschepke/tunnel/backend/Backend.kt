@@ -1,20 +1,23 @@
 package com.zaneschepke.tunnel.backend
 
+import com.zaneschepke.tunnel.NotificationProvider
 import com.zaneschepke.tunnel.Tunnel
+import com.zaneschepke.tunnel.event.TunnelEvent
 import com.zaneschepke.tunnel.model.BackendMode
 import com.zaneschepke.tunnel.model.DnsBoostrapMode
 import com.zaneschepke.tunnel.model.KillSwitchConfig
+import com.zaneschepke.tunnel.service.VpnService
 import com.zaneschepke.tunnel.state.BackendStatus
-import com.zaneschepke.wireguardautotunnel.parser.ActiveConfig
+import kotlin.reflect.KClass
 import kotlinx.coroutines.flow.Flow
-import java.io.File
 
 interface Backend {
 
-    suspend fun start(
-        tunnel: Tunnel,
-        mode: BackendMode
-    ): Result<Unit>
+    val notificationProvider: NotificationProvider
+
+    suspend fun start(tunnel: Tunnel, mode: BackendMode): Result<Unit>
+
+    fun setAlwaysOnCallback(alwaysOnCallback: VpnService.AlwaysOnCallback)
 
     suspend fun stop(id: Int): Result<Unit>
 
@@ -22,16 +25,13 @@ interface Backend {
 
     suspend fun disableKillSwitch(): Result<Unit>
 
-    suspend fun setBootstrapDnsMode(mode : DnsBoostrapMode)
+    suspend fun setBootstrapDnsMode(mode: DnsBoostrapMode)
 
-    suspend fun getActiveConfig(id: Int): Result<ActiveConfig?>
+    suspend fun stopAllOfType(modeClass: KClass<out BackendMode>): Result<Unit>
+
+    suspend fun stopAllActiveTunnels(): Result<Unit>
 
     val status: Flow<BackendStatus>
 
-    companion object {
-        private const val KERNEL_SUPPORT_PATH = "/sys/module/wireguard"
-        fun hasKernelSupport() : Boolean {
-            return File(KERNEL_SUPPORT_PATH).exists()
-        }
-    }
+    val events: Flow<TunnelEvent>
 }

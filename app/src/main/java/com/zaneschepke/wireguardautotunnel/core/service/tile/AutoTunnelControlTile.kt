@@ -1,109 +1,54 @@
 package com.zaneschepke.wireguardautotunnel.core.service.tile
 
-import android.content.Intent
-import android.os.IBinder
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
-import androidx.lifecycle.*
-import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
-import com.zaneschepke.wireguardautotunnel.domain.repository.AutoTunnelSettingsRepository
-import kotlin.concurrent.atomics.AtomicBoolean
-import kotlin.concurrent.atomics.ExperimentalAtomicApi
-import kotlinx.coroutines.launch
+import com.zaneschepke.wireguardautotunnel.core.orchestration.AutoTunnelCoordinator
+import com.zaneschepke.wireguardautotunnel.core.service.autotunnel.AutoTunnelStateHolder
+import kotlinx.coroutines.*
 import org.koin.android.ext.android.inject
-import timber.log.Timber
 
-class AutoTunnelControlTile : TileService(), LifecycleOwner {
+class AutoTunnelControlTile : TileService() {
 
-    private val autoTunnelSettingsRepository: AutoTunnelSettingsRepository by inject()
+    private val autoTunnelStateHolder: AutoTunnelStateHolder by inject()
+    private val autoTunnelCoordinator: AutoTunnelCoordinator by inject()
 
-    private val serviceManager: ServiceManager by inject()
+    private val tileScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
-    @OptIn(ExperimentalAtomicApi::class) val isCollecting = AtomicBoolean(false)
-
-    private val lifecycleRegistry: LifecycleRegistry = LifecycleRegistry(this)
-
-    override fun onCreate() {
-        super.onCreate()
-        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-    }
-
-    override fun onTileAdded() {
-        super.onTileAdded()
-        initTileState()
+    override fun onStartListening() {
+        observeState()
     }
 
     override fun onStopListening() {
-        super.onStopListening()
-        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_STOP)
+        tileScope.coroutineContext.cancelChildren()
     }
 
-    @OptIn(ExperimentalAtomicApi::class)
-    private fun initTileState() {
-        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START)
-        Timber.d("Start listening called for auto tunnel tile")
-        if (isCollecting.compareAndSet(expectedValue = false, newValue = true)) {
-            lifecycleScope.launch {
-                repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    serviceManager.autoTunnelService.collect {
-                        if (it != null) return@collect setActive()
-                        setInactive()
-                    }
-                }
+    override fun onClick() {
+        unlockAndRun {
+            tileScope.launch {
+                autoTunnelCoordinator.toggle()
             }
         }
     }
 
-    override fun onStartListening() {
-        super.onStartListening()
-        initTileState()
-    }
-
-    override fun onClick() {
-        super.onClick()
-        unlockAndRun {
-            lifecycleScope.launch {
-                if (serviceManager.autoTunnelService.value != null) {
-                    autoTunnelSettingsRepository.updateAutoTunnelEnabled(false)
-                    setInactive()
-                } else {
-                    autoTunnelSettingsRepository.updateAutoTunnelEnabled(true)
-                    setActive()
+    private fun observeState() {
+        tileScope.launch {
+            autoTunnelStateHolder.active.collect { active ->
+                    if (active) setActive() else setInactive()
                 }
-            }
         }
     }
 
     private fun setActive() {
-        qsTile?.let {
-            it.state = Tile.STATE_ACTIVE
-            it.updateTile()
+        qsTile?.apply {
+            state = Tile.STATE_ACTIVE
+            updateTile()
         }
     }
 
     private fun setInactive() {
-        qsTile?.let {
-            it.state = Tile.STATE_INACTIVE
-            it.updateTile()
+        qsTile?.apply {
+            state = Tile.STATE_INACTIVE
+            updateTile()
         }
     }
-
-    /* This works around an annoying unsolved frameworks bug some people are hitting. */
-    override fun onBind(intent: Intent): IBinder? {
-        var ret: IBinder? = null
-        try {
-            ret = super.onBind(intent)
-        } catch (_: Throwable) {
-            Timber.e("Failed to bind to AutoTunnelControlTile")
-        }
-        return ret
-    }
-
-    override val lifecycle: Lifecycle
-        get() = lifecycleRegistry
 }

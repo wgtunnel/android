@@ -10,5 +10,5 @@ data class PingConfig(
     val proxy: Proxy? = null,
     val proxyUsername: String? = null,
     val proxyPassword: String? = null,
-    val delayBetweenPingsMs: Long = 200L
+    val delayBetweenPingsMs: Long = 200L,
 )

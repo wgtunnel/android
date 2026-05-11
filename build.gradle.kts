@@ -1,3 +1,6 @@
+import com.ncorti.ktfmt.gradle.tasks.KtfmtFormatTask
+import org.gradle.kotlin.dsl.register
+
 plugins {
 	alias(libs.plugins.android.application) apply false
 	alias(libs.plugins.kotlin.android) apply false
@@ -13,6 +16,13 @@ plugins {
 subprojects {
 	apply {
 		plugin(rootProject.libs.plugins.ktfmt.get().pluginId)
+	}
+
+	tasks.register<KtfmtFormatTask>("format") {
+		description = "Format Kotlin code style deviations."
+        source = project.fileTree(rootDir)
+		include("**/*.kt")
+		exclude("**/build/**", ".*generated.*", "**/amneziawg-tools/**", "**/.gradle/**")
 	}
 
 	ktfmt {

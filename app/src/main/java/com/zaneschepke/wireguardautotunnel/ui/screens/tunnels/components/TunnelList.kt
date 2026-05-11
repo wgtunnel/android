@@ -78,17 +78,6 @@ fun TunnelList(
                     uiState.selectedTunnels.any { it.id == tunnel.id }
                 }
 
-            // TODO add new pinger to be factored in
-//            var leadingIconColor by
-//                remember(
-//                    tunnelState.status,
-//                    tunnelState.logHealthState,
-//                    tunnelState.pingStates,
-//                    tunnelState.statistics,
-//                ) {
-//                    mutableStateOf(tunnelState.health().asColor())
-//                }
-
             SurfaceRow(
                 modifier = Modifier.animateItem(),
                 leading = {
@@ -111,13 +100,7 @@ fun TunnelList(
                 selected = selected,
                 expandedContent =
                     if (tunnelState.state !== Tunnel.State.Down) {
-                        {
-                            TunnelStatisticsRow(
-                                tunnelState,
-                                uiState.isPingEnabled,
-                                uiState.showPingStats,
-                            )
-                        }
+                        { TunnelStatisticsRow(tunnelState) }
                     } else null,
                 onLongClick = { viewModel.toggleSelectedTunnel(tunnel.id) },
                 trailing = { modifier ->

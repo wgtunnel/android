@@ -4,6 +4,7 @@
     <string name="app_permission_title">Control tunnels and auto-tunnel features.</string>
     <string name="app_permission_description">https://hosted.weblate.org/translate/wg-tunnel/strings/en/?checksum=e52d7eb2e28a9a12Control tunnels and auto-tunnel features.</string>
     <string name="vpn_channel_id" translatable="false">VPN Channel</string>
+    <string name="proxy_channel_id" translatable="false">Proxy Channel</string>
     <string name="vpn_channel_name">VPN Notification Channel</string>
     <string name="github_url" translatable="false">https://github.com/wgtunnel/wgtunnel/issues</string>
     <string name="github_sponsors_url" translatable="false">https://github.com/sponsors/zaneschepke</string>
@@ -136,7 +137,7 @@
     <string name="tunnel_running">Tunnel running</string>
     <string name="monitoring_state_changes">Monitoring state changes</string>
     <string name="donate">Donate to project</string>
-    <string name="local_logging">Local logs monitor</string>
+    <string name="local_logging">Local logging</string>
     <string name="add_from_clipboard">Add from clipboard</string>
     <string name="stop_on_no_internet">Stop on no internet</string>
     <string name="stop_on_internet_loss">Stop tunnel on internet loss</string>
@@ -144,10 +145,10 @@
     <string name="native_kill_switch">Native kill switch</string>
     <string name="allow_lan_traffic">Allow LAN traffic</string>
     <string name="bypass_lan_for_kill_switch">Bypass LAN for kill switch</string>
-    <string name="vpn_channel_description">A channel for VPN state notifications</string>
+    <string name="vpn_channel_description">Notifications for VPN tunnels.</string>
     <string name="auto_tunnel_channel_id" translatable="false">Auto-tunnel Channel</string>
-    <string name="auto_tunnel_channel_name">Auto-tunnel Notification Channel</string>
-    <string name="auto_tunnel_channel_description">A channel for auto-tunnel state notifications</string>
+    <string name="auto_tunnel_channel_name">Auto-tunnel</string>
+    <string name="auto_tunnel_channel_description">Notifications for auto-tunnel events.</string>
     <string name="stop">Stop</string>
     <string name="splt_tunneling">Split tunneling</string>
     <string name="show_scripts">Show scripts</string>
@@ -332,8 +333,10 @@
     <string name="mimic_dns">Mimic DNS</string>
     <string name="mimic_sip">Mimic SIP</string>
     <string name="active_tunnel_update_failed">Active tunnel update failed</string>
-    <string name="ddns_auto_update">Dynamic DNS auto-update</string>
-    <string name="ddns_auto_update_description">Auto-updates IP on DDNS changes</string>
+    <string name="ddns_auto_update">Dynamic DNS (DDNS)</string>
+    <string name="ddns_auto_update_description">
+        Re-resolves the server hostname and updates peer endpoints on DDNS changes
+    </string>
     <string name="prefer_ipv6_resolution">Prefer IPv6 peer resolution</string>
     <string name="disabled">Disabled</string>
     <string name="mode_disabled_template">Feature unavailable in %1$s mode.</string>
@@ -468,4 +471,72 @@
     <string name="only_template">%1$s only</string>
     <string name="export_unsupported">Export is not supported on this device</string>
     <string name="export_canceled">Export canceled</string>
+    <string name="proxy_channel_description">Notifications for proxy tunnels.</string>
+    <string name="initializing">Initializing…</string>
+    <string name="network">Network</string>
+    <string name="view_configuration">View configuration</string>
+    <string name="view_live_configuration">View live configuration</string>
+    <string name="toggle_sensitive_data_visibility">Toggle sensitive data visibility</string>
+    <string name="ipv6_settings">IPv6 settings</string>
+    <string name="automation">Automation</string>
+    <string name="use_ipv6">Use IPv6 when available</string>
+    <string name="switch_to_ipv4">Switch to IPv4 if needed</string>
+    <string name="switch_to_ipv6">Switch back to IPv6</string>
+    <string name="peer_resolution">Peer Resolution</string>
+    <string name="resolution_method">Resolution method</string>
+    <string name="tunnel_dns">Tunnel DNS</string>
+    <string name="dot">DNS over TLS (DoT)</string>
+    <string name="plain_dns">Plain DNS (port 53)</string>
+    <string name="current_system_dns">Current system DNS</string>
+    <string name="dns_error_empty">Endpoint cannot be empty</string>
+    <string name="dns_error_invalid_url">Invalid URL format</string>
+    <string name="dns_error_invalid_scheme">DoH must use HTTPS</string>
+    <string name="dns_error_invalid_host">Host cannot be empty</string>
+    <string name="dns_error_invalid_port">Port must be between 1 and 65535</string>
+    <string name="dns_error_invalid_ip_or_host">Invalid IP address or hostname</string>
+    <string name="dns_endpoint_label">DNS server endpoint</string>
+    <string name="dns_endpoint_hint">IP, hostname, or DoH URL</string>
+    <string name="no_system_dns_information">No system DNS information</string>
+    <string name="private_dns_automatic">Private DNS: automatic</string>
+    <string name="private_dns_hostname">Private DNS: hostname (%1$s)</string>
+    <string name="system_dns_servers">Servers: %1$s</string>
+    <string name="no_system_dns_detected">No system DNS detected</string>
+    <!-- Tunnel states -->
+    <string name="tunnel_state_connected">Connected</string>
+    <string name="tunnel_state_resolving_dns">Resolving DNS</string>
+    <string name="tunnel_state_handshake_failure">Handshake failure</string>
+    <string name="tunnel_state_disconnected">Disconnected</string>
+    <string name="tunnel_state_starting">Starting</string>
+    <string name="tunnel_state_stopping">Stopping</string>
+
+    <!-- Notification formatting -->
+    <string name="notification_tunnel_status_format">%1$s • %2$s</string>
+
+    <!-- Informational notifications -->
+    <string name="ipv4_fallback">IPv4 fallback</string>
+    <string name="ipv6_recovery">IPv6 recovery</string>
+    <string name="dynamic_dns_update">Dynamic DNS update</string>
+
+    <string name="notification_ipv4_fallback_message">
+        %1$s switched to IPv4 connectivity
+    </string>
+
+    <string name="notification_ipv6_recovery_message">
+        %1$s recovered IPv6 connectivity
+    </string>
+
+    <string name="notification_dynamic_dns_message">
+        %1$s updated after Dynamic DNS change
+    </string>
+
+    <!-- Errors -->
+    <string name="vpn_permission_required">
+        VPN permission required
+    </string>
+
+    <string name="notification_tunnel_already_running">
+        %1$s is already running
+    </string>
+
+    <string name="error">Error</string>
 </resources>
