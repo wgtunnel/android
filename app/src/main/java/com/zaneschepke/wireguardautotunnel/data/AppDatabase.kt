@@ -62,7 +62,7 @@ import com.zaneschepke.wireguardautotunnel.data.entity.TunnelConfig
             AutoMigration(from = 24, to = 25),
             AutoMigration(from = 26, to = 27, spec = GlobalsMigration::class),
             AutoMigration(from = 27, to = 28, spec = DonationMigration::class),
-            AutoMigration(from = 29, to = 30, spec = SingleConfigMigration::class),
+            AutoMigration(from = 29, to = 30, spec = SingleConfigMigration::class)
         ],
     exportSchema = true,
 )
@@ -180,18 +180,15 @@ class DonationMigration : AutoMigrationSpec
 class SingleConfigMigration : AutoMigrationSpec {
 
     override fun onPostMigrate(db: SupportSQLiteDatabase) {
-
-        db.execSQL(
-            """
+        db.execSQL("""
             UPDATE tunnel_config
-            SET prefer_ipv6 = CASE
-                WHEN is_ipv4_preferred = 1 THEN 0
-                WHEN is_ipv4_preferred = 0 THEN 1
-                ELSE 0
-            END
-            """
-                .trimIndent()
-        )
+            SET prefer_ipv6 =
+                CASE prefer_ipv6
+                    WHEN 1 THEN 0
+                    WHEN 0 THEN 1
+                    ELSE 0
+                END
+        """)
 
         db.execSQL(
             """
