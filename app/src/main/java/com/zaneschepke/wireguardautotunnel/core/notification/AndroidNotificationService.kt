@@ -10,7 +10,8 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationCompat.*
+import androidx.core.app.NotificationCompat.Action
+import androidx.core.app.NotificationCompat.Builder
 import androidx.core.app.NotificationManagerCompat
 import com.zaneschepke.wireguardautotunnel.MainActivity
 import com.zaneschepke.wireguardautotunnel.R

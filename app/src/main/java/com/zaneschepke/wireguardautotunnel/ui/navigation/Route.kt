@@ -20,11 +20,21 @@ sealed class Route : NavKey {
 
     @Keep @Serializable data object Support : Route()
 
-    @Keep @Serializable data object Lock : Route()
+    @Keep
+    @Serializable
+    data object Lock : Route(), SecureRoute {
+        override val requiresProtection: Boolean
+            get() = true
+    }
 
     @Keep @Serializable data object License : Route()
 
-    @Keep @Serializable data object Logs : Route()
+    @Keep
+    @Serializable
+    data object Logs : Route(), SecureRoute {
+        override val requiresProtection: Boolean
+            get() = true
+    }
 
     @Keep @Serializable data object Appearance : Route()
 
@@ -36,37 +46,92 @@ sealed class Route : NavKey {
 
     @Keep @Serializable data class TunnelSettings(val id: Int) : Route()
 
-    @Keep @Serializable data class Config(val id: Int, val live: Boolean = false) : Route()
+    @Keep
+    @Serializable
+    data class Config(val id: Int, val live: Boolean = false) : Route(), SecureRoute {
+        override val requiresProtection: Boolean
+            get() = true
+    }
 
     @Keep @Serializable data class IPv6(val id: Int) : Route()
 
-    @Keep @Serializable data class ConfigEdit(val id: Int?) : Route()
+    @Keep
+    @Serializable
+    data class ConfigEdit(val id: Int?) : Route(), SecureRoute {
+        override val requiresProtection: Boolean
+            get() = true
+    }
 
-    @Keep @Serializable data class SplitTunnel(val id: Int) : Route()
+    @Keep
+    @Serializable
+    data class SplitTunnel(val id: Int) : Route(), SecureRoute {
+        override val requiresProtection: Boolean
+            get() = true
+    }
 
-    @Keep @Serializable data class ConfigGlobal(val id: Int?) : Route()
+    @Keep
+    @Serializable
+    data class ConfigGlobal(val id: Int?) : Route(), SecureRoute {
+        override val requiresProtection: Boolean
+            get() = true
+    }
 
-    @Keep @Serializable data class SplitTunnelGlobal(val id: Int) : Route()
+    @Keep
+    @Serializable
+    data class SplitTunnelGlobal(val id: Int) : Route(), SecureRoute {
+        override val requiresProtection: Boolean
+            get() = true
+    }
 
     @Keep @Serializable data object Sort : Route()
 
     @Keep @Serializable data object Settings : Route()
 
-    @Keep @Serializable data object AndroidIntegrations : Route()
+    @Keep
+    @Serializable
+    data object AndroidIntegrations : Route(), SecureRoute {
+        override val requiresProtection: Boolean
+            get() = true
+    }
 
-    @Keep @Serializable data object Dns : Route()
+    @Keep
+    @Serializable
+    data object Dns : Route(), SecureRoute {
+        override val requiresProtection: Boolean
+            get() = true
+    }
 
-    @Keep @Serializable data object ProxySettings : Route()
+    @Keep
+    @Serializable
+    data object TunnelGlobals : Route(), SecureRoute {
+        override val requiresProtection: Boolean
+            get() = true
+    }
+
+    @Keep
+    @Serializable
+    data object ProxySettings : Route(), SecureRoute {
+        override val requiresProtection: Boolean
+            get() = true
+    }
 
     @Keep @Serializable data object LockdownSettings : Route()
 
-    @Keep @Serializable data object AutoTunnel : Route()
-
-    @Keep @Serializable data object AdvancedAutoTunnel : Route()
+    @Keep
+    @Serializable
+    data object AutoTunnel : Route(), SecureRoute {
+        override val requiresProtection: Boolean
+            get() = true
+    }
 
     @Keep @Serializable data object WifiDetectionMethod : Route()
 
-    @Keep @Serializable data object WifiPreferences : Route()
+    @Keep
+    @Serializable
+    data object WifiPreferences : Route(), SecureRoute {
+        override val requiresProtection: Boolean
+            get() = true
+    }
 
     @Keep @Serializable data object LocationDisclosure : Route()
 
@@ -74,9 +139,16 @@ sealed class Route : NavKey {
 
     @Keep @Serializable data object Addresses : Route()
 
-    @Keep @Serializable data class PreferredTunnel(val tunnelNetwork: TunnelNetwork) : Route()
+    @Keep
+    @Serializable
+    data class PreferredTunnel(val tunnelNetwork: TunnelNetwork) : Route(), SecureRoute {
+        override val requiresProtection: Boolean
+            get() = true
+    }
 
-    @Keep @Serializable data object PingTarget : Route()
+    @Keep @Serializable data object Security : Route()
+
+    @Keep @Serializable data object Monitoring : Route()
 }
 
 @Serializable
@@ -116,7 +188,6 @@ enum class Tab(
                 is Route.IPv6,
                 is Route.SplitTunnel -> TUNNELS
                 is Route.AutoTunnel,
-                Route.AdvancedAutoTunnel,
                 Route.WifiDetectionMethod,
                 Route.WifiPreferences,
                 is Route.PreferredTunnel,
@@ -130,8 +201,10 @@ enum class Tab(
                 Route.Appearance,
                 Route.Language,
                 Route.Display,
-                Route.PingTarget,
                 is Route.ConfigGlobal,
+                Route.TunnelGlobals,
+                Route.Security,
+                Route.Monitoring,
                 Route.Logs -> SETTINGS
                 is Route.Support,
                 Route.License,
@@ -139,4 +212,8 @@ enum class Tab(
                 Route.Addresses -> SUPPORT
             }
     }
+}
+
+interface SecureRoute {
+    val requiresProtection: Boolean
 }

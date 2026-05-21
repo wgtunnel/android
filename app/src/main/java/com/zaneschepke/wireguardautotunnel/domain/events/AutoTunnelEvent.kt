@@ -1,12 +1,10 @@
 package com.zaneschepke.wireguardautotunnel.domain.events
 
-import androidx.annotation.Keep
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 
-sealed class AutoTunnelEvent {
-    @Keep data class Start(val tunnelConfig: TunnelConfig? = null) : AutoTunnelEvent()
+sealed interface AutoTunnelEvent {
 
-    @Keep data object Stop : AutoTunnelEvent()
+    data class Sync(val start: Set<TunnelConfig>, val stop: Set<Int>) : AutoTunnelEvent
 
-    @Keep data object DoNothing : AutoTunnelEvent()
+    data object DoNothing : AutoTunnelEvent
 }

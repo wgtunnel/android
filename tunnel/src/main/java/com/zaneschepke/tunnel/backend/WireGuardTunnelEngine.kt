@@ -1,25 +1,21 @@
 package com.zaneschepke.tunnel.backend
 
 import com.zaneschepke.tunnel.ProxyBackend
-import com.zaneschepke.tunnel.StatusCallback
 import com.zaneschepke.tunnel.Tunnel
 import com.zaneschepke.tunnel.VpnBackend
 import com.zaneschepke.tunnel.model.BackendMode
 import com.zaneschepke.tunnel.model.ProxyConfig
 import com.zaneschepke.tunnel.state.EngineStartResult
 import com.zaneschepke.tunnel.state.EngineState
-import com.zaneschepke.tunnel.state.TunnelStatus
+import com.zaneschepke.tunnel.state.NativeTunnelStatus
 import com.zaneschepke.tunnel.util.BackendException
 import com.zaneschepke.wireguardautotunnel.parser.ActiveConfig
 import com.zaneschepke.wireguardautotunnel.parser.Config
 import com.zaneschepke.wireguardautotunnel.parser.PeerSection
 import java.io.IOException
 import java.net.ServerSocket
-import java.util.*
-import kotlinx.coroutines.channels.Channel
+import java.util.UUID
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.receiveAsFlow
-import timber.log.Timber
 
 internal class WireGuardTunnelEngine(
     private val serviceHolder: ServiceHolder,
@@ -28,26 +24,15 @@ internal class WireGuardTunnelEngine(
 
     private val proxyPass = UUID.randomUUID().toString()
 
-    private val statusChannel = Channel<TunnelStatus>(Channel.BUFFERED)
-
-    override val status: Flow<TunnelStatus> = statusChannel.receiveAsFlow()
+    override val status: Flow<NativeTunnelStatus> = serviceHolder.nativeStatuses
 
     override val state: Flow<EngineState> = stateProvider.state
-
-    private val statusCallback = StatusCallback { handle, code ->
-        Timber.d("Native Callback - Handle: $handle, Code: $code")
-        statusChannel.trySend(TunnelStatus(handle, code))
-    }
-
-    init {
-        VpnBackend.setStatusCallback(statusCallback)
-    }
 
     override suspend fun start(tunnel: Tunnel, mode: BackendMode): EngineStartResult {
 
         val ifName = WGT_INTERFACE_PREFIX + tunnel.id
 
-        val config = buildConfig(mode)
+        val (config, removedPeerEndpoint) = buildConfig(mode)
 
         val handle =
             when (mode) {
@@ -73,18 +58,21 @@ internal class WireGuardTunnelEngine(
             handle = handle,
             interfaceName = ifName,
             mode = mode,
+            removedPeerEndpoint = removedPeerEndpoint,
         )
     }
 
-    private fun buildConfig(mode: BackendMode): Config {
+    private fun buildConfig(mode: BackendMode): Pair<Config, Boolean> {
+        var removedPeerEndpoint = false
         return mode.config.copy(
             peers =
                 mode.config.peers.map { peer ->
                     if (!peer.isStaticallyConfigured) {
+                        removedPeerEndpoint = true
                         rewriteDynamicEndpoint(peer)
                     } else peer
                 }
-        )
+        ) to removedPeerEndpoint
     }
 
     private fun buildBridgeProxyConfig(): ProxyConfig {
@@ -128,9 +116,9 @@ internal class WireGuardTunnelEngine(
         }
     }
 
+    // omit peer endpoint while boostrapping
     private fun rewriteDynamicEndpoint(peer: PeerSection): PeerSection {
-        val port = peer.endpoint?.substringAfterLast(":") ?: return peer
-        return peer.copy(endpoint = "$DUMMY_ADDRESS:$port")
+        return peer.copy(endpoint = null)
     }
 
     override suspend fun stop(handle: Int, mode: BackendMode) {
@@ -156,7 +144,7 @@ internal class WireGuardTunnelEngine(
             VpnBackend.awgTurnOn(ifName, fd, config.asQuickString(), serviceHolder.uapiPath)
 
         if (handle < 0) {
-            throw BackendException.InternalError("Internal native error")
+            throw BackendException.InternalError("Internal native error with code: $handle")
         }
 
         service.protect(VpnBackend.awgGetSocketV4(handle))
@@ -208,6 +196,5 @@ internal class WireGuardTunnelEngine(
     companion object {
         const val LOCKDOWN_USER = "local"
         const val WGT_INTERFACE_PREFIX = "wgtun"
-        const val DUMMY_ADDRESS = "192.0.2.1"
     }
 }

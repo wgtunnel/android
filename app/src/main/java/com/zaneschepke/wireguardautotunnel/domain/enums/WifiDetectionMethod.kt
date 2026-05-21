@@ -1,4 +1,4 @@
-package com.zaneschepke.wireguardautotunnel.data.model
+package com.zaneschepke.wireguardautotunnel.domain.enums
 
 enum class WifiDetectionMethod(val value: Int) {
     DEFAULT(0),

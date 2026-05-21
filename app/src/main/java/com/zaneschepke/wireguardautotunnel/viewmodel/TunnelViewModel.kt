@@ -1,7 +1,7 @@
 package com.zaneschepke.wireguardautotunnel.viewmodel
 
 import androidx.lifecycle.ViewModel
-import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelProvider
+import com.zaneschepke.wireguardautotunnel.core.orchestration.TunnelCoordinator
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.settings.ipv6.IPv6Intent
 import com.zaneschepke.wireguardautotunnel.ui.state.TunnelUiState
@@ -12,7 +12,7 @@ import org.orbitmvi.orbit.viewmodel.container
 
 class TunnelViewModel(
     private val tunnelRepository: TunnelRepository,
-    private val tunnelProvider: TunnelProvider,
+    private val tunnelCoordinator: TunnelCoordinator,
     val tunnelId: Int,
 ) : ContainerHost<TunnelUiState, Nothing>, ViewModel() {
 
@@ -25,10 +25,19 @@ class TunnelViewModel(
                     tunnelRepository.userTunnelsFlow.map {
                         it.firstOrNull { tun -> tun.id == tunnelId }
                     },
-                    tunnelProvider.backendStatus.map { it.activeTunnels[tunnelId] },
+                    tunnelCoordinator.backendStatus.map { it.activeTunnels[tunnelId] },
                 ) { tunnel, active ->
+                    val config = tunnel?.getConfig()
+                    val includedAppCount =
+                        config?.`interface`?.includedApplications?.takeIf { it.isNotEmpty() }?.size
+
+                    val excludedAppCount =
+                        config?.`interface`?.excludedApplications?.takeIf { it.isNotEmpty() }?.size
+
                     state.copy(
                         tunnel = tunnel,
+                        excludedAppsCount = excludedAppCount,
+                        includedAppsCount = includedAppCount,
                         activeConfig = active?.activeConfig,
                         isLoading = false,
                     )

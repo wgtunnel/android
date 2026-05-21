@@ -6,10 +6,15 @@ import com.zaneschepke.wireguardautotunnel.util.extensions.round
 import java.io.IOException
 import java.time.Instant
 import kotlin.math.sqrt
-import kotlinx.coroutines.*
+import kotlin.time.Duration.Companion.milliseconds
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
 import timber.log.Timber
 
 class NetworkUtils(private val ioDispatcher: CoroutineDispatcher) {
@@ -32,7 +37,7 @@ class NetworkUtils(private val ioDispatcher: CoroutineDispatcher) {
         count: Int,
         timeoutMillis: Long = (count * 2000L),
     ): PingStats {
-        return withTimeout(timeoutMillis) {
+        return withTimeout(timeoutMillis.milliseconds) {
             withContext(ioDispatcher) {
                 val icmp = Icmp4a()
                 val stats = PingStats()

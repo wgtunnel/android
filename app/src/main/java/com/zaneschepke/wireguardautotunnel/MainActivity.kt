@@ -6,31 +6,52 @@ import android.graphics.Color
 import android.net.VpnService
 import android.os.Build
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.animation.*
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.surfaceColorAtElevation
-import androidx.compose.runtime.*
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.*
+import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withLink
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
@@ -39,7 +60,7 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.zaneschepke.networkmonitor.NetworkMonitor
 import com.zaneschepke.wireguardautotunnel.data.AppDatabase
-import com.zaneschepke.wireguardautotunnel.data.model.TunnelMode
+import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelMode
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppStateRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
@@ -53,13 +74,13 @@ import com.zaneschepke.wireguardautotunnel.ui.common.snackbar.SnackbarInfo
 import com.zaneschepke.wireguardautotunnel.ui.common.snackbar.SnackbarType
 import com.zaneschepke.wireguardautotunnel.ui.common.snackbar.rememberCustomSnackbarState
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
+import com.zaneschepke.wireguardautotunnel.ui.navigation.SecureRoute
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Tab
 import com.zaneschepke.wireguardautotunnel.ui.navigation.components.BottomNavbar
 import com.zaneschepke.wireguardautotunnel.ui.navigation.components.DynamicTopAppBar
 import com.zaneschepke.wireguardautotunnel.ui.navigation.components.currentRouteAsNavbarState
 import com.zaneschepke.wireguardautotunnel.ui.navigation.functions.rememberNavController
 import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.AutoTunnelScreen
-import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.advanced.AutoTunnelAdvancedScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.detection.WifiDetectionMethodScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.disclosure.LocationDisclosureScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.preferred.PreferredTunnelScreen
@@ -70,9 +91,12 @@ import com.zaneschepke.wireguardautotunnel.ui.screens.settings.appearance.Appear
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.appearance.display.DisplayScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.appearance.language.LanguageScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.dns.DnsSettingsScreen
+import com.zaneschepke.wireguardautotunnel.ui.screens.settings.globals.TunnelGlobalsScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.integrations.AndroidIntegrationsScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.lockdown.LockdownSettingsScreen
+import com.zaneschepke.wireguardautotunnel.ui.screens.settings.monitoring.MonitoringScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.monitoring.logs.LogsScreen
+import com.zaneschepke.wireguardautotunnel.ui.screens.settings.security.SecurityScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.support.SupportScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.support.donate.DonateScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.support.donate.crypto.AddressesScreen
@@ -88,18 +112,25 @@ import com.zaneschepke.wireguardautotunnel.ui.theme.AlertRed
 import com.zaneschepke.wireguardautotunnel.ui.theme.OffWhite
 import com.zaneschepke.wireguardautotunnel.ui.theme.WireguardAutoTunnelTheme
 import com.zaneschepke.wireguardautotunnel.util.LocaleUtil
-import com.zaneschepke.wireguardautotunnel.util.extensions.*
+import com.zaneschepke.wireguardautotunnel.util.extensions.installApk
+import com.zaneschepke.wireguardautotunnel.util.extensions.isRunningOnTv
+import com.zaneschepke.wireguardautotunnel.util.extensions.openWebUrl
+import com.zaneschepke.wireguardautotunnel.util.extensions.restartApp
+import com.zaneschepke.wireguardautotunnel.util.extensions.showToast
 import com.zaneschepke.wireguardautotunnel.viewmodel.ConfigEditViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.SharedAppViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.SplitTunnelViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.TunnelViewModel
 import de.raphaelebner.roomdatabasebackup.core.RoomBackup
+import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.compose.koinViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
+import org.orbitmvi.orbit.compose.collectAsState
 import xyz.teamgravity.pin_lock_compose.PinManager
 
 class MainActivity : AppCompatActivity() {
@@ -132,7 +163,7 @@ class MainActivity : AppCompatActivity() {
         setContent {
             val context = LocalContext.current
             val isTv = isRunningOnTv()
-            val uiState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
+            val uiState by viewModel.collectAsState()
             val scope = rememberCoroutineScope()
 
             LaunchedEffect(uiState.isAppLoaded) {
@@ -288,13 +319,40 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
 
+                    val isPinVisible by remember { derivedStateOf { showLock } }
+
+                    val currentRoute by remember {
+                        derivedStateOf { backStack.lastOrNull() as? Route }
+                    }
+
+                    LaunchedEffect(
+                        uiState.isScreenRecordingProtectionEnabled,
+                        currentRoute,
+                        isPinVisible,
+                    ) {
+                        val isSecureRoute = currentRoute is SecureRoute
+
+                        val shouldProtect =
+                            uiState.isScreenRecordingProtectionEnabled &&
+                                (isSecureRoute || isPinVisible)
+
+                        if (shouldProtect) {
+                            window.setFlags(
+                                WindowManager.LayoutParams.FLAG_SECURE,
+                                WindowManager.LayoutParams.FLAG_SECURE,
+                            )
+                        } else {
+                            delay(500L)
+                            window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
+                            awaitCancellation()
+                        }
+                    }
+
                     if (showLock) {
                         PinManager.initialize(context = this@MainActivity)
                         PinLockScreen()
                     } else {
-                        val currentRoute by remember {
-                            derivedStateOf { backStack.lastOrNull() as? Route }
-                        }
+
                         val currentTab by remember {
                             derivedStateOf { Tab.fromRoute(currentRoute ?: Route.Tunnels) }
                         }
@@ -321,11 +379,7 @@ class MainActivity : AppCompatActivity() {
                                     snackbarState.SnackbarHost(
                                         modifier =
                                             Modifier.align(Alignment.BottomCenter)
-                                                .padding(
-                                                    bottom =
-                                                        if (LocalIsAndroidTV.current) 120.dp
-                                                        else 80.dp
-                                                )
+                                                .padding(bottom = 80.dp)
                                     ) { info ->
                                         CustomSnackBar(
                                             message = info.message,
@@ -362,7 +416,6 @@ class MainActivity : AppCompatActivity() {
                                                 bottom = padding.calculateBottomPadding(),
                                             )
                                             .consumeWindowInsets(padding)
-                                            .imePadding()
                                 ) {
                                     NavDisplay(
                                         backStack = backStack,
@@ -441,9 +494,6 @@ class MainActivity : AppCompatActivity() {
                                                 entry<Route.WifiPreferences> {
                                                     WifiSettingsScreen()
                                                 }
-                                                entry<Route.AdvancedAutoTunnel> {
-                                                    AutoTunnelAdvancedScreen()
-                                                }
                                                 entry<Route.WifiDetectionMethod> {
                                                     WifiDetectionMethodScreen()
                                                 }
@@ -488,6 +538,9 @@ class MainActivity : AppCompatActivity() {
                                                 entry<Route.PreferredTunnel> { key ->
                                                     PreferredTunnelScreen(key.tunnelNetwork)
                                                 }
+                                                entry<Route.TunnelGlobals> { TunnelGlobalsScreen() }
+                                                entry<Route.Security> { SecurityScreen() }
+                                                entry<Route.Monitoring> { MonitoringScreen() }
                                             },
                                     )
                                 }

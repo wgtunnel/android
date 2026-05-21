@@ -13,9 +13,16 @@ import android.net.NetworkRequest
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.provider.Settings
-import com.zaneschepke.networkmonitor.AndroidNetworkMonitor.WifiDetectionMethod.*
+import com.zaneschepke.networkmonitor.AndroidNetworkMonitor.WifiDetectionMethod.DEFAULT
+import com.zaneschepke.networkmonitor.AndroidNetworkMonitor.WifiDetectionMethod.LEGACY
+import com.zaneschepke.networkmonitor.AndroidNetworkMonitor.WifiDetectionMethod.ROOT
+import com.zaneschepke.networkmonitor.AndroidNetworkMonitor.WifiDetectionMethod.SHIZUKU
 import com.zaneschepke.networkmonitor.shizuku.ShizukuShell
-import com.zaneschepke.networkmonitor.util.*
+import com.zaneschepke.networkmonitor.util.getCurrentSecurityType
+import com.zaneschepke.networkmonitor.util.getWifiSsid
+import com.zaneschepke.networkmonitor.util.hasRequiredLocationPermissions
+import com.zaneschepke.networkmonitor.util.isAirplaneModeOn
+import com.zaneschepke.networkmonitor.util.isLocationServicesEnabled
 import java.net.Inet6Address
 import kotlin.concurrent.atomics.AtomicReference
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
@@ -24,7 +31,18 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.shareIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withTimeoutOrNull
 import timber.log.Timber
 
@@ -40,7 +58,7 @@ class AndroidNetworkMonitor(
         val detectionMethod: Flow<WifiDetectionMethod>
 
         // maybe this shouldn't just be a string result
-        fun runRootShellCommand(vararg cmd: String): String?
+        suspend fun runRootShellCommand(cmd: String): String?
     }
 
     companion object {
@@ -160,31 +178,6 @@ class AndroidNetworkMonitor(
             } else false
 
         val hasSupport = (hasGlobalIpv6 && hasIpv6DefaultRoute) || hasNat64Prefix
-
-        Timber.d("LinkAddresses (IPv6 only):")
-        lp.linkAddresses
-            .filter { it.address is Inet6Address }
-            .forEach {
-                val addr = it.address as Inet6Address
-                Timber.d(
-                    "  ${addr.hostAddress}/${it.prefixLength} " +
-                        "(global=${hasGlobalIpv6 && !addr.isLinkLocalAddress && !addr.isLoopbackAddress && !addr.isMulticastAddress})"
-                )
-            }
-        Timber.d("Routes:")
-        lp.routes.forEach {
-            Timber.d(
-                "  ${it.destination} " +
-                    "(default=${it.isDefaultRoute}, gateway=${it.gateway?.hostAddress})"
-            )
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            Timber.d("NAT64 Prefix: ${lp.nat64Prefix}")
-        }
-        Timber.d("DNS servers: ${lp.dnsServers.map { it.hostAddress }}")
-        Timber.d(
-            "SUMMARY: global=$hasGlobalIpv6 | defaultRoute=$hasIpv6DefaultRoute | nat64=$hasNat64Prefix | SUPPORT=$hasSupport"
-        )
 
         return hasSupport
     }
@@ -396,17 +389,6 @@ class AndroidNetworkMonitor(
         }
     }
 
-    private val cellularStateFlow: Flow<NetworkCapabilities?> =
-        cellularFlow
-            .map { event ->
-                when (event) {
-                    is TransportEvent.CapabilitiesChanged -> event.networkCapabilities
-                    is TransportEvent.Lost -> null
-                    else -> null
-                }
-            }
-            .stateIn(applicationScope, SharingStarted.Eagerly, null)
-
     private suspend fun getSsidByDetectionMethod(
         detectionMethod: WifiDetectionMethod?,
         networkCapabilities: NetworkCapabilities?,
@@ -438,7 +420,6 @@ class AndroidNetworkMonitor(
                         ROOT ->
                             withTimeoutOrNull(SHELL_COMMAND_TIMEOUT_MS.milliseconds) {
                                 configurationListener.runRootShellCommand(WIFI_SSID_SHELL_COMMAND)
-                                    ?: ANDROID_UNKNOWN_SSID
                             } ?: ANDROID_UNKNOWN_SSID
                         SHIZUKU ->
                             withTimeoutOrNull(SHELL_COMMAND_TIMEOUT_MS.milliseconds) {
@@ -575,7 +556,6 @@ class AndroidNetworkMonitor(
                     lastKnownActiveNetwork.value = physicalNetwork
                 }
 
-                // ─────────────────────────────────────────────────────────────
                 val underlyingNetwork: Network? =
                     when (val last = lastKnownActiveNetwork.value) {
                         is ActiveNetwork.Wifi -> last.network
@@ -608,7 +588,7 @@ class AndroidNetworkMonitor(
                 )
             }
             .distinctUntilChanged()
-            .debounce { 300L }
+            .debounce(300.milliseconds)
             .shareIn(applicationScope, SharingStarted.Eagerly, replay = 1)
 
     // utility to send local broadcast to trigger a recheck of location permissions onResume,

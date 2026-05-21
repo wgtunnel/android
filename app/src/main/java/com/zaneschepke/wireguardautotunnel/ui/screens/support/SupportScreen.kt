@@ -1,25 +1,45 @@
 package com.zaneschepke.wireguardautotunnel.ui.screens.support
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Launch
-import androidx.compose.material.icons.outlined.*
+import androidx.compose.material.icons.outlined.Balance
+import androidx.compose.material.icons.outlined.Book
+import androidx.compose.material.icons.outlined.Favorite
+import androidx.compose.material.icons.outlined.InstallMobile
+import androidx.compose.material.icons.outlined.Mail
+import androidx.compose.material.icons.outlined.Memory
+import androidx.compose.material.icons.outlined.Policy
+import androidx.compose.material.icons.outlined.Reviews
+import androidx.compose.material.icons.outlined.Translate
+import androidx.compose.material.icons.outlined.Web
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.BuildConfig
 import com.zaneschepke.wireguardautotunnel.R
+import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
 import com.zaneschepke.wireguardautotunnel.ui.common.functions.rememberClipboardHelper
@@ -29,22 +49,38 @@ import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
 import com.zaneschepke.wireguardautotunnel.ui.screens.support.components.PermissionDialog
 import com.zaneschepke.wireguardautotunnel.ui.screens.support.components.UpdateDialog
 import com.zaneschepke.wireguardautotunnel.util.Constants
-import com.zaneschepke.wireguardautotunnel.util.extensions.*
+import com.zaneschepke.wireguardautotunnel.util.extensions.launchPlayStoreListing
+import com.zaneschepke.wireguardautotunnel.util.extensions.launchPlayStoreReview
+import com.zaneschepke.wireguardautotunnel.util.extensions.launchSupportEmail
+import com.zaneschepke.wireguardautotunnel.util.extensions.openWebUrl
+import com.zaneschepke.wireguardautotunnel.util.extensions.showToast
 import com.zaneschepke.wireguardautotunnel.viewmodel.SupportViewModel
 import org.koin.androidx.compose.koinViewModel
+import org.orbitmvi.orbit.compose.collectAsState
 
 @Composable
 fun SupportScreen(viewModel: SupportViewModel = koinViewModel()) {
     val context = LocalContext.current
     val navController = LocalNavController.current
+    val isTv = LocalIsAndroidTV.current
 
-    val supportState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
+    val supportState by viewModel.collectAsState()
+
+    if (supportState.isLoading) return
 
     val clipboardManager = rememberClipboardHelper()
 
     val version = remember {
         "v${BuildConfig.VERSION_NAME +
                 if(BuildConfig.DEBUG) "-debug" else "" }"
+    }
+
+    val focusRequester = remember { FocusRequester() }
+
+    LaunchedEffect(Unit) {
+        if (isTv) {
+            focusRequester.requestFocus()
+        }
     }
 
     var showPermissionDialog by rememberSaveable { mutableStateOf(false) }
@@ -77,6 +113,7 @@ fun SupportScreen(viewModel: SupportViewModel = koinViewModel()) {
                 leading = { Icon(Icons.Outlined.Favorite, contentDescription = null) },
                 title = stringResource(R.string.donate),
                 onClick = { navController.push(Route.Donate) },
+                modifier = Modifier.focusRequester(focusRequester),
             )
             SurfaceRow(
                 stringResource(R.string.docs_description),

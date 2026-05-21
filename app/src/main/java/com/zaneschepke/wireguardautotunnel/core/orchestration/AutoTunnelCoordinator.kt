@@ -7,7 +7,7 @@ import com.zaneschepke.wireguardautotunnel.domain.repository.AutoTunnelSettingsR
 class AutoTunnelCoordinator(
     private val repository: AutoTunnelSettingsRepository,
     private val serviceManager: ServiceManager,
-    private val autoTunnelStateHolder: AutoTunnelStateHolder
+    private val autoTunnelStateHolder: AutoTunnelStateHolder,
 ) {
 
     suspend fun shouldTakeOverBoot(): Boolean {
@@ -29,7 +29,7 @@ class AutoTunnelCoordinator(
 
     suspend fun toggle() {
         val running = autoTunnelStateHolder.active.value
-        if(running) {
+        if (running) {
             disable()
         } else enable()
     }

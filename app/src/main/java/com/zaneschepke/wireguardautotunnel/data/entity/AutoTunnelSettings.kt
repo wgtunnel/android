@@ -3,7 +3,7 @@ package com.zaneschepke.wireguardautotunnel.data.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.zaneschepke.wireguardautotunnel.data.model.WifiDetectionMethod
+import com.zaneschepke.wireguardautotunnel.domain.enums.WifiDetectionMethod
 
 @Entity(tableName = "auto_tunnel_settings")
 data class AutoTunnelSettings(
@@ -22,8 +22,6 @@ data class AutoTunnelSettings(
     val isWildcardsEnabled: Boolean = false,
     @ColumnInfo(name = "is_stop_on_no_internet_enabled", defaultValue = "0")
     val isStopOnNoInternetEnabled: Boolean = false,
-    @ColumnInfo(name = "debounce_delay_seconds", defaultValue = "3")
-    val debounceDelaySeconds: Int = 3,
     @ColumnInfo(name = "is_tunnel_on_unsecure_enabled", defaultValue = "0")
     val isTunnelOnUnsecureEnabled: Boolean = false,
     @ColumnInfo(name = "wifi_detection_method", defaultValue = "0")

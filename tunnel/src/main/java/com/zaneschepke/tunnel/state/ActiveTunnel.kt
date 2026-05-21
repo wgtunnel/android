@@ -6,13 +6,21 @@ import com.zaneschepke.tunnel.model.BackendMode
 import com.zaneschepke.wireguardautotunnel.parser.ActiveConfig
 
 data class ActiveTunnel(
-    val state: Tunnel.State = Tunnel.State.Down,
+    val transportState: Tunnel.State = Tunnel.State.Down,
+    val bootstrapState: BootstrapState = BootstrapState.None,
     val lastStateChangeMs: Long = System.currentTimeMillis(),
     val lastHealthChangeMs: Long = 0L,
     val interfaceName: String? = null,
     val activeConfig: ActiveConfig? = null,
     val pingStats: PingStats? = null,
-    val resolvingDns: Boolean = false,
     val mode: BackendMode? = null,
     val uptime: Long? = null,
-)
+    val lastPeerUpdateMs: Long = 0L,
+) {
+    val isPeerUpdating: Boolean
+        get() = System.currentTimeMillis() - lastPeerUpdateMs < PEER_UPDATE_GRACE_MS
+
+    companion object {
+        private const val PEER_UPDATE_GRACE_MS = 8_000L
+    }
+}

@@ -1,12 +1,9 @@
 package com.zaneschepke.wireguardautotunnel.ui.state
 
-import com.zaneschepke.wireguardautotunnel.data.model.TunnelMode
-import com.zaneschepke.wireguardautotunnel.domain.model.MonitoringSettings
-import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
+import com.zaneschepke.wireguardautotunnel.domain.enums.StatisticRefresh
 
 data class MonitoringUiState(
-    val monitoringSettings: MonitoringSettings = MonitoringSettings(),
-    val tunnels: List<TunnelConfig> = emptyList(),
-    val tunnelMode: TunnelMode = TunnelMode.VPN,
+    val tunnelStatisticsEnabled: Boolean = false,
+    val statisticRefresh: StatisticRefresh = StatisticRefresh.BALANCED,
     val isLoading: Boolean = true,
 )

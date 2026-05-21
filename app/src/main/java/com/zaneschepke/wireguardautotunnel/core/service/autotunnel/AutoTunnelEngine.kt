@@ -10,18 +10,12 @@ class AutoTunnelEngine {
     fun evaluate(state: AutoTunnelState): AutoTunnelEvent {
         return when (val decision = decide(state)) {
             is Decision.Sync -> {
-                // convert diff into events
-                if (decision.stop.isNotEmpty()) {
-                    return AutoTunnelEvent.Stop
+                if (decision.start.isEmpty() && decision.stop.isEmpty()) {
+                    AutoTunnelEvent.DoNothing
+                } else {
+                    AutoTunnelEvent.Sync(start = decision.start, stop = decision.stop)
                 }
-
-                // if multiple tunnels should start, we start primary one for now
-                // (we can expand to true multi-start later if backend supports it cleanly)
-                decision.start.firstOrNull()?.let {
-                    AutoTunnelEvent.Start(it)
-                } ?: AutoTunnelEvent.DoNothing
             }
-
             Decision.None -> AutoTunnelEvent.DoNothing
         }
     }
@@ -37,10 +31,7 @@ class AutoTunnelEngine {
 
         // stop condition overrides everything
         if (!network.hasInternet() && settings.isStopOnNoInternetEnabled) {
-            return Decision.Sync(
-                start = emptySet(),
-                stop = activeTunnelIds
-            )
+            return Decision.Sync(start = emptySet(), stop = activeTunnelIds)
         }
 
         val toStart = desiredTunnels - activeTunnelIds
@@ -52,7 +43,7 @@ class AutoTunnelEngine {
 
         return Decision.Sync(
             start = state.tunnels.filter { it.id in toStart }.toSet(),
-            stop = toStop
+            stop = toStop,
         )
     }
 
@@ -73,34 +64,23 @@ class AutoTunnelEngine {
 
             wifiActive && settings.isTunnelOnWifiEnabled && !isWifiTrusted(state) ->
                 resolveWifiTunnels(state)
-
             else -> emptyList()
         }
     }
 
     private fun resolveByPriority(
         state: AutoTunnelState,
-        predicate: (TunnelConfig) -> Boolean
+        predicate: (TunnelConfig) -> Boolean,
     ): List<TunnelConfig> {
-        return listOfNotNull(
-            state.tunnels.firstOrNull(predicate),
-            state.tunnels.firstOrNull { it.isPrimaryTunnel }
-        ).distinct()
+        return listOfNotNull(state.tunnels.firstOrNull(predicate) ?: defaultTunnel(state))
     }
 
     private fun resolveWifiTunnels(state: AutoTunnelState): List<TunnelConfig> {
         val wifi = state.networkState.activeNetwork as? ActiveNetwork.Wifi ?: return emptyList()
 
-        val matched = state.tunnels.filter {
-            state.matchesNetwork(wifi.ssid, it.tunnelNetworks)
-        }
+        val matched = state.tunnels.filter { state.matchesNetwork(wifi.ssid, it.tunnelNetworks) }
 
-        return matched.ifEmpty {
-            listOfNotNull(
-                state.tunnels.firstOrNull { it.isPrimaryTunnel },
-                state.tunnels.firstOrNull()
-            )
-        }
+        return matched.ifEmpty { listOfNotNull(defaultTunnel(state)) }
     }
 
     private fun isWifiTrusted(state: AutoTunnelState): Boolean {
@@ -108,11 +88,12 @@ class AutoTunnelEngine {
         return state.matchesNetwork(wifi.ssid, state.settings.trustedNetworkSSIDs)
     }
 
+    private fun defaultTunnel(state: AutoTunnelState): TunnelConfig? {
+        return state.tunnels.firstOrNull { it.isPrimaryTunnel } ?: state.tunnels.firstOrNull()
+    }
+
     private sealed interface Decision {
-        data class Sync(
-            val start: Set<TunnelConfig>,
-            val stop: Set<Int>
-        ) : Decision
+        data class Sync(val start: Set<TunnelConfig>, val stop: Set<Int>) : Decision
 
         data object None : Decision
     }

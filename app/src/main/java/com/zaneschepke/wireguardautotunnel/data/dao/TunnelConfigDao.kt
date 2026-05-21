@@ -1,6 +1,11 @@
 package com.zaneschepke.wireguardautotunnel.data.dao
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.Upsert
 import com.zaneschepke.wireguardautotunnel.data.entity.TunnelConfig
 import kotlinx.coroutines.flow.Flow
 

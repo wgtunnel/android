@@ -1,10 +1,10 @@
 package com.zaneschepke.wireguardautotunnel.core.notification
 
-import com.zaneschepke.tunnel.state.BackendStatus
+import com.zaneschepke.tunnel.state.ActiveTunnel
 
 interface TunnelNotificationService {
 
-    suspend fun updatePersistentNotifications(status: BackendStatus)
+    suspend fun updatePersistentNotifications(activeTunnels: Map<Int, ActiveTunnel>)
 
     suspend fun showIpv4Fallback(tunnelId: Int)
 
@@ -15,6 +15,8 @@ interface TunnelNotificationService {
     suspend fun showVpnRequired()
 
     suspend fun showStateConflict(tunnelId: Int)
+
+    suspend fun showRootShellAccess()
 
     suspend fun showError(message: String)
 }

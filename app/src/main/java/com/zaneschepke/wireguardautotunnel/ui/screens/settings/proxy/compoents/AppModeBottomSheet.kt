@@ -2,7 +2,7 @@ package com.zaneschepke.wireguardautotunnel.ui.screens.settings.proxy.compoents
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
-import com.zaneschepke.wireguardautotunnel.data.model.TunnelMode
+import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelMode
 import com.zaneschepke.wireguardautotunnel.ui.common.sheet.CustomBottomSheet
 import com.zaneschepke.wireguardautotunnel.ui.common.sheet.SheetOption
 import com.zaneschepke.wireguardautotunnel.util.extensions.asIcon

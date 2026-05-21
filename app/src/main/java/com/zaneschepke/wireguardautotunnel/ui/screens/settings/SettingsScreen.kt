@@ -7,18 +7,21 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.CallSplit
 import androidx.compose.material.icons.automirrored.outlined.ViewQuilt
 import androidx.compose.material.icons.outlined.Android
 import androidx.compose.material.icons.outlined.Dns
 import androidx.compose.material.icons.outlined.ExpandMore
-import androidx.compose.material.icons.outlined.Pin
+import androidx.compose.material.icons.outlined.MonitorHeart
+import androidx.compose.material.icons.outlined.Public
+import androidx.compose.material.icons.outlined.Security
 import androidx.compose.material.icons.outlined.SettingsBackupRestore
+import androidx.compose.material.icons.outlined.Terminal
 import androidx.compose.material.icons.outlined.ViewHeadline
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,16 +30,18 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.MainActivity
 import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.data.model.TunnelMode
+import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelMode
+import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SheetButtonWithDivider
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
@@ -47,7 +52,6 @@ import com.zaneschepke.wireguardautotunnel.ui.common.text.DescriptionText
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.components.BackupBottomSheet
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.proxy.compoents.AppModeBottomSheet
-import com.zaneschepke.wireguardautotunnel.ui.theme.Disabled
 import com.zaneschepke.wireguardautotunnel.util.StringValue
 import com.zaneschepke.wireguardautotunnel.util.extensions.asString
 import com.zaneschepke.wireguardautotunnel.util.extensions.asTitleString
@@ -57,6 +61,7 @@ import com.zaneschepke.wireguardautotunnel.viewmodel.SettingsViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.SharedAppViewModel
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.viewmodel.koinActivityViewModel
+import org.orbitmvi.orbit.compose.collectAsState
 
 @Composable
 fun SettingsScreen(
@@ -65,13 +70,22 @@ fun SettingsScreen(
 ) {
     val context = LocalContext.current
     val navController = LocalNavController.current
+    val isTv = LocalIsAndroidTV.current
 
     val locale = Locale.current.platformLocale
 
-    val globalUiState by sharedViewModel.container.stateFlow.collectAsStateWithLifecycle()
-    val uiState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
+    val globalUiState by sharedViewModel.collectAsState()
+    val uiState by viewModel.collectAsState()
 
     if (uiState.isLoading) return
+
+    val focusRequester = remember { FocusRequester() }
+
+    LaunchedEffect(Unit) {
+        if (isTv) {
+            focusRequester.requestFocus()
+        }
+    }
 
     var showBackupSheet by rememberSaveable { mutableStateOf(false) }
     var showAppModeSheet by rememberSaveable { mutableStateOf(false) }
@@ -133,6 +147,7 @@ fun SettingsScreen(
                         TunnelMode.VPN -> showAppModeSheet = true
                     }
                 },
+                modifier = Modifier.focusRequester(focusRequester),
             )
             SurfaceRow(
                 leading = {
@@ -158,62 +173,36 @@ fun SettingsScreen(
                 },
             )
             SurfaceRow(
-                leading = {
-                    Icon(
-                        Icons.AutoMirrored.Outlined.CallSplit,
-                        contentDescription = null,
-                        tint =
-                            if (globalUiState.tunnelMode == TunnelMode.PROXY) Disabled
-                            else MaterialTheme.colorScheme.onSurface,
-                    )
-                },
-                enabled = globalUiState.tunnelMode != TunnelMode.PROXY,
-                title = stringResource(R.string.global_split_tunneling),
+                leading = { Icon(Icons.Outlined.Public, contentDescription = null) },
+                title = stringResource(R.string.tunnel_globals),
+                onClick = { navController.push(Route.TunnelGlobals) },
+            )
+            SurfaceRow(
+                leading = { Icon(Icons.Outlined.Terminal, contentDescription = null) },
+                title = stringResource(R.string.tunnel_scripting),
                 trailing = { modifier ->
-                    SwitchWithDivider(
-                        checked = uiState.settings.isGlobalSplitTunnelEnabled,
-                        onClick = { viewModel.setGlobalSplitTunneling(it) },
+                    ThemedSwitch(
+                        checked = uiState.settings.tunnelScriptingEnabled,
+                        onClick = { viewModel.setTunnelScriptedEnabled(it) },
                         modifier = modifier,
-                        enabled = globalUiState.tunnelMode != TunnelMode.PROXY,
                     )
                 },
-                description =
-                    if (globalUiState.tunnelMode == TunnelMode.PROXY) {
-                        {
-                            DescriptionText(
-                                stringResource(R.string.unavailable_in_mode),
-                                disabled = true,
-                            )
-                        }
-                    } else null,
-                onClick = {
-                    uiState.globalTunnelConfig?.let {
-                        navController.push(Route.SplitTunnelGlobal(id = it.id))
-                    }
+                description = {
+                    DescriptionText(stringResource(R.string.root_required_template, "").trim())
                 },
+                onClick = {
+                    viewModel.setTunnelScriptedEnabled(!uiState.settings.tunnelScriptingEnabled)
+                },
+            )
+            SurfaceRow(
+                leading = { Icon(Icons.Outlined.MonitorHeart, null) },
+                title = stringResource(R.string.tunnel_monitoring),
+                onClick = { navController.push(Route.Monitoring) },
             )
             SurfaceRow(
                 leading = { Icon(Icons.Outlined.Android, null) },
                 title = stringResource(R.string.android_integrations),
                 onClick = { navController.push(Route.AndroidIntegrations) },
-            )
-        }
-        Column {
-            GroupLabel(
-                stringResource(R.string.monitoring),
-                modifier = Modifier.padding(horizontal = 16.dp),
-            )
-            SurfaceRow(
-                leading = { Icon(Icons.Outlined.ViewHeadline, contentDescription = null) },
-                title = stringResource(R.string.local_logging),
-                trailing = { modifier ->
-                    SwitchWithDivider(
-                        checked = uiState.monitoring.isLocalLogsEnabled,
-                        onClick = { viewModel.setLocalLogging(it) },
-                        modifier = modifier,
-                    )
-                },
-                onClick = { navController.push(Route.Logs) },
             )
         }
         Column(modifier = Modifier.padding(bottom = 16.dp)) {
@@ -229,27 +218,21 @@ fun SettingsScreen(
                 onClick = { navController.push(Route.Appearance) },
             )
             SurfaceRow(
-                leading = { Icon(Icons.Outlined.Pin, contentDescription = null) },
-                title = stringResource(R.string.enable_app_lock),
-                trailing = {
-                    ThemedSwitch(
-                        checked = uiState.isPinLockEnabled,
-                        onClick = {
-                            if (it) {
-                                navController.push(Route.Lock)
-                            } else {
-                                sharedViewModel.setPinLockEnabled(false)
-                            }
-                        },
+                leading = { Icon(Icons.Outlined.Security, contentDescription = null) },
+                title = stringResource(R.string.security),
+                onClick = { navController.push(Route.Security) },
+            )
+            SurfaceRow(
+                leading = { Icon(Icons.Outlined.ViewHeadline, contentDescription = null) },
+                title = stringResource(R.string.local_logging),
+                trailing = { modifier ->
+                    SwitchWithDivider(
+                        checked = uiState.monitoring.isLocalLogsEnabled,
+                        onClick = { viewModel.setLocalLogging(it) },
+                        modifier = modifier,
                     )
                 },
-                onClick = {
-                    if (!uiState.isPinLockEnabled) {
-                        navController.push(Route.Lock)
-                    } else {
-                        sharedViewModel.setPinLockEnabled(false)
-                    }
-                },
+                onClick = { navController.push(Route.Logs) },
             )
             SurfaceRow(
                 leading = { Icon(Icons.Outlined.SettingsBackupRestore, contentDescription = null) },

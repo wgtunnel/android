@@ -10,11 +10,12 @@ import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.core.notification.AndroidNotificationService
 import com.zaneschepke.wireguardautotunnel.core.notification.NotificationService
 import com.zaneschepke.wireguardautotunnel.core.orchestration.TunnelCoordinator
-import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelProvider
-import com.zaneschepke.wireguardautotunnel.data.model.TunnelMode
 import com.zaneschepke.wireguardautotunnel.di.Dispatcher
 import com.zaneschepke.wireguardautotunnel.domain.enums.NotificationAction
+import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelActionSource
+import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelMode
 import com.zaneschepke.wireguardautotunnel.domain.events.AutoTunnelEvent
+import com.zaneschepke.wireguardautotunnel.domain.events.TunnelActionEvent
 import com.zaneschepke.wireguardautotunnel.domain.model.AutoTunnelSettings
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.domain.repository.AutoTunnelSettingsRepository
@@ -26,8 +27,16 @@ import com.zaneschepke.wireguardautotunnel.util.Constants
 import com.zaneschepke.wireguardautotunnel.util.extensions.to
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.distinctUntilChangedBy
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import org.koin.android.ext.android.inject
 import org.koin.core.qualifier.named
 import timber.log.Timber
@@ -36,7 +45,9 @@ class AutoTunnelService : LifecycleService() {
 
     private val engine = AutoTunnelEngine()
 
-    private val networkEngine : StableNetworkEngine by inject()
+    private val reconciliationMutex = Mutex()
+
+    private val networkEngine: StableNetworkEngine by inject()
 
     private val notificationService: NotificationService by inject()
 
@@ -44,14 +55,15 @@ class AutoTunnelService : LifecycleService() {
 
     private val stateHolder: AutoTunnelStateHolder by inject()
 
-    private val tunnelProvider: TunnelProvider by inject()
-
     private val autoTunnelRepository: AutoTunnelSettingsRepository by inject()
     private val settingsRepository: GeneralSettingRepository by inject()
     private val tunnelsRepository: TunnelRepository by inject()
     private val tunnelCoordinator: TunnelCoordinator by inject()
     private var autoTunnelJob: Job? = null
     private var permissionsJob: Job? = null
+    private var overridesJob: Job? = null
+
+    @Volatile private var manualOverrideState = ManualOverrideState()
 
     private data class PermissionWarningState(
         val detectionMethod: AndroidNetworkMonitor.WifiDetectionMethod,
@@ -60,27 +72,30 @@ class AutoTunnelService : LifecycleService() {
         val ssidReadRequired: Boolean,
     )
 
+    private data class ManualOverrideState(
+        val fingerprint: AutoTunnelState.NetworkFingerprint? = null,
+        val stoppedTunnelIds: Set<Int> = emptySet(),
+        val startedTunnelIds: Set<Int> = emptySet(),
+    )
+
     private val autoTunnelStateFlow: Flow<AutoTunnelState> by lazy {
         val networkFlow = networkEngine.stableState.mapNotNull { it?.state?.toDomain() }
 
-        val settingsFlow =
-            combineSettings()
+        val settingsFlow = combineSettings()
 
         val backendFlow =
-            tunnelProvider.backendStatus
+            tunnelCoordinator.backendStatus.distinctUntilChangedBy { it.activeTunnels.keys.toSet() }
 
         combine(networkFlow, settingsFlow, backendFlow) { network, settings, backend ->
-
-            AutoTunnelState(
-                networkState = network,
-                settings = settings.second,
-                tunnelMode = settings.first,
-                tunnels = settings.third,
-                backendStatus = backend
-            )
-        }
+                AutoTunnelState(
+                    networkState = network,
+                    settings = settings.second,
+                    tunnelMode = settings.first,
+                    tunnels = settings.third,
+                    backendStatus = backend,
+                )
+            }
             .distinctUntilChanged()
-            .flowOn(ioDispatcher)
     }
 
     override fun onCreate() {
@@ -103,6 +118,8 @@ class AutoTunnelService : LifecycleService() {
         autoTunnelJob = startAutoTunnelStateJob()
         permissionsJob?.cancel()
         permissionsJob = startLocationPermissionsNotificationJob()
+        overridesJob?.cancel()
+        overridesJob = startOverridesJob()
     }
 
     fun stop() {
@@ -115,6 +132,46 @@ class AutoTunnelService : LifecycleService() {
         stateHolder.setActive(false)
         super.onDestroy()
     }
+
+    private fun startOverridesJob(): Job =
+        lifecycleScope.launch(ioDispatcher) {
+            tunnelCoordinator.actions.collect { action ->
+                reconciliationMutex.withLock {
+                    manualOverrideState =
+                        when (action) {
+                            is TunnelActionEvent.Started -> {
+
+                                if (action.source != TunnelActionSource.USER) {
+                                    return@withLock
+                                }
+
+                                manualOverrideState.copy(
+                                    startedTunnelIds =
+                                        manualOverrideState.startedTunnelIds + action.tunnelId,
+                                    stoppedTunnelIds =
+                                        manualOverrideState.stoppedTunnelIds - action.tunnelId,
+                                )
+                            }
+
+                            is TunnelActionEvent.Stopped -> {
+
+                                if (action.source != TunnelActionSource.USER) {
+                                    return@withLock
+                                }
+
+                                manualOverrideState.copy(
+                                    stoppedTunnelIds =
+                                        manualOverrideState.stoppedTunnelIds + action.tunnelId,
+                                    startedTunnelIds =
+                                        manualOverrideState.startedTunnelIds - action.tunnelId,
+                                )
+                            }
+                        }
+
+                    Timber.d("Updated manual overrides: $manualOverrideState")
+                }
+            }
+        }
 
     private fun launchWatcherNotification(
         description: String = getString(R.string.monitoring_state_changes)
@@ -142,15 +199,51 @@ class AutoTunnelService : LifecycleService() {
         )
     }
 
-
-
     private fun startAutoTunnelStateJob(): Job =
         lifecycleScope.launch(ioDispatcher) {
-            autoTunnelStateFlow.collect { state ->
-                val event = engine.evaluate(state)
-                handleAutoTunnelEvent(event)
+            autoTunnelStateFlow.collectLatest { state ->
+                reconciliationMutex.withLock {
+                    updateFingerprintIfNeeded(state)
+
+                    val rawEvent = engine.evaluate(state)
+
+                    val event = applyOverrides(rawEvent)
+
+                    Timber.d("AutoTunnel reconciliation event: $event")
+
+                    handleAutoTunnelEvent(event)
+                }
             }
         }
+
+    private fun updateFingerprintIfNeeded(state: AutoTunnelState) {
+        val fingerprint = state.networkFingerPrint
+
+        if (manualOverrideState.fingerprint != fingerprint) {
+            Timber.d("Network changed, clearing overrides")
+
+            manualOverrideState = ManualOverrideState(fingerprint = fingerprint)
+        }
+    }
+
+    private fun applyOverrides(event: AutoTunnelEvent): AutoTunnelEvent {
+
+        if (event !is AutoTunnelEvent.Sync) {
+            return event
+        }
+
+        val filteredStart =
+            event.start.filterNot { it.id in manualOverrideState.stoppedTunnelIds }.toSet()
+
+        val filteredStop =
+            event.stop.filterNot { it in manualOverrideState.startedTunnelIds }.toSet()
+
+        if (filteredStart.isEmpty() && filteredStop.isEmpty()) {
+            return AutoTunnelEvent.DoNothing
+        }
+
+        return event.copy(start = filteredStart, stop = filteredStop)
+    }
 
     private fun combineSettings():
         Flow<Triple<TunnelMode, AutoTunnelSettings, List<TunnelConfig>>> {
@@ -174,31 +267,35 @@ class AutoTunnelService : LifecycleService() {
                         locationPermissionsEnabled = state.networkState.locationPermissionGranted,
                         ssidReadRequired =
                             state.tunnels.any { it.tunnelNetworks.isNotEmpty() } ||
-                                    state.settings.trustedNetworkSSIDs.isNotEmpty()
+                                state.settings.trustedNetworkSSIDs.isNotEmpty(),
                     )
                 }
                 .distinctUntilChanged()
                 .collect { state ->
-
                     val wifiMode = state.detectionMethod
 
                     if (
                         wifiMode == AndroidNetworkMonitor.WifiDetectionMethod.DEFAULT ||
-                        wifiMode == AndroidNetworkMonitor.WifiDetectionMethod.LEGACY
+                            wifiMode == AndroidNetworkMonitor.WifiDetectionMethod.LEGACY
                     ) {
 
                         if (!state.ssidReadRequired) {
-                            notificationService.remove(NotificationService.AUTO_TUNNEL_LOCATION_SERVICES_ID)
-                            notificationService.remove(NotificationService.AUTO_TUNNEL_LOCATION_PERMISSION_ID)
+                            notificationService.remove(
+                                NotificationService.AUTO_TUNNEL_LOCATION_SERVICES_ID
+                            )
+                            notificationService.remove(
+                                NotificationService.AUTO_TUNNEL_LOCATION_PERMISSION_ID
+                            )
                             return@collect
                         }
 
                         if (!state.locationPermissionsEnabled) {
-                            val notification = notificationService.createNotification(
-                                AndroidNotificationService.NotificationChannels.AUTO_TUNNEL,
-                                title = getString(R.string.warning),
-                                description = getString(R.string.location_permissions_missing),
-                            )
+                            val notification =
+                                notificationService.createNotification(
+                                    AndroidNotificationService.NotificationChannels.AUTO_TUNNEL,
+                                    title = getString(R.string.warning),
+                                    description = getString(R.string.location_permissions_missing),
+                                )
 
                             notificationService.show(
                                 NotificationService.AUTO_TUNNEL_LOCATION_PERMISSION_ID,
@@ -211,11 +308,12 @@ class AutoTunnelService : LifecycleService() {
                         }
 
                         if (!state.locationServicesEnabled) {
-                            val notification = notificationService.createNotification(
-                                AndroidNotificationService.NotificationChannels.AUTO_TUNNEL,
-                                title = getString(R.string.warning),
-                                description = getString(R.string.location_services_not_detected),
-                            )
+                            val notification =
+                                notificationService.createNotification(
+                                    AndroidNotificationService.NotificationChannels.AUTO_TUNNEL,
+                                    title = getString(R.string.warning),
+                                    description = getString(R.string.location_services_not_detected),
+                                )
 
                             notificationService.show(
                                 NotificationService.AUTO_TUNNEL_LOCATION_SERVICES_ID,
@@ -232,13 +330,20 @@ class AutoTunnelService : LifecycleService() {
 
     private suspend fun handleAutoTunnelEvent(event: AutoTunnelEvent) {
         when (event) {
-            is AutoTunnelEvent.Start ->
-                event.tunnelConfig?.let { config ->
-                    tunnelCoordinator.startTunnel(config)
-                } ?: Timber.w("Received auto-tunnel start event without config...")
-            is AutoTunnelEvent.Stop ->
-                tunnelProvider.stopActiveTunnels()
+            is AutoTunnelEvent.Sync -> {
+
+                event.stop.forEach { tunnelId ->
+                    Timber.d("Stopping tunnel: $tunnelId")
+                    tunnelCoordinator.stopTunnel(tunnelId, TunnelActionSource.AUTO_TUNNEL)
+                }
+
+                event.start.forEach { config ->
+                    Timber.d("Starting tunnel: ${config.name}")
+                    tunnelCoordinator.startTunnel(config, TunnelActionSource.AUTO_TUNNEL)
+                }
+            }
+
             AutoTunnelEvent.DoNothing -> Unit
         }
-}
+    }
 }

@@ -2,19 +2,18 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.androidLibrary)
-    alias(libs.plugins.kotlin.android)
 }
 
 android {
     namespace = "com.zaneschepke.tunnel"
     compileSdk {
-        version = release(36)
+        version = release(Constants.TARGET_SDK)
     }
 
-    ndkVersion = "28.2.13676358"
+    ndkVersion = Constants.NDK_VERSION
 
     defaultConfig {
-        minSdk = 26
+        minSdk = Constants.MIN_SDK
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")

@@ -9,7 +9,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.CallSplit
-import androidx.compose.material.icons.outlined.*
+import androidx.compose.material.icons.outlined.Bolt
+import androidx.compose.material.icons.outlined.DataUsage
+import androidx.compose.material.icons.outlined.Description
+import androidx.compose.material.icons.outlined.Dns
+import androidx.compose.material.icons.outlined.Public
+import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -19,9 +24,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.data.model.TunnelMode
+import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelMode
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ThemedSwitch
@@ -32,6 +36,7 @@ import com.zaneschepke.wireguardautotunnel.ui.theme.Disabled
 import com.zaneschepke.wireguardautotunnel.viewmodel.SharedAppViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.TunnelViewModel
 import org.koin.compose.viewmodel.koinActivityViewModel
+import org.orbitmvi.orbit.compose.collectAsState
 
 @Composable
 fun TunnelSettingsScreen(
@@ -40,12 +45,12 @@ fun TunnelSettingsScreen(
 ) {
     val navController = LocalNavController.current
 
-    val sharedUiState by sharedViewModel.container.stateFlow.collectAsStateWithLifecycle()
+    val sharedUiState by sharedViewModel.collectAsState()
 
-    val tunnelState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
+    val uiState by viewModel.collectAsState()
 
-    if (tunnelState.isLoading) return
-    val tunnel = tunnelState.tunnel ?: return
+    if (uiState.isLoading) return
+    val tunnel = uiState.tunnel ?: return
 
     Column(
         horizontalAlignment = Alignment.Start,
@@ -62,10 +67,10 @@ fun TunnelSettingsScreen(
                 title = stringResource(R.string.view_configuration),
                 onClick = { navController.push(Route.Config(tunnel.id)) },
             )
-            if (tunnelState.activeConfig != null) {
+            if (uiState.activeConfig != null) {
                 SurfaceRow(
                     leading = { Icon(Icons.Outlined.Bolt, contentDescription = null) },
-                    title = stringResource(R.string.view_live_configuration),
+                    title = stringResource(R.string.view_live_tunnel),
                     onClick = { navController.push(Route.Config(tunnel.id, true)) },
                 )
             }
@@ -113,15 +118,21 @@ fun TunnelSettingsScreen(
                 },
                 enabled = sharedUiState.tunnelMode != TunnelMode.PROXY,
                 title = stringResource(R.string.splt_tunneling),
-                description =
+                description = {
                     if (sharedUiState.tunnelMode == TunnelMode.PROXY) {
-                        {
-                            DescriptionText(
-                                stringResource(R.string.unavailable_in_mode),
-                                disabled = true,
-                            )
+                        DescriptionText(
+                            stringResource(R.string.unavailable_in_mode),
+                            disabled = true,
+                        )
+                    } else {
+                        uiState.includedAppsCount?.let {
+                            DescriptionText(stringResource(R.string.included_apps, it))
                         }
-                    } else null,
+                        uiState.excludedAppsCount?.let {
+                            DescriptionText(stringResource(R.string.excluded_apps, it))
+                        }
+                    }
+                },
                 onClick = { navController.push(Route.SplitTunnel(id = tunnel.id)) },
             )
             SurfaceRow(

@@ -7,19 +7,18 @@ import com.zaneschepke.tunnel.backend.Backend
 import com.zaneschepke.tunnel.backend.ServiceHolder
 import com.zaneschepke.tunnel.backend.ServiceHolder.Companion.alwaysOnCallback
 import com.zaneschepke.tunnel.model.BackendMode
-import java.util.concurrent.CompletableFuture
-import kotlinx.coroutines.*
+import kotlinx.coroutines.runBlocking
 import org.koin.java.KoinJavaComponent.inject
 import timber.log.Timber
 
 class TunnelService : LifecycleService() {
 
     private val backend: Backend by inject(Backend::class.java)
-
-    private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private val serviceHolder: ServiceHolder by inject(ServiceHolder::class.java)
 
     override fun onCreate() {
         ServiceHolder.tunnelService.complete(this)
+        serviceHolder.ensureNativeCallbacksRegistered()
         launchForegroundNotification()
         super.onCreate()
     }
@@ -36,23 +35,17 @@ class TunnelService : LifecycleService() {
                 (intent.component!!.packageName != packageName)
         ) {
             Timber.d("TunnelService started by system")
-            alwaysOnCallback?.alwaysOnTriggered()
+            alwaysOnCallback?.get()?.alwaysOnTriggered()
         }
+
         return START_STICKY
     }
 
     override fun onDestroy() {
-        serviceScope.launch {
-            backend.stopAllOfType(BackendMode.Proxy.Standard::class)
-            serviceScope.cancel()
-        }
+        runBlocking { backend.stopAllOfType(BackendMode.Proxy.Standard::class) }
 
         ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
-
-        if (!ServiceHolder.tunnelService.isDone) {
-            ServiceHolder.tunnelService.cancel(false)
-        }
-        ServiceHolder.tunnelService = CompletableFuture<TunnelService>()
+        serviceHolder.clear(this)
         super.onDestroy()
     }
 

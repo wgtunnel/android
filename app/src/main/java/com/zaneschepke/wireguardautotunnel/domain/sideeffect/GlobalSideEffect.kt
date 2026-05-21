@@ -1,6 +1,6 @@
 package com.zaneschepke.wireguardautotunnel.domain.sideeffect
 
-import com.zaneschepke.wireguardautotunnel.data.model.TunnelMode
+import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelMode
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.ui.common.snackbar.SnackbarType
 import com.zaneschepke.wireguardautotunnel.util.StringValue

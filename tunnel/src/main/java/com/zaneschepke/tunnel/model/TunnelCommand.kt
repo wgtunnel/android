@@ -1,8 +1,8 @@
 package com.zaneschepke.tunnel.model
 
 import com.zaneschepke.tunnel.Tunnel
+import com.zaneschepke.tunnel.state.BootstrapState
 import com.zaneschepke.wireguardautotunnel.parser.PeerSection
-import kotlinx.coroutines.Job
 
 sealed class TunnelCommand {
 
@@ -12,7 +12,7 @@ sealed class TunnelCommand {
 
     data class UpdateActiveConfig(val tunnelId: Int) : TunnelCommand()
 
-    data class AttachJob(val tunnelId: Int, val job: Job) : TunnelCommand()
+    data class UpdateKillSwitch(val enabled: Boolean) : TunnelCommand()
 
     data class ApplyResolvedPeers(
         val tunnelId: Int,
@@ -22,7 +22,15 @@ sealed class TunnelCommand {
 
     data class UpdatePeers(val tunnelId: Int, val preferIpv6: Boolean) : TunnelCommand()
 
-    data class BeginDnsResolution(val tunnelId: Int) : TunnelCommand()
+    data class SetBootstrapState(val tunnelId: Int, val state: BootstrapState) : TunnelCommand()
 
-    data class EndDnsResolution(val tunnelId: Int) : TunnelCommand()
+    data class RunHook(val tunnelId: Int, val phase: Phase, val cmds: List<String>?) :
+        TunnelCommand() {
+        enum class Phase {
+            PreUp,
+            PostUp,
+            PreDown,
+            PostDown,
+        }
+    }
 }

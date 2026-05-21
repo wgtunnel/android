@@ -7,7 +7,5 @@ data class TunnelsUiState(
     val tunnels: List<TunnelConfig> = emptyList(),
     val backendStatus: BackendStatus = BackendStatus(),
     val selectedTunnels: List<TunnelConfig> = emptyList(),
-    val isPingEnabled: Boolean = false,
-    val showPingStats: Boolean = false,
     val isLoading: Boolean = true,
 )

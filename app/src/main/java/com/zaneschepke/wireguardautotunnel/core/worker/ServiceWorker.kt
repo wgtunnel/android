@@ -17,7 +17,7 @@ class ServiceWorker(
     params: WorkerParameters,
     private val serviceManager: ServiceManager,
     private val autoTunnelSettingsRepository: AutoTunnelSettingsRepository,
-    private val autoTunnelStateHolder: AutoTunnelStateHolder
+    private val autoTunnelStateHolder: AutoTunnelStateHolder,
 ) : CoroutineWorker(context, params) {
 
     companion object {
@@ -52,7 +52,7 @@ class ServiceWorker(
             return Result.success()
         }
 
-        if(autoTunnelStateHolder.active.value) return Result.success()
+        if (autoTunnelStateHolder.active.value) return Result.success()
 
         serviceManager.startAutoTunnelService()
 

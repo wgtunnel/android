@@ -3,7 +3,7 @@ package com.zaneschepke.wireguardautotunnel.data.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.zaneschepke.wireguardautotunnel.data.model.TunnelMode
+import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelMode
 
 @Entity(tableName = "general_settings")
 data class GeneralSettings(
@@ -28,6 +28,10 @@ data class GeneralSettings(
     @ColumnInfo(name = "is_always_on_vpn_enabled", defaultValue = "0")
     val isAlwaysOnVpnEnabled: Boolean = false,
     @ColumnInfo(name = "already_donated", defaultValue = "0") val alreadyDonated: Boolean = false,
-    @ColumnInfo(name = "screen_recording_security", defaultValue = "0")
+    @ColumnInfo(name = "screen_recording_security", defaultValue = "1")
     val screenRecordingSecurityEnabled: Boolean = true,
+    @ColumnInfo(name = "global_amnezia_enabled", defaultValue = "0")
+    val isGlobalAmneziaEnabled: Boolean = false,
+    @ColumnInfo(name = "tunnel_scripting_enabled", defaultValue = "0")
+    val tunnelScriptingEnabled: Boolean = true,
 )

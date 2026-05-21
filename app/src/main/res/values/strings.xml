@@ -429,6 +429,7 @@
     <string name="unavailable_in_mode">Unavailable in current mode</string>
     <string name="global_split_tunneling">Global split tunneling</string>
     <string name="global_dns_servers">Global DNS servers</string>
+    <string name="global_amnezia_configuration">Global Amnezia configuration</string>
     <string name="dual_stack">Dual-stack</string>
     <string name="dual_stack_description">Tunnels must support IPv4 and IPv6</string>
     <string name="save_changes">Save changes</string>
@@ -475,7 +476,7 @@
     <string name="initializing">Initializing…</string>
     <string name="network">Network</string>
     <string name="view_configuration">View configuration</string>
-    <string name="view_live_configuration">View live configuration</string>
+    <string name="view_live_tunnel">View live tunnel</string>
     <string name="toggle_sensitive_data_visibility">Toggle sensitive data visibility</string>
     <string name="ipv6_settings">IPv6 settings</string>
     <string name="automation">Automation</string>
@@ -509,6 +510,11 @@
     <string name="tunnel_state_starting">Starting</string>
     <string name="tunnel_state_stopping">Stopping</string>
 
+    <string name="status_template">status: %1$s</string>
+    <string name="uptime_template">uptime: %1$s</string>
+    <string name="peer_template">peer: %1$s</string>
+    <string name="handshake_template">handshake: %1$s</string>
+
     <!-- Notification formatting -->
     <string name="notification_tunnel_status_format">%1$s • %2$s</string>
 
@@ -538,5 +544,25 @@
         %1$s is already running
     </string>
 
+    <string name="included_apps">
+        %1$s apps included
+    </string>
+
+    <string name="excluded_apps">
+        %1$s apps excluded
+    </string>
+
     <string name="error">Error</string>
+    <string name="tunnel_globals">Tunnel globals</string>
+    <string name="configuration_globals">Configuration globals</string>
+    <string name="screen_recording_protection">Screen recording protection</string>
+    <string name="security">Security</string>
+    <string name="ready">Ready</string>
+    <string name="statistics">Statistics</string>
+    <string name="tunnel_statistics">Live tunnel statistics</string>
+    <string name="refresh_rate">Statistics refresh rate</string>
+    <string name="balanced">Balanced (3s)</string>
+    <string name="live">Real-time (1s)</string>
+    <string name="balance_saver">Battery Saver (10s)</string>
+    <string name="tunnel_scripting">Pre/Post script support</string>
 </resources>

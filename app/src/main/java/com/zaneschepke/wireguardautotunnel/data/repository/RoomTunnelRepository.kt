@@ -6,6 +6,7 @@ import com.zaneschepke.wireguardautotunnel.data.mapper.toEntity
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig as Domain
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 
 class RoomTunnelRepository(private val tunnelConfigDao: TunnelConfigDao) : TunnelRepository {
@@ -90,5 +91,11 @@ class RoomTunnelRepository(private val tunnelConfigDao: TunnelConfigDao) : Tunne
 
     override suspend fun delete(tunnels: List<Domain>) {
         tunnelConfigDao.delete(tunnels.map { it.toEntity() })
+    }
+
+    override suspend fun ensureGlobalConfigExists() {
+        if (globalTunnelFlow.firstOrNull() == null) {
+            save(Domain.generateDefaultGlobalConfig())
+        }
     }
 }

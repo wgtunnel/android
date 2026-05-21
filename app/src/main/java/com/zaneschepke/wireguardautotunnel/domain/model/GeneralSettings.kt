@@ -1,6 +1,6 @@
 package com.zaneschepke.wireguardautotunnel.domain.model
 
-import com.zaneschepke.wireguardautotunnel.data.model.TunnelMode
+import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelMode
 import com.zaneschepke.wireguardautotunnel.ui.theme.Theme
 
 data class GeneralSettings(
@@ -19,4 +19,6 @@ data class GeneralSettings(
     val isKillSwitchMetered: Boolean = true,
     val alreadyDonated: Boolean = false,
     val screenRecordingSecurityEnabled: Boolean = true,
+    val isGlobalAmneziaEnabled: Boolean = false,
+    val tunnelScriptingEnabled: Boolean = true,
 )

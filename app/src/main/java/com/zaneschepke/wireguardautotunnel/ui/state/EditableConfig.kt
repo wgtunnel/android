@@ -4,13 +4,11 @@ import com.zaneschepke.wireguardautotunnel.parser.Config
 import com.zaneschepke.wireguardautotunnel.parser.InterfaceSection
 import com.zaneschepke.wireguardautotunnel.util.extensions.toTrimmedList
 
-data class ConfigProxy(
-    val `interface`: InterfaceProxy = InterfaceProxy(),
-    val peers: List<PeerProxy> = emptyList(),
+data class EditableConfig(
+    val `interface`: EditableInterface = EditableInterface(),
+    val peers: List<EditablePeer> = emptyList(),
     val headerComments: List<String> = emptyList(),
 ) {
-
-    fun hasScripts(): Boolean = `interface`.hasScripts()
 
     fun buildConfig(): Config {
         val interfaceSection =
@@ -20,15 +18,12 @@ data class ConfigProxy(
                 dns = `interface`.dnsServers.ifBlank { null },
                 listenPort = `interface`.listenPort.toIntOrNull(),
                 mtu = `interface`.mtu.toIntOrNull(),
-                // Scripts (UI uses single multiline string → split)
                 preUp = `interface`.preUp.toTrimmedList(),
                 postUp = `interface`.postUp.toTrimmedList(),
                 preDown = `interface`.preDown.toTrimmedList(),
                 postDown = `interface`.postDown.toTrimmedList(),
-                // Android
                 includedApplications = `interface`.includedApplications.toList(),
                 excludedApplications = `interface`.excludedApplications.toList(),
-                // Amnezia fields (mapped from old UI names)
                 jC = `interface`.junkPacketCount.toIntOrNull(),
                 jMin = `interface`.junkPacketMinSize.toIntOrNull(),
                 jMax = `interface`.junkPacketMaxSize.toIntOrNull(),
@@ -57,10 +52,10 @@ data class ConfigProxy(
     }
 
     companion object {
-        fun from(config: Config): ConfigProxy {
-            return ConfigProxy(
-                `interface` = InterfaceProxy.from(config.`interface`),
-                peers = config.peers.map { PeerProxy.from(it) },
+        fun from(config: Config): EditableConfig {
+            return EditableConfig(
+                `interface` = EditableInterface.from(config.`interface`),
+                peers = config.peers.map { EditablePeer.from(it) },
                 headerComments = config.headerComments,
             )
         }

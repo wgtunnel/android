@@ -2,7 +2,6 @@ package com.zaneschepke.wireguardautotunnel.core.notification
 
 import com.zaneschepke.tunnel.model.BackendMode
 import com.zaneschepke.tunnel.state.ActiveTunnel
-import com.zaneschepke.tunnel.state.BackendStatus
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.core.notification.AndroidNotificationService.NotificationChannels
 import com.zaneschepke.wireguardautotunnel.core.notification.NotificationService.Companion.PROXY_GROUP_KEY
@@ -13,18 +12,18 @@ import com.zaneschepke.wireguardautotunnel.core.notification.NotificationService
 import com.zaneschepke.wireguardautotunnel.core.notification.NotificationService.Companion.VPN_NOTIFICATION_ID
 import com.zaneschepke.wireguardautotunnel.domain.enums.NotificationAction
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
-import com.zaneschepke.wireguardautotunnel.util.extensions.localizedLabel
+import com.zaneschepke.wireguardautotunnel.ui.state.DisplayTunnelState
 
 class AndroidTunnelNotificationService(
     private val notificationService: NotificationService,
     private val tunnelRepository: TunnelRepository,
 ) : TunnelNotificationService {
 
-    override suspend fun updatePersistentNotifications(status: BackendStatus) {
+    override suspend fun updatePersistentNotifications(activeTunnels: Map<Int, ActiveTunnel>) {
 
-        val vpnTunnels = status.activeTunnels.filterValues { it.mode is BackendMode.Vpn }
+        val vpnTunnels = activeTunnels.filterValues { it.mode is BackendMode.Vpn }
 
-        val proxyTunnels = status.activeTunnels.filterValues { it.mode is BackendMode.Proxy }
+        val proxyTunnels = activeTunnels.filterValues { it.mode is BackendMode.Proxy }
 
         updateGroupNotification(
             tunnels = vpnTunnels,
@@ -57,11 +56,12 @@ class AndroidTunnelNotificationService(
 
         val lines = tunnels.mapNotNull { (id, activeTunnel) ->
             val tunnel = tunnelRepository.getById(id) ?: return@mapNotNull null
+            val display = DisplayTunnelState.from(activeTunnel)
 
             context.getString(
                 R.string.notification_tunnel_status_format,
                 tunnel.name,
-                activeTunnel.state.localizedLabel(context),
+                display.asLocalizedString(context),
             )
         }
 
@@ -144,6 +144,12 @@ class AndroidTunnelNotificationService(
         showError(context.getString(R.string.notification_tunnel_already_running, name))
     }
 
+    override suspend fun showRootShellAccess() {
+        // TODO could improve with fix action
+        val context = notificationService.context
+        showError(context.getString(R.string.error_root_denied))
+    }
+
     override suspend fun showError(message: String) {
 
         val notification =
@@ -159,7 +165,7 @@ class AndroidTunnelNotificationService(
         notificationService.show(TUNNEL_ERROR_NOTIFICATION_ID, notification)
     }
 
-    private suspend fun showMessage(title: String, message: String) {
+    private fun showMessage(title: String, message: String) {
 
         val notification =
             notificationService.createNotification(

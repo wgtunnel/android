@@ -2,8 +2,7 @@ package com.zaneschepke.wireguardautotunnel.viewmodel
 
 import androidx.lifecycle.ViewModel
 import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelProvider
-import com.zaneschepke.wireguardautotunnel.domain.model.ProxySettings
+import com.zaneschepke.wireguardautotunnel.core.orchestration.TunnelCoordinator
 import com.zaneschepke.wireguardautotunnel.domain.repository.GlobalEffectRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.ProxySettingsRepository
 import com.zaneschepke.wireguardautotunnel.domain.sideeffect.GlobalSideEffect
@@ -17,7 +16,7 @@ import org.orbitmvi.orbit.viewmodel.container
 class ProxySettingsViewModel(
     private val proxySettingsRepository: ProxySettingsRepository,
     private val globalEffectRepository: GlobalEffectRepository,
-    private val tunnelProvider: TunnelProvider,
+    private val tunnelCoordinator: TunnelCoordinator,
 ) : ContainerHost<ProxySettingsUiState, Nothing>, ViewModel() {
 
     override val container =
@@ -25,48 +24,37 @@ class ProxySettingsViewModel(
             ProxySettingsUiState(),
             buildSettings = { repeatOnSubscribedStopTimeout = 5000L },
         ) {
-            combine(tunnelProvider.backendStatus, proxySettingsRepository.flow) {
+            combine(tunnelCoordinator.backendStatus, proxySettingsRepository.flow) {
                     backendStatus,
                     settings ->
-                    state.copy(
+                    ProxySettingsUiState(
                         proxySettings = settings,
-                        isLoading = false,
                         backendStatus = backendStatus,
+                        isLoading = false,
+                        socks5Enabled = settings.socks5ProxyEnabled,
+                        httpEnabled = settings.httpProxyEnabled,
+                        socksBindAddress = settings.socks5ProxyBindAddress ?: "",
+                        httpBindAddress = settings.httpProxyBindAddress ?: "",
+                        proxyUsername = settings.proxyUsername ?: "",
+                        proxyPassword = settings.proxyPassword ?: "",
                     )
                 }
                 .collect { reduce { it } }
         }
 
-    fun save(proxySettings: ProxySettings) = intent {
+    fun save() = intent {
         reduce { state.copy(showSaveModal = false) }
+
+        val current = state
+
         val updated =
-            state.proxySettings.copy(
-                socks5ProxyEnabled = proxySettings.socks5ProxyEnabled,
-                httpProxyEnabled = proxySettings.httpProxyEnabled,
-                httpProxyBindAddress =
-                    if (proxySettings.httpProxyEnabled) {
-                        proxySettings.httpProxyBindAddress?.ifBlank { null }
-                    } else {
-                        null
-                    },
-                socks5ProxyBindAddress =
-                    if (proxySettings.socks5ProxyEnabled) {
-                        proxySettings.socks5ProxyBindAddress?.ifBlank { null }
-                    } else {
-                        null
-                    },
-                proxyUsername =
-                    if (proxySettings.socks5ProxyEnabled || proxySettings.httpProxyEnabled) {
-                        proxySettings.proxyUsername?.ifBlank { null }
-                    } else {
-                        null
-                    },
-                proxyPassword =
-                    if (proxySettings.socks5ProxyEnabled || proxySettings.httpProxyEnabled) {
-                        proxySettings.proxyPassword?.ifBlank { null }
-                    } else {
-                        null
-                    },
+            current.proxySettings.copy(
+                socks5ProxyEnabled = current.socks5Enabled,
+                httpProxyEnabled = current.httpEnabled,
+                socks5ProxyBindAddress = current.socksBindAddress.ifBlank { null },
+                httpProxyBindAddress = current.httpBindAddress.ifBlank { null },
+                proxyUsername = current.proxyUsername.ifBlank { null },
+                proxyPassword = current.proxyPassword.ifBlank { null },
             )
 
         val isHttpDefault = updated.httpProxyBindAddress == null
@@ -110,9 +98,8 @@ class ProxySettingsViewModel(
 
         proxySettingsRepository.upsert(updated)
 
-        // TODO
-        //        if (state.backendStatus.activeTunnels.isNotEmpty())
-        // tunnelBackendProvider.restartActiveTunnels()
+        tunnelCoordinator.toggleTunnels()
+        tunnelCoordinator.toggleTunnels()
 
         postSideEffect(
             GlobalSideEffect.Snackbar(StringValue.StringResource(R.string.config_changes_saved))
@@ -137,4 +124,32 @@ class ProxySettingsViewModel(
     }
 
     private fun areBothNullOrBothNotNull(s1: String?, s2: String?) = (s1 == null) == (s2 == null)
+
+    fun onSocks5EnabledChanged(enabled: Boolean) = intent {
+        reduce { state.copy(socks5Enabled = enabled) }
+    }
+
+    fun onHttpEnabledChanged(enabled: Boolean) = intent {
+        reduce { state.copy(httpEnabled = enabled) }
+    }
+
+    fun onSocksBindChanged(value: String) = intent {
+        reduce { state.copy(socksBindAddress = value, isSocks5BindAddressError = false) }
+    }
+
+    fun onHttpBindChanged(value: String) = intent {
+        reduce { state.copy(httpBindAddress = value, isHttpBindAddressError = false) }
+    }
+
+    fun onUsernameChanged(value: String) = intent {
+        reduce { state.copy(proxyUsername = value, isUserNameError = false) }
+    }
+
+    fun onPasswordChanged(value: String) = intent {
+        reduce { state.copy(proxyPassword = value, isPasswordError = false) }
+    }
+
+    fun onPasswordVisibilityChanged(value: Boolean) = intent {
+        reduce { state.copy(passwordVisible = value) }
+    }
 }

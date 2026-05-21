@@ -2,28 +2,26 @@ package com.zaneschepke.wireguardautotunnel
 
 import android.app.Application
 import android.os.StrictMode
-import com.zaneschepke.logcatter.LogReader
 import com.zaneschepke.tunnel.backend.Backend
 import com.zaneschepke.tunnel.di.tunnelModule
-import com.zaneschepke.tunnel.model.DnsBoostrapConfig.*
-import com.zaneschepke.tunnel.model.DnsBoostrapMode.Custom
-import com.zaneschepke.tunnel.model.DnsBoostrapMode.System
 import com.zaneschepke.tunnel.service.VpnService
 import com.zaneschepke.wireguardautotunnel.core.event.TunnelEventDispatcher
 import com.zaneschepke.wireguardautotunnel.core.notification.NotificationService
+import com.zaneschepke.wireguardautotunnel.core.orchestration.AppBoostrapCoordinator
 import com.zaneschepke.wireguardautotunnel.core.orchestration.TunnelCoordinator
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelProvider
-import com.zaneschepke.wireguardautotunnel.data.model.DnsProtocol
-import com.zaneschepke.wireguardautotunnel.di.*
-import com.zaneschepke.wireguardautotunnel.domain.repository.DnsSettingsRepository
-import com.zaneschepke.wireguardautotunnel.domain.repository.MonitoringSettingsRepository
+import com.zaneschepke.wireguardautotunnel.di.Dispatcher
+import com.zaneschepke.wireguardautotunnel.di.Scope
+import com.zaneschepke.wireguardautotunnel.di.appModule
+import com.zaneschepke.wireguardautotunnel.di.coordinatorModule
+import com.zaneschepke.wireguardautotunnel.di.databaseModule
+import com.zaneschepke.wireguardautotunnel.di.dispatchersModule
+import com.zaneschepke.wireguardautotunnel.di.networkModule
+import com.zaneschepke.wireguardautotunnel.di.tunnelBackendProviderModule
+import com.zaneschepke.wireguardautotunnel.di.workerModule
 import com.zaneschepke.wireguardautotunnel.util.ReleaseTree
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.distinctUntilChangedBy
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
@@ -42,10 +40,8 @@ class WireGuardAutoTunnel : Application(), KoinComponent {
 
     private val applicationScope: CoroutineScope by inject(named(Scope.APPLICATION))
     private val ioDispatcher: CoroutineDispatcher by inject(named(Dispatcher.IO))
-    private val logReader: LogReader by inject()
 
-    private val monitoringRepository: MonitoringSettingsRepository by inject()
-    private val dnsSettingRepository: DnsSettingsRepository by inject()
+    private val boostrapCoordinator: AppBoostrapCoordinator by inject()
 
     private val notificationService: NotificationService by inject()
 
@@ -91,9 +87,7 @@ class WireGuardAutoTunnel : Application(), KoinComponent {
         backend.setAlwaysOnCallback(
             object : VpnService.AlwaysOnCallback {
                 override fun alwaysOnTriggered() {
-                    applicationScope.launch {
-                        tunnelCoordinator.startDefault()
-                    }
+                    applicationScope.launch { tunnelCoordinator.startDefault() }
                 }
             }
         )
@@ -110,32 +104,7 @@ class WireGuardAutoTunnel : Application(), KoinComponent {
             coordinator.errors,
         )
 
-        applicationScope.launch(ioDispatcher) {
-            launch {
-                monitoringRepository.flow
-                    .distinctUntilChangedBy { it.isLocalLogsEnabled }
-                    .collect { settings ->
-                        if (settings.isLocalLogsEnabled) {
-                            logReader.start()
-                        } else {
-                            logReader.stop()
-                        }
-                    }
-            }
-            // boostrap DNS setting
-            launch {
-                val dnsSettings = dnsSettingRepository.getDnsSettings()
-                val dnsBoostrapMode =
-                    when (dnsSettings.dnsProtocol) {
-                        DnsProtocol.SYSTEM -> System
-                        DnsProtocol.DOH -> Custom(DoH(dnsSettings.dnsEndpoint))
-
-                        DnsProtocol.DOT -> Custom(DoT(dnsSettings.dnsEndpoint))
-                        DnsProtocol.UDP -> Custom(Plain(dnsSettings.dnsEndpoint))
-                    }
-                backend.setBootstrapDnsMode(dnsBoostrapMode)
-            }
-        }
+        applicationScope.launch(ioDispatcher) { boostrapCoordinator.bootstrap() }
     }
 
     companion object {

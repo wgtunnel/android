@@ -1,6 +1,6 @@
 package com.zaneschepke.wireguardautotunnel.ui.state
 
-import com.zaneschepke.wireguardautotunnel.data.model.TunnelMode
+import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelMode
 import com.zaneschepke.wireguardautotunnel.ui.theme.Theme
 import com.zaneschepke.wireguardautotunnel.util.LocaleUtil
 
@@ -18,4 +18,5 @@ data class GlobalAppUiState(
     val selectedTunnelCount: Int = 0,
     val alreadyDonated: Boolean = false,
     val isPinVerified: Boolean = false,
+    val isScreenRecordingProtectionEnabled: Boolean = false,
 )

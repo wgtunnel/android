@@ -10,4 +10,6 @@ sealed interface TunnelEvent {
     data class FallbackToIpv4(val tunnelId: Int) : TunnelEvent
 
     data class RecoveredToIpv6(val tunnelId: Int) : TunnelEvent
+
+    data class NoRootShellAccess(val tunnelId: Int) : TunnelEvent
 }

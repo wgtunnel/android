@@ -4,7 +4,7 @@ import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.parser.PeerSection
 import com.zaneschepke.wireguardautotunnel.util.extensions.joinAndTrim
 
-data class PeerProxy(
+data class EditablePeer(
     val publicKey: String = "",
     val preSharedKey: String = "",
     val persistentKeepalive: String = "",
@@ -24,14 +24,14 @@ data class PeerProxy(
     fun isLanExcluded(): Boolean =
         this.allowedIps.contains(TunnelConfig.LAN_BYPASS_ALLOWED_IPS.joinAndTrim())
 
-    fun includeLan(): PeerProxy = this.copy(allowedIps = TunnelConfig.ALL_IPS.joinAndTrim())
+    fun includeLan(): EditablePeer = this.copy(allowedIps = TunnelConfig.ALL_IPS.joinAndTrim())
 
-    fun excludeLan(): PeerProxy =
+    fun excludeLan(): EditablePeer =
         this.copy(allowedIps = TunnelConfig.LAN_BYPASS_ALLOWED_IPS.joinAndTrim())
 
     companion object {
-        fun from(peer: PeerSection): PeerProxy =
-            PeerProxy(
+        fun from(peer: PeerSection): EditablePeer =
+            EditablePeer(
                 publicKey = peer.publicKey,
                 preSharedKey = peer.presharedKey ?: "",
                 persistentKeepalive = peer.persistentKeepalive?.toString() ?: "",

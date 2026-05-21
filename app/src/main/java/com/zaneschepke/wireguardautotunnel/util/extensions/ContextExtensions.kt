@@ -26,7 +26,7 @@ import com.zaneschepke.wireguardautotunnel.util.Constants
 import com.zaneschepke.wireguardautotunnel.util.FileUtils
 import java.io.File
 import java.io.InputStream
-import java.util.*
+import java.util.Locale
 import kotlin.system.exitProcess
 import timber.log.Timber
 

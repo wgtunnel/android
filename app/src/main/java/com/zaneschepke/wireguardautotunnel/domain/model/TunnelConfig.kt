@@ -6,7 +6,7 @@ import com.zaneschepke.wireguardautotunnel.parser.Config
 import com.zaneschepke.wireguardautotunnel.parser.InterfaceSection
 import com.zaneschepke.wireguardautotunnel.parser.PeerSection
 import com.zaneschepke.wireguardautotunnel.parser.crypto.Key
-import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.settings.config.edit.components.InterfaceSection
+import com.zaneschepke.wireguardautotunnel.ui.state.TunnelSummary
 import com.zaneschepke.wireguardautotunnel.util.extensions.defaultName
 
 data class TunnelConfig(
@@ -26,13 +26,24 @@ data class TunnelConfig(
     val ipv4FallbackEnabled: Boolean = false,
     val ipv6RestoreEnabled: Boolean = false,
 ) {
+
+    fun toSummary() = TunnelSummary(id = id, name = name)
+
     fun getConfig(): Config {
         return Config.parseQuickString(quickConfig)
     }
 
-    fun toBackendTunnel(): Tunnel = BackendTunnel(this)
+    val isGlobalConfig: Boolean
+        get() = name == GLOBAL_CONFIG_NAME
 
-    private class BackendTunnel(private val config: TunnelConfig) : Tunnel {
+    fun toBackendTunnel(monitoringSettings: MonitoringSettings, scriptsEnabled: Boolean): Tunnel =
+        BackendTunnel(this, monitoringSettings, scriptsEnabled)
+
+    private class BackendTunnel(
+        private val config: TunnelConfig,
+        private val monitoringSettings: MonitoringSettings,
+        override val scriptsEnabled: Boolean,
+    ) : Tunnel {
 
         override val id: Int
             get() = config.id
@@ -45,14 +56,22 @@ data class TunnelConfig(
 
         override val ipStrategy: Tunnel.IpStrategy
             get() =
-                Tunnel.IpStrategy.PreferIpv6(
-                    fallbackToIpv4Enabled = config.ipv4FallbackEnabled,
-                    recoveryEnabled = config.ipv6RestoreEnabled,
-                )
+                if (config.isIpv6Preferred)
+                    Tunnel.IpStrategy.PreferIpv6(
+                        fallbackToIpv4Enabled = config.ipv4FallbackEnabled,
+                        recoveryEnabled = config.ipv6RestoreEnabled,
+                    )
+                else Tunnel.IpStrategy.Ipv4Only
 
         override val features: Set<Tunnel.Feature>
             get() = buildSet {
-                add(Tunnel.Feature.ActiveConfigMonitor())
+                if (monitoringSettings.tunnelStatisticsEnabled) {
+                    add(
+                        Tunnel.Feature.ActiveConfigMonitor(
+                            monitoringSettings.tunnelStatisticsPollInterval
+                        )
+                    )
+                }
 
                 if (config.dynamicDnsEnabled) {
                     add(Tunnel.Feature.DynamicDNS)

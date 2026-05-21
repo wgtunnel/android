@@ -24,7 +24,6 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.settings.config.components.QrCodeDialog
 import com.zaneschepke.wireguardautotunnel.ui.sideeffect.LocalSideEffect
@@ -33,6 +32,7 @@ import com.zaneschepke.wireguardautotunnel.util.extensions.showToast
 import com.zaneschepke.wireguardautotunnel.viewmodel.SharedAppViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.TunnelViewModel
 import org.koin.compose.viewmodel.koinActivityViewModel
+import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
 
 @Composable
@@ -43,7 +43,7 @@ fun ConfigScreen(
 ) {
 
     val context = LocalContext.current
-    val uiState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
+    val uiState by viewModel.collectAsState()
     var showKeys by rememberSaveable { mutableStateOf(false) }
 
     if (uiState.isLoading) return
@@ -94,6 +94,7 @@ fun ConfigScreen(
         Text(
             text = annotated,
             style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.padding(horizontal = 16.dp),
         )
     }

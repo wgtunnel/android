@@ -21,4 +21,8 @@ class RoomDnsSettingsRepository(private val dnsSettingsDao: DnsSettingsDao) :
     override suspend fun getDnsSettings(): Domain {
         return (dnsSettingsDao.getDnsSettings() ?: Entity()).toDomain()
     }
+
+    override suspend fun updateGlobalDnsEnabled(enabled: Boolean) {
+        dnsSettingsDao.updateGlobalDnsEnabled(enabled)
+    }
 }

@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -11,32 +12,27 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Dns
 import androidx.compose.material.icons.outlined.NetworkCheck
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.networkmonitor.PrivateDnsMode
 import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.data.model.DnsProtocol
+import com.zaneschepke.wireguardautotunnel.domain.enums.DnsProtocol
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
-import com.zaneschepke.wireguardautotunnel.ui.common.button.SwitchWithDivider
 import com.zaneschepke.wireguardautotunnel.ui.common.dropdown.LabelledDropdown
 import com.zaneschepke.wireguardautotunnel.ui.common.label.GroupLabel
 import com.zaneschepke.wireguardautotunnel.ui.common.text.DescriptionText
 import com.zaneschepke.wireguardautotunnel.ui.common.textbox.ConfigurationTextBox
 import com.zaneschepke.wireguardautotunnel.ui.sideeffect.LocalSideEffect
-import com.zaneschepke.wireguardautotunnel.util.extensions.toLocalizedString
 import com.zaneschepke.wireguardautotunnel.viewmodel.DnsViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.SharedAppViewModel
-import java.util.Locale
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.viewmodel.koinActivityViewModel
+import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
 
 @Composable
@@ -45,7 +41,7 @@ fun DnsSettingsScreen(
     sharedViewModel: SharedAppViewModel = koinActivityViewModel(),
 ) {
     val context = LocalContext.current
-    val uiState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
+    val uiState by viewModel.collectAsState()
 
     if (uiState.isLoading) return
 
@@ -136,58 +132,13 @@ fun DnsSettingsScreen(
             )
             AnimatedVisibility(uiState.dnsSettings.dnsProtocol != DnsProtocol.SYSTEM) {
                 ConfigurationTextBox(
-                    modifier = Modifier.padding(horizontal = 16.dp).padding(top = 8.dp),
+                    modifier =
+                        Modifier.padding(horizontal = 16.dp).padding(top = 8.dp).fillMaxWidth(),
                     hint = stringResource(R.string.dns_endpoint_hint),
                     label = stringResource(R.string.dns_endpoint_label),
                     value = uiState.dnsSettings.dnsEndpoint ?: "",
                     isError = uiState.peerResolutionEndpointError != null,
-                    supportingText = {
-                        uiState.peerResolutionEndpointError?.let {
-                            Text(it.toLocalizedString(context))
-                        }
-                    },
                     onValueChange = viewModel::setDnsEndpoint,
-                )
-            }
-        }
-        Column {
-            GroupLabel(stringResource(R.string.tunnel_dns), Modifier.padding(horizontal = 16.dp))
-            SurfaceRow(
-                leading = {
-                    Icon(ImageVector.vectorResource(R.drawable.host), contentDescription = null)
-                },
-                title = stringResource(R.string.global_dns_servers),
-                trailing = { modifier ->
-                    SwitchWithDivider(
-                        checked = uiState.dnsSettings.isGlobalTunnelDnsEnabled,
-                        onClick = { viewModel.setGlobalTunnelDnsEnabled(it) },
-                        modifier = modifier,
-                    )
-                },
-                onClick = {
-                    viewModel.setGlobalTunnelDnsEnabled(
-                        !uiState.dnsSettings.isGlobalTunnelDnsEnabled
-                    )
-                },
-            )
-            AnimatedVisibility(uiState.dnsSettings.isGlobalTunnelDnsEnabled) {
-                ConfigurationTextBox(
-                    modifier = Modifier.padding(horizontal = 16.dp).padding(top = 8.dp),
-                    value = uiState.tunnelDnsServers,
-                    onValueChange = viewModel::setTunnelDnsServers,
-                    label = stringResource(R.string.dns_servers),
-                    hint =
-                        stringResource(
-                                R.string.hint_template,
-                                stringResource(R.string.comma_separated),
-                            )
-                            .lowercase(Locale.getDefault()),
-                    isError = uiState.dnsServersError != null,
-                    supportingText = {
-                        uiState.dnsServersError?.let {
-                            Text(stringResource(R.string.dns_error_invalid_ip_or_host))
-                        }
-                    },
                 )
             }
         }

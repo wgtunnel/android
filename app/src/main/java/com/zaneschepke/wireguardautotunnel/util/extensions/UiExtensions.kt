@@ -9,18 +9,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.VpnKey
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import com.zaneschepke.networkmonitor.AndroidNetworkMonitor
-import com.zaneschepke.tunnel.Tunnel
+import com.zaneschepke.tunnel.state.ActiveTunnel
 import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.data.model.TunnelMode
-import com.zaneschepke.wireguardautotunnel.data.model.WifiDetectionMethod
-import com.zaneschepke.wireguardautotunnel.ui.theme.AlertRed
-import com.zaneschepke.wireguardautotunnel.ui.theme.CoolGray
-import com.zaneschepke.wireguardautotunnel.ui.theme.SilverTree
-import com.zaneschepke.wireguardautotunnel.ui.theme.Straw
+import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelMode
+import com.zaneschepke.wireguardautotunnel.domain.enums.WifiDetectionMethod
+import com.zaneschepke.wireguardautotunnel.ui.state.DisplayTunnelState
 import com.zaneschepke.wireguardautotunnel.util.DnsError
 import java.util.Locale
 import kotlin.time.Duration
@@ -57,8 +53,8 @@ fun WifiDetectionMethod.asDescriptionString(context: Context): String? {
 fun TunnelMode.asTitleString(context: Context): String {
     return when (this) {
         TunnelMode.VPN -> asString(context)
-        TunnelMode.PROXY -> context.getString(R.string.expiremental_template, asString(context))
-        TunnelMode.LOCK_DOWN -> context.getString(R.string.expiremental_template, asString(context))
+        TunnelMode.PROXY -> asString(context)
+        TunnelMode.LOCK_DOWN -> asString(context)
     }
 }
 
@@ -76,17 +72,6 @@ fun TunnelMode.asIcon(): ImageVector {
         TunnelMode.VPN -> Icons.Outlined.VpnKey
         TunnelMode.PROXY -> ImageVector.vectorResource(R.drawable.proxy)
         TunnelMode.LOCK_DOWN -> Icons.Outlined.Lock
-    }
-}
-
-fun Tunnel.State.asColor(): Color {
-    return when (this) {
-        Tunnel.State.Down -> CoolGray
-        Tunnel.State.Starting,
-        Tunnel.State.Stopping,
-        Tunnel.State.Up.ResolvingDns -> Straw
-        Tunnel.State.Up.HandshakeFailure -> AlertRed
-        Tunnel.State.Up.Healthy -> SilverTree
     }
 }
 
@@ -124,34 +109,30 @@ fun Long.toUptimeDisplay(currentTimeMillis: Long = System.currentTimeMillis()): 
     return elapsedMillis.milliseconds.localized()
 }
 
-fun DnsError.toLocalizedString(context: Context): String {
-    return when (this) {
-        DnsError.Empty -> context.getString(R.string.dns_error_empty)
-        DnsError.InvalidUrl -> context.getString(R.string.dns_error_invalid_url)
-        DnsError.InvalidScheme -> context.getString(R.string.dns_error_invalid_scheme)
-        DnsError.InvalidHost -> context.getString(R.string.dns_error_invalid_host)
-        DnsError.InvalidPort -> context.getString(R.string.dns_error_invalid_port)
-        DnsError.InvalidIpOrHost -> context.getString(R.string.dns_error_invalid_ip_or_host)
-    }
-}
-
 @StringRes
-fun Tunnel.State.labelRes(): Int {
+fun DnsError.labelRes(): Int {
     return when (this) {
-        is Tunnel.State.Up.Healthy -> R.string.tunnel_state_connected
-
-        is Tunnel.State.Up.ResolvingDns -> R.string.tunnel_state_resolving_dns
-
-        is Tunnel.State.Up.HandshakeFailure -> R.string.tunnel_state_handshake_failure
-
-        Tunnel.State.Down -> R.string.tunnel_state_disconnected
-
-        Tunnel.State.Starting -> R.string.tunnel_state_starting
-
-        Tunnel.State.Stopping -> R.string.tunnel_state_stopping
+        DnsError.Empty -> R.string.dns_error_empty
+        DnsError.InvalidUrl -> R.string.dns_error_invalid_url
+        DnsError.InvalidScheme -> R.string.dns_error_invalid_scheme
+        DnsError.InvalidHost -> R.string.dns_error_invalid_host
+        DnsError.InvalidPort -> R.string.dns_error_invalid_port
+        DnsError.InvalidIpOrHost -> R.string.dns_error_invalid_ip_or_host
     }
 }
 
-fun Tunnel.State.localizedLabel(context: Context): String {
-    return context.getString(labelRes())
+fun ActiveTunnel.statusText(context: Context): String {
+    return context.getString(
+        R.string.status_template,
+        DisplayTunnelState.from(this).asLocalizedString(context),
+    )
+}
+
+fun ActiveTunnel.uptimeText(context: Context, now: Long): String? {
+
+    val startedAt = uptime ?: return null
+
+    val uptimeDisplay = startedAt.toUptimeDisplay(now)
+
+    return context.getString(R.string.uptime_template, uptimeDisplay)
 }

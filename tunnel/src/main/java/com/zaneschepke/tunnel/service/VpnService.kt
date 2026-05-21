@@ -11,6 +11,7 @@ import com.zaneschepke.tunnel.ProxyBackend
 import com.zaneschepke.tunnel.Tunnel
 import com.zaneschepke.tunnel.backend.Backend
 import com.zaneschepke.tunnel.backend.KillSwitch
+import com.zaneschepke.tunnel.backend.ServiceHolder
 import com.zaneschepke.tunnel.backend.ServiceHolder.Companion.DEFAULT_MTU
 import com.zaneschepke.tunnel.backend.ServiceHolder.Companion.alwaysOnCallback
 import com.zaneschepke.tunnel.backend.ServiceHolder.Companion.vpnService
@@ -22,15 +23,21 @@ import com.zaneschepke.tunnel.util.parseInetNetwork
 import com.zaneschepke.wireguardautotunnel.parser.Config
 import java.io.IOException
 import java.net.ServerSocket
-import java.util.*
-import java.util.concurrent.CompletableFuture
-import kotlinx.coroutines.*
+import java.util.UUID
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.koin.java.KoinJavaComponent.inject
 import timber.log.Timber
 
 class VpnService : android.net.VpnService(), KillSwitch, SocketProtector {
 
     private val backend: Backend by inject(Backend::class.java)
+    private val serviceHolder: ServiceHolder by inject(ServiceHolder::class.java)
 
     private val defaultPass = UUID.randomUUID().toString()
 
@@ -45,7 +52,7 @@ class VpnService : android.net.VpnService(), KillSwitch, SocketProtector {
         vpnService.complete(this)
         // We call this for all backend modes as it is shared for bootstrapping bypass
         ProxyBackend.setSocketProtector(this)
-
+        serviceHolder.ensureNativeCallbacksRegistered()
         launchForegroundNotification()
         super.onCreate()
     }
@@ -69,16 +76,14 @@ class VpnService : android.net.VpnService(), KillSwitch, SocketProtector {
         disableKillSwitch()
         hevBridgeJob?.cancel()
 
-        serviceScope.launch {
+        serviceScope.cancel()
+
+        runBlocking {
             backend.stopAllOfType(BackendMode.Vpn::class)
             backend.stopAllOfType(BackendMode.Proxy.KillSwitchPrimary::class)
-            serviceScope.cancel()
         }
 
-        if (!vpnService.isDone) {
-            vpnService.cancel(false)
-        }
-        vpnService = CompletableFuture<VpnService>()
+        serviceHolder.clear(this)
 
         super.onDestroy()
     }
@@ -94,7 +99,7 @@ class VpnService : android.net.VpnService(), KillSwitch, SocketProtector {
                 (intent.component!!.packageName != packageName)
         ) {
             Timber.d("VpnService started by system")
-            alwaysOnCallback?.alwaysOnTriggered()
+            alwaysOnCallback?.get()?.alwaysOnTriggered()
         }
         return START_STICKY
     }

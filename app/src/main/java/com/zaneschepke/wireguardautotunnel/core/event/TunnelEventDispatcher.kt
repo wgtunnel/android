@@ -6,7 +6,10 @@ import com.zaneschepke.wireguardautotunnel.core.notification.TunnelNotificationS
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 
 class TunnelEventDispatcher(private val notificationManager: TunnelNotificationService) {
@@ -20,6 +23,7 @@ class TunnelEventDispatcher(private val notificationManager: TunnelNotificationS
 
         // informational events
         providerEvents
+            .distinctUntilChanged()
             .onEach { event ->
                 when (event) {
                     is TunnelEvent.FallbackToIpv4 -> {
@@ -33,12 +37,17 @@ class TunnelEventDispatcher(private val notificationManager: TunnelNotificationS
                     is TunnelEvent.DynamicDnsUpdate -> {
                         notificationManager.showDynamicDnsUpdate(event.tunnelId)
                     }
+
+                    is TunnelEvent.NoRootShellAccess -> {
+                        notificationManager.showRootShellAccess()
+                    }
                 }
             }
             .launchIn(scope)
 
         // errors from the coordinator
         coordinatorErrors
+            .distinctUntilChanged()
             .onEach { error ->
                 when (error) {
                     is TunnelErrorEvent.VpnPermissionDenied -> {
@@ -58,6 +67,14 @@ class TunnelEventDispatcher(private val notificationManager: TunnelNotificationS
 
         // update persistent notification for services with the tunnel states
         providerStatus
+            .map { it.activeTunnels }
+            .distinctUntilChangedBy { map ->
+                val stateSignature =
+                    map.entries
+                        .sortedBy { it.key }
+                        .map { (_, tunnel) -> tunnel.transportState to tunnel.bootstrapState }
+                map.size to stateSignature
+            }
             .onEach { status -> notificationManager.updatePersistentNotifications(status) }
             .launchIn(scope)
     }

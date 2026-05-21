@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 30,
-    "identityHash": "b16ff9cb760eb3cbc5d38edc837e3766",
+    "identityHash": "28560c6b408d8f5ef28844723e940395",
     "entities": [
       {
         "tableName": "tunnel_config",
@@ -177,7 +177,7 @@
       },
       {
         "tableName": "general_settings",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `is_shortcuts_enabled` INTEGER NOT NULL DEFAULT 0, `is_restore_on_boot_enabled` INTEGER NOT NULL DEFAULT 0, `is_multi_tunnel_enabled` INTEGER NOT NULL DEFAULT 0, `global_split_tunnel_enabled` INTEGER NOT NULL DEFAULT 0, `app_mode` INTEGER NOT NULL DEFAULT 0, `theme` TEXT NOT NULL DEFAULT 'AUTOMATIC', `locale` TEXT, `remote_key` TEXT, `is_remote_control_enabled` INTEGER NOT NULL DEFAULT 0, `is_pin_lock_enabled` INTEGER NOT NULL DEFAULT 0, `is_always_on_vpn_enabled` INTEGER NOT NULL DEFAULT 0, `already_donated` INTEGER NOT NULL DEFAULT 0, `screen_recording_security` INTEGER NOT NULL DEFAULT 0)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `is_shortcuts_enabled` INTEGER NOT NULL DEFAULT 0, `is_restore_on_boot_enabled` INTEGER NOT NULL DEFAULT 0, `is_multi_tunnel_enabled` INTEGER NOT NULL DEFAULT 0, `global_split_tunnel_enabled` INTEGER NOT NULL DEFAULT 0, `app_mode` INTEGER NOT NULL DEFAULT 0, `theme` TEXT NOT NULL DEFAULT 'AUTOMATIC', `locale` TEXT, `remote_key` TEXT, `is_remote_control_enabled` INTEGER NOT NULL DEFAULT 0, `is_pin_lock_enabled` INTEGER NOT NULL DEFAULT 0, `is_always_on_vpn_enabled` INTEGER NOT NULL DEFAULT 0, `already_donated` INTEGER NOT NULL DEFAULT 0, `screen_recording_security` INTEGER NOT NULL DEFAULT 1, `global_amnezia_enabled` INTEGER NOT NULL DEFAULT 0, `tunnel_scripting_enabled` INTEGER NOT NULL DEFAULT 0)",
         "fields": [
           {
             "fieldPath": "id",
@@ -270,6 +270,20 @@
             "columnName": "screen_recording_security",
             "affinity": "INTEGER",
             "notNull": true,
+            "defaultValue": "1"
+          },
+          {
+            "fieldPath": "isGlobalAmneziaEnabled",
+            "columnName": "global_amnezia_enabled",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "tunnelScriptingEnabled",
+            "columnName": "tunnel_scripting_enabled",
+            "affinity": "INTEGER",
+            "notNull": true,
             "defaultValue": "0"
           }
         ],
@@ -282,7 +296,7 @@
       },
       {
         "tableName": "auto_tunnel_settings",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `is_tunnel_enabled` INTEGER NOT NULL DEFAULT 0, `is_tunnel_on_mobile_data_enabled` INTEGER NOT NULL DEFAULT 0, `trusted_network_ssids` TEXT NOT NULL DEFAULT '', `is_tunnel_on_ethernet_enabled` INTEGER NOT NULL DEFAULT 0, `is_tunnel_on_wifi_enabled` INTEGER NOT NULL DEFAULT 0, `is_wildcards_enabled` INTEGER NOT NULL DEFAULT 0, `is_stop_on_no_internet_enabled` INTEGER NOT NULL DEFAULT 0, `debounce_delay_seconds` INTEGER NOT NULL DEFAULT 3, `is_tunnel_on_unsecure_enabled` INTEGER NOT NULL DEFAULT 0, `wifi_detection_method` INTEGER NOT NULL DEFAULT 0, `start_on_boot` INTEGER NOT NULL DEFAULT 0)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `is_tunnel_enabled` INTEGER NOT NULL DEFAULT 0, `is_tunnel_on_mobile_data_enabled` INTEGER NOT NULL DEFAULT 0, `trusted_network_ssids` TEXT NOT NULL DEFAULT '', `is_tunnel_on_ethernet_enabled` INTEGER NOT NULL DEFAULT 0, `is_tunnel_on_wifi_enabled` INTEGER NOT NULL DEFAULT 0, `is_wildcards_enabled` INTEGER NOT NULL DEFAULT 0, `is_stop_on_no_internet_enabled` INTEGER NOT NULL DEFAULT 0, `is_tunnel_on_unsecure_enabled` INTEGER NOT NULL DEFAULT 0, `wifi_detection_method` INTEGER NOT NULL DEFAULT 0, `start_on_boot` INTEGER NOT NULL DEFAULT 0)",
         "fields": [
           {
             "fieldPath": "id",
@@ -340,13 +354,6 @@
             "defaultValue": "0"
           },
           {
-            "fieldPath": "debounceDelaySeconds",
-            "columnName": "debounce_delay_seconds",
-            "affinity": "INTEGER",
-            "notNull": true,
-            "defaultValue": "3"
-          },
-          {
             "fieldPath": "isTunnelOnUnsecureEnabled",
             "columnName": "is_tunnel_on_unsecure_enabled",
             "affinity": "INTEGER",
@@ -377,7 +384,7 @@
       },
       {
         "tableName": "monitoring_settings",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `is_ping_enabled` INTEGER NOT NULL DEFAULT 0, `is_ping_monitoring_enabled` INTEGER NOT NULL DEFAULT 1, `tunnel_ping_interval_sec` INTEGER NOT NULL DEFAULT 30, `tunnel_ping_attempts` INTEGER NOT NULL DEFAULT 3, `tunnel_ping_timeout_sec` INTEGER, `show_detailed_ping_stats` INTEGER NOT NULL DEFAULT 0, `is_local_logs_enabled` INTEGER NOT NULL DEFAULT 0)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `is_local_logs_enabled` INTEGER NOT NULL DEFAULT 0, `tunnel_statistics_enabled` INTEGER NOT NULL DEFAULT 1, `tunnel_statistics_poll_interval` INTEGER NOT NULL DEFAULT 3)",
         "fields": [
           {
             "fieldPath": "id",
@@ -386,51 +393,25 @@
             "notNull": true
           },
           {
-            "fieldPath": "isPingEnabled",
-            "columnName": "is_ping_enabled",
-            "affinity": "INTEGER",
-            "notNull": true,
-            "defaultValue": "0"
-          },
-          {
-            "fieldPath": "isPingMonitoringEnabled",
-            "columnName": "is_ping_monitoring_enabled",
-            "affinity": "INTEGER",
-            "notNull": true,
-            "defaultValue": "1"
-          },
-          {
-            "fieldPath": "tunnelPingIntervalSeconds",
-            "columnName": "tunnel_ping_interval_sec",
-            "affinity": "INTEGER",
-            "notNull": true,
-            "defaultValue": "30"
-          },
-          {
-            "fieldPath": "tunnelPingAttempts",
-            "columnName": "tunnel_ping_attempts",
-            "affinity": "INTEGER",
-            "notNull": true,
-            "defaultValue": "3"
-          },
-          {
-            "fieldPath": "tunnelPingTimeoutSeconds",
-            "columnName": "tunnel_ping_timeout_sec",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "showDetailedPingStats",
-            "columnName": "show_detailed_ping_stats",
-            "affinity": "INTEGER",
-            "notNull": true,
-            "defaultValue": "0"
-          },
-          {
             "fieldPath": "isLocalLogsEnabled",
             "columnName": "is_local_logs_enabled",
             "affinity": "INTEGER",
             "notNull": true,
             "defaultValue": "0"
+          },
+          {
+            "fieldPath": "tunnelStatisticsEnabled",
+            "columnName": "tunnel_statistics_enabled",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "1"
+          },
+          {
+            "fieldPath": "tunnelStatisticsPollInterval",
+            "columnName": "tunnel_statistics_poll_interval",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "3"
           }
         ],
         "primaryKey": {
@@ -519,7 +500,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b16ff9cb760eb3cbc5d38edc837e3766')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '28560c6b408d8f5ef28844723e940395')"
     ]
   }
 }

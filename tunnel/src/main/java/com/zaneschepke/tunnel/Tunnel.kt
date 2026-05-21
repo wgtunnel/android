@@ -4,6 +4,7 @@ interface Tunnel {
     val id: Int
     val name: String
     val isMetered: Boolean
+    val scriptsEnabled: Boolean
 
     val ipStrategy: IpStrategy
     val features: Set<Feature>
@@ -14,16 +15,12 @@ interface Tunnel {
         sealed class Up : State {
             data object Healthy : Up()
 
-            data object ResolvingDns : Up()
-
             data object HandshakeFailure : Up()
         }
 
         data object Down : State
 
         data object Starting : State
-
-        data object Stopping : State
     }
 
     sealed interface IpStrategy {
@@ -38,6 +35,6 @@ interface Tunnel {
     sealed interface Feature {
         data object DynamicDNS : Feature
 
-        data class ActiveConfigMonitor(val intervalSeconds: Int = 1) : Feature
+        data class ActiveConfigMonitor(val intervalSeconds: Int = 3) : Feature
     }
 }

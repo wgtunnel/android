@@ -9,8 +9,8 @@ import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.core.orchestration.AutoTunnelCoordinator
 import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
 import com.zaneschepke.wireguardautotunnel.core.service.autotunnel.AutoTunnelStateHolder
-import com.zaneschepke.wireguardautotunnel.data.model.TunnelMode
-import com.zaneschepke.wireguardautotunnel.data.model.WifiDetectionMethod
+import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelMode
+import com.zaneschepke.wireguardautotunnel.domain.enums.WifiDetectionMethod
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.domain.repository.AutoTunnelSettingsRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.GlobalEffectRepository
@@ -33,7 +33,6 @@ class AutoTunnelViewModel(
     private val autoTunnelCoordinator: AutoTunnelCoordinator,
     private val tunnelsRepository: TunnelRepository,
     private val autoTunnelStateHolder: AutoTunnelStateHolder,
-    private val rootShell: RootShell,
 ) : ContainerHost<AutoTunnelUiState, Nothing>, ViewModel() {
 
     init {
@@ -50,7 +49,7 @@ class AutoTunnelViewModel(
                         stableNetworkEngine.stableState.mapNotNull { it?.state },
                         autoTunnelRepository.flow,
                         tunnelsRepository.userTunnelsFlow,
-                        autoTunnelStateHolder.active
+                        autoTunnelStateHolder.active,
                     ) { connectivity, autoTunnel, tunnels, active ->
                         state.copy(
                             autoTunnelActive = active,
@@ -128,10 +127,6 @@ class AutoTunnelViewModel(
         autoTunnelRepository.upsert(state.autoTunnelSettings.copy(startOnBoot = to))
     }
 
-    fun setDebounceDelay(to: Int) = intent {
-        autoTunnelRepository.upsert(state.autoTunnelSettings.copy(debounceDelaySeconds = to))
-    }
-
     fun setPreferredMobileDataTunnel(tunnel: TunnelConfig?) = intent {
         tunnelsRepository.updateMobileDataTunnel(tunnel)
     }
@@ -157,7 +152,7 @@ class AutoTunnelViewModel(
     fun setWifiDetectionMethod(method: WifiDetectionMethod) = intent {
         when (method) {
             WifiDetectionMethod.ROOT -> {
-                val accepted = rootShell.requestRootPermission()
+                val accepted = RootShell.requestRootPermission()
                 val message =
                     if (!accepted) StringValue.StringResource(R.string.error_root_denied)
                     else StringValue.StringResource(R.string.root_accepted)

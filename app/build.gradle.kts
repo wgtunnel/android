@@ -1,9 +1,8 @@
-import com.android.build.gradle.internal.api.BaseVariantOutputImpl
+import com.android.build.api.dsl.ApplicationExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlinxSerialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.compose.compiler)
@@ -11,7 +10,26 @@ plugins {
     alias(libs.plugins.licensee)
 }
 
-android {
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
+}
+
+licensee {
+    allowedLicenses().forEach { allow(it) }
+    allowedLicenseUrls().forEach { allowUrl(it) }
+    // foss, but missing licenses
+    ignoreDependencies("com.github.T8RIN.QuickieExtended")
+    ignoreDependencies("com.github.topjohnwu.libsu")
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget = JvmTarget.JVM_17
+        freeCompilerArgs = listOf("-XXLanguage:+PropertyParamAnnotationDefaultTargetMode")
+    }
+}
+
+configure<ApplicationExtension> {
     namespace = Constants.APP_ID
     compileSdk = Constants.TARGET_SDK
 
@@ -21,8 +39,6 @@ android {
         includeInApk = false
         includeInBundle = false
     }
-
-    ksp { arg("room.schemaLocation", "$projectDir/schemas") }
 
     // fix okhttp proguard issue
     packaging { resources { pickFirsts.add("okhttp3/internal/publicsuffix/publicsuffixes.gz") } }
@@ -119,29 +135,16 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlin {
-        compilerOptions {
-            jvmTarget = JvmTarget.JVM_17
-            freeCompilerArgs = listOf("-XXLanguage:+PropertyParamAnnotationDefaultTargetMode")
-        }
-    }
-
     buildFeatures {
         compose = true
         buildConfig = true
+        resValues = true
     }
     packaging { resources { excludes += "/META-INF/{AL2.0,LGPL2.1}" } }
+}
 
-    licensee {
-        allowedLicenses().forEach { allow(it) }
-        allowedLicenseUrls().forEach { allowUrl(it) }
-        // foss, but missing licenses
-        ignoreDependencies("com.github.T8RIN.QuickieExtended")
-        ignoreDependencies("com.github.topjohnwu.libsu")
-    }
-
-    android.applicationVariants.all {
-        val variant = this
+androidComponents {
+    onVariants { variant ->
 
         val abiNameMap =
             mapOf(
@@ -151,21 +154,42 @@ android {
                 "x86_64" to "x64",
             )
 
-        variant.outputs.all {
-            val output = this as BaseVariantOutputImpl
-            val abi = output.getFilter("ABI")
+        val variantCap =
+            variant.name.replaceFirstChar { it.uppercase() }
 
-            val baseFileName = "${Constants.APP_NAME}-${variant.flavorName}-v${variant.versionName}"
+        tasks.register<Copy>("rename${variantCap}Apk") {
 
-            val outputFileName =
-                if (!abi.isNullOrEmpty()) {
-                    val shortAbiName = abiNameMap.getOrDefault(abi, abi)
-                    "${baseFileName}-${shortAbiName}.apk"
+            val apkFolder =
+                layout.buildDirectory.dir("outputs/apk/${variant.name}")
+
+            from(apkFolder)
+
+            include("*.apk")
+
+            into(layout.buildDirectory.dir("renamed-apks"))
+
+            rename { originalName ->
+
+                val abi =
+                    abiNameMap.entries.find { entry ->
+                        originalName.contains(entry.key)
+                    }?.value
+
+                val versionName =
+                    variant.outputs.single().versionName.get()
+
+                val flavorName =
+                    variant.productFlavors.joinToString("-") { it.second }
+
+                val baseName =
+                    "${Constants.APP_NAME}-${flavorName}-v$versionName"
+
+                if (abi != null) {
+                    "$baseName-$abi.apk"
                 } else {
-                    "${baseFileName}.apk"
+                    "$baseName.apk"
                 }
-
-            output.outputFileName = outputFileName
+            }
         }
     }
 }
@@ -267,7 +291,7 @@ tasks.register<Copy>("copyLicenseeJsonToAssets") {
 tasks.named("preBuild") { dependsOn("copyLicenseeJsonToAssets") }
 
 // https://gist.github.com/obfusk/61046e09cee352ae6dd109911534b12e#fix-proposed-by-linsui-disable-baseline-profiles
-tasks.whenTaskAdded {
+tasks.configureEach {
     if (name.contains("ArtProfile")) {
         enabled = false
     }

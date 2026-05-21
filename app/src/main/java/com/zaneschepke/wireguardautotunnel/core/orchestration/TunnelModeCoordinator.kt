@@ -1,7 +1,7 @@
 package com.zaneschepke.wireguardautotunnel.core.orchestration
 
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelProvider
-import com.zaneschepke.wireguardautotunnel.data.model.TunnelMode
+import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelMode
 import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.LockdownSettingsRepository
 

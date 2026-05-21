@@ -3,7 +3,7 @@ package com.zaneschepke.wireguardautotunnel.data.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.zaneschepke.wireguardautotunnel.data.model.DnsProtocol
+import com.zaneschepke.wireguardautotunnel.domain.enums.DnsProtocol
 
 @Entity(tableName = "dns_settings")
 data class DnsSettings(

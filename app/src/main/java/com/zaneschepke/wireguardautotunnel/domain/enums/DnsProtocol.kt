@@ -1,4 +1,4 @@
-package com.zaneschepke.wireguardautotunnel.data.model
+package com.zaneschepke.wireguardautotunnel.domain.enums
 
 import android.content.Context
 import com.zaneschepke.wireguardautotunnel.R
@@ -19,9 +19,6 @@ enum class DnsProtocol(val value: Int) {
     }
 
     companion object {
-        fun fromValue(value: Int): DnsProtocol =
-            DnsProtocol.entries.find { it.value == value } ?: SYSTEM
+        fun fromValue(value: Int): DnsProtocol = entries.find { it.value == value } ?: SYSTEM
     }
 }
-
-data class DnsSettings(val protocol: DnsProtocol = DnsProtocol.SYSTEM, val endpoint: String? = null)

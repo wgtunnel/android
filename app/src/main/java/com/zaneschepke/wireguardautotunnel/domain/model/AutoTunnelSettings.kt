@@ -1,6 +1,6 @@
 package com.zaneschepke.wireguardautotunnel.domain.model
 
-import com.zaneschepke.wireguardautotunnel.data.model.WifiDetectionMethod
+import com.zaneschepke.wireguardautotunnel.domain.enums.WifiDetectionMethod
 
 data class AutoTunnelSettings(
     val id: Int = 0,
@@ -11,7 +11,6 @@ data class AutoTunnelSettings(
     val isTunnelOnWifiEnabled: Boolean = false,
     val isWildcardsEnabled: Boolean = false,
     val isStopOnNoInternetEnabled: Boolean = false,
-    val debounceDelaySeconds: Int = 3,
     val isTunnelOnUnsecureEnabled: Boolean = false,
     val wifiDetectionMethod: WifiDetectionMethod = WifiDetectionMethod.fromValue(0),
     val startOnBoot: Boolean = false,

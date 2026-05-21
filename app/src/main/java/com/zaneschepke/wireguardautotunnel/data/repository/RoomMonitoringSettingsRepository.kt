@@ -22,4 +22,12 @@ class RoomMonitoringSettingsRepository(private val monitoringSettingsDao: Monito
     override suspend fun getMonitoringSettings(): Domain {
         return (monitoringSettingsDao.getMonitoringSettings() ?: Entity()).toDomain()
     }
+
+    override suspend fun updateStatisticRefresh(statisticRefresh: Int) {
+        monitoringSettingsDao.updateStatisticsInterval(statisticRefresh)
+    }
+
+    override suspend fun updateStatisticsEnabled(enabled: Boolean) {
+        monitoringSettingsDao.updateStatisticsEnabled(enabled)
+    }
 }

@@ -44,10 +44,10 @@ class DynamicDnsController(
     fun diff(resolved: Map<PublicKey, DnsBootstrapResult>): List<PublicKey> {
 
         val changed = buildList {
-            for ((k, v) in resolved) {
-                val old = lastCache[k]
-                if (old == null || old.ipv4 != v.ipv4 || old.ipv6 != v.ipv6) {
-                    add(k)
+            for ((key, cache) in resolved) {
+                val old = lastCache[key]
+                if (old == null || old.ipv4 != cache.ipv4 || old.ipv6 != cache.ipv6) {
+                    add(key)
                 }
             }
         }

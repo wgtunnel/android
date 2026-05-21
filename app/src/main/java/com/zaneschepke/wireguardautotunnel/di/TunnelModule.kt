@@ -20,8 +20,11 @@ import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelProvider
 import com.zaneschepke.wireguardautotunnel.domain.repository.AutoTunnelSettingsRepository
 import com.zaneschepke.wireguardautotunnel.util.extensions.to
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
@@ -29,7 +32,6 @@ import org.koin.dsl.module
 import timber.log.Timber
 
 val tunnelBackendProviderModule = module {
-    single { RootShell(androidContext()) }
     single<TunnelNotificationService> { AndroidTunnelNotificationService(get(), get()) }
     singleOf(::TunnelEventDispatcher)
 
@@ -74,17 +76,17 @@ val tunnelBackendProviderModule = module {
         AndroidNetworkMonitor(
             androidContext(),
             object : AndroidNetworkMonitor.ConfigurationListener {
-                override fun runRootShellCommand(vararg cmd: String): String? {
-                    val rootShell = get<RootShell>()
+                override suspend fun runRootShellCommand(cmd: String): String? {
                     return try {
-                        rootShell.start()
-                        val result = rootShell.run(*cmd)
-                        result.output
+                        withTimeout(3_000) {
+                            withContext(Dispatchers.IO) {
+                                val result = RootShell.run(cmd)
+                                result.output
+                            }
+                        }
                     } catch (e: RootShellException) {
                         Timber.e(e)
                         null
-                    } finally {
-                        rootShell.stop()
                     }
                 }
 

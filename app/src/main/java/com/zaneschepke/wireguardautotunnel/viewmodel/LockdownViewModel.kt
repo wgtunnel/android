@@ -3,8 +3,6 @@ package com.zaneschepke.wireguardautotunnel.viewmodel
 import androidx.lifecycle.ViewModel
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelProvider
-import com.zaneschepke.wireguardautotunnel.domain.model.LockdownSettings
-import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.domain.repository.GlobalEffectRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.LockdownSettingsRepository
 import com.zaneschepke.wireguardautotunnel.domain.sideeffect.GlobalSideEffect
@@ -25,18 +23,32 @@ class LockdownViewModel(
             buildSettings = { repeatOnSubscribedStopTimeout = 5000L },
         ) {
             lockdownSettingsRepository.flow.collect {
-                reduce { state.copy(lockdownSettings = it, isLoading = false) }
+                reduce {
+                    state.copy(
+                        lockdownSettings = it,
+                        metered = it.metered,
+                        dualStack = it.dualStack,
+                        bypassLan = it.bypassLan,
+                        isLoading = false,
+                    )
+                }
             }
         }
 
-    fun setLockdownSettings(lockdownSettings: LockdownSettings) = intent {
+    fun setLockdownSettings() = intent {
         reduce { state.copy(showSaveModal = false) }
-        lockdownSettingsRepository.upsert(lockdownSettings)
+
+        val updated =
+            state.lockdownSettings.copy(
+                metered = state.metered,
+                dualStack = state.dualStack,
+                bypassLan = state.bypassLan,
+            )
+
+        lockdownSettingsRepository.upsert(updated)
 
         tunnelProvider.disableLockDown()
-        val allowedIps =
-            if (lockdownSettings.bypassLan) TunnelConfig.LAN_BYPASS_ALLOWED_IPS else emptySet()
-        tunnelProvider.setLockDown(lockdownSettings)
+        tunnelProvider.setLockDown(updated)
 
         postSideEffect(GlobalSideEffect.PopBackStack)
         postSideEffect(
@@ -49,4 +61,10 @@ class LockdownViewModel(
     }
 
     fun setShowSaveModal(to: Boolean) = intent { reduce { state.copy(showSaveModal = to) } }
+
+    fun setMetered(value: Boolean) = intent { reduce { state.copy(metered = value) } }
+
+    fun setDualStack(value: Boolean) = intent { reduce { state.copy(dualStack = value) } }
+
+    fun setBypassLan(value: Boolean) = intent { reduce { state.copy(bypassLan = value) } }
 }

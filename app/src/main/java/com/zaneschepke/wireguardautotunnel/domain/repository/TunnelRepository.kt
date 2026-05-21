@@ -43,4 +43,6 @@ interface TunnelRepository {
     suspend fun findPrimary(): List<TunnelConfig>
 
     suspend fun delete(tunnels: List<TunnelConfig>)
+
+    suspend fun ensureGlobalConfigExists()
 }

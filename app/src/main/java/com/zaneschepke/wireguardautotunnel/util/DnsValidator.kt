@@ -1,6 +1,6 @@
 package com.zaneschepke.wireguardautotunnel.util
 
-import com.zaneschepke.wireguardautotunnel.data.model.DnsProtocol
+import com.zaneschepke.wireguardautotunnel.domain.enums.DnsProtocol
 
 object DnsValidator {
 

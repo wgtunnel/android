@@ -1,9 +1,9 @@
 package com.zaneschepke.wireguardautotunnel.data
 
 import androidx.room.TypeConverter
-import com.zaneschepke.wireguardautotunnel.data.model.DnsProtocol
-import com.zaneschepke.wireguardautotunnel.data.model.TunnelMode
-import com.zaneschepke.wireguardautotunnel.data.model.WifiDetectionMethod
+import com.zaneschepke.wireguardautotunnel.domain.enums.DnsProtocol
+import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelMode
+import com.zaneschepke.wireguardautotunnel.domain.enums.WifiDetectionMethod
 import kotlinx.serialization.json.Json
 
 class DatabaseConverters {

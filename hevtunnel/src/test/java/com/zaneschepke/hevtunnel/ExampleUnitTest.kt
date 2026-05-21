@@ -1,6 +1,6 @@
 package com.zaneschepke.hevtunnel
 
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
 import org.junit.Test
 
 /**

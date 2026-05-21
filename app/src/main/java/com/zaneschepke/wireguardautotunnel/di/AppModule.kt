@@ -14,9 +14,21 @@ import com.zaneschepke.wireguardautotunnel.domain.repository.GlobalEffectReposit
 import com.zaneschepke.wireguardautotunnel.domain.repository.SelectedTunnelsRepository
 import com.zaneschepke.wireguardautotunnel.util.FileUtils
 import com.zaneschepke.wireguardautotunnel.util.network.NetworkUtils
-import com.zaneschepke.wireguardautotunnel.viewmodel.*
-import kotlinx.coroutines.CoroutineDispatcher
+import com.zaneschepke.wireguardautotunnel.viewmodel.AutoTunnelViewModel
+import com.zaneschepke.wireguardautotunnel.viewmodel.ConfigEditViewModel
+import com.zaneschepke.wireguardautotunnel.viewmodel.DnsViewModel
+import com.zaneschepke.wireguardautotunnel.viewmodel.LicenseViewModel
+import com.zaneschepke.wireguardautotunnel.viewmodel.LockdownViewModel
+import com.zaneschepke.wireguardautotunnel.viewmodel.LoggerViewModel
+import com.zaneschepke.wireguardautotunnel.viewmodel.MonitoringViewModel
+import com.zaneschepke.wireguardautotunnel.viewmodel.ProxySettingsViewModel
+import com.zaneschepke.wireguardautotunnel.viewmodel.SettingsViewModel
+import com.zaneschepke.wireguardautotunnel.viewmodel.SharedAppViewModel
+import com.zaneschepke.wireguardautotunnel.viewmodel.SplitTunnelViewModel
+import com.zaneschepke.wireguardautotunnel.viewmodel.SupportViewModel
+import com.zaneschepke.wireguardautotunnel.viewmodel.TunnelViewModel
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.annotation.KoinExperimentalAPI
@@ -30,9 +42,8 @@ import org.koin.dsl.module
 @OptIn(KoinExperimentalAPI::class)
 val appModule = module {
     single<CoroutineScope>(named(Scope.APPLICATION)) {
-        CoroutineScope(SupervisorJob() + get<CoroutineDispatcher>(named(Dispatcher.DEFAULT)))
+        CoroutineScope(SupervisorJob() + Dispatchers.Default)
     }
-
     single<LogReader> { LogcatReader.init(storageDir = androidContext().filesDir.absolutePath) }
 
     single<PowerManager> {
@@ -50,7 +61,7 @@ val appModule = module {
     single { NetworkUtils(get(named(Dispatcher.IO))) }
 
     viewModelOf(::AutoTunnelViewModel)
-    viewModel { (id: Int?) -> ConfigEditViewModel(get(), get(), get(), id) }
+    viewModel { (id: Int?) -> ConfigEditViewModel(get(), get(), get(), get(), get(), id) }
     viewModelOf(::DnsViewModel)
     viewModelOf(::LicenseViewModel)
     viewModelOf(::LockdownViewModel)

@@ -20,6 +20,8 @@ fun Entity.toDomain(): Domain =
         isAlwaysOnVpnEnabled = isAlwaysOnVpnEnabled,
         alreadyDonated = alreadyDonated,
         screenRecordingSecurityEnabled = screenRecordingSecurityEnabled,
+        isGlobalAmneziaEnabled = isGlobalAmneziaEnabled,
+        tunnelScriptingEnabled = tunnelScriptingEnabled,
     )
 
 fun Domain.toEntity(): Entity =
@@ -38,4 +40,6 @@ fun Domain.toEntity(): Entity =
         isAlwaysOnVpnEnabled = isAlwaysOnVpnEnabled,
         alreadyDonated = alreadyDonated,
         screenRecordingSecurityEnabled = screenRecordingSecurityEnabled,
+        isGlobalAmneziaEnabled = isGlobalAmneziaEnabled,
+        tunnelScriptingEnabled = tunnelScriptingEnabled,
     )

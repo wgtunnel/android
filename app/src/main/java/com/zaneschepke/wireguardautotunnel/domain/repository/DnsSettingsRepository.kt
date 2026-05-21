@@ -9,4 +9,6 @@ interface DnsSettingsRepository {
     val flow: Flow<DnsSettings>
 
     suspend fun getDnsSettings(): DnsSettings
+
+    suspend fun updateGlobalDnsEnabled(enabled: Boolean)
 }

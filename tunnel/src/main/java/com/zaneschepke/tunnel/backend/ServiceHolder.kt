@@ -2,17 +2,45 @@ package com.zaneschepke.tunnel.backend
 
 import android.content.Context
 import android.content.Intent
+import com.zaneschepke.tunnel.StatusCallback
+import com.zaneschepke.tunnel.VpnBackend
 import com.zaneschepke.tunnel.service.TunnelService
 import com.zaneschepke.tunnel.service.VpnService
+import com.zaneschepke.tunnel.state.NativeTunnelStatus
 import com.zaneschepke.tunnel.util.BackendException
+import java.lang.ref.WeakReference
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
+import kotlin.concurrent.atomics.AtomicBoolean
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import timber.log.Timber
 
 internal class ServiceHolder(private val context: Context) {
 
     internal val uapiPath = context.dataDir.absolutePath
+
+    @OptIn(ExperimentalAtomicApi::class)
+    private val nativeCallbacksRegistered = AtomicBoolean(false)
+
+    private val _nativeStatuses = MutableSharedFlow<NativeTunnelStatus>(extraBufferCapacity = 64)
+
+    val nativeStatuses = _nativeStatuses.asSharedFlow()
+
+    private val statusCallback = StatusCallback { handle, code ->
+        val status = NativeTunnelStatus.NativeTunnelStatusCode.from(code)
+
+        if (status == null) {
+            Timber.d("Unknown native status code: $code")
+            return@StatusCallback
+        }
+
+        Timber.d("Native Callback - Handle: $handle, Code: $status")
+
+        _nativeStatuses.tryEmit(NativeTunnelStatus(handle = handle, code = status))
+    }
 
     fun set(service: VpnService) {
         vpnService.complete(service)
@@ -82,10 +110,54 @@ internal class ServiceHolder(private val context: Context) {
         service.stopSelf()
     }
 
+    @OptIn(ExperimentalAtomicApi::class)
+    fun ensureNativeCallbacksRegistered() {
+        if (!nativeCallbacksRegistered.compareAndSet(expectedValue = false, newValue = true)) {
+            return
+        }
+
+        VpnBackend.setStatusCallback(statusCallback)
+
+        Timber.d("Registered native status callback")
+    }
+
+    @OptIn(ExperimentalAtomicApi::class)
+    fun maybeUnregisterNativeCallbacks() {
+        val vpnAlive = vpnService.getNow(null) != null
+        val tunnelAlive = tunnelService.getNow(null) != null
+
+        if (vpnAlive || tunnelAlive) {
+            return
+        }
+
+        if (!nativeCallbacksRegistered.compareAndSet(expectedValue = true, newValue = false)) {
+            return
+        }
+
+        VpnBackend.setStatusCallback(null)
+
+        Timber.d("Unregistered native status callback")
+    }
+
+    fun clear(service: VpnService) {
+        if (vpnService.getNow(null) === service) {
+            vpnService = CompletableFuture()
+        }
+
+        maybeUnregisterNativeCallbacks()
+    }
+
+    fun clear(service: TunnelService) {
+        if (tunnelService.getNow(null) === service) {
+            tunnelService = CompletableFuture()
+        }
+        maybeUnregisterNativeCallbacks()
+    }
+
     companion object {
         const val DEFAULT_MTU = 1280
         // for consumer to set AOVPN callback
-        var alwaysOnCallback: VpnService.AlwaysOnCallback? = null
+        var alwaysOnCallback: WeakReference<VpnService.AlwaysOnCallback>? = null
         @Volatile var vpnService = CompletableFuture<VpnService>()
         @Volatile var tunnelService = CompletableFuture<TunnelService>()
     }

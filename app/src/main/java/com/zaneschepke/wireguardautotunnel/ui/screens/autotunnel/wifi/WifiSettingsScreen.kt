@@ -27,7 +27,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.common.banner.WarningBanner
@@ -47,13 +46,14 @@ import com.zaneschepke.wireguardautotunnel.util.extensions.launchLocationService
 import com.zaneschepke.wireguardautotunnel.util.extensions.openWebUrl
 import com.zaneschepke.wireguardautotunnel.viewmodel.AutoTunnelViewModel
 import org.koin.androidx.compose.koinViewModel
+import org.orbitmvi.orbit.compose.collectAsState
 
 @Composable
 fun WifiSettingsScreen(viewModel: AutoTunnelViewModel = koinViewModel()) {
     val context = LocalContext.current
     val navController = LocalNavController.current
 
-    val uiState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
+    val uiState by viewModel.collectAsState()
 
     if (uiState.isLoading) return
 

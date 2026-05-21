@@ -1,36 +1,40 @@
 package com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.settings.config.edit.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.RemoveRedEye
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.MoreVert
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
 import com.zaneschepke.wireguardautotunnel.ui.common.label.GroupLabel
-import com.zaneschepke.wireguardautotunnel.ui.state.ConfigProxy
-import com.zaneschepke.wireguardautotunnel.ui.state.PeerProxy
+import com.zaneschepke.wireguardautotunnel.ui.state.ConfigUiState
+import com.zaneschepke.wireguardautotunnel.ui.state.EditablePeer
 
 @Composable
 fun PeersSection(
-    configProxy: ConfigProxy,
+    uiState: ConfigUiState,
     onRemove: (index: Int) -> Unit,
+    onPeerDropdownExpanded: (Boolean) -> Unit,
     onToggleLan: (index: Int) -> Unit,
-    onUpdatePeer: (PeerProxy, index: Int) -> Unit,
+    onUpdatePeer: (EditablePeer, index: Int) -> Unit,
 ) {
-    val isTv = LocalIsAndroidTV.current
-    configProxy.peers.forEachIndexed { index, peer ->
-        var isDropDownExpanded by remember { mutableStateOf(false) }
-        var showPresharedKey by remember { mutableStateOf(false) }
-
+    uiState.draft.config.peers.forEachIndexed { index, peer ->
         Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -48,23 +52,20 @@ fun PeersSection(
                             contentDescription = stringResource(R.string.delete),
                         )
                     }
-                    if (isTv)
-                        IconButton(onClick = { showPresharedKey = !showPresharedKey }) {
-                            Icon(
-                                Icons.Outlined.RemoveRedEye,
-                                stringResource(R.string.show_password),
-                            )
-                        }
                     Column {
-                        IconButton(onClick = { isDropDownExpanded = true }) {
+                        IconButton(
+                            onClick = { onPeerDropdownExpanded(!uiState.ui.isPeerDropdownExpanded) }
+                        ) {
                             Icon(
                                 Icons.Rounded.MoreVert,
                                 contentDescription = stringResource(R.string.quick_actions),
                             )
                         }
                         DropdownMenu(
-                            expanded = isDropDownExpanded,
-                            onDismissRequest = { isDropDownExpanded = false },
+                            expanded = uiState.ui.isPeerDropdownExpanded,
+                            onDismissRequest = {
+                                onPeerDropdownExpanded(!uiState.ui.isPeerDropdownExpanded)
+                            },
                             modifier =
                                 Modifier.shadow(12.dp).background(MaterialTheme.colorScheme.surface),
                         ) {
@@ -78,14 +79,18 @@ fun PeersSection(
                                 },
                                 onClick = {
                                     onToggleLan(index)
-                                    isDropDownExpanded = false
+                                    onPeerDropdownExpanded(false)
                                 },
                             )
                         }
                     }
                 }
             }
-            PeerFields(peer = peer, onPeerChange = { onUpdatePeer(it, index) }, showPresharedKey)
+            PeerFields(
+                peer = peer,
+                onPeerChange = { onUpdatePeer(it, index) },
+                uiState.ui.showSensitiveData,
+            )
         }
     }
 }

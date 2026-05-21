@@ -1,91 +1,34 @@
 package com.zaneschepke.tunnel.backend
 
-import android.content.Context
 import com.topjohnwu.superuser.Shell
 import com.zaneschepke.tunnel.model.ShellResult
-import com.zaneschepke.tunnel.util.RootShellException
-import java.io.File
+import timber.log.Timber
 
-class RootShell(private val context: Context) {
+object RootShell {
 
-    private val localBinaryDir = File(context.codeCacheDir, "bin")
-    private val localTemporaryDir = File(context.cacheDir, "tmp")
-
-    private val preamble: String by lazy {
-        val packageName = context.packageName
-        val binPath = localBinaryDir.absolutePath
-        val tmpPath = localTemporaryDir.absolutePath
-
-        $$"""
-        export CALLING_PACKAGE='$$packageName'
-        export PATH="$$binPath:$PATH"
-        export TMPDIR='$$tmpPath'
-        """
-            .trimIndent()
-    }
-
-    @Volatile private var initialized = false
-
-    init {
-        ensureDirs()
-    }
-
-    private fun ensureDirs() {
-        if (!localBinaryDir.exists() && !localBinaryDir.mkdirs()) {
-            throw RootShellException.DirectoryCreationFailed(localBinaryDir.absolutePath)
-        }
-        if (!localTemporaryDir.exists() && !localTemporaryDir.mkdirs()) {
-            throw RootShellException.DirectoryCreationFailed(localTemporaryDir.absolutePath)
-        }
+    fun hasRootPermission(): Boolean {
+        return Shell.isAppGrantedRoot() == true
     }
 
     fun requestRootPermission(): Boolean {
-        if (Shell.isAppGrantedRoot() == true) {
-            return true
-        }
-
-        // Triggers the root permission dialog
-        val shell = Shell.getShell()
-
-        return shell.isRoot
-    }
-
-    @Synchronized
-    @Throws(RootShellException::class)
-    fun start() {
-        if (Shell.isAppGrantedRoot() == false) {
-            throw RootShellException.NoRootAccess()
-        }
-
-        if (!initialized) {
-            val shell = Shell.getShell()
-            if (!shell.isAlive) {
-                throw RootShellException.ShellStartFailed()
-            }
-
-            val result = shell.newJob().add(preamble).exec()
-            if (result.code != 0) {
-                throw RootShellException.ShellStartFailed(exitCode = result.code)
-            }
-            initialized = true
+        return try {
+            val result = Shell.cmd("true").exec()
+            result.isSuccess
+        } catch (e: Exception) {
+            false
         }
     }
 
-    @Throws(RootShellException::class)
-    fun run(vararg command: String): ShellResult {
-        start() // make sure preamble has already run for this session
+    fun run(command: String): ShellResult {
+        try {
+            val result = Shell.cmd(command).exec()
 
-        val result = Shell.cmd(*command).exec()
+            Timber.d("Root shell command result: ${result.out.joinToString("\n")}")
 
-        return ShellResult(code = result.code, stdout = result.out, stderr = result.err)
-    }
-
-    fun stop() {
-        if (initialized) {
-            try {
-                Shell.getShell().waitAndClose()
-            } catch (_: Exception) {}
-            initialized = false
+            return ShellResult(code = result.code, stdout = result.out, stderr = result.err)
+        } catch (e: Exception) {
+            Timber.e(e, "Root command failed")
+            throw e
         }
     }
 }
