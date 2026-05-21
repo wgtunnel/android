@@ -165,12 +165,10 @@ class TunnelCoordinator(
             .onFailure { _errors.emit(TunnelErrorEvent.from(it, tunnelConfig.id)) }
     }
 
-    // TODO check where this is called
     suspend fun startDefault() {
         tunnelRepository.getDefaultTunnel()?.let { tunnel -> startTunnel(tunnel) }
     }
 
-    // TODO check where this is called
     suspend fun toggleTunnels(source: TunnelActionSource = TunnelActionSource.USER) =
         tunnelMutex.withLock {
             val active = tunnelProvider.backendStatus.value.activeTunnels
@@ -202,7 +200,6 @@ class TunnelCoordinator(
             .onFailure { _errors.emit(TunnelErrorEvent.from(it, id)) }
     }
 
-    // TODO check where this is called
     private suspend fun stopActiveTunnelsInternal() {
         tunnelProvider.stopActiveTunnels()
     }

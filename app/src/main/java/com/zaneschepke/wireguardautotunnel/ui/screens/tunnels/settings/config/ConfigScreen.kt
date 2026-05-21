@@ -27,6 +27,8 @@ import androidx.compose.ui.unit.dp
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.settings.config.components.QrCodeDialog
 import com.zaneschepke.wireguardautotunnel.ui.sideeffect.LocalSideEffect
+import com.zaneschepke.wireguardautotunnel.ui.theme.ConfigHeaderColor
+import com.zaneschepke.wireguardautotunnel.ui.theme.ConfigKeyColor
 import com.zaneschepke.wireguardautotunnel.util.extensions.isTextTooLargeForQr
 import com.zaneschepke.wireguardautotunnel.util.extensions.showToast
 import com.zaneschepke.wireguardautotunnel.viewmodel.SharedAppViewModel
@@ -110,7 +112,7 @@ fun buildConfigAnnotatedString(text: String): AnnotatedString {
     // Headers
     headerRegex.findAll(text).forEach {
         builder.addStyle(
-            SpanStyle(color = Color(0xFFBB86FC), fontWeight = FontWeight.Bold),
+            SpanStyle(color = ConfigHeaderColor, fontWeight = FontWeight.Bold),
             it.range.first,
             it.range.last + 1,
         )
@@ -118,7 +120,7 @@ fun buildConfigAnnotatedString(text: String): AnnotatedString {
 
     // Keys
     keyRegex.findAll(text).forEach {
-        builder.addStyle(SpanStyle(color = Color(0xFF03DAC5)), it.range.first, it.range.last + 1)
+        builder.addStyle(SpanStyle(color = ConfigKeyColor), it.range.first, it.range.last + 1)
     }
 
     // Comments

@@ -21,6 +21,10 @@ val Straw = Color(0xFFD4C483)
 
 val Disabled = CoolGray.copy(alpha = 0.4f)
 
+// Config colors
+val ConfigHeaderColor = Color(0xFFBB86FC)
+val ConfigKeyColor = Color(0xFF03DAC5)
+
 sealed class ThemeColors(
     val background: Color,
     val surface: Color,

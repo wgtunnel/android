@@ -103,7 +103,6 @@ data class EditableInterface(
         )
     }
 
-    // TODO fix this later when we get amnezia to properly return 0
     fun isAmneziaCompatibilityModeSet(): Boolean {
         return (initPacketJunkSize.toIntOrNull() ?: 0) == 0 &&
             (responsePacketJunkSize.toIntOrNull() ?: 0) == 0 &&
