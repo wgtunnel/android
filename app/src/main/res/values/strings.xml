@@ -326,8 +326,8 @@
     <string name="unknown_section">Unknown section</string>
     <string name="config_error_template">Bad config. %1$s at location: %2$s.</string>
     <string name="ports_must_differ">Failed. Proxies must have different ports.</string>
-    <string name="password_no_spaces">Password cannot have spaces.</string>
-    <string name="tunnel_name_taken">Tunnel name is already used.</string>
+    <string name="password_no_spaces">Password cannot have spaces</string>
+    <string name="tunnel_name_taken">Tunnel name is already used</string>
     <string name="range_hint">(%1$d–%2$d)</string>
     <string name="mimic_quic">Mimic QUIC</string>
     <string name="mimic_dns">Mimic DNS</string>
@@ -565,4 +565,5 @@
     <string name="live">Real-time (1s)</string>
     <string name="balance_saver">Battery Saver (10s)</string>
     <string name="tunnel_scripting">Pre/Post script support</string>
+    <string name="name_error_empty">Tunnel name cannot be empty</string>
 </resources>

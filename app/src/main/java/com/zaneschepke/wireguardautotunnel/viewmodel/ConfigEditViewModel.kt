@@ -106,9 +106,16 @@ class ConfigEditViewModel(
         if (state.isTunnelNameTaken) {
 
             postSideEffect(
-                GlobalSideEffect.Toast(StringValue.StringResource(R.string.tunnel_name_taken))
+                GlobalSideEffect.Snackbar(StringValue.StringResource(R.string.tunnel_name_taken))
             )
 
+            return@intent
+        }
+
+        if (state.draft.tunnelName.isBlank()) {
+            postSideEffect(
+                GlobalSideEffect.Snackbar(StringValue.StringResource(R.string.name_error_empty))
+            )
             return@intent
         }
 
