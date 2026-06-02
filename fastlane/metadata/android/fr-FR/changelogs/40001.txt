@@ -1,4 +1,4 @@
-What's new:
-- Search domain tunnels fail to start bugfix
-- DNS fallback to IPv4 on IPv4 only networks bugfix
-- Ping target not editable bugfix
+Nouveautés :
+- Correction d'un bug empêchant le démarrage des tunnels de recherche de domaine
+- Correction d'un bug concernant le repli DNS vers IPv4 sur les réseaux exclusivement IPv4
+- Correction d'un bug empêchant la modification de la cible Ping

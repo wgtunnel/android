@@ -1,7 +1,7 @@
-What's new:
-- Fix for tunnel sort bug
-- Improved location permissions flow
-- Location permission detection and notifications
-- Fix for AndroidTV apps detection for split tunneling
-- Improved tunnel monitoring and reboot recovery
-- Fix tunnel slow reconnect from sleep
+Nouveautés :
+- Correction d'un bug lié au tri des tunnels
+- Amélioration du processus de gestion des autorisations de localisation
+- Détection des autorisations de localisation et notifications
+- Correction de la détection des applications Android TV pour le split tunneling
+- Amélioration de la surveillance des tunnels et de la récupération après redémarrage
+- Correction de la reconnexion lente au tunnel après la mise en veille

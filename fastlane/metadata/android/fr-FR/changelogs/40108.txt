@@ -1,2 +1,2 @@
-What's new:
-- Rapid network changes cause invalid network state bugfix
+Nouveautés :
+- Correction d'un bug lié à un état réseau invalide provoqué par des changements rapides du réseau

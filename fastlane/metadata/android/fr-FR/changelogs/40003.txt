@@ -1,4 +1,4 @@
-What's new:
-- Monitoring failing to shut down race bugfix
-- Notifications stop action bugfix
-- Notification relaunch activity when already active bugfix
+Nouveautés :
+- Correction d'un bug de concurrence empêchant l'arrêt du système
+- Correction d'un bug provoquant l'arrêt des notifications
+- Correction d'un bug provoquant le redémarrage des notifications alors qu'elles étaient déjà actives
