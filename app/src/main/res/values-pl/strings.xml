@@ -121,8 +121,8 @@
     <string name="stop_on_internet_loss">Zatrzymaj tunel przy utracie Internetu</string>
     <string name="allow_lan_traffic">Zezwól na ruch LAN</string>
     <string name="bypass_lan_for_kill_switch">Omiń LAN dla wyłącznika awaryjnego</string>
-    <string name="vpn_channel_description">Kanał powiadomień o stanie VPN</string>
-    <string name="auto_tunnel_channel_description">Kanał powiadomień o stanie autotunelowania</string>
+    <string name="vpn_channel_description">Kanał powiadomień o stanie VPN</string>
+    <string name="auto_tunnel_channel_description">Kanał powiadomień o stanie autotunelowania</string>
     <string name="stop">Zatrzymaj</string>
     <string name="splt_tunneling">Tunelowanie dzielone</string>
     <string name="pre_up">Przed aktywacją</string>
