@@ -450,4 +450,26 @@
     <string name="error_socks5_port_unavailable">SOCKS5 port %1$d is already in use.\nPlease choose a different port.</string>
     <string name="tunnel_scripting">Pre/Post script support</string>
     <string name="initializing">Initializing…</string>
+    <string name="errors_channel_id" translatable="false">Errors Channel</string>
+    <string name="s2" translatable="false">S2</string>
+    <string name="jc" translatable="false">Jc</string>
+    <string name="i2" translatable="false">I2</string>
+    <string name="events_channel_id" translatable="false">Events Channel</string>
+    <string name="proxy_channel_id" translatable="false">Proxy Channel</string>
+    <string name="jmax" translatable="false">Jmax</string>
+    <string name="h2" translatable="false">H2</string>
+    <string name="s3" translatable="false">S3</string>
+    <string name="i1" translatable="false">I1</string>
+    <string name="app_channel_id" translatable="false">App Channel</string>
+    <string name="i3" translatable="false">I3</string>
+    <string name="example_import_url" translatable="false">https://123.com/tun.conf</string>
+    <string name="i5" translatable="false">I5</string>
+    <string name="s4" translatable="false">S4</string>
+    <string name="fdroid_url" translatable="false">https://apt.izzysoft.de/fdroid/index/apk/com.zaneschepke.wireguardautotunnel</string>
+    <string name="h3" translatable="false">H3</string>
+    <string name="h1" translatable="false">H1</string>
+    <string name="jmin" translatable="false">Jmin</string>
+    <string name="i4" translatable="false">I4</string>
+    <string name="s1" translatable="false">S1</string>
+    <string name="h4" translatable="false">H4</string>
 </resources>
