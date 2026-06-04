@@ -1,0 +1,3 @@
+What's new:
+- Auto-tunnel screen not loading without connecting to Wi-Fi bugfix
+- Import tunnel via URL bugfix
