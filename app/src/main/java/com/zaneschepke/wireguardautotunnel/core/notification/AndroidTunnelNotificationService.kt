@@ -55,10 +55,16 @@ class AndroidTunnelNotificationService(private val notificationService: Notifica
                 )
             }
 
+        // Show the tunnel name as the title when a single tunnel is active so it remains
+        // visible in the collapsed notification; fall back to the generic channel name otherwise.
         val title =
-            when (channel) {
-                is NotificationChannels.Tunnel.VPN -> context.getString(R.string.vpn)
-                is NotificationChannels.Tunnel.Proxy -> context.getString(R.string.proxy)
+            if (tunnelNotificationLines.size == 1) {
+                tunnelNotificationLines.values.first().name
+            } else {
+                when (channel) {
+                    is NotificationChannels.Tunnel.VPN -> context.getString(R.string.vpn)
+                    is NotificationChannels.Tunnel.Proxy -> context.getString(R.string.proxy)
+                }
             }
 
         val style =
