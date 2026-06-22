@@ -1,3 +1,3 @@
-What's new:
-- Fixes crash on older Android versions where metered tunnel override is unavailable
-- Fixes auto-tunnel network monitor incorrectly detecting VPN changes
+Újdonságok:
+Az alkalmazásösszeomlás javítása régebbi Android verziókon, ahol a forgalmi korlátos felülbírálás nem érhető el
+Az automatikus alagút hálózatfigyelőjének javítása, amely hibásan érzékelte a VPN-módosításokat

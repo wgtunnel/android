@@ -4,7 +4,7 @@ import com.zaneschepke.wireguardautotunnel.data.dao.GeneralSettingsDao
 import com.zaneschepke.wireguardautotunnel.data.entity.GeneralSettings as Entity
 import com.zaneschepke.wireguardautotunnel.data.mapper.toDomain
 import com.zaneschepke.wireguardautotunnel.data.mapper.toEntity
-import com.zaneschepke.wireguardautotunnel.data.model.AppMode
+import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelMode
 import com.zaneschepke.wireguardautotunnel.domain.model.GeneralSettings as Domain
 import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
 import com.zaneschepke.wireguardautotunnel.ui.theme.Theme
@@ -34,7 +34,15 @@ class RoomSettingsRepository(private val settingsDao: GeneralSettingsDao) :
         settingsDao.updatePinLockEnabled(enabled)
     }
 
-    override suspend fun updateAppMode(appMode: AppMode) {
-        settingsDao.updateAppMode(appMode)
+    override suspend fun updateAppMode(tunnelMode: TunnelMode) {
+        settingsDao.updateAppMode(tunnelMode)
+    }
+
+    override suspend fun updateGlobalAmneziaEnabled(enabled: Boolean) {
+        settingsDao.updateGlobalAmneziaEnabled(enabled)
+    }
+
+    override suspend fun updateScreenRecordingSecurity(enabled: Boolean) {
+        settingsDao.updateScreenRecordingSecurity(enabled)
     }
 }

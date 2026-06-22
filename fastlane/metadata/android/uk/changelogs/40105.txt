@@ -1,3 +1,3 @@
-What's new:
-- Fixes crash on older Android versions where metered tunnel override is unavailable
-- Fixes auto-tunnel network monitor incorrectly detecting VPN changes
+Що нового:
+- Виправлено збій у роботі на старих версіях Android, де функція перевизначення тунелю з обмеженим трафіком недоступна
+- Виправлено помилкове виявлення змін у VPN монітором мережі з автоматичним тунелюванням

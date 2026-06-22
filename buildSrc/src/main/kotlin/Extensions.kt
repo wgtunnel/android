@@ -1,18 +1,18 @@
-
-import org.ajoberstar.grgit.Grgit
 import org.gradle.api.Project
-import org.semver4j.Semver
+import org.gradle.api.provider.Provider
 
-fun Project.languageList(): List<String> {
-	return fileTree("../app/src/main/res") { include("**/strings.xml") }
-		.asSequence()
-		.map { stringFile -> stringFile.parentFile.name }
-		.map { valuesFolderName -> valuesFolderName.replace("values-", "") }
-		.filter { valuesFolderName -> valuesFolderName != "values" }
-		.map { languageCode -> languageCode.replace("-r", "_") }
-		.distinct()
-		.sorted()
-		.toList() + "en"
+fun Project.languageListProvider(): Provider<List<String>> {
+    return providers.provider {
+        fileTree("../app/src/main/res") { include("**/strings.xml") }
+            .asSequence()
+            .map { stringFile -> stringFile.parentFile.name }
+            .map { valuesFolderName -> valuesFolderName.replace("values-", "") }
+            .filter { valuesFolderName -> valuesFolderName != "values" }
+            .map { languageCode -> languageCode.replace("-r", "_") }
+            .distinct()
+            .sorted()
+            .toList() + "en"
+    }
 }
 
 fun allowedLicenses(): List<String> {
@@ -20,45 +20,68 @@ fun allowedLicenses(): List<String> {
 }
 
 fun allowedLicenseUrls(): List<String> {
-    return listOf("https://jsoup.org/license", "http://opensource.org/licenses/bsd-license.php", "https://github.com/journeyapps/zxing-android-embedded/blob/master/COPYING",
-        "https://github.com/RikkaApps/Shizuku-API/blob/master/LICENSE", "https://github.com/rafi0101/Android-Room-Database-Backup/blob/master/LICENSE",
-        "https://opensource.org/license/mit")
+    return listOf(
+        "https://jsoup.org/license",
+        "http://opensource.org/licenses/bsd-license.php",
+        "https://github.com/RikkaApps/Shizuku-API/blob/master/LICENSE",
+        "https://github.com/rafi0101/Android-Room-Database-Backup/blob/master/LICENSE",
+        "https://opensource.org/license/mit",
+        "https://www.bouncycastle.org/licence.html",
+    )
 }
 
 fun buildLanguagesArray(languages: List<String>): String {
     return languages.joinToString(separator = ", ") { "\"$it\"" }
 }
 
-// Get the Git commit hash
-fun Project.getGitCommitHash(): String {
-    var grgit: Grgit? = null
-    try {
-        grgit = Grgit.open(mapOf("currentDir" to projectDir))
-        return grgit.head().abbreviatedId
-    } catch (e: Exception) {
-        logger.warn("Failed to get Git commit hash: ${e.message}. Using fallback.")
-        return "unknown"
-    } finally {
-        grgit?.close()
+fun bumpToNextPatchVersion(version: String): String {
+    val parts = version.split(".")
+    return if (parts.size == 3) {
+        val patch = parts[2].toIntOrNull() ?: 0
+        "${parts[0]}.${parts[1]}.${patch + 1}"
+    } else {
+        "$version-next"
     }
 }
 
-// Get commit count since last commit for versionCode increment
+fun Project.getGitCommitHash(): String {
+    return providers
+        .provider {
+            val ciSha =
+                System.getenv("GITHUB_SHA")
+                    ?: System.getenv("CI_COMMIT_SHA")
+                    ?: System.getenv("GIT_COMMIT")
+
+            if (ciSha != null) {
+                return@provider ciSha.take(7)
+            }
+
+            // Local only
+            runGitCommand(listOf("rev-parse", "--short", "HEAD"))
+        }
+        .get()
+}
+
+private fun Project.runGitCommand(args: List<String>): String {
+    return providers
+        .exec {
+            commandLine("git", *args.toTypedArray())
+            workingDir = projectDir
+            isIgnoreExitValue = true
+        }
+        .standardOutput
+        .asText
+        .get()
+        .trim()
+}
+
 fun Project.getCommitCountSinceLastCommit(): Int {
-    var grgit: Grgit? = null
-    try {
-        grgit = Grgit.open(mapOf("currentDir" to projectDir))
-        val headCommit = grgit.head()
-        val log = grgit.log(mapOf(
-            "includes" to listOf(headCommit.id)
-        ))
-        return log.size
-    } catch (e: Exception) {
-        logger.warn("Failed to get commit count: ${e.message}. Using fallback.")
-        return 0
-    } finally {
-        grgit?.close()
-    }
+    return providers
+        .provider {
+            val output = runGitCommand(listOf("rev-list", "--count", "HEAD"))
+            output.toIntOrNull() ?: 0
+        }
+        .get()
 }
 
 // Get versionCode increment for nightly
@@ -71,39 +94,6 @@ fun Project.getVersionCodeIncrement(): Int {
         ?: getCommitCountSinceLastCommit()
 }
 
-// Compute versionName dynamic bumping for nightly
-fun Project.computeVersionName(): String {
-    val isNightlyBuild = isNightlyBuild()
-
-    // Static version from Constants.kt
-    val baseVersion = Semver.parse(Constants.VERSION_NAME) ?: Semver.of(0, 0, 0)
-
-    return when {
-        isNightlyBuild -> {
-            // Bump patch for nightly
-            val nightlyVersion = Semver.of(
-                baseVersion.major,
-                baseVersion.minor,
-                baseVersion.patch + 1
-            )
-            "${nightlyVersion}-nightly+git.${getGitCommitHash()}"
-        }
-        else -> Constants.VERSION_NAME
-    }
-}
-
 fun Project.isNightlyBuild(): Boolean {
     return gradle.startParameter.taskNames.any { it.lowercase().contains(Constants.NIGHTLY) }
-}
-
-// Compute versionCode (static baseline, dynamic bumping for nightly)
-fun Project.computeVersionCode(): Int {
-    val isNightlyBuild = isNightlyBuild()
-    var versionCode = Constants.VERSION_CODE
-
-    if (isNightlyBuild) {
-        versionCode += 1 // Patch bump
-    }
-
-    return versionCode + getVersionCodeIncrement()
 }

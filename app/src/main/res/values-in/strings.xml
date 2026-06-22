@@ -2,11 +2,9 @@
 <resources>
     <string name="settings">Pengaturan</string>
     <string name="support">Dukungan</string>
-    <string name="kernel">Kernel</string>
     <string name="init_packet_junk_size">Ukuran sampah paket init</string>
     <string name="app_name">WG Tunnel</string>
     <string name="error_file_extension">File bukan berformat .conf atau .zip</string>
-    <string name="no_tunnels">Belum ada terowongan yang ditambahkan!</string>
     <string name="tunnels">Terowongan</string>
     <string name="tunnel_mobile_data">Terowongan pada data seluler</string>
     <string name="privacy_policy">Kebijakan privasi</string>
@@ -17,7 +15,6 @@
     <string name="trusted_ssid_value_description">Kirim SSID</string>
     <string name="add_tunnels_text">Tambah dari file atau zip</string>
     <string name="add_from_qr">Tambah dari kode QR</string>
-    <string name="auto_tunneling">Terowongan otomatis</string>
     <string name="vpn_off">VPN nonaktif</string>
     <string name="vpn_on">VPN aktif</string>
     <string name="create_import">Buat dari awal</string>
@@ -32,7 +29,6 @@
     <string name="seconds">Detik</string>
     <string name="persistent_keepalive">Keepalive persisten</string>
     <string name="cancel">Batal</string>
-    <string name="enabled_app_shortcuts">Aktifkan pintasan aplikasi</string>
     <string name="unknown_error">Terjadi kesalahan tidak dikenal</string>
     <string name="tunnel_on_wifi">Terowongan pada Wi-Fi</string>
     <string name="email_subject">Dukungan WG Tunnel</string>
@@ -56,9 +52,6 @@
     <string name="response_packet_magic_header">Header ajaib paket respons</string>
     <string name="transport_packet_magic_header">Header ajaib paket transport</string>
     <string name="underload_packet_magic_header">Header ajaib paket underload</string>
-    <string name="unsure_how">jika Anda tidak yakin cara melanjutkan</string>
-    <string name="see_the">Lihat</string>
-    <string name="getting_started_guide">panduan memulai</string>
     <string name="restart_at_boot">Mulai saat booting</string>
     <string name="vpn_denied_dialog_title">Izin Ditolak</string>
     <string name="vpn_settings">Pengaturan sistem VPN</string>
@@ -67,12 +60,9 @@
     <string name="root_accepted">Shell root diterima</string>
     <string name="show_amnezia_properties">Tampilkan properti Amnezia</string>
     <string name="never">Tidak pernah</string>
-    <string name="handshake">Jabat tangan terakhir</string>
-    <string name="vpn_channel_name">Saluran Notifikasi VPN</string>
     <string name="prominent_background_location_message">Fitur ini memerlukan izin lokasi latar belakang untuk mengaktifkan pemantauan SSID Wi-Fi bahkan saat aplikasi ditutup. Untuk detail selengkapnya, silakan lihat Kebijakan Privasi yang tertaut di layar Dukungan.</string>
     <string name="copy_public_key">Salin kunci publik</string>
     <string name="base64_key">Kunci Base64</string>
-    <string name="enable_app_lock">Aktifkan kunci aplikasi</string>
     <string name="delete_tunnel">Hapus terowongan</string>
     <string name="delete_tunnel_message">Apakah Anda yakin ingin menghapus terowongan yang dipilih?</string>
     <string name="no_email_detected">Tidak ada aplikasi email yang terdeteksi</string>
@@ -85,17 +75,12 @@
     <string name="enter_config_url">Masukkan URL konfigurasi</string>
     <string name="use_android_recommended">Gunakan metode yang direkomendasikan Android untuk mendapatkan informasi Wi-Fi, berdasarkan versi Android</string>
     <string name="dual_stack">Dual-stack</string>
-    <string name="missing_attribute">Atribut tidak ada</string>
     <string name="hide_amnezia_properties">Sembunyikan properti Amnezia</string>
-    <string name="advanced_settings">Pengaturan lanjutan</string>
-    <string name="kernel_name_dots">Nama terowongan tidak boleh \'.\' atau \'..\' dalam mode kernel</string>
-    <string name="auto_tunnel_channel_name">Saluran Notifikasi Terowongan Otomatis</string>
     <string name="github_sponsors">GitHub Sponsors</string>
     <string name="current_template">Saat ini: %1$s</string>
     <string name="save_changes">Simpan perubahan</string>
     <string name="save">Simpan</string>
     <string name="logs">Log</string>
-    <string name="ethernet_tunnel">Terowongan ethernet</string>
     <string name="config_changes_saved">Perubahan konfigurasi disimpan.</string>
     <string name="join_telegram">Bergabung dengan komunitas Telegram</string>
     <string name="post_up">Post up</string>
@@ -106,10 +91,8 @@
     <string name="remote_key">Kunci jarak jauh</string>
     <string name="mobile_data">Data seluler</string>
     <string name="use_shell_via_shizuku">Gunakan shell melalui Shizuku untuk mendapatkan informasi Wi-Fi, sehingga tidak memerlukan izin lokasi pada perangkat yang tidak di-root</string>
-    <string name="stop_on_internet_loss">Hentikan terowongan saat koneksi internet terputus</string>
     <string name="vpn">VPN</string>
     <string name="tunnel_boot_description">Mulai terowongan bawaan saat booting</string>
-    <string name="prefer_ipv6_resolution">Utamakan resolusi rekan IPv6</string>
     <string name="allow_lan_traffic">Izinkan lalu lintas LAN</string>
     <string name="quick_actions">Tindakan cepat</string>
     <string name="google_donation_message">Sayangnya, karena kebijakan Google, tautan donasi tidak diizinkan dalam versi Play Store aplikasi ini. Silakan telusuri halaman web proyek untuk menemukan tempat berdonasi.</string>
@@ -118,12 +101,10 @@
     <string name="licenses">Lisensi</string>
     <string name="http_bind_address">Alamat bind HTTP</string>
     <string name="vpn_channel_description">Saluran untuk notifikasi status VPN</string>
-    <string name="amnezia">Amnezia</string>
     <string name="tunnel_mapping_description">Petakan terowongan sebagai pilihan berdasarkan nama Wi-Fi</string>
     <string name="tunnel_name_taken">Nama terowongan sudah digunakan.</string>
     <string name="check_for_update">Periksa pembaruan</string>
     <string name="mimic_dns">Tiru DNS</string>
-    <string name="unknown_attribute">Atribut tidak dikenal</string>
     <string name="donation_prompt_prefix">Terima kasih telah menggunakan WG Tunnel! Jika memungkinkan, harap pertimbangkan untuk</string>
     <string name="hint_template">(%1$s)</string>
     <string name="peer">Rekan</string>
@@ -131,29 +112,19 @@
     <string name="root_required_template">%1$s (memerlukan root)</string>
     <string name="tunnel_control">Kontrol terowongan</string>
     <string name="website">Situs web aplikasi</string>
-    <string name="mobile_tunnel">Terowongan data seluler</string>
     <string name="mimic_quic">Tiru QUIC</string>
     <string name="auto_tunnel_channel_description">Saluran untuk notifikasi status terowongan otomatis</string>
     <string name="show_qr">Tampilkan QR</string>
     <string name="wifi_settings">Pengaturan Wi-Fi</string>
-    <string name="tunnel_starting">Terowongan sedang dimulai</string>
-    <string name="backup_success">Pencadangan berhasil. %1$s</string>
-    <string name="inactive">Tidak aktif</string>
-    <string name="invalid_value">Nilai tidak valid</string>
+    <string name="backup_success">Pencadangan berhasil</string>
     <string name="info">Info</string>
-    <string name="pinger_bounce_successful">Terowongan berhasil dimulai ulang oleh pinger.</string>
     <string name="exclude">Kecualikan</string>
     <string name="backup_failed">Gagal membuat cadangan.</string>
-    <string name="unknown_section">Bagian tidak dikenal</string>
     <string name="location_services_not_detected">Layanan lokasi tidak terdeteksi</string>
     <string name="location_permissions">Izin Lokasi</string>
     <string name="unknown">Tidak dikenal</string>
-    <string name="tunnel_error_template">Terowongan gagal dengan: %1$s</string>
-    <string name="syntax_error">Kesalahan sintaks</string>
     <string name="learn_more">Pelajari lebih lanjut</string>
     <string name="all_services_disabled">Terowongan otomatis dan terowongan harus dinonaktifkan untuk melakukan tindakan ini.</string>
-    <string name="ping_timeout">Batas waktu ping terowongan</string>
-    <string name="pinger_bounce_recovery">Pinger gagal memulai ulang. Terowongan dipulihkan dengan alamat lama.</string>
     <string name="defaults_to_template">(default ke %1$s)</string>
     <string name="delete_logs">Hapus dan bersihkan log</string>
     <string name="launch_app_settings">Buka pengaturan aplikasi</string>
@@ -164,18 +135,13 @@
     <string name="no_network">Tidak ada jaringan yang terhubung</string>
     <string name="checking_for_update">Memeriksa pembaruan</string>
     <string name="restore_success">Pemulihan berhasil. %1$s</string>
-    <string name="latency_template">Latensi: %1$s</string>
     <string name="wifi">Wi-Fi</string>
-    <string name="packet_loss_template">Kehilangan paket: %.2f%%</string>
     <string name="update_check_failed">Pemeriksaan pembaruan gagal.</string>
     <string name="dns_resolve_error">Resolusi DNS gagal</string>
-    <string name="ping_target">Target ping</string>
     <string name="update_available">Pembaruan Tersedia!</string>
     <string name="appearance">Tampilan</string>
     <string name="name">Nama</string>
-    <string name="dns_provider">Penyedia DNS</string>
     <string name="recommended_template">%1$s (direkomendasikan)</string>
-    <string name="missing_section">Bagian tidak ada</string>
     <string name="config_error_template">Konfigurasi buruk. %1$s pada lokasi: %2$s.</string>
     <string name="locked_down">Terkunci</string>
     <string name="export_logs">Ekspor log tersimpan</string>
@@ -185,15 +151,12 @@
     <string name="darker">Lebih gelap</string>
     <string name="dynamic">Dinamis</string>
     <string name="resources">Sumber daya</string>
-    <string name="invalid_number">Angka tidak valid</string>
     <string name="stop_on_no_internet">Hentikan saat tidak ada internet</string>
     <string name="permission_required">Izin Diperlukan</string>
     <string name="shizuku_not_detected">Shizuku tidak terdeteksi</string>
     <string name="automatic">Otomatis</string>
-    <string name="timeout_all_attempts">Total batas waktu untuk semua percobaan</string>
     <string name="back">Kembali</string>
     <string name="liberapay">Liberapay</string>
-    <string name="ip_or_hostname">IP atau nama host</string>
     <string name="local_logging">Monitor log lokal</string>
     <string name="flavor_template">Varian: %1$s</string>
     <string name="delete">Hapus</string>
@@ -202,14 +165,12 @@
     <string name="active_tunnel_update_failed">Pembaruan terowongan aktif gagal</string>
     <string name="start">Mulai</string>
     <string name="enable_amnezia_compatibility">Aktifkan kompatibilitas Amnezia</string>
-    <string name="nothing_here_yet">Belum ada apa pun di sini!</string>
     <string name="mode_disabled_template">Fitur tidak tersedia dalam mode %1$s.</string>
     <string name="dns_servers">Server DNS</string>
     <string name="already_donated">Sudah berdonasi</string>
     <string name="kofi">Ko-fi</string>
     <string name="donation_signoff">Dengan penuh rasa syukur,</string>
     <string name="selected">Dipilih</string>
-    <string name="global_split_tunneling">Terowongan terpisah global</string>
     <string name="active_network">Jaringan Aktif:</string>
     <string name="range_hint">(%1$d–%2$d)</string>
     <string name="delete_active_message">Tidak dapat menghapus terowongan yang sedang aktif.</string>
@@ -227,7 +188,6 @@
     <string name="mtu">MTU</string>
     <string name="configuration">Konfigurasi</string>
     <string name="drag_handle">Pegangan Seret</string>
-    <string name="global_dns_servers">Server DNS global</string>
     <string name="display_theme">Tema tampilan</string>
     <string name="contact">Kontak</string>
     <string name="ports_must_differ">Gagal. Proksi harus memiliki port yang berbeda.</string>
@@ -243,24 +203,17 @@
     <string name="show_password">Tampilkan kata sandi</string>
     <string name="proxy_credentials">Kredensial proksi</string>
     <string name="download_and_install">Unduh dan Pasang</string>
-    <string name="ping">Ping</string>
     <string name="about">Tentang</string>
-    <string name="debounce_delay">Penundaan debounce</string>
     <string name="donation_prompt_link">mendukung proyek ini</string>
-    <string name="tunnel_ping_interval">Interval ping terowongan</string>
     <string name="donation_prompt_suffix">agar tetap gratis dan terus berkembang.</string>
     <string name="text_too_large_for_qr">Teks terlalu besar untuk ditampilkan sebagai QR.</string>
     <string name="options">Opsi</string>
     <string name="bypass_lan_for_kill_switch">Lewati LAN untuk kill switch</string>
     <string name="use_wildcards">Gunakan wildcard nama</string>
-    <string name="export_tunnels_wireguard">Ekspor terowongan sebagai WireGuard</string>
     <string name="wifi_detection_method">Metode deteksi Wi-Fi</string>
     <string name="tunnel">terowongan</string>
     <string name="legacy_api_description">Gunakan metode yang tidak lagi didukung sejak Android 12 untuk mendapatkan informasi Wi-Fi yang membatasi kueri lokasi, tetapi mungkin tidak bekerja secara andal pada perangkat yang lebih baru</string>
-    <string name="active">Aktif</string>
     <string name="security_type">Keamanan:</string>
-    <string name="export_tunnels_amnezia">Ekspor terowongan sebagai Amnezia</string>
-    <string name="bounce_failed_template">Pinger gagal memulihkan terowongan dengan kesalahan: %1$s</string>
     <string name="ddns_success_message">Titik akhir DNS dinamis berhasil diperbarui.</string>
     <string name="addresses">Alamat</string>
     <string name="auto_tunnel">Terowongan otomatis</string>
@@ -276,73 +229,52 @@
     <string name="public_key">Kunci publik</string>
     <string name="show_scripts">Tampilkan skrip</string>
     <string name="allowed_ips">IP yang Diizinkan</string>
-    <string name="reliability">Keandalan</string>
     <string name="monitoring">Pemantauan</string>
     <string name="app_permission_title">Kontrol terowongan dan fitur terowongan otomatis.</string>
-    <string name="wireguard">WireGuard</string>
     <string name="aovpn_description">Mengizinkan Android memulai terowongan</string>
     <string name="move_up">Pindah ke Atas</string>
     <string name="release_notes">Catatan rilis</string>
     <string name="dark">Gelap</string>
     <string name="monitoring_state_changes">Memantau perubahan status</string>
     <string name="dropdown">Dropdown</string>
-    <string name="set_ping_target">Atur target ping</string>
-    <string name="ping_target_template">Target ping: %1$s</string>
     <string name="version_template">Versi: %1$s</string>
     <string name="donation_thanks_intro">Terima kasih telah mempertimbangkan untuk berdonasi ke proyek ini!</string>
-    <string name="reachable_template">Dapat dijangkau: %1$s</string>
     <string name="restore_failed">Gagal memulihkan dari cadangan.</string>
     <string name="move_down">Pindah ke Bawah</string>
     <string name="remove_amnezia_compatibility">Hapus kompatibilitas Amnezia</string>
     <string name="backup_application">Cadangkan data aplikasi</string>
-    <string name="remote_key_template">Kunci: %1$s</string>
     <string name="comma_separated">Dipisahkan dengan koma</string>
     <string name="amoled">AMOLED</string>
     <string name="general">Umum</string>
     <string name="donation_dev_message">Sebagai satu-satunya pengembang, saya bekerja tanpa henti untuk menjadikan WG Tunnel klien WireGuard gratis dan sumber terbuka terbaik untuk Android, tetapi ini hanya mungkin dengan dukungan Anda.</string>
     <string name="review">Beri nilai aplikasi</string>
-    <string name="app_permission_description">Control tunnels and auto-tunnel features.</string>
+    <string name="app_permission_description">https://hosted.weblate.org/translate/wg-tunnel/strings/en/?checksum=e52d7eb2e28a9a12Control tunnels and auto-tunnel features.</string>
     <string name="install_updated_permission">Aplikasi ini memerlukan izin untuk memasang pembaruan.</string>
     <string name="use_root_shell_for_wifi">Gunakan shell root untuk mendapatkan informasi Wi-Fi, sehingga tidak memerlukan izin lokasi</string>
-    <string name="disabled">Dinonaktifkan</string>
     <string name="ddns_auto_update">Pembaruan otomatis DNS dinamis</string>
     <string name="backend_mode">Mode aplikasi</string>
     <string name="language">Bahasa</string>
-    <string name="attempts_per_interval">Jumlah percobaan ping per interval</string>
     <string name="splt_tunneling">Terowongan terpisah</string>
     <string name="search">Cari</string>
-    <string name="packets_sent_template">Paket terkirim: %1$s</string>
     <string name="auth_error">Tidak sah</string>
-    <string name="kernel_name_special_characters">Nama terowongan dalam mode kernel tidak boleh mengandung spasi atau karakter khusus tertentu (diizinkan: alfanumerik, _, =, +, ., -)</string>
     <string name="add_from_clipboard">Tambah dari clipboard</string>
-    <string name="kernel_name_error">Kesalahan nama modul kernel</string>
     <string name="sort">Urutkan</string>
     <string name="_continue">Lanjutkan</string>
-    <string name="_false">Salah</string>
     <string name="config_error">Konfigurasi tidak valid</string>
     <string name="mimic_sip">Tiru SIP</string>
     <string name="update_check_unsupported">Pemeriksaan pembaruan tidak didukung untuk jenis build ini.</string>
-    <string name="expiremental_template">%1$s (eksperimental)</string>
-    <string name="display_detailed_ping_stats">Tampilkan statistik ping terperinci</string>
     <string name="donate">Donasi ke proyek</string>
     <string name="unavailable_in_mode">Tidak tersedia dalam mode saat ini</string>
     <string name="server_port">Server:Port</string>
-    <string name="tunnel_item_description">%1$s, %2$s, %3$s</string>
     <string name="camera_permission_required">Izin kamera diperlukan</string>
-    <string name="debounce_description">Penundaan antara perubahan jaringan yang cepat</string>
-    <string name="dns_protocol">Protokol DNS</string>
     <string name="preferred_tunnel">Terowongan pilihan</string>
     <string name="allow">Izinkan</string>
     <string name="latest_installed">Anda sudah menjalankan versi terbaru.</string>
     <string name="add_wifi_name">Tambah nama Wi-Fi</string>
     <string name="fix">Perbaiki</string>
     <string name="tunnel_running_name_message">Nama tidak dapat diubah saat terowongan aktif.</string>
-    <string name="ping_success_template">Ping terakhir berhasil: %1$s</string>
-    <string name="tunnel_running">Terowongan berjalan</string>
     <string name="export_failed">Ekspor gagal</string>
-    <string name="enable_remote_app_control">Aktifkan kontrol aplikasi jarak jauh</string>
     <string name="donation_closing">Impian saya adalah bekerja penuh waktu untuk Anda pada proyek ini.</string>
-    <string name="set_custom_ping_target">Target ping kustom</string>
     <string name="update_download_failed">Unduhan pembaruan gagal.</string>
     <string name="network_name">Jaringan:</string>
     <string name="mapped">Dipetakan</string>
@@ -354,14 +286,12 @@
     <string name="always_on_vpn_support">Izinkan VPN Selalu Aktif</string>
     <string name="_default">Bawaan</string>
     <string name="exclude_lan">Kecualikan LAN</string>
-    <string name="ping_monitor">Monitor ping</string>
     <string name="read_failed">Gagal membaca data.</string>
     <string name="start_auto">Mulai terowongan otomatis</string>
     <string name="crypto">Alamat mata uang kripto</string>
     <string name="hide_scripts">Sembunyikan skrip</string>
     <string name="system">Sistem</string>
     <string name="tunnel_name">Nama Terowongan</string>
-    <string name="error_tunnel_name">Nama terowongan tidak boleh lebih dari 15 karakter dalam mode kernel</string>
     <string name="wildcards_active">Wildcard aktif</string>
     <string name="restart_message_template">Menyimpan perubahan akan menyebabkan %1$s dimulai ulang, apakah Anda ingin melanjutkan?</string>
     <string name="already_donated_description">Menonaktifkan permintaan donasi di masa mendatang</string>
@@ -369,21 +299,16 @@
     <string name="location_permissions_missing">Izin lokasi tidak ada</string>
     <string name="metered_tunnel">Terowongan terukur</string>
     <string name="stop_auto">Hentikan terowongan otomatis</string>
-    <string name="multiple">Beberapa</string>
     <string name="shizuku">Shizuku</string>
     <string name="lockdown_settings">Pengaturan lockdown</string>
-    <string name="_true">Benar</string>
     <string name="networks">Jaringan</string>
     <string name="auto_tunnel_not_running">Terowongan otomatis tidak berjalan</string>
     <string name="pre_down">Pre down</string>
-    <string name="jitter_template">Jitter: %1$s</string>
-    <string name="ping_target_description">Defaultnya adalah IP terowongan internal untuk konfigurasi terpisah atau Cloudflare untuk konfigurasi terowongan penuh.</string>
     <string name="lockdown">Lockdown</string>
     <string name="export_success">Ekspor berhasil</string>
     <string name="proxy">Proksi</string>
     <string name="auto_tunnel_running">Terowongan otomatis sedang berjalan</string>
     <string name="done">Selesai</string>
-    <string name="invalid_key">Kunci tidak valid</string>
     <string name="auto_tunnel_channel_id" translatable="false">Auto-tunnel Channel</string>
     <string name="kofi_url" translatable="false">https://ko-fi.com/zaneschepke</string>
     <string name="bitcoin_cash_address" translatable="false">bitcoincash:qp6xacvswha2tjfp2rscguq3gd4eecxeuvcgtyjv58</string>
@@ -426,4 +351,112 @@
     <string name="github_sponsors_url" translatable="false">https://github.com/sponsors/zaneschepke</string>
     <string name="transport_packet_junk_size">Ukuran sampah paket transport</string>
     <string name="cookie_packet_junk_size">Ukuran sampah paket cookie</string>
+    <string name="fallback_to_ipv4">Fallback to IPv4</string>
+    <string name="excluded_apps">%1$s apps excluded</string>
+    <string name="kernel_wireguard_unsupported">Kernel does not include WireGuard support (module missing or not built-in into kernel)!</string>
+    <string name="resolution_method">Resolution method</string>
+    <string name="notification_ipv6_recovery_message">%1$s recovered IPv6 connectivity</string>
+    <string name="tunnel_state_resolving_dns">Resolving DNS</string>
+    <string name="handshake_template">handshake: %1$s</string>
+    <string name="peer_template">peer: %1$s</string>
+    <string name="errors">Errors</string>
+    <string name="no_system_dns_information">No system DNS information</string>
+    <string name="export_unsupported">Export is not supported on this device</string>
+    <string name="tunnel_globals">Tunnel globals</string>
+    <string name="sort_by_latency">Sort by latency</string>
+    <string name="ready">Ready</string>
+    <string name="no_system_dns_detected">No system DNS detected</string>
+    <string name="name_error_empty">Tunnel name cannot be empty</string>
+    <string name="notification_ipv4_fallback_message">%1$s switched to IPv4 connectivity</string>
+    <string name="notification_tunnel_status_format">%1$s • %2$s</string>
+    <string name="dns_error_invalid_ip_or_host">Invalid IP address or hostname</string>
+    <string name="proxy_channel_description">Notifications for proxy tunnels.</string>
+    <string name="system_dns_servers">Servers: %1$s</string>
+    <string name="balanced">Balanced (3s)</string>
+    <string name="import_url_description">The URL must be secure and serve a .conf file.</string>
+    <string name="dns_error_invalid_port">Port must be between 1 and 65535</string>
+    <string name="view_configuration">View configuration</string>
+    <string name="dot">DNS over TLS (DoT)</string>
+    <string name="ipv6_recovery">IPv6 recovery</string>
+    <string name="screen_recording_protection">Screen recording protection</string>
+    <string name="dns_error_invalid_host">Host cannot be empty</string>
+    <string name="toggle_sensitive_data_visibility">Toggle sensitive data visibility</string>
+    <string name="ipv4_fallback">IPv4 fallback</string>
+    <string name="dns_error_empty">Endpoint cannot be empty</string>
+    <string name="tunnel_state_connected">Connected</string>
+    <string name="dns_error_invalid_scheme">DoH must use HTTPS</string>
+    <string name="private_dns_hostname">Private DNS: hostname (%1$s)</string>
+    <string name="app">App</string>
+    <string name="refresh_rate">Statistics refresh rate</string>
+    <string name="app_selection">App selection</string>
+    <string name="tunnel_state_handshake_failure">Handshake failure</string>
+    <string name="notification_dynamic_dns_message">%1$s updated after Dynamic DNS change</string>
+    <string name="tunnel_state_establishing_connection">Establishing connection</string>
+    <string name="prefer_ipv6">Prefer IPv6</string>
+    <string name="peer_endpoints">Peer endpoints</string>
+    <string name="dns_endpoint_hint">IP, hostname, or DoH URL</string>
+    <string name="restore_ipv6">Restore IPv6</string>
+    <string name="network">Network</string>
+    <string name="fallback_to_ipv4_desc">Switch to IPv4 if IPv6 fails, without restarting the tunnel.</string>
+    <string name="tunnel_state_disconnected">Disconnected</string>
+    <string name="live">Real-time (1s)</string>
+    <string name="uptime_template">uptime: %1$s</string>
+    <string name="events">Events</string>
+    <string name="peer_resolution">Peer Resolution</string>
+    <string name="restore_ipv6_desc">Switch back to IPv6 when an IPv6 network is detected.</string>
+    <string name="errors_channel_description">A channel for application and tunnel errors</string>
+    <string name="vpn_permission_required">VPN permission required</string>
+    <string name="app_channel_description">A channel for general application notifications, like version updates</string>
+    <string name="automation">Automation</string>
+    <string name="balance_saver">Battery Saver (10s)</string>
+    <string name="pinging_servers">Pinging servers…</string>
+    <string name="dynamic_dns_update">Dynamic DNS update</string>
+    <string name="statistics">Statistics</string>
+    <string name="events_channel_description">A channel for app events, like automation event</string>
+    <string name="private_dns_automatic">Private DNS: automatic</string>
+    <string name="tunnel_statistics">Live tunnel statistics</string>
+    <string name="ipv6_settings">IPv6 settings</string>
+    <string name="error">Error</string>
+    <string name="dns_error_invalid_url">Invalid URL format</string>
+    <string name="view_live_tunnel">View live tunnel</string>
+    <string name="mode">Mode</string>
+    <string name="tunnel_state_starting">Starting</string>
+    <string name="dns_endpoint_label">DNS server endpoint</string>
+    <string name="plain_dns">Plain DNS (port 53)</string>
+    <string name="included_apps">%1$s apps included</string>
+    <string name="error_http_port_unavailable">HTTP listener port %1$d is already in use.\nPlease choose a different port.</string>
+    <string name="current_system_dns">Current system DNS</string>
+    <string name="security">Security</string>
+    <string name="more_options">More options</string>
+    <string name="status_template">status: %1$s</string>
+    <string name="export_canceled">Export canceled</string>
+    <string name="prefer_ipv6_desc">Use IPv6 endpoints when the network supports it.</string>
+    <string name="stop_all">Stop all</string>
+    <string name="copy_from">Copy from</string>
+    <string name="special_junk_packet">Special junk packet</string>
+    <string name="error_socks5_port_unavailable">SOCKS5 port %1$d is already in use.\nPlease choose a different port.</string>
+    <string name="tunnel_scripting">Pre/Post script support</string>
+    <string name="initializing">Initializing…</string>
+    <string name="errors_channel_id" translatable="false">Errors Channel</string>
+    <string name="s2" translatable="false">S2</string>
+    <string name="jc" translatable="false">Jc</string>
+    <string name="i2" translatable="false">I2</string>
+    <string name="events_channel_id" translatable="false">Events Channel</string>
+    <string name="proxy_channel_id" translatable="false">Proxy Channel</string>
+    <string name="jmax" translatable="false">Jmax</string>
+    <string name="h2" translatable="false">H2</string>
+    <string name="s3" translatable="false">S3</string>
+    <string name="i1" translatable="false">I1</string>
+    <string name="app_channel_id" translatable="false">App Channel</string>
+    <string name="i3" translatable="false">I3</string>
+    <string name="example_import_url" translatable="false">https://123.com/tun.conf</string>
+    <string name="i5" translatable="false">I5</string>
+    <string name="s4" translatable="false">S4</string>
+    <string name="fdroid_url" translatable="false">https://apt.izzysoft.de/fdroid/index/apk/com.zaneschepke.wireguardautotunnel</string>
+    <string name="h3" translatable="false">H3</string>
+    <string name="h1" translatable="false">H1</string>
+    <string name="jmin" translatable="false">Jmin</string>
+    <string name="i4" translatable="false">I4</string>
+    <string name="s1" translatable="false">S1</string>
+    <string name="h4" translatable="false">H4</string>
 </resources>

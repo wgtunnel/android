@@ -6,13 +6,11 @@
 	<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <!--for split tunneling-->
-    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
+        tools:ignore="QueryAllPackagesPermission" />
 
     <!--foreground service special use for non VPN service tunnels, android 14-->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
-    <!--foreground service special use for VPN service tunnels, android 14-->
-    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SYSTEM_EXEMPTED" />
 
     <!--foreground service permissions-->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
@@ -60,6 +58,9 @@
         android:theme="@style/Theme.App.Start"
         tools:targetApi="tiramisu">
 
+        <meta-data android:name="android.telephony.PROPERTY_SATELLITE_DATA_OPTIMIZED"
+                   android:value="${applicationId}" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -87,6 +88,60 @@
                 <category android:name="android.intent.category.LAUNCHER" />
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
                 <action android:name="android.service.quicksettings.action.QS_TILE_PREFERENCES" />
+            </intent-filter>
+
+            <!-- .zip files -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.EDIT" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="content" />
+                <data android:host="*" />
+                <data android:mimeType="application/zip" />
+
+                <data android:scheme="content" />
+                <data android:host="*" />
+                <data android:mimeType="application/x-zip-compressed" />
+
+                <data android:scheme="file" />
+                <data android:host="*" />
+                <data android:mimeType="application/zip" />
+
+                <data android:scheme="file" />
+                <data android:host="*" />
+                <data android:mimeType="application/x-zip-compressed" />
+            </intent-filter>
+
+            <!-- Share sheet for .zip -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="application/zip" />
+                <data android:mimeType="application/x-zip-compressed" />
+            </intent-filter>
+
+            <!-- .conf files  -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.EDIT" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="content" />
+                <data android:host="*" />
+                <data android:mimeType="*/*" />
+
+                <data android:scheme="file" />
+                <data android:host="*" />
+                <data android:mimeType="*/*" />
+
+                <!-- Path patterns for .conf extension matching -->
+                <data android:pathPattern=".*\\.conf" />
+                <data android:pathPattern=".*\\..*\\.conf" />
+                <data android:pathPattern=".*\\..*\\..*\\.conf" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\.conf" />
             </intent-filter>
         </activity>
 
@@ -121,7 +176,7 @@
                 tools:node="remove" />
         </provider>
         <service
-            android:name=".core.service.tile.TunnelControlTile"
+            android:name=".service.tile.TunnelControlTile"
             android:exported="true"
             android:icon="@drawable/ic_notification"
             android:label="@string/tunnel_control"
@@ -138,7 +193,7 @@
             </intent-filter>
         </service>
         <service
-            android:name=".core.service.tile.AutoTunnelControlTile"
+            android:name=".service.tile.AutoTunnelControlTile"
             android:exported="true"
             android:icon="@drawable/ic_notification"
             android:label="@string/auto_tunnel"
@@ -155,41 +210,7 @@
             </intent-filter>
         </service>
         <service
-            android:name=".core.service.tile.TunnelControlTile"
-            android:exported="true"
-            android:icon="@drawable/ic_notification"
-            android:label="@string/tunnel_control"
-            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
-            <meta-data
-                android:name="android.service.quicksettings.ACTIVE_TILE"
-                android:value="true" />
-            <meta-data
-                android:name="android.service.quicksettings.TOGGLEABLE_TILE"
-                android:value="true" />
-
-            <intent-filter>
-                <action android:name="android.service.quicksettings.action.QS_TILE" />
-            </intent-filter>
-        </service>
-        <service
-            android:name=".core.service.tile.AutoTunnelControlTile"
-            android:exported="true"
-            android:icon="@drawable/ic_notification"
-            android:label="@string/auto_tunnel"
-            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
-            <meta-data
-                android:name="android.service.quicksettings.ACTIVE_TILE"
-                android:value="true" />
-            <meta-data
-                android:name="android.service.quicksettings.TOGGLEABLE_TILE"
-                android:value="true" />
-
-            <intent-filter>
-                <action android:name="android.service.quicksettings.action.QS_TILE" />
-            </intent-filter>
-        </service>
-        <service
-            android:name=".core.service.autotunnel.AutoTunnelService"
+            android:name=".service.autotunnel.AutoTunnelService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="specialUse"
@@ -203,33 +224,6 @@
                       which cannot be achieved with standard background APIs due to timing and reliability needs for
                       network connectivity monitoring."/>
         </service>
-
-        <service
-                android:name=".core.service.TunnelForegroundService"
-                android:enabled="true"
-                android:exported="false"
-                android:foregroundServiceType="specialUse"
-                android:persistent="true"
-                android:stopWithTask="false"
-                tools:node="merge">
-            <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
-                      android:value="This service sustains non-VpnService virtual tunnels (using gVisor/netstack for
-                      isolated networking), keeping connections alive for continuous secure data routing.
-                      Persistent foreground operation is essential to handle
-                      low-level tunnel maintenance and avoid interruptions, beyond the capabilities of other
-                      service types or background work."/>
-        </service>
-
-		<service
-			android:name=".core.service.VpnForegroundService"
-			android:exported="false"
-			android:persistent="true"
-            android:foregroundServiceType="systemExempted"
-			android:permission="android.permission.BIND_VPN_SERVICE">
-			<intent-filter>
-				<action android:name="android.net.VpnService" />
-			</intent-filter>
-		</service>
 
         <receiver
             android:name=".core.broadcast.RestartReceiver"
@@ -245,14 +239,6 @@
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
             </intent-filter>
         </receiver>
-		<receiver
-			android:name=".core.broadcast.KernelReceiver"
-			android:exported="false"
-			android:permission="${applicationId}.permission.CONTROL_TUNNELS">
-			<intent-filter>
-				<action android:name="com.wireguard.android.action.REFRESH_TUNNEL_STATES" />
-			</intent-filter>
-		</receiver>
 		<!--custom security solution for easier user integration-->
 		<receiver
 			android:name=".core.broadcast.RemoteControlReceiver"

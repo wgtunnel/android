@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="no_tunnels">Žádné tunely ještě nebyly přidány!</string>
     <string name="tunnel_mobile_data">Tunelovat na mobilních datech</string>
     <string name="privacy_policy">Zásady soukromí</string>
     <string name="okay">OK</string>
@@ -22,7 +21,6 @@
     <string name="preshared_key">Předsdílený klíč</string>
     <string name="seconds">s</string>
     <string name="cancel">Zrušit</string>
-    <string name="enabled_app_shortcuts">Zapnout zkratky aplikací</string>
     <string name="unknown_error">Došlo k neznámé chybě</string>
     <string name="tunnel_on_wifi">Tunelovat na Wi-Fi</string>
     <string name="email_subject">WG Tunnel podpora</string>
@@ -41,9 +39,6 @@
     <string name="junk_packet_maximum_size">Junk packet maximální velikost</string>
     <string name="init_packet_junk_size">Init packet junk velikost</string>
     <string name="response_packet_junk_size">Response packet junk velikost</string>
-    <string name="unsure_how">pokud si nejste jisti, jak postupovat</string>
-    <string name="see_the">Podívejte se na</string>
-    <string name="getting_started_guide">začátečnickou příručku</string>
     <string name="error_file_extension">Soubor není ve formátu .conf nebo .zip</string>
     <string name="tunnel_on_ethernet">Tunelovat na ethernetu</string>
     <string name="prominent_background_location_message">Tato funkce vyžaduje oprávnění pro přístup k poloze na pozadí pro zapnutí monitorování Wi-Fi SSID, i když je aplikace zavřená. Pro více detailů, podívejte se prosím na zásady soukromí umístěné v kategorii Podpora.</string>
@@ -54,7 +49,6 @@
     <string name="dns_servers">DNS servery</string>
     <string name="allowed_ips">Povolené IP adresy</string>
     <string name="name">Název</string>
-    <string name="auto_tunneling">Automatické tunelování</string>
     <string name="interface_">Rozhraní</string>
     <string name="rotate_keys">Rotovat klíče</string>
     <string name="private_key">Soukromý klíč</string>
@@ -70,14 +64,12 @@
     <string name="no_browser_detected">Žádný prohlížeč nebyl nalezen</string>
     <string name="pin_created">PIN úspěšně vytvořen</string>
     <string name="enter_pin">Zadejte PIN</string>
-    <string name="enable_app_lock">Zapnout zámek aplikace</string>
     <string name="settings">Nastavení</string>
     <string name="support">Podpora</string>
     <string name="app_name">WG Tunnel</string>
     <string name="mtu">MTU</string>
     <string name="listen_port">Naslouchací port</string>
     <string name="auto">(Automaticky)</string>
-    <string name="kernel">Kernel</string>
     <string name="persistent_keepalive">Udržování spojení</string>
     <string name="restart_at_boot">Spustit při startu systému</string>
     <string name="show_amnezia_properties">Zobrazit Amnezia možnosti</string>
@@ -94,14 +86,10 @@
     <string name="logs">Logy</string>
     <string name="automatic">Automaticky</string>
     <string name="primary_tunnel">Výchozí tunel</string>
-    <string name="mobile_tunnel">Tunel pro mobilní data</string>
     <string name="skip">Přeskočit</string>
     <string name="donate">Přispět na projekt</string>
-    <string name="stop_on_internet_loss">Zastavit tunel při ztrátě internetu</string>
     <string name="stop_on_no_internet">Zastavit při ztrátě internetu</string>
-    <string name="ethernet_tunnel">Ethernet tunel</string>
     <string name="native_kill_switch">Nativní kill switch</string>
-    <string name="auto_tunnel_channel_name">Kanál pro oznámení auto-tunelu</string>
     <string name="vpn_channel_description">Kanál pro oznámení o stavu VPN</string>
     <string name="bypass_lan_for_kill_switch">Obejít LAN pro kill switch</string>
     <string name="hide_scripts">Skrýt skripty</string>
@@ -115,10 +103,8 @@
     <string name="init_packet_magic_header">Init packet magic header</string>
     <string name="response_packet_magic_header">Response packet magic header</string>
     <string name="trusted_wifi_names">Důvěryhodné názvy Wi-Fi</string>
-    <string name="advanced_settings">Rozšířené nastavení</string>
     <string name="include_lan">Zahrnout LAN</string>
     <string name="add_wifi_name">Přidat název Wi-Fi</string>
-    <string name="vpn_channel_name">Kanál pro oznámení VPN</string>
     <string name="show_scripts">Zobrazit skripty</string>
     <string name="splt_tunneling">Dělené tunelování</string>
     <string name="auto_tunnel_channel_description">Kanál pro oznámení o stavu auto-tunelu</string>
@@ -127,7 +113,6 @@
     <string name="peer">Peer</string>
     <string name="vpn_settings">Systémové nastavení VPN</string>
     <string name="never">Nikdy</string>
-    <string name="handshake">Poslední handshake</string>
     <string name="start_auto">Spustit auto-tunel</string>
     <string name="stop_auto">Zastavit auto-tunel</string>
     <string name="local_logging">Monitor lokálních protokolů</string>
@@ -135,7 +120,6 @@
     <string name="stop">Stop</string>
     <string name="always_on_message2">ujistěte se, že je pro všechny ostatní aplikace vypnutá funkce trvalé připojení VPN, a zkuste to znovu</string>
     <string name="use_wildcards">Použít zástupné znaky(wildcards) pro názvy</string>
-    <string name="multiple">Několik</string>
     <string name="enter_config_url">Zadejte adresu URL konfigurace</string>
     <string name="search">Hledat</string>
     <string name="join_matrix">Připojte se k Matrix komunitě</string>
@@ -151,16 +135,12 @@
     <string name="dropdown">Rozbalovací nabídka</string>
     <string name="select_all">Vybrat vše</string>
     <string name="trusted_ssid_value_description">Odeslat SSID</string>
-    <string name="debounce_delay">Zpoždění odezvy</string>
     <string name="always_on_message">Autorizace připojení VPN byla zamítnuta. Zkontrolujte prosím</string>
     <string name="config_error">Neplatná konfigurace</string>
     <string name="prominent_background_location_title">Zpřístupnění stávající polohy na pozadí</string>
     <string name="vpn_denied_dialog_title">Oprávnění zamítnuto</string>
     <string name="app_permission_title">Ovládání tunelů a funkcí automatického tunelování</string>
     <string name="app_permission_description">https://hosted.weblate.org/translate/wg-tunnel/strings/en/?checksum=e52d7eb2e28a9a12 Ovládání funkcí tunelu a automatického tunelování.</string>
-    <string name="enable_remote_app_control">Povolit vzdálené ovládání aplikace</string>
-    <string name="tunnel_starting">Spuštění tunelu</string>
-    <string name="nothing_here_yet">Zatím zde nic není!</string>
     <string name="export_success">Export byl úspěšně dokončen</string>
     <string name="download">Stáhnout</string>
     <string name="check_for_update">Zkontrolovat aktualizaci</string>
@@ -176,21 +156,13 @@
     <string name="install_updated_permission">Tato aplikace potřebuje oprávnění k instalaci aktualizací.</string>
     <string name="checking_for_update">Kontrola aktualizací</string>
     <string name="add_from_url">Přidat z adresy URL</string>
-    <string name="inactive">Neaktivní</string>
     <string name="auth_error">Neautorizováno</string>
-    <string name="kernel_name_error">Chyba názvu modulu jádra</string>
     <string name="export_failed">Export se nezdařil</string>
     <string name="delete">Smazat</string>
-    <string name="export_tunnels_wireguard">Exportovat tunely jako WireGuard</string>
-    <string name="export_tunnels_amnezia">Exportovat tunely jako Amnezia</string>
-    <string name="remote_key_template">Klíč: %1$s</string>
-    <string name="active">Aktivní</string>
     <string name="service_running_error">Služba není spuštěna</string>
-    <string name="tunnel_error_template">Tunel selhal s: %1$s</string>
     <string name="camera_permission_required">Vyžadováno oprávnění k použití fotoaparátu</string>
     <string name="copy">Kopírovat</string>
     <string name="launch_app_settings">Spustit nastavení aplikace</string>
-    <string name="tunnel_running">Tunel je v provozu</string>
     <string name="wildcards_active">Wildcards aktivní</string>
     <string name="root_accepted">Root shell přijata</string>
     <string name="update_check_unsupported">Kontrola aktualizací není u tohoto typu sestavení podporována.</string>
@@ -202,8 +174,6 @@
     <string name="post_up">Po aktivaci</string>
     <string name="flavor_template">Varianta: %1$s</string>
     <string name="done">Hotovo</string>
-    <string name="wireguard">WireGuard</string>
-    <string name="amnezia">Amnezia</string>
     <string name="show_qr">Zobrazit QR kód</string>
     <string name="current_template">Aktuální: %1$s</string>
     <string name="wifi_detection_method">Metoda detekce Wi-Fi</string>
@@ -220,9 +190,7 @@
     <string name="legacy_api_description">Použije zastarou metodu systému Android 12 pro získání informací o síti Wi-Fi, která omezuje dotazy na polohu, ale na novějších zařízeních nemusí spolehlivě fungovat</string>
     <string name="use_shell_via_shizuku">Použít shell přes Shizuku k získání informací o Wi-Fi, čímž se zabrání potřebě oprávnění k poloze na zařízeních, která nejsou rootnutá</string>
     <string name="drag_handle">Přetáhnout úchyt</string>
-    <string name="error_tunnel_name">Název tunelu musí v kernel režimu obsahovat 15 znaků nebo méně</string>
     <string name="tunnel">tunel</string>
-    <string name="tunnel_item_description">%1$s, %2$s, %3$s</string>
     <string name="warning">Varování</string>
     <string name="location_permissions">Oprávnění k přístupu k poloze</string>
     <string name="open_settings">Otevřít nastavení</string>
@@ -231,16 +199,7 @@
     <string name="start">Start</string>
     <string name="auto_tunnel_running">Automatický tunel je spuštěn</string>
     <string name="auto_tunnel_not_running">Automatický tunel není spuštěn</string>
-    <string name="pinger_bounce_successful">Tunel byl úspěšně restartován pomocí pingera.</string>
     <string name="tunnel_monitoring">Monitorování tunelu</string>
-    <string name="ip_or_hostname">IP adresa nebo název hostitele</string>
-    <string name="attempts_per_interval">Pokusů o ping za interval</string>
-    <string name="timeout_all_attempts">Celkový časový limit pro všechny pokusy</string>
-    <string name="display_detailed_ping_stats">Zobrazit podrobné statistiky pingů</string>
-    <string name="ping_success_template">Poslední úspěšný ping: %1$s</string>
-    <string name="packets_sent_template">Odeslané pakety: %1$s</string>
-    <string name="packet_loss_template">Ztracené pakety: %.2f%%</string>
-    <string name="_true">Pravda</string>
     <string name="restarting_app">Restartování aplikace pro použití změn…</string>
     <string name="restore_failed">Obnovení ze zálohy se nepodařilo.</string>
     <string name="backup_failed">Nepodařilo se vytvořit zálohu.</string>
@@ -258,22 +217,12 @@
     <string name="show_password">Zobrazit heslo</string>
     <string name="defaults_to_template">(výchozí hodnota je %1$s)</string>
     <string name="dns_settings">Nastavení DNS</string>
-    <string name="dns_provider">Poskytovatel DNS</string>
-    <string name="dns_protocol">Protokol DNS</string>
     <string name="system">Systém</string>
     <string name="doh">DNS přes HTTPS (DoH)</string>
     <string name="comma_separated">Oddělené čárkami</string>
     <string name="server_port">Server:Port</string>
     <string name="new_tunnel">Nový tunel</string>
     <string name="read_failed">Nepodařilo se přečíst data.</string>
-    <string name="invalid_key">Neplatný klíč</string>
-    <string name="invalid_number">Neplatné číslo</string>
-    <string name="invalid_value">Neplatná hodnota</string>
-    <string name="missing_attribute">Chybějící atribut</string>
-    <string name="missing_section">Chybějící sekce</string>
-    <string name="syntax_error">Syntaktická chyba</string>
-    <string name="unknown_attribute">Neznámý atribut</string>
-    <string name="unknown_section">Neznámá sekce</string>
     <string name="ports_must_differ">Selhalo. Proxy servery musí mít různé porty.</string>
     <string name="password_no_spaces">Heslo nesmí obsahovat mezery.</string>
     <string name="tunnel_name_taken">Název tunelu je již použit.</string>
@@ -284,8 +233,6 @@
     <string name="active_tunnel_update_failed">Aktualizace aktivního tunelu se nezdařila</string>
     <string name="ddns_auto_update">Automatická aktualizace dynamického DNS</string>
     <string name="ddns_auto_update_description">Automatická aktualizace IP adresy při změně DDNS</string>
-    <string name="prefer_ipv6_resolution">Upřednostnit překlad IPv6 peerů</string>
-    <string name="disabled">Deaktivováno</string>
     <string name="mode_disabled_template">Funkce není v %1$s režimu dostupná.</string>
     <string name="donate_title">Darovat</string>
     <string name="crypto">Adresy kryptoměn</string>
@@ -295,23 +242,14 @@
     <string name="donation_thanks_intro">Děkujeme, že uvažujete o podpoře tohoto projektu!</string>
     <string name="donation_closing">Mým snem je pracovat pro vás na tomto projektu na plný úvazek.</string>
     <string name="donation_signoff">S vděčností,</string>
-    <string name="expiremental_template">%1$s (experimentální)</string>
     <string name="root_required_template">%1$s (vyžaduje root)</string>
     <string name="recommended_template">%1$s (doporučeno)</string>
     <string name="hint_template">(%1$s)</string>
-    <string name="set_custom_ping_target">Vlastní cíl pingu</string>
-    <string name="tunnel_ping_interval">Interval pingování tunelu</string>
-    <string name="ping_timeout">Časový limit pingování tunelu</string>
-    <string name="latency_template">Latence: %1$s</string>
-    <string name="ping_target_template">Cíl pingu: %1$s</string>
-    <string name="backup_success">Úspěšně zazálohováno. %1$s</string>
+    <string name="backup_success">Úspěšně zazálohováno</string>
     <string name="config_error_template">Špatná konfigurace. %1$s v umístění: %2$s.</string>
     <string name="donation_dev_message">Jako jediný vývojář neúnavně pracuji na tom, aby se WG Tunnel stal nejlepším bezplatným a open-source WireGuard klientem pro Android, ale to je možné pouze s vaší podporou.</string>
     <string name="google_donation_message">Bohužel, kvůli pravidlům společnosti Google nejsou odkazy na darování povoleny ve verzi této aplikace z Obchodu Play. Projděte si prosím webové stránky projektu, abyste zjistili, kde můžete přispět.</string>
-    <string name="pinger_bounce_recovery">Restartování pingera se nezdařilo. Tunel byl obnoven se starými adresami.</string>
-    <string name="bounce_failed_template">Pinger nemohl obnovit tunel kvůli následující chybě: %1$s</string>
     <string name="dual_stack">Dual-stack</string>
-    <string name="kernel_name_dots">Název tunelu nemůže být „.“ nebo „..“ v režimu kernel</string>
     <string name="save_changes">Uložit změny</string>
     <string name="dual_stack_description">Tunely musí podporovat IPv4 a IPv6</string>
     <string name="remote_key">Dálkový klíč</string>
@@ -329,13 +267,11 @@
     <string name="no_network">Žádné připojení k síti</string>
     <string name="restore_success">Úspěšně obnoveno. %1$s</string>
     <string name="wifi">Wi-Fi</string>
-    <string name="ping_target">Cíl pingu</string>
     <string name="locked_down">Uzamknuto</string>
     <string name="resources">Odkazy</string>
     <string name="back">Zpět</string>
     <string name="already_donated">Již darováno</string>
     <string name="selected">Vybrané</string>
-    <string name="global_split_tunneling">Globální dělené tunelování</string>
     <string name="active_network">Aktivní síť:</string>
     <string name="delete_active_message">Aktivní tunel nelze odstranit.</string>
     <string name="help_translate">Pomozte s překladem aplikace</string>
@@ -343,10 +279,8 @@
     <string name="other">Ostatní</string>
     <string name="kill_switch">kill switch</string>
     <string name="configuration">Konfigurace</string>
-    <string name="global_dns_servers">Globální DNS servery</string>
     <string name="contact">Kontakt</string>
     <string name="backup_and_restore">Zálohování a obnovení</string>
-    <string name="ping">Ping</string>
     <string name="about">O aplikaci</string>
     <string name="donation_prompt_link">podporu projektu,</string>
     <string name="donation_prompt_suffix">aby zůstal bezplatný a mohl se dále zlepšovat.</string>
@@ -356,33 +290,24 @@
     <string name="ddns_success_message">Dynamický koncový bod DNS byl úspěšně aktualizován.</string>
     <string name="translation">Překlad</string>
     <string name="location_justification">Aby bylo možné číst názvy Wi-Fi sítí na pozadí pomocí vaší současné metody detekce, Android vyžaduje, aby aplikace měly oprávnění „Povolit vždy“ a „Přesné“ (na starších zařízeních „Poloha na pozadí“). Tyto oprávnění prosím povolte ve vaší aplikaci pro Android nastavení.</string>
-    <string name="reliability">Spolehlivost</string>
     <string name="monitoring">Monitorování</string>
     <string name="aovpn_description">Umožnit Android systému spouštět tunely</string>
-    <string name="set_ping_target">Nastavit cíl pingu</string>
-    <string name="reachable_template">Dosažitelné: %1$s</string>
     <string name="general">Obecné</string>
     <string name="review">Ohodnotit aplikaci</string>
     <string name="backend_mode">Režim aplikace</string>
-    <string name="kernel_name_special_characters">Název tunelu v režimu jádra nesmí obsahovat mezery ani určité speciální znaky (povolené: alfanumerické znaky, _, =, +, ., -)</string>
     <string name="_continue">Pokračovat</string>
-    <string name="_false">Nepravda</string>
     <string name="unavailable_in_mode">V aktuálním režimu nedostupné</string>
-    <string name="debounce_description">Zpoždění mezi rychlými změnami sítě</string>
     <string name="preferred_tunnel">Preferovaný tunel</string>
     <string name="tunnel_running_name_message">Jméno nelze změnit, dokud je tunel aktivní.</string>
     <string name="network_name">Síť:</string>
     <string name="mapped">Přiřazeno</string>
     <string name="tunnel_mapping">Přiřazování tunelů</string>
     <string name="preferred_tunnel_label">Preferovaný tunel:</string>
-    <string name="ping_monitor">Monitor pingu</string>
     <string name="restart_message_template">Uložení změn způsobí restart %1$s, chcete pokračovat?</string>
     <string name="already_donated_description">Zakáže budoucí výzvy k darování</string>
     <string name="metered_tunnel">Měřený tunel</string>
     <string name="lockdown_settings">Nastavení uzamčení</string>
     <string name="networks">Sítě</string>
-    <string name="jitter_template">Jitter: %1$s</string>
-    <string name="ping_target_description">Výchozí nastavení je interní IP tunelu pro dělené konfigurace nebo Cloudflare pro konfigurace s plným tunelováním.</string>
     <string name="lockdown">Uzamčení</string>
     <string name="auto_tunnel_channel_id" translatable="false">Auto-tunnel Channel</string>
     <string name="kofi_url" translatable="false">https://ko-fi.com/zaneschepke</string>
@@ -426,4 +351,112 @@
     <string name="github_sponsors_url" translatable="false">https://github.com/sponsors/zaneschepke</string>
     <string name="transport_packet_junk_size">Transport packet junk velikost</string>
     <string name="cookie_packet_junk_size">Cookie packet junk velikost</string>
+    <string name="fallback_to_ipv4">Fallback to IPv4</string>
+    <string name="excluded_apps">%1$s apps excluded</string>
+    <string name="kernel_wireguard_unsupported">Kernel does not include WireGuard support (module missing or not built-in into kernel)!</string>
+    <string name="resolution_method">Resolution method</string>
+    <string name="notification_ipv6_recovery_message">%1$s recovered IPv6 connectivity</string>
+    <string name="tunnel_state_resolving_dns">Resolving DNS</string>
+    <string name="handshake_template">handshake: %1$s</string>
+    <string name="peer_template">peer: %1$s</string>
+    <string name="errors">Errors</string>
+    <string name="no_system_dns_information">No system DNS information</string>
+    <string name="export_unsupported">Export is not supported on this device</string>
+    <string name="tunnel_globals">Tunnel globals</string>
+    <string name="sort_by_latency">Sort by latency</string>
+    <string name="ready">Ready</string>
+    <string name="no_system_dns_detected">No system DNS detected</string>
+    <string name="name_error_empty">Tunnel name cannot be empty</string>
+    <string name="notification_ipv4_fallback_message">%1$s switched to IPv4 connectivity</string>
+    <string name="notification_tunnel_status_format">%1$s • %2$s</string>
+    <string name="dns_error_invalid_ip_or_host">Invalid IP address or hostname</string>
+    <string name="proxy_channel_description">Notifications for proxy tunnels.</string>
+    <string name="system_dns_servers">Servers: %1$s</string>
+    <string name="balanced">Balanced (3s)</string>
+    <string name="import_url_description">The URL must be secure and serve a .conf file.</string>
+    <string name="dns_error_invalid_port">Port must be between 1 and 65535</string>
+    <string name="view_configuration">View configuration</string>
+    <string name="dot">DNS over TLS (DoT)</string>
+    <string name="ipv6_recovery">IPv6 recovery</string>
+    <string name="screen_recording_protection">Screen recording protection</string>
+    <string name="dns_error_invalid_host">Host cannot be empty</string>
+    <string name="toggle_sensitive_data_visibility">Toggle sensitive data visibility</string>
+    <string name="ipv4_fallback">IPv4 fallback</string>
+    <string name="dns_error_empty">Endpoint cannot be empty</string>
+    <string name="tunnel_state_connected">Connected</string>
+    <string name="dns_error_invalid_scheme">DoH must use HTTPS</string>
+    <string name="private_dns_hostname">Private DNS: hostname (%1$s)</string>
+    <string name="app">App</string>
+    <string name="refresh_rate">Statistics refresh rate</string>
+    <string name="app_selection">App selection</string>
+    <string name="tunnel_state_handshake_failure">Handshake failure</string>
+    <string name="notification_dynamic_dns_message">%1$s updated after Dynamic DNS change</string>
+    <string name="tunnel_state_establishing_connection">Establishing connection</string>
+    <string name="prefer_ipv6">Prefer IPv6</string>
+    <string name="peer_endpoints">Peer endpoints</string>
+    <string name="dns_endpoint_hint">IP, hostname, or DoH URL</string>
+    <string name="restore_ipv6">Restore IPv6</string>
+    <string name="network">Network</string>
+    <string name="fallback_to_ipv4_desc">Switch to IPv4 if IPv6 fails, without restarting the tunnel.</string>
+    <string name="tunnel_state_disconnected">Disconnected</string>
+    <string name="live">Real-time (1s)</string>
+    <string name="uptime_template">uptime: %1$s</string>
+    <string name="events">Events</string>
+    <string name="peer_resolution">Peer Resolution</string>
+    <string name="restore_ipv6_desc">Switch back to IPv6 when an IPv6 network is detected.</string>
+    <string name="errors_channel_description">A channel for application and tunnel errors</string>
+    <string name="vpn_permission_required">VPN permission required</string>
+    <string name="app_channel_description">A channel for general application notifications, like version updates</string>
+    <string name="automation">Automation</string>
+    <string name="balance_saver">Battery Saver (10s)</string>
+    <string name="pinging_servers">Pinging servers…</string>
+    <string name="dynamic_dns_update">Dynamic DNS update</string>
+    <string name="statistics">Statistics</string>
+    <string name="events_channel_description">A channel for app events, like automation event</string>
+    <string name="private_dns_automatic">Private DNS: automatic</string>
+    <string name="tunnel_statistics">Live tunnel statistics</string>
+    <string name="ipv6_settings">IPv6 settings</string>
+    <string name="error">Error</string>
+    <string name="dns_error_invalid_url">Invalid URL format</string>
+    <string name="view_live_tunnel">View live tunnel</string>
+    <string name="mode">Mode</string>
+    <string name="tunnel_state_starting">Starting</string>
+    <string name="dns_endpoint_label">DNS server endpoint</string>
+    <string name="plain_dns">Plain DNS (port 53)</string>
+    <string name="included_apps">%1$s apps included</string>
+    <string name="error_http_port_unavailable">HTTP listener port %1$d is already in use.\nPlease choose a different port.</string>
+    <string name="current_system_dns">Current system DNS</string>
+    <string name="security">Security</string>
+    <string name="more_options">More options</string>
+    <string name="status_template">status: %1$s</string>
+    <string name="export_canceled">Export canceled</string>
+    <string name="prefer_ipv6_desc">Use IPv6 endpoints when the network supports it.</string>
+    <string name="stop_all">Stop all</string>
+    <string name="copy_from">Copy from</string>
+    <string name="special_junk_packet">Special junk packet</string>
+    <string name="error_socks5_port_unavailable">SOCKS5 port %1$d is already in use.\nPlease choose a different port.</string>
+    <string name="tunnel_scripting">Pre/Post script support</string>
+    <string name="initializing">Initializing…</string>
+    <string name="errors_channel_id" translatable="false">Errors Channel</string>
+    <string name="s2" translatable="false">S2</string>
+    <string name="jc" translatable="false">Jc</string>
+    <string name="i2" translatable="false">I2</string>
+    <string name="events_channel_id" translatable="false">Events Channel</string>
+    <string name="proxy_channel_id" translatable="false">Proxy Channel</string>
+    <string name="jmax" translatable="false">Jmax</string>
+    <string name="h2" translatable="false">H2</string>
+    <string name="s3" translatable="false">S3</string>
+    <string name="i1" translatable="false">I1</string>
+    <string name="app_channel_id" translatable="false">App Channel</string>
+    <string name="i3" translatable="false">I3</string>
+    <string name="example_import_url" translatable="false">https://123.com/tun.conf</string>
+    <string name="i5" translatable="false">I5</string>
+    <string name="s4" translatable="false">S4</string>
+    <string name="fdroid_url" translatable="false">https://apt.izzysoft.de/fdroid/index/apk/com.zaneschepke.wireguardautotunnel</string>
+    <string name="h3" translatable="false">H3</string>
+    <string name="h1" translatable="false">H1</string>
+    <string name="jmin" translatable="false">Jmin</string>
+    <string name="i4" translatable="false">I4</string>
+    <string name="s1" translatable="false">S1</string>
+    <string name="h4" translatable="false">H4</string>
 </resources>

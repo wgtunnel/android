@@ -1,5 +1,5 @@
-What's new:
-- Resource usage bugfix
-- Improve network monitoring
-- Tab navigation bugfix
-- Tunnel metered default bugfix
+Що нового:
+- Виправлення помилки у використанні ресурсів
+- Покращення моніторингу мережі
+- Виправлення помилки в навігації між вкладками
+- Виправлення помилки у налаштуваннях тунелю за замовчуванням

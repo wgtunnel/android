@@ -1,4 +1,4 @@
-What's new:
-- Search domain tunnels fail to start bugfix
-- DNS fallback to IPv4 on IPv4 only networks bugfix
-- Ping target not editable bugfix
+Що нового:
+- Виправлено помилку, через яку не запускалися тунелі доменного пошуку
+- Виправлено помилку, пов’язану з переходом DNS на IPv4 у мережах, що підтримують лише IPv4
+- Виправлено помилку, через яку не можна було редагувати адресу для команди ping

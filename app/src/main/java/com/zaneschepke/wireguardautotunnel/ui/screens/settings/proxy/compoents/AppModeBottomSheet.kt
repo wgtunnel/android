@@ -2,39 +2,42 @@ package com.zaneschepke.wireguardautotunnel.ui.screens.settings.proxy.compoents
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
-import com.zaneschepke.wireguardautotunnel.data.model.AppMode
-import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
+import androidx.compose.ui.res.stringResource
+import com.zaneschepke.wireguardautotunnel.R
+import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelMode
 import com.zaneschepke.wireguardautotunnel.ui.common.sheet.CustomBottomSheet
 import com.zaneschepke.wireguardautotunnel.ui.common.sheet.SheetOption
 import com.zaneschepke.wireguardautotunnel.util.extensions.asIcon
 import com.zaneschepke.wireguardautotunnel.util.extensions.asTitleString
-import com.zaneschepke.wireguardautotunnel.util.extensions.description
+import kotlin.enums.enumEntries
 
 @Composable
 fun AppModeBottomSheet(
-    onAppModeChange: (AppMode) -> Unit,
-    appMode: AppMode,
+    onAppModeChange: (TunnelMode) -> Unit,
+    tunnelMode: TunnelMode,
     onDismiss: () -> Unit,
 ) {
     val context = LocalContext.current
-    val isTv = LocalIsAndroidTV.current
 
     CustomBottomSheet(
-        enumValues<AppMode>()
-            .filterNot { isTv && it == AppMode.KERNEL }
-            .map {
-                val icon = it.asIcon()
-                SheetOption(
-                    icon,
-                    label = it.asTitleString(context),
-                    onClick = {
-                        onDismiss()
-                        onAppModeChange(it)
+        enumEntries<TunnelMode>().map {
+            val icon = it.asIcon()
+            SheetOption(
+                icon,
+                label = it.asTitleString(context),
+                onClick = {
+                    onDismiss()
+                    onAppModeChange(it)
+                },
+                description =
+                    when (it) {
+                        TunnelMode.VPN -> stringResource(R.string.vpn_desc)
+                        TunnelMode.PROXY -> stringResource(R.string.local_proxy_desc)
+                        TunnelMode.LOCK_DOWN -> stringResource(R.string.lockdown_desc)
                     },
-                    selected = appMode == it,
-                    description = it.description(context),
-                )
-            }
+                selected = tunnelMode == it,
+            )
+        }
     ) {
         onDismiss()
     }

@@ -6,13 +6,11 @@
     <string name="add_peer">پیئر شامل کریں</string>
     <string name="rotate_keys">کلید گھمائیں</string>
     <string name="copy_public_key">عوامی کلید نقل کریں</string>
-    <string name="vpn_channel_name">وی پی این نوٹیفکیشن چینل</string>
     <string name="optional">(اختیاری)</string>
     <string name="prominent_background_location_title">پس منظر لوکیشن کا انکشاف</string>
     <string name="public_key">عوامی کلید</string>
     <string name="app_name">ڈبلیو جی ٹنل</string>
     <string name="error_file_extension">فائل conf یا zip نہیں ہے</string>
-    <string name="no_tunnels">ابھی تک کوئی ٹنلز شامل نہیں کی گئیں!</string>
     <string name="tunnels">ٹنلز</string>
     <string name="tunnel_mobile_data">موبائل ڈیٹا پر ٹنل</string>
     <string name="privacy_policy">رازداری کی پالیسی دیکھیں</string>
@@ -39,7 +37,6 @@
     <string name="random">(بے ترتیب)</string>
     <string name="preshared_key">پہلے سے مشترکہ کلید</string>
     <string name="cancel">منسوخ</string>
-    <string name="enabled_app_shortcuts">ایپ شارٹ کٹس کو فعال کریں</string>
     <string name="tunnel_on_wifi">ناقابل اعتماد وائی فائی پر ٹنل</string>
     <string name="email_subject">ڈبلیو جی ٹنل سپورٹ</string>
     <string name="docs_description">دستاویزات پڑھیں</string>
@@ -64,7 +61,6 @@
     <string name="init_packet_junk_size">اِنِٹ پیکٹ جنک سائز</string>
     <string name="init_packet_magic_header">اِنِٹ پیکٹ میجک ہیڈر</string>
     <string name="transport_packet_magic_header">ٹرانسپورٹ پیکٹ میجک ہیڈر</string>
-    <string name="see_the">دیکھیں</string>
     <string name="vpn_denied_dialog_title">اجازت نامنظور</string>
     <string name="vpn_settings">وی پی این سسٹم کی ترتیبات</string>
     <string name="always_on_message">وی پی این کنکشن کی اجازت مسترد کر دی گئی ہے۔ براہ کرم چیک کریں</string>
@@ -79,14 +75,12 @@
     <string name="display_theme">ڈسپلے تھیم</string>
     <string name="trusted_wifi_names">قابل اعتماد وائی فائی نام</string>
     <string name="primary_tunnel">بنیادی ٹنل</string>
-    <string name="mobile_tunnel">موبائل ڈیٹا ٹنل</string>
     <string name="skip">نظر انداز</string>
     <string name="learn_more">مزید جانیں</string>
     <string name="start_auto">خودکار ٹنل چلائیں</string>
     <string name="donate">پروجیکٹ کے لیے عطیہ کریں</string>
     <string name="local_logging">مقامی لاگنگ</string>
     <string name="stop_on_no_internet">بغیر انٹرنیٹ پر روکیں</string>
-    <string name="stop_on_internet_loss">انٹرنیٹ لاس پر ٹنل روکیں</string>
     <string name="allow_lan_traffic">لین ٹریفک کی اجازت دیں</string>
     <string name="splt_tunneling">سپلٹ ٹنلنگ</string>
     <string name="show_scripts">اسکرپٹس دکھائیں</string>
@@ -95,18 +89,14 @@
     <string name="pre_down">پری نیچے</string>
     <string name="post_down">پوسٹ نیچے</string>
     <string name="quick_actions">فوری اقدامات</string>
-    <string name="advanced_settings">اعلیٰ ترتیبات</string>
-    <string name="debounce_delay">ڈی باؤنس تاخیر</string>
     <string name="hide_amnezia_properties">ایمنیزیا خصوصیات چھپائیں</string>
     <string name="exclude_lan">لین خارج کریں</string>
     <string name="include_lan">لین شامل کریں</string>
     <string name="auto_tunnel">خودکار ٹنل</string>
-    <string name="multiple">متعدد</string>
     <string name="prominent_background_location_message">اس فیچر کو ایپلیکیشن بند ہونے کے باوجود بھی وای فائی ایس ایس آی ڈی مانیٹرنگ کو فعال کرنے کے لیے پس منظر لوکیشن کی اجازت درکار ہے۔ مزید تفصیلات کے لیے، براہ کرم سپورٹ اسکرین پر منسلک رازداری کی پالیسی دیکھیں۔</string>
     <string name="email_chooser">ای میل بھیجیں…</string>
     <string name="add_tunnels_text">فائل یا زپ سے شامل کریں</string>
     <string name="config_changes_saved">کنفیگریشن تبدیلیاں محفوظ ہو گئیں۔</string>
-    <string name="auto_tunneling">خودکار ٹنلنگ</string>
     <string name="create_import">شروع سے تخلیق کریں</string>
     <string name="unknown_error">نامعلوم خرابی پیش آگئی</string>
     <string name="seconds">سیکنڈز</string>
@@ -116,17 +106,12 @@
     <string name="launch_app_settings">ایپ ترتیبات لانچ کریں</string>
     <string name="monitoring_state_changes">ریاستی تبدیلیوں کی نگرانی</string>
     <string name="enter_pin">پن درج کریں</string>
-    <string name="getting_started_guide">شروع کرنے کی گائیڈ</string>
-    <string name="handshake">ہینڈشیک</string>
     <string name="response_packet_magic_header">رسپانس پیکٹ میجک ہیڈر</string>
-    <string name="unsure_how">اگر آپ کو یقین نہیں کہ کیسے آگے بڑھیں</string>
     <string name="use_root_shell_for_wifi">وائی فائی کی معلومات حاصل کرنے کے لیے روٹ شیل کا استعمال کریں، مقام کی اجازت کی ضرورت کو روکتے ہوئے</string>
     <string name="response_packet_junk_size">رسپانس پیکٹ جنک سائز</string>
     <string name="junk_packet_minimum_size">جنک پیکٹ کا کم از کم سائز</string>
     <string name="edit_tunnel">ٹنل میں ترمیم کریں</string>
-    <string name="enable_app_lock">ایپ لاک فعال کریں</string>
     <string name="logs">لاگز</string>
-    <string name="kernel">کرنل</string>
     <string name="restart_at_boot">بوٹ پر دوبارہ شروع کریں</string>
     <string name="support">سپورٹ</string>
     <string name="settings">ترتیبات</string>
@@ -143,16 +128,10 @@
     <string name="never">کبھی نہیں</string>
     <string name="underload_packet_magic_header">پیکٹ میجک ہیڈر کو انڈر لوڈ کریں</string>
     <string name="always_on_message2">یہ یقینی بنانے کے لیے کہ ہمیشہ آن وی پی این دیگر تمام ایپس کے لیے بند ہے اور دوبارہ کوشش کریں</string>
-    <string name="ethernet_tunnel">ایتھرنیٹ ٹنل</string>
-    <string name="auto_tunnel_channel_name">خودکار ٹنل نوٹیفکیشن چینل</string>
-    <string name="tunnel_running">ٹنل چل رہا ہے</string>
     <string name="tunnel_control">ٹنل کنٹرول</string>
     <string name="vpn_channel_description">وی پی این ریاستی اطلاعات کے لیے ایک چینل</string>
     <string name="hide_scripts">اسکرپٹس چھپائیں</string>
     <string name="add_from_clipboard">کلپ بورڈ سے شامل کریں</string>
-    <string name="remote_key_template">کلید: %1$s</string>
-    <string name="enable_remote_app_control">ریموٹ ایپ کنٹرول فعال کریں</string>
-    <string name="kernel_name_error">کرنل ماڈیول نام کی خرابی</string>
     <string name="app_permission_title">ڈبلیو جی ٹنل کنٹرول برج</string>
     <string name="app_permission_description">ٹنل اور خودکار ٹنل کی خصوصیات کو کنٹرول کریں۔</string>
     <string name="add_from_url">یو آر ایل سے شامل کریں</string>
@@ -167,22 +146,15 @@
     <string name="add_tunnel">ٹنل شامل کریں</string>
     <string name="export_logs">ذخیرہ شدہ لاگز برآمد کریں</string>
     <string name="copy">نقل</string>
-    <string name="export_tunnels_wireguard">ٹنلز بطور وائر گارڈ برآمد کریں</string>
     <string name="delete">حذف</string>
     <string name="camera_permission_required">کیمرے کی اجازت درکار ہے</string>
     <string name="export_failed">برآمد ناکام</string>
-    <string name="tunnel_error_template">ٹنل اس کے ساتھ ناکام ہوگئی: %1$s</string>
     <string name="config_error">غلط ترتیب</string>
     <string name="dns_resolve_error">ڈی این ایس ریزولوشن ناکام</string>
     <string name="auth_error">غیر مجاز</string>
     <string name="service_running_error">سروس نہیں چل رہی</string>
-    <string name="inactive">غیر فعال</string>
-    <string name="active">فعال</string>
-    <string name="tunnel_starting">ٹنل شروع ہو رہی ہے</string>
-    <string name="nothing_here_yet">ابھی تک یہاں کچھ نہیں!</string>
     <string name="join_matrix">میٹرکس کمیونٹی میں شامل ہوں</string>
     <string name="delete_logs">لاگز حذف اور صاف کریں</string>
-    <string name="export_tunnels_amnezia">ٹنلز بطور ایمنیزیا برآمد کریں</string>
     <string name="select_all">سبھی کو منتخب کریں</string>
     <string name="check_for_update">تازہ کاری کے لیے جانچ کریں</string>
     <string name="update_check_failed">تازہ کاری کی جانچ ناکام ہو گئی۔</string>
@@ -203,8 +175,6 @@
     <string name="update_check_unsupported">اس قسم کی تعمیر کے لیے تازہ کاری معائنہ تعاون یافتہ نہیں ہے۔</string>
     <string name="flavor_template">ذائقہ: %1$s</string>
     <string name="show_qr">کیو آر دکھائیں</string>
-    <string name="amnezia">ایمنیزیا</string>
-    <string name="wireguard">وائرگارڈ</string>
     <string name="done">ہوگیا</string>
     <string name="current_template">موجودہ: %1$s</string>
     <string name="wifi_detection_method">وائی فائی کا پتہ لگانے کا طریقہ</string>
@@ -221,9 +191,7 @@
     <string name="drag_handle">ہینڈل کو گھسیٹیں</string>
     <string name="move_up">اوپر منتقل کریں</string>
     <string name="move_down">نیچے منتقل کریں</string>
-    <string name="error_tunnel_name">کرنل موڈ میں ٹنل کا نام 15 حروف یا اس سے کم ہونا چاہیے</string>
     <string name="tunnel">ٹنل</string>
-    <string name="tunnel_item_description">%1$s, %2$s, %3$s</string>
     <string name="warning">وارننگ</string>
     <string name="location_permissions">مقام کی اجازت</string>
     <string name="location_justification">آپ کے موجودہ پتہ لگانے کے طریقے کے ساتھ پس منظر میں وائی فائی کے ناموں کو پڑھنے کے لیے، اینڈرائیڈ کو ایپس کو \'ہر وقت اجازت دیں\' اور \'عین مطابق\' (پرانے آلات پر پس منظر کی جگہ) کی اجازت دینے کی ضرورت ہے۔ براہ کرم اپنی اینڈرائیڈ ایپ کی ترتیبات میں ان اجازتوں کو فعال کریں۔</string>
@@ -233,35 +201,14 @@
     <string name="start">شروع کریں</string>
     <string name="auto_tunnel_running">آٹو ٹنل چل رہا ہے</string>
     <string name="auto_tunnel_not_running">آٹو ٹنل نہیں چل رہا ہے</string>
-    <string name="pinger_bounce_successful">پِنگر کے ذریعے ٹنل کامیابی کے ساتھ دوبارہ شروع ہو گئی۔</string>
-    <string name="pinger_bounce_recovery">پِنگر دوبارہ شروع کرنا ناکام ہو گیا۔ پرانے پتوں کے ساتھ ٹنل برآمد ہوئی۔</string>
-    <string name="bounce_failed_template">پِنگر خرابی کے ساتھ سرنگ کی بازیابی میں ناکام ہو گیا: %1$s</string>
     <string name="tunnel_monitoring">ٹنل کی نگرانی</string>
-    <string name="set_custom_ping_target">حسب ضرورت پِنگ ہدف (اختیاری)</string>
-    <string name="ip_or_hostname">آئی پی یا میزبان نام</string>
-    <string name="ping_target_description">استعمال کیا جاتا ہے اگر کوئی اندرونی آئی پی دستیاب نہیں ہے (جیسے، مکمل ٹنل کی تشکیل میں)۔ خالی چھوڑنے پر کلاؤڈفلئیر طے شدہ ہے۔</string>
-    <string name="tunnel_ping_interval">ٹنل پِنگ وقفہ</string>
-    <string name="attempts_per_interval">فی وقفہ پنگ کی کوششیں</string>
-    <string name="ping_timeout">ٹنل پنگ ٹائم آؤٹ</string>
-    <string name="timeout_all_attempts">تمام کوششوں کے لیے کل ٹائم آؤٹ</string>
-    <string name="display_detailed_ping_stats">پِنگ کے تفصیلی اعدادوشمار دکھائیں</string>
-    <string name="reachable_template">قابل رسائی: %1$s</string>
-    <string name="ping_success_template">آخری کامیاب پِنگ: %1$s</string>
-    <string name="latency_template">تاخیر: %1$s</string>
-    <string name="jitter_template">ہلچل: %1$s</string>
-    <string name="packets_sent_template">پیکٹ بھیجے گئے: %1$s</string>
-    <string name="packet_loss_template">پیکٹ کا نقصان: %.2f%%</string>
-    <string name="ping_target_template">پِنگ کا ہدف: %1$s</string>
-    <string name="_true">درست</string>
-    <string name="_false">غلط</string>
-    <string name="backup_success">بیک اپ کامیاب۔ %1$s</string>
+    <string name="backup_success">بیک اپ کامیاب۔</string>
     <string name="restore_success">بحالی کامیاب۔ %1$s</string>
     <string name="restarting_app">تبدیلیاں لاگو کرنے کے لیے ایپ کو دوبارہ شروع کیا جا رہا ہے…</string>
     <string name="restore_failed">بیک اپ سے بحالی ناکام۔</string>
     <string name="backup_failed">بیک اپ بنانے میں ناکام۔</string>
     <string name="backup_application">ایپلیکیشن ڈیٹا کا بیک اپ</string>
     <string name="restore_application">بیک اپ سے بحال کریں</string>
-    <string name="expiremental_template">%1$s (تجرباتی)</string>
     <string name="root_required_template">%1$s (روٹ کی ضرورت ہے)</string>
     <string name="recommended_template">%1$s (تجویز کردہ)</string>
     <string name="hint_template">(%1$s)</string>
@@ -282,22 +229,12 @@
     <string name="defaults_to_template">(%1$s پر پہلے سے طے شدہ)</string>
     <string name="dns_settings">ڈی‌این‌ایس ترتیبات</string>
     <string name="locked_down">لاک ڈاؤن</string>
-    <string name="dns_provider">ڈی‌این‌ایس فراہم کنندہ</string>
-    <string name="dns_protocol">ڈی‌این‌ایس پروٹوکول</string>
     <string name="system">سسٹم</string>
     <string name="doh">ایچ‌ٹی‌ٹی‌پی‌ایس پر ڈی‌این‌ایس (ڈی‌او‌ایچ)</string>
     <string name="comma_separated">کوما الگ شدہ</string>
     <string name="server_port">سرور:پورٹ</string>
     <string name="new_tunnel">نئی ٹنل</string>
     <string name="read_failed">ڈیٹا پڑھنے میں ناکام۔</string>
-    <string name="invalid_key">غلط کلید</string>
-    <string name="invalid_number">غلط نمبر</string>
-    <string name="invalid_value">غلط مقدار</string>
-    <string name="missing_attribute">غائب وصف</string>
-    <string name="missing_section">غائب سیکشن</string>
-    <string name="syntax_error">نحو کی خرابی</string>
-    <string name="unknown_attribute">نامعلوم وصف</string>
-    <string name="unknown_section">نامعلوم سیکشن</string>
     <string name="config_error_template">خراب ترتیب۔ %1$s مقام پر: %2$s۔</string>
     <string name="ports_must_differ">ناکام۔ پراکسیوں کے پاس مختلف پورٹس ہونے چاہئیں۔</string>
     <string name="password_no_spaces">پاس ورڈ میں خالی جگہیں نہیں ہوسکتی ہیں۔</string>
@@ -309,8 +246,6 @@
     <string name="active_tunnel_update_failed">فعال ٹنل کی تازہ کاری ناکام ہو گئی</string>
     <string name="ddns_auto_update">متحرک ڈی‌این‌ایس خودکار تازہ کاری</string>
     <string name="ddns_auto_update_description">ڈی‌ڈی‌این‌ایس تبدیلیوں پر آئی‌پی کی خودکار تازہ کاری کرتا ہے</string>
-    <string name="prefer_ipv6_resolution">آئی‌پی‌وی6 ہم مرتبہ ریزولوشن کو ترجیح دیں</string>
-    <string name="disabled">معذور</string>
     <string name="mode_disabled_template">فیچر %1$s موڈ میں دستیاب نہیں ہے۔</string>
     <string name="lockdown">لاک ڈاؤن</string>
     <string name="donate_title">عطیہ کریں</string>
@@ -325,7 +260,6 @@
     <string name="google_donation_message">بدقسمتی سے، گوگل کی پالیسیوں کی وجہ سے، اس ایپ کے پلے اسٹور ورژن میں عطیہ کے لنکس کی اجازت نہیں ہے۔ عطیہ کہاں کرنا ہے تلاش کرنے کے لیے براہ کرم پروجیکٹ کے ویب پیجز کو براؤز کریں۔</string>
     <string name="delete_active_message">فعال ٹنل کو حذف نہیں کیا جا سکتا۔</string>
     <string name="dual_stack">Dual-stack</string>
-    <string name="kernel_name_dots">Tunnel name cannot be \'.\' or \'..\' in kernel mode</string>
     <string name="save_changes">Save changes</string>
     <string name="dual_stack_description">Tunnels must support IPv4 and IPv6</string>
     <string name="remote_key">Remote key</string>
@@ -340,21 +274,17 @@
     <string name="all_services_disabled">Auto-tunnel and tunnels must be disabled to perform this action.</string>
     <string name="no_network">No network connected</string>
     <string name="wifi">Wi-Fi</string>
-    <string name="ping_target">Ping target</string>
     <string name="resources">Resources</string>
     <string name="back">Back</string>
     <string name="already_donated">Already donated</string>
-    <string name="global_split_tunneling">Global split tunneling</string>
     <string name="active_network">Active Network:</string>
     <string name="help_translate">Help translate the app</string>
     <string name="ethernet">Ethernet</string>
     <string name="other">Other</string>
     <string name="kill_switch">kill switch</string>
     <string name="configuration">Configuration</string>
-    <string name="global_dns_servers">Global DNS servers</string>
     <string name="contact">Contact</string>
     <string name="backup_and_restore">Backup and restore</string>
-    <string name="ping">Ping</string>
     <string name="about">About</string>
     <string name="donation_prompt_link">supporting the project</string>
     <string name="donation_prompt_suffix">to keep it free and improving.</string>
@@ -363,23 +293,18 @@
     <string name="security_type">Security:</string>
     <string name="ddns_success_message">Dynamic DNS endpoint successfully updated.</string>
     <string name="translation">Translation</string>
-    <string name="reliability">Reliability</string>
     <string name="monitoring">Monitoring</string>
     <string name="aovpn_description">Allows Android to start tunnels</string>
-    <string name="set_ping_target">Set ping target</string>
     <string name="general">General</string>
     <string name="review">Rate app</string>
-    <string name="kernel_name_special_characters">Tunnel name in kernel mode cannot have spaces or certain special characters (allowed: alphanumeric, _, =, +, ., -)</string>
     <string name="_continue">Continue</string>
     <string name="unavailable_in_mode">Unavailable in current mode</string>
-    <string name="debounce_description">Delay between rapid network changes</string>
     <string name="preferred_tunnel">Preferred tunnel</string>
     <string name="tunnel_running_name_message">Name unchangeable while tunnel is active.</string>
     <string name="network_name">Network:</string>
     <string name="mapped">Mapped</string>
     <string name="tunnel_mapping">Tunnel mapping</string>
     <string name="preferred_tunnel_label">Preferred tunnel:</string>
-    <string name="ping_monitor">Ping monitor</string>
     <string name="restart_message_template">Saving changes will cause the %1$s to restart, do you wish to continue?</string>
     <string name="already_donated_description">Disables future donation prompts</string>
     <string name="metered_tunnel">Metered tunnel</string>
@@ -426,4 +351,112 @@
     <string name="github_sponsors_url" translatable="false">https://github.com/sponsors/zaneschepke</string>
     <string name="transport_packet_junk_size">Transport packet junk size</string>
     <string name="cookie_packet_junk_size">Cookie packet junk size</string>
+    <string name="fallback_to_ipv4">Fallback to IPv4</string>
+    <string name="excluded_apps">%1$s apps excluded</string>
+    <string name="kernel_wireguard_unsupported">Kernel does not include WireGuard support (module missing or not built-in into kernel)!</string>
+    <string name="resolution_method">Resolution method</string>
+    <string name="notification_ipv6_recovery_message">%1$s recovered IPv6 connectivity</string>
+    <string name="tunnel_state_resolving_dns">Resolving DNS</string>
+    <string name="handshake_template">handshake: %1$s</string>
+    <string name="peer_template">peer: %1$s</string>
+    <string name="errors">Errors</string>
+    <string name="no_system_dns_information">No system DNS information</string>
+    <string name="export_unsupported">Export is not supported on this device</string>
+    <string name="tunnel_globals">Tunnel globals</string>
+    <string name="sort_by_latency">Sort by latency</string>
+    <string name="ready">Ready</string>
+    <string name="no_system_dns_detected">No system DNS detected</string>
+    <string name="name_error_empty">Tunnel name cannot be empty</string>
+    <string name="notification_ipv4_fallback_message">%1$s switched to IPv4 connectivity</string>
+    <string name="notification_tunnel_status_format">%1$s • %2$s</string>
+    <string name="dns_error_invalid_ip_or_host">Invalid IP address or hostname</string>
+    <string name="proxy_channel_description">Notifications for proxy tunnels.</string>
+    <string name="system_dns_servers">Servers: %1$s</string>
+    <string name="balanced">Balanced (3s)</string>
+    <string name="import_url_description">The URL must be secure and serve a .conf file.</string>
+    <string name="dns_error_invalid_port">Port must be between 1 and 65535</string>
+    <string name="view_configuration">View configuration</string>
+    <string name="dot">DNS over TLS (DoT)</string>
+    <string name="ipv6_recovery">IPv6 recovery</string>
+    <string name="screen_recording_protection">Screen recording protection</string>
+    <string name="dns_error_invalid_host">Host cannot be empty</string>
+    <string name="toggle_sensitive_data_visibility">Toggle sensitive data visibility</string>
+    <string name="ipv4_fallback">IPv4 fallback</string>
+    <string name="dns_error_empty">Endpoint cannot be empty</string>
+    <string name="tunnel_state_connected">Connected</string>
+    <string name="dns_error_invalid_scheme">DoH must use HTTPS</string>
+    <string name="private_dns_hostname">Private DNS: hostname (%1$s)</string>
+    <string name="app">App</string>
+    <string name="refresh_rate">Statistics refresh rate</string>
+    <string name="app_selection">App selection</string>
+    <string name="tunnel_state_handshake_failure">Handshake failure</string>
+    <string name="notification_dynamic_dns_message">%1$s updated after Dynamic DNS change</string>
+    <string name="tunnel_state_establishing_connection">Establishing connection</string>
+    <string name="prefer_ipv6">Prefer IPv6</string>
+    <string name="peer_endpoints">Peer endpoints</string>
+    <string name="dns_endpoint_hint">IP, hostname, or DoH URL</string>
+    <string name="restore_ipv6">Restore IPv6</string>
+    <string name="network">Network</string>
+    <string name="fallback_to_ipv4_desc">Switch to IPv4 if IPv6 fails, without restarting the tunnel.</string>
+    <string name="tunnel_state_disconnected">Disconnected</string>
+    <string name="live">Real-time (1s)</string>
+    <string name="uptime_template">uptime: %1$s</string>
+    <string name="events">Events</string>
+    <string name="peer_resolution">Peer Resolution</string>
+    <string name="restore_ipv6_desc">Switch back to IPv6 when an IPv6 network is detected.</string>
+    <string name="errors_channel_description">A channel for application and tunnel errors</string>
+    <string name="vpn_permission_required">VPN permission required</string>
+    <string name="app_channel_description">A channel for general application notifications, like version updates</string>
+    <string name="automation">Automation</string>
+    <string name="balance_saver">Battery Saver (10s)</string>
+    <string name="pinging_servers">Pinging servers…</string>
+    <string name="dynamic_dns_update">Dynamic DNS update</string>
+    <string name="statistics">Statistics</string>
+    <string name="events_channel_description">A channel for app events, like automation event</string>
+    <string name="private_dns_automatic">Private DNS: automatic</string>
+    <string name="tunnel_statistics">Live tunnel statistics</string>
+    <string name="ipv6_settings">IPv6 settings</string>
+    <string name="error">Error</string>
+    <string name="dns_error_invalid_url">Invalid URL format</string>
+    <string name="view_live_tunnel">View live tunnel</string>
+    <string name="mode">Mode</string>
+    <string name="tunnel_state_starting">Starting</string>
+    <string name="dns_endpoint_label">DNS server endpoint</string>
+    <string name="plain_dns">Plain DNS (port 53)</string>
+    <string name="included_apps">%1$s apps included</string>
+    <string name="error_http_port_unavailable">HTTP listener port %1$d is already in use.\nPlease choose a different port.</string>
+    <string name="current_system_dns">Current system DNS</string>
+    <string name="security">Security</string>
+    <string name="more_options">More options</string>
+    <string name="status_template">status: %1$s</string>
+    <string name="export_canceled">Export canceled</string>
+    <string name="prefer_ipv6_desc">Use IPv6 endpoints when the network supports it.</string>
+    <string name="stop_all">Stop all</string>
+    <string name="copy_from">Copy from</string>
+    <string name="special_junk_packet">Special junk packet</string>
+    <string name="error_socks5_port_unavailable">SOCKS5 port %1$d is already in use.\nPlease choose a different port.</string>
+    <string name="tunnel_scripting">Pre/Post script support</string>
+    <string name="initializing">Initializing…</string>
+    <string name="errors_channel_id" translatable="false">Errors Channel</string>
+    <string name="s2" translatable="false">S2</string>
+    <string name="jc" translatable="false">Jc</string>
+    <string name="i2" translatable="false">I2</string>
+    <string name="events_channel_id" translatable="false">Events Channel</string>
+    <string name="proxy_channel_id" translatable="false">Proxy Channel</string>
+    <string name="jmax" translatable="false">Jmax</string>
+    <string name="h2" translatable="false">H2</string>
+    <string name="s3" translatable="false">S3</string>
+    <string name="i1" translatable="false">I1</string>
+    <string name="app_channel_id" translatable="false">App Channel</string>
+    <string name="i3" translatable="false">I3</string>
+    <string name="example_import_url" translatable="false">https://123.com/tun.conf</string>
+    <string name="i5" translatable="false">I5</string>
+    <string name="s4" translatable="false">S4</string>
+    <string name="fdroid_url" translatable="false">https://apt.izzysoft.de/fdroid/index/apk/com.zaneschepke.wireguardautotunnel</string>
+    <string name="h3" translatable="false">H3</string>
+    <string name="h1" translatable="false">H1</string>
+    <string name="jmin" translatable="false">Jmin</string>
+    <string name="i4" translatable="false">I4</string>
+    <string name="s1" translatable="false">S1</string>
+    <string name="h4" translatable="false">H4</string>
 </resources>

@@ -1,8 +1,8 @@
-What's new:
-- UI rework
-- Dynamic DNS fixes
-- Battery usage bugfix
-- Auto-tunnel reliability improvements
-- Global split tunneling and config overrides
-- Restart on boot and AOVPN bugfixes
-- Various other improvements and optimizations
+Що нового:
+- Оновлення інтерфейсу
+- Виправлення помилок у роботі динамічного DNS
+- Виправлення помилки, пов'язаної зі споживанням заряду акумулятора
+- Покращення надійності роботи автоматичного тунелювання
+- Глобальне роздільне тунелювання та можливість заміни налаштувань
+- Виправлення помилок, пов'язаних із перезапуском під час завантаження та AOVPN
+- Різні інші вдосконалення та оптимізації

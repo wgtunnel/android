@@ -12,24 +12,25 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
 import com.zaneschepke.wireguardautotunnel.ui.theme.Theme
 import com.zaneschepke.wireguardautotunnel.viewmodel.SharedAppViewModel
+import kotlin.enums.enumEntries
 import org.koin.compose.viewmodel.koinActivityViewModel
+import org.orbitmvi.orbit.compose.collectAsState
 
 @Composable
 fun DisplayScreen(sharedViewModel: SharedAppViewModel = koinActivityViewModel()) {
 
-    val appState by sharedViewModel.container.stateFlow.collectAsStateWithLifecycle()
+    val appState by sharedViewModel.collectAsState()
 
     Column(
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.Top,
         modifier = Modifier.fillMaxSize(),
     ) {
-        enumValues<Theme>().forEach {
+        enumEntries<Theme>().forEach {
             val title =
                 when (it) {
                     Theme.DARK -> stringResource(R.string.dark)

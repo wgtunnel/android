@@ -1,10 +1,14 @@
 package com.zaneschepke.wireguardautotunnel.ui.state
 
+import com.zaneschepke.networkmonitor.DnsInfo
 import com.zaneschepke.wireguardautotunnel.domain.model.DnsSettings
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
+import com.zaneschepke.wireguardautotunnel.util.DnsError
 
 data class DnsUiState(
-    val isLoading: Boolean = true,
     val dnsSettings: DnsSettings = DnsSettings(),
-    val globalConfig: TunnelConfig? = null,
+    val isLoading: Boolean = true,
+    val globalTunnelConfig: TunnelConfig? = null,
+    val peerResolutionEndpointError: DnsError? = null,
+    val systemDnsInfo: DnsInfo? = null,
 )

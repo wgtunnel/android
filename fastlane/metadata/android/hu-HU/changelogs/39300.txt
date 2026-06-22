@@ -1,4 +1,4 @@
-What's new:
-- Fixes deprecate location API bug by adding Wi-Fi info method selection
-- Simplified update check dialog UI
-- Improve auto-tunnel reliability with delayed recheck
+Újdonságok:
+Az elavult helymeghatározási API hibájának javítása Wi-Fi információ-lekérdezési mód választó hozzáadásával
+Egyszerűsített frissítésellenőrző ablak (UI)
+Az automatikus alagút (auto-tunnel) megbízhatóságának javítása késleltetett újraellenőrzéssel

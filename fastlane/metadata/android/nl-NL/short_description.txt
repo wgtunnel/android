@@ -1,1 +1,1 @@
-Een alternatieve vpn-clientapp voor Wireguard met extra functies
+WireGuard- en AmneziaWG-VPN-client met autotunneling en lockdown

@@ -72,20 +72,21 @@ jobs:
     outputs:
       UPLOAD_DIR_ANDROID: ${{ env.UPLOAD_DIR_ANDROID }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-      - name: Set up JDK 17
+          submodules: recursive
+      - name: Set up JDK 21
         uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '21'
           cache: gradle
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Decode Keystore
         id: decode_keystore
-        uses: timheuer/base64-to-file@v1.2
+        uses: timheuer/base64-to-file@v2.0
         with:
           fileName: ${{ env.KEY_STORE_FILE }}
           fileDir: ${{ env.KEY_STORE_LOCATION }}
@@ -111,6 +112,9 @@ jobs:
               ./gradlew :app:assemble${flavor^}Debug --stacktrace
               ;;
           esac
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_RUN_NUMBER: ${{ github.run_number }}
       - name: Get release apk path
         id: apk-path
         run: echo "path=$(find . -regex '^.*/build/outputs/apk/${{ inputs.flavor }}/${{ inputs.build_type }}/.*\.apk$' -type f | head -1 | tail -c+2)" >> $GITHUB_OUTPUT

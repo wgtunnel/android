@@ -28,25 +28,24 @@ class InstalledAndroidPackageRepository(
         withContext(ioDispatcher) {
             val packages = context.packageManager.getInstalledPackages(0)
 
-            val installedPackages =
-                packages.mapNotNull { packageInfo ->
-                    try {
-                        val appInfo =
-                            context.packageManager.getApplicationInfo(packageInfo.packageName, 0)
-                        InstalledPackage(
-                            name =
-                                context.packageManager.getFriendlyAppName(
-                                    packageInfo.packageName,
-                                    appInfo,
-                                ),
-                            packageName = packageInfo.packageName,
-                            uId = appInfo.uid,
-                        )
-                    } catch (e: PackageManager.NameNotFoundException) {
-                        Timber.e(e)
-                        null
-                    }
+            val installedPackages = packages.mapNotNull { packageInfo ->
+                try {
+                    val appInfo =
+                        context.packageManager.getApplicationInfo(packageInfo.packageName, 0)
+                    InstalledPackage(
+                        name =
+                            context.packageManager.getFriendlyAppName(
+                                packageInfo.packageName,
+                                appInfo,
+                            ),
+                        packageName = packageInfo.packageName,
+                        uId = appInfo.uid,
+                    )
+                } catch (e: PackageManager.NameNotFoundException) {
+                    Timber.e(e)
+                    null
                 }
+            }
 
             cachedPackages = installedPackages
 

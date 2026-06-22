@@ -1,2 +1,2 @@
-What's new:
-- Rapid network changes cause invalid network state bugfix
+Újdonságok:
+A gyors hálózatváltások okozta érvénytelen hálózati állapot hibájának javítása

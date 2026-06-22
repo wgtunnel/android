@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="no_tunnels">您还没有添加隧道！</string>
     <string name="tunnels">隧道列表</string>
     <string name="privacy_policy">隐私政策</string>
     <string name="tunnel_mobile_data">允许隧道使用数据流量</string>
@@ -26,7 +25,6 @@
     <string name="private_key">私钥</string>
     <string name="listen_port">监听端口</string>
     <string name="optional">(可选)</string>
-    <string name="enabled_app_shortcuts">创建桌面快捷方式</string>
     <string name="docs_description">阅读文档</string>
     <string name="email_description">给作者发邮件</string>
     <string name="error_root_denied">root 权限未开启</string>
@@ -42,7 +40,6 @@
     <string name="prominent_background_location_message">此功能意味着允许软件在后台自动扫描 Wi-Fi SSID，这要求开启后台位置信息访问权限。更多信息，请在支持页面查看隐私政策。</string>
     <string name="vpn_on">VPN 已连接</string>
     <string name="vpn_off">VPN 已关闭</string>
-    <string name="auto_tunneling">自动建立隧道</string>
     <string name="add_peer">添加节点</string>
     <string name="random">(随机)</string>
     <string name="seconds">秒</string>
@@ -59,10 +56,8 @@
     <string name="yes">是</string>
     <string name="all">全部</string>
     <string name="no_email_detected">未安装邮件应用</string>
-    <string name="enable_app_lock">锁定应用</string>
     <string name="settings">设置</string>
     <string name="support">支持</string>
-    <string name="kernel">内核</string>
     <string name="junk_packet_minimum_size">无效包最小值</string>
     <string name="root_accepted">已获取 root 权限</string>
     <string name="show_amnezia_properties">显示 Amnezia 属性</string>
@@ -70,7 +65,6 @@
     <string name="incorrect_pin">密码不正确</string>
     <string name="junk_packet_count">无效包计数</string>
     <string name="app_name">WG Tunnel</string>
-    <string name="vpn_channel_name">VPN 通知频道</string>
     <string name="open_issue">查看问题</string>
     <string name="auto">(自动)</string>
     <string name="pin_created">创建密码成功</string>
@@ -89,7 +83,6 @@
     <string name="vpn_settings">系统 VPN 设置</string>
     <string name="always_on_message2">确保始终开启 VPN 功能已关闭，然后再尝试连接</string>
     <string name="never">从不</string>
-    <string name="handshake">上次握手</string>
     <string name="light">亮色</string>
     <string name="dark">暗色</string>
     <string name="trusted_wifi_names">可信 WiFi 名称</string>
@@ -102,15 +95,11 @@
     <string name="language">语言</string>
     <string name="add_wifi_name">添加 WiFi 名称</string>
     <string name="primary_tunnel">默认隧道</string>
-    <string name="mobile_tunnel">使用数据流量</string>
     <string name="add_from_clipboard">从剪贴板添加</string>
     <string name="transport_packet_magic_header">传输包的 magic header</string>
     <string name="underload_packet_magic_header">欠载数据包 magic header</string>
     <string name="restart_at_boot">开机时启动</string>
     <string name="learn_more">了解更多</string>
-    <string name="unsure_how">如果您不确定如何进行</string>
-    <string name="see_the">请查阅</string>
-    <string name="getting_started_guide">入门指南</string>
     <string name="skip">取消</string>
     <string name="launch_app_settings">打开应用设置</string>
     <string name="use_wildcards">使用名称通配符</string>
@@ -119,13 +108,10 @@
     <string name="start_auto">开启自动隧道</string>
     <string name="monitoring_state_changes">监控状态变化</string>
     <string name="stop_auto">停止自动隧道</string>
-    <string name="tunnel_running">隧道运行中</string>
     <string name="donate">捐赠</string>
     <string name="local_logging">本地日志监控器</string>
     <string name="stop_on_no_internet">无网络时停用</string>
-    <string name="stop_on_internet_loss">网络丢失时停止隧道</string>
     <string name="bypass_lan_for_kill_switch">绕过局域网流量</string>
-    <string name="auto_tunnel_channel_name">自动隧道通知频道</string>
     <string name="auto_tunnel_channel_description">自动隧道状态通知频道</string>
     <string name="stop">停止</string>
     <string name="splt_tunneling">隧道分流</string>
@@ -135,8 +121,6 @@
     <string name="pre_down">关闭前</string>
     <string name="post_down">关闭后</string>
     <string name="quick_actions">快捷操作</string>
-    <string name="advanced_settings">高级设置</string>
-    <string name="debounce_delay">防抖延迟</string>
     <string name="hide_amnezia_properties">隐藏 Amnezia 属性</string>
     <string name="hide_scripts">隐藏脚本</string>
     <string name="enable_amnezia_compatibility">开启 Amnezia 兼容性</string>
@@ -145,11 +129,9 @@
     <string name="include_lan">包含局域网</string>
     <string name="tunnel_control">隧道控制</string>
     <string name="auto_tunnel">自动隧道</string>
-    <string name="ethernet_tunnel">以太网隧道</string>
     <string name="native_kill_switch">系统 VPN 开关</string>
     <string name="allow_lan_traffic">允许局域网流量</string>
     <string name="vpn_channel_description">VPN 状态通知频道</string>
-    <string name="multiple">多个</string>
     <string name="auth_error">未授权</string>
     <string name="export_failed">导出失败了</string>
     <string name="delete">删除</string>
@@ -167,22 +149,12 @@
     <string name="add_tunnel">添加隧道</string>
     <string name="delete_logs">删除并清除日志</string>
     <string name="copy">复制</string>
-    <string name="export_tunnels_amnezia">将隧道导出为 Amnezia</string>
-    <string name="export_tunnels_wireguard">将隧道导出为 WireGuard</string>
-    <string name="tunnel_error_template">隧道失败，原因：%1$s</string>
-    <string name="remote_key_template">Key: %1$s</string>
     <string name="config_error">无效配置</string>
-    <string name="kernel_name_error">内核模块名称错误</string>
     <string name="service_running_error">服务未运行</string>
-    <string name="active">活跃</string>
-    <string name="tunnel_starting">隧道启动中</string>
-    <string name="enable_remote_app_control">开启远程应用控制</string>
     <string name="join_matrix">加入 Matrix 社区</string>
     <string name="app_permission_description">控制隧道和自动隧道功能.</string>
     <string name="app_permission_title">控制隧道和自动隧道功能。</string>
-    <string name="inactive">不活跃</string>
     <string name="export_logs">导出已保存的日志</string>
-    <string name="nothing_here_yet">此处还什么都没有！</string>
     <string name="select_all">全选</string>
     <string name="version_template">当前版本：%1$s</string>
     <string name="export_success">导出成功</string>
@@ -203,8 +175,6 @@
     <string name="darker">颜色更深</string>
     <string name="amoled">AMOLED</string>
     <string name="show_qr">显示二维码</string>
-    <string name="amnezia">Amnezia</string>
-    <string name="wireguard">WireGuard</string>
     <string name="done">完成</string>
     <string name="current_template">当前：%1$s</string>
     <string name="wifi_detection_method">Wi-Fi 检测方式</string>
@@ -221,9 +191,7 @@
     <string name="drag_handle">拖动手柄</string>
     <string name="move_up">上移</string>
     <string name="move_down">下移</string>
-    <string name="error_tunnel_name">内核模式下隧道名称长度最多 15 个字符</string>
     <string name="tunnel">隧道</string>
-    <string name="tunnel_item_description">%1$s, %2$s, %3$s</string>
     <string name="warning">警告</string>
     <string name="location_permissions">位置权限</string>
     <string name="location_justification">为了用当前检测方法在后台读取 Wi-Fi 名称，Android 要求应用被给予“始终允许”和“精确定位”（在较老设备上叫“后台位置”）权限。请在系统的应用设置中启用这些权限。</string>
@@ -233,35 +201,14 @@
     <string name="start">启动</string>
     <string name="auto_tunnel_running">自动隧道运行中</string>
     <string name="auto_tunnel_not_running">自动隧道未运行</string>
-    <string name="pinger_bounce_successful">pinger 成功重启了隧道。</string>
-    <string name="pinger_bounce_recovery">Pinger 重启失败。用旧地址恢复了隧道。</string>
-    <string name="bounce_failed_template">Pinger 未能恢复隧道，错误：%1$s</string>
     <string name="tunnel_monitoring">隧道监控</string>
-    <string name="set_custom_ping_target">自定义 ping 目标</string>
-    <string name="ip_or_hostname">IP 或主机名</string>
-    <string name="ping_target_description">分流配置默认使用内部隧道 IP；不分流配置默认使用 Cloudflare。</string>
-    <string name="tunnel_ping_interval">隧道 ping 操作间隔</string>
-    <string name="attempts_per_interval">每一间隔的 Ping 次数</string>
-    <string name="ping_timeout">隧道 ping 超时</string>
-    <string name="timeout_all_attempts">所有 ping 尝试的总超时</string>
-    <string name="display_detailed_ping_stats">展示详细的 ping 数据</string>
-    <string name="reachable_template">可抵达：%1$s</string>
-    <string name="ping_success_template">上次成功的 ping 操作：%1$s</string>
-    <string name="latency_template">延迟：%1$s</string>
-    <string name="jitter_template">抖动：%1$s</string>
-    <string name="packets_sent_template">已发送数据包：%1$s</string>
-    <string name="packet_loss_template">丢失数据包：%.2f%%</string>
-    <string name="ping_target_template">Ping 目标：%1$s</string>
-    <string name="_true">是</string>
-    <string name="_false">否</string>
-    <string name="backup_success">成功备份：%1$s</string>
+    <string name="backup_success">成功备份</string>
     <string name="restore_success">成功恢复：%1$s</string>
     <string name="restarting_app">正重启应用来应用更改…</string>
     <string name="restore_failed">未能从备份恢复。</string>
     <string name="backup_failed">创建备份失败。</string>
     <string name="backup_application">备份应用数据</string>
     <string name="restore_application">从备份恢复</string>
-    <string name="expiremental_template">%1$s （实验性）</string>
     <string name="root_required_template">%1$s （需 root）</string>
     <string name="recommended_template">%1$s （推荐）</string>
     <string name="hint_template">（%1$s）</string>
@@ -282,22 +229,12 @@
     <string name="defaults_to_template">（默认为 %1$s）</string>
     <string name="dns_settings">DNS 设置</string>
     <string name="locked_down">锁定</string>
-    <string name="dns_provider">DNS 提供商</string>
-    <string name="dns_protocol">DNS 协议</string>
     <string name="system">系统</string>
     <string name="doh">DNS over HTTPS (DoH)</string>
     <string name="comma_separated">英文逗号分隔</string>
     <string name="server_port">服务器：端口</string>
     <string name="new_tunnel">新隧道</string>
     <string name="read_failed">读取数据失败。</string>
-    <string name="invalid_key">无效密钥</string>
-    <string name="invalid_number">无效数字</string>
-    <string name="invalid_value">无效值</string>
-    <string name="missing_attribute">缺少属性</string>
-    <string name="missing_section">缺少部分</string>
-    <string name="syntax_error">语法错误</string>
-    <string name="unknown_attribute">未知属性</string>
-    <string name="unknown_section">未知部分</string>
     <string name="config_error_template">错误的配置。位置：%2$s 处的 %1$s。</string>
     <string name="ports_must_differ">失败了。代理必须有不同的端口。</string>
     <string name="password_no_spaces">密码不能有空格。</string>
@@ -309,8 +246,6 @@
     <string name="active_tunnel_update_failed">激活隧道更新失败了</string>
     <string name="ddns_auto_update">动态 DNS 自动更新</string>
     <string name="ddns_auto_update_description">DDNS 更改时自动更新 IP</string>
-    <string name="prefer_ipv6_resolution">偏好 IPv6 对端解析</string>
-    <string name="disabled">已停用</string>
     <string name="mode_disabled_template">功能在 %1$s 模式下不可用。</string>
     <string name="lockdown">锁定</string>
     <string name="donate_title">捐赠</string>
@@ -340,11 +275,7 @@
     <string name="mapped">已映射</string>
     <string name="tunnel_mapping">隧道映射</string>
     <string name="wifi_settings">Wi-Fi 设置</string>
-    <string name="ping">Ping</string>
-    <string name="ping_monitor">Ping 监控器</string>
     <string name="backup_and_restore">备份和恢复</string>
-    <string name="ping_target">Ping 目标</string>
-    <string name="set_ping_target">设置 ping 目标</string>
     <string name="mobile_data">移动数据</string>
     <string name="ethernet">以太网</string>
     <string name="unknown">未知</string>
@@ -356,21 +287,15 @@
     <string name="text_too_large_for_qr">文本过大无法显示二维码。</string>
     <string name="all_services_disabled">要执行此操作必须禁用自动隧道和隧道。</string>
     <string name="ddns_success_message">成功更新了动态 DNS 端点。</string>
-    <string name="reliability">可靠性</string>
-    <string name="debounce_description">快速网络切换延迟</string>
     <string name="aovpn_description">允许安卓系统启动隧道</string>
     <string name="tunnel_boot_description">开机时启动默认隧道</string>
     <string name="remote_key">远程 key</string>
     <string name="tunnel_mapping_description">按照 Wi-Fi 名称将隧道映射为首选</string>
     <string name="monitoring">监控</string>
-    <string name="kernel_name_dots">内核模式下隧道名称不能是 \'.\' 或 \'..\'</string>
-    <string name="kernel_name_special_characters">内核模式下的隧道名称不能有空格或某些特殊字符（允许：字母数字混合、_、=、+、.、-）</string>
     <string name="tunnel_running_name_message">隧道活跃时无法更改名称。</string>
     <string name="metered_tunnel">流量计费的隧道</string>
     <string name="lockdown_settings">锁定设置</string>
     <string name="unavailable_in_mode">当前模式下不可用</string>
-    <string name="global_split_tunneling">全局分流隧道</string>
-    <string name="global_dns_servers">全局 DNS 服务器</string>
     <string name="dual_stack">双栈</string>
     <string name="dual_stack_description">隧道必须支持 IPv4 和 IPv6</string>
     <string name="save_changes">保存更改</string>
@@ -426,4 +351,112 @@
     <string name="github_sponsors_url" translatable="false">https://github.com/sponsors/zaneschepke</string>
     <string name="transport_packet_junk_size">传输包垃圾大小</string>
     <string name="cookie_packet_junk_size">Cookie 包垃圾大小</string>
+    <string name="fallback_to_ipv4">Fallback to IPv4</string>
+    <string name="excluded_apps">%1$s apps excluded</string>
+    <string name="kernel_wireguard_unsupported">Kernel does not include WireGuard support (module missing or not built-in into kernel)!</string>
+    <string name="resolution_method">Resolution method</string>
+    <string name="notification_ipv6_recovery_message">%1$s recovered IPv6 connectivity</string>
+    <string name="tunnel_state_resolving_dns">Resolving DNS</string>
+    <string name="handshake_template">handshake: %1$s</string>
+    <string name="peer_template">peer: %1$s</string>
+    <string name="errors">Errors</string>
+    <string name="no_system_dns_information">No system DNS information</string>
+    <string name="export_unsupported">Export is not supported on this device</string>
+    <string name="tunnel_globals">Tunnel globals</string>
+    <string name="sort_by_latency">Sort by latency</string>
+    <string name="ready">Ready</string>
+    <string name="no_system_dns_detected">No system DNS detected</string>
+    <string name="name_error_empty">Tunnel name cannot be empty</string>
+    <string name="notification_ipv4_fallback_message">%1$s switched to IPv4 connectivity</string>
+    <string name="notification_tunnel_status_format">%1$s • %2$s</string>
+    <string name="dns_error_invalid_ip_or_host">Invalid IP address or hostname</string>
+    <string name="proxy_channel_description">Notifications for proxy tunnels.</string>
+    <string name="system_dns_servers">Servers: %1$s</string>
+    <string name="balanced">Balanced (3s)</string>
+    <string name="import_url_description">The URL must be secure and serve a .conf file.</string>
+    <string name="dns_error_invalid_port">Port must be between 1 and 65535</string>
+    <string name="view_configuration">View configuration</string>
+    <string name="dot">DNS over TLS (DoT)</string>
+    <string name="ipv6_recovery">IPv6 recovery</string>
+    <string name="screen_recording_protection">Screen recording protection</string>
+    <string name="dns_error_invalid_host">Host cannot be empty</string>
+    <string name="toggle_sensitive_data_visibility">Toggle sensitive data visibility</string>
+    <string name="ipv4_fallback">IPv4 fallback</string>
+    <string name="dns_error_empty">Endpoint cannot be empty</string>
+    <string name="tunnel_state_connected">Connected</string>
+    <string name="dns_error_invalid_scheme">DoH must use HTTPS</string>
+    <string name="private_dns_hostname">Private DNS: hostname (%1$s)</string>
+    <string name="app">App</string>
+    <string name="refresh_rate">Statistics refresh rate</string>
+    <string name="app_selection">App selection</string>
+    <string name="tunnel_state_handshake_failure">Handshake failure</string>
+    <string name="notification_dynamic_dns_message">%1$s updated after Dynamic DNS change</string>
+    <string name="tunnel_state_establishing_connection">Establishing connection</string>
+    <string name="prefer_ipv6">Prefer IPv6</string>
+    <string name="peer_endpoints">Peer endpoints</string>
+    <string name="dns_endpoint_hint">IP, hostname, or DoH URL</string>
+    <string name="restore_ipv6">Restore IPv6</string>
+    <string name="network">Network</string>
+    <string name="fallback_to_ipv4_desc">Switch to IPv4 if IPv6 fails, without restarting the tunnel.</string>
+    <string name="tunnel_state_disconnected">Disconnected</string>
+    <string name="live">Real-time (1s)</string>
+    <string name="uptime_template">uptime: %1$s</string>
+    <string name="events">Events</string>
+    <string name="peer_resolution">Peer Resolution</string>
+    <string name="restore_ipv6_desc">Switch back to IPv6 when an IPv6 network is detected.</string>
+    <string name="errors_channel_description">A channel for application and tunnel errors</string>
+    <string name="vpn_permission_required">VPN permission required</string>
+    <string name="app_channel_description">A channel for general application notifications, like version updates</string>
+    <string name="automation">Automation</string>
+    <string name="balance_saver">Battery Saver (10s)</string>
+    <string name="pinging_servers">Pinging servers…</string>
+    <string name="dynamic_dns_update">Dynamic DNS update</string>
+    <string name="statistics">Statistics</string>
+    <string name="events_channel_description">A channel for app events, like automation event</string>
+    <string name="private_dns_automatic">Private DNS: automatic</string>
+    <string name="tunnel_statistics">Live tunnel statistics</string>
+    <string name="ipv6_settings">IPv6 settings</string>
+    <string name="error">Error</string>
+    <string name="dns_error_invalid_url">Invalid URL format</string>
+    <string name="view_live_tunnel">View live tunnel</string>
+    <string name="mode">Mode</string>
+    <string name="tunnel_state_starting">Starting</string>
+    <string name="dns_endpoint_label">DNS server endpoint</string>
+    <string name="plain_dns">Plain DNS (port 53)</string>
+    <string name="included_apps">%1$s apps included</string>
+    <string name="error_http_port_unavailable">HTTP listener port %1$d is already in use.\nPlease choose a different port.</string>
+    <string name="current_system_dns">Current system DNS</string>
+    <string name="security">Security</string>
+    <string name="more_options">More options</string>
+    <string name="status_template">status: %1$s</string>
+    <string name="export_canceled">Export canceled</string>
+    <string name="prefer_ipv6_desc">Use IPv6 endpoints when the network supports it.</string>
+    <string name="stop_all">Stop all</string>
+    <string name="copy_from">Copy from</string>
+    <string name="special_junk_packet">Special junk packet</string>
+    <string name="error_socks5_port_unavailable">SOCKS5 port %1$d is already in use.\nPlease choose a different port.</string>
+    <string name="tunnel_scripting">Pre/Post script support</string>
+    <string name="initializing">Initializing…</string>
+    <string name="errors_channel_id" translatable="false">Errors Channel</string>
+    <string name="s2" translatable="false">S2</string>
+    <string name="jc" translatable="false">Jc</string>
+    <string name="i2" translatable="false">I2</string>
+    <string name="events_channel_id" translatable="false">Events Channel</string>
+    <string name="proxy_channel_id" translatable="false">Proxy Channel</string>
+    <string name="jmax" translatable="false">Jmax</string>
+    <string name="h2" translatable="false">H2</string>
+    <string name="s3" translatable="false">S3</string>
+    <string name="i1" translatable="false">I1</string>
+    <string name="app_channel_id" translatable="false">App Channel</string>
+    <string name="i3" translatable="false">I3</string>
+    <string name="example_import_url" translatable="false">https://123.com/tun.conf</string>
+    <string name="i5" translatable="false">I5</string>
+    <string name="s4" translatable="false">S4</string>
+    <string name="fdroid_url" translatable="false">https://apt.izzysoft.de/fdroid/index/apk/com.zaneschepke.wireguardautotunnel</string>
+    <string name="h3" translatable="false">H3</string>
+    <string name="h1" translatable="false">H1</string>
+    <string name="jmin" translatable="false">Jmin</string>
+    <string name="i4" translatable="false">I4</string>
+    <string name="s1" translatable="false">S1</string>
+    <string name="h4" translatable="false">H4</string>
 </resources>

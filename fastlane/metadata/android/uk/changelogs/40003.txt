@@ -1,4 +1,4 @@
-What's new:
-- Monitoring failing to shut down race bugfix
-- Notifications stop action bugfix
-- Notification relaunch activity when already active bugfix
+Що нового:
+- Виправлено помилку, що призводила до зависання системи під час вимкнення
+- Виправлено помилку, що призводила до зупинки дії під час отримання сповіщень
+- Виправлено помилку, що призводила до повторного запуску сповіщень, якщо вони вже були активними

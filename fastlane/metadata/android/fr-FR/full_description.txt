@@ -1,14 +1,13 @@
-Fonctionnalités
+WG Tunnel est un client VPN WireGuard qui offre un équilibre parfait entre simplicité et robustesse, ce qui en fait le client idéal pour les utilisateurs occasionnels comme pour les utilisateurs expérimentés.
+Que vous souhaitiez simplement automatiser votre connexion VPN ou que vous soyez un utilisateur expérimenté avec des besoins avancés en matière de confidentialité, WG Tunnel est la solution qu'il vous faut.
 
-- Permet l'ajout de tunnels à l'aide d'un fichier .conf, zip, par entrée manuelle ou par code QR
-- Se connecte automatiquement au VPN en fonction du SSID de votre Wi-Fi, de l'usage d'Ethernet ou de l'usage des données mobiles
-- Divise les tunnels en fonction de l'application avec recherche
-- Prend en charge les modes noyau et espace utilisateur de WireGuard
-- Prend en charge Amnezia pour la protection contre l'inspection profonde de paquets ou contre la censure
-- Prend en charge le VPN permanent
-- Permet l'export des tunnels Amnezia et WireGuard en zip
-- Permet l'activation du VPN depuis la barre de réglages rapide
-- Prend en charge les raccourcis statiques pour le tunnel principal permettant l'intégration automatisée.
-- Prend en charge l'automatisation des intentions pour tous les tunnels
-- Redémarre automatiquement les services après un redémarrage du téléphone
-- Préserve la batterie
+- **Tunneling automatique :** activez automatiquement des tunnels en fonction du SSID Wi-Fi, des connexions Ethernet ou des réseaux de données mobiles.
+- **Split Tunneling :** prise en charge flexible du routage d'applications ou de trafic spécifiques via le VPN.
+- **Modes d'application :** prise en charge de plusieurs modes de tunnel, notamment les modes VPN standard, noyau, verrouillage (kill switch personnalisé) et proxy.
+- **Intégration AmneziaWG :** prise en charge complète d'AmneziaWG, offrant une contournement efficace de la censure.
+- **Options de proxy :** prise en charge intégrée des proxys HTTP et SOCKS5 permettant aux applications tierces de tunneler leur trafic.
+- **Commandes rapides :** vignette Paramètres rapides et raccourcis sur l'écran d'accueil pour des actions faciles à activer.
+- **Prise en charge de l'automatisation :** automatisation basée sur l'intention pour contrôler les tunnels et le tunneling automatique.
+- **Gestion dynamique du DNS :** détecte et met à jour les changements de DNS sans redémarrer le tunnel.
+- **Outils de surveillance :** fonctionnalités avancées de surveillance des tunnels pour contrôler leurs performances.
+- **Prise en charge d'Android TV :** prise en charge d'Android TV pour presque toutes les fonctionnalités de l'application.

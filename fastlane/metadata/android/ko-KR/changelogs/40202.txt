@@ -1,0 +1,6 @@
+What's new:
+- Private profile lockdown mode bugfix
+- UI performance optimizations
+- Back navigation crash in certain scenarios bugfix
+- Auto tunneling race after Amnezia 2.0 changes bugfix
+- Localizations

@@ -1,4 +1,4 @@
-What's new:
-- Search domain tunnels fail to start bugfix
-- DNS fallback to IPv4 on IPv4 only networks bugfix
-- Ping target not editable bugfix
+Újdonságok:
+A keresési tartománnyal (search domain) rendelkező alagutak indítási hibájának javítása
+DNS visszalépés IPv4-re a csak IPv4-alapú hálózatokon (hibajavítás)
+A pingelési célpont (ping target) szerkeszthetőségi hibájának javítása

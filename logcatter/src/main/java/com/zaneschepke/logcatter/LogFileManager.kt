@@ -18,10 +18,6 @@ class LogFileManager(
 
     val ioDispatcher = Dispatchers.IO
 
-    init {
-        rotateIfNeeded()
-    }
-
     suspend fun writeLog(line: String) =
         withContext(ioDispatcher) {
             rotateIfNeeded()
@@ -32,20 +28,26 @@ class LogFileManager(
     suspend fun zipLogs(zipFilePath: String) =
         withContext(ioDispatcher) {
             outputStream?.close()
+
             val sourceDir = File(logDir)
             if (!sourceDir.exists() || !sourceDir.isDirectory) return@withContext
+
             val outputZipFile = File(zipFilePath)
+
             ZipOutputStream(BufferedOutputStream(FileOutputStream(outputZipFile))).use { zos ->
                 sourceDir.walkTopDown().forEach { file ->
                     val zipFileName =
                         file.absolutePath.removePrefix(sourceDir.absolutePath).removePrefix("/")
+
                     val entry = ZipEntry("$zipFileName${if (file.isDirectory) "/" else ""}")
                     zos.putNextEntry(entry)
+
                     if (file.isFile) {
                         file.inputStream().use { it.copyTo(zos) }
                     }
                 }
             }
+
             rotateIfNeeded()
         }
 
@@ -62,19 +64,6 @@ class LogFileManager(
         currentFile = null
     }
 
-    private fun rotateIfNeeded() {
-        val folderSize = getFolderSize(File(logDir))
-        if (folderSize >= maxFolderSize) {
-            deleteOldestFile()
-        }
-        val fileSize = currentFile?.length() ?: 0L
-        if (currentFile == null || fileSize >= maxFileSize) {
-            outputStream?.close()
-            currentFile = File(logDir, "logcat_${System.currentTimeMillis()}.txt")
-            outputStream = FileOutputStream(currentFile!!)
-        }
-    }
-
     private fun getFolderSize(dir: File): Long {
         var size = 0L
         if (dir.isDirectory && dir.listFiles() != null) {
@@ -87,5 +76,19 @@ class LogFileManager(
 
     private fun deleteOldestFile() {
         File(logDir).listFiles()?.toList()?.minByOrNull { it.lastModified() }?.delete()
+    }
+
+    private fun rotateIfNeeded() {
+        val folderSize = getFolderSize(File(logDir))
+        if (folderSize >= maxFolderSize) {
+            deleteOldestFile()
+        }
+
+        val fileSize = currentFile?.length() ?: 0L
+        if (currentFile == null || fileSize >= maxFileSize) {
+            outputStream?.close()
+            currentFile = File(logDir, "logcat_${System.currentTimeMillis()}.txt")
+            outputStream = FileOutputStream(currentFile!!)
+        }
     }
 }

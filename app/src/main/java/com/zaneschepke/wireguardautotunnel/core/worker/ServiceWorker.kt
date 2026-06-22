@@ -6,8 +6,9 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
-import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
 import com.zaneschepke.wireguardautotunnel.domain.repository.AutoTunnelSettingsRepository
+import com.zaneschepke.wireguardautotunnel.service.ServiceManager
+import com.zaneschepke.wireguardautotunnel.service.autotunnel.AutoTunnelStateHolder
 import java.util.concurrent.TimeUnit
 import timber.log.Timber
 
@@ -16,6 +17,7 @@ class ServiceWorker(
     params: WorkerParameters,
     private val serviceManager: ServiceManager,
     private val autoTunnelSettingsRepository: AutoTunnelSettingsRepository,
+    private val autoTunnelStateHolder: AutoTunnelStateHolder,
 ) : CoroutineWorker(context, params) {
 
     companion object {
@@ -42,14 +44,18 @@ class ServiceWorker(
     }
 
     override suspend fun doWork(): Result {
-        Timber.i("Service worker started")
-        with(autoTunnelSettingsRepository.getAutoTunnelSettings()) {
-            Timber.i("Checking to see if auto-tunnel has been killed by system")
-            if (isAutoTunnelEnabled && serviceManager.autoTunnelService.value == null) {
-                Timber.i("Service has been killed by system, restoring.")
-                serviceManager.startAutoTunnelService()
-            }
+        Timber.i("AutoTunnel reconciliation worker running")
+
+        val settings = autoTunnelSettingsRepository.getAutoTunnelSettings()
+
+        if (!settings.isAutoTunnelEnabled) {
             return Result.success()
         }
+
+        if (autoTunnelStateHolder.active.value) return Result.success()
+
+        serviceManager.startAutoTunnelService()
+
+        return Result.success()
     }
 }

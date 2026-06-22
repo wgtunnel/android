@@ -1,0 +1,4 @@
+What's new:
+- Bugfix for some tunnel endpoints failing to resolve in system DNS mode
+- Mitigated memory tagging error bug for system DNS mode
+- Bugfix for split tunneling regression by reverting Android Auto workaround

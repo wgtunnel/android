@@ -42,7 +42,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
@@ -54,6 +53,7 @@ import com.zaneschepke.wireguardautotunnel.ui.navigation.TunnelNetwork
 import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.components.WildcardsLabel
 import com.zaneschepke.wireguardautotunnel.viewmodel.AutoTunnelViewModel
 import org.koin.androidx.compose.koinViewModel
+import org.orbitmvi.orbit.compose.collectAsState
 
 @Composable
 fun PreferredTunnelScreen(
@@ -62,7 +62,7 @@ fun PreferredTunnelScreen(
 ) {
     val navController = LocalNavController.current
 
-    val autoTunnelState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
+    val autoTunnelState by viewModel.collectAsState()
 
     if (autoTunnelState.isLoading) return
 

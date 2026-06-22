@@ -27,15 +27,21 @@ data class LogMessage(
                 )
             } else {
                 val parts = logcatLine.trim().split(" ").filter { it.isNotEmpty() }
-                val epochParts = parts[0].split(".").map { it.toLong() }
-                val message = parts.subList(5, parts.size).joinToString(" ")
+                val timeParts = parts[0].split(".")
+
+                val seconds = timeParts[0].toLong()
+                val millis = if (timeParts.size > 1) timeParts[1].toLong() else 0L
+
+                // Convert milliseconds to nanoseconds
+                val nanos = millis * 1_000_000L
+
                 LogMessage(
-                    Instant.ofEpochSecond(epochParts[0], epochParts[1]).toString(),
+                    Instant.ofEpochSecond(seconds, nanos).toString(),
                     parts[1],
                     parts[2],
                     LogLevel.fromSignifier(parts[3]),
                     parts[4],
-                    message,
+                    parts.subList(5, parts.size).joinToString(" "),
                 )
             }
         }

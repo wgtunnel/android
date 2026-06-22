@@ -6,23 +6,15 @@ import com.zaneschepke.wireguardautotunnel.domain.model.MonitoringSettings as Do
 fun Entity.toDomain(): Domain =
     Domain(
         id = id,
-        isPingEnabled = isPingEnabled,
-        isPingMonitoringEnabled = isPingMonitoringEnabled,
-        tunnelPingIntervalSeconds = tunnelPingIntervalSeconds,
-        tunnelPingAttempts = tunnelPingAttempts,
-        tunnelPingTimeoutSeconds = tunnelPingTimeoutSeconds,
-        showDetailedPingStats = showDetailedPingStats,
+        tunnelStatisticsEnabled = tunnelStatisticsEnabled,
+        tunnelStatisticsPollInterval = tunnelStatisticsPollInterval,
         isLocalLogsEnabled = isLocalLogsEnabled,
     )
 
 fun Domain.toEntity(): Entity =
     Entity(
         id = id,
-        isPingEnabled = isPingEnabled,
-        isPingMonitoringEnabled = isPingMonitoringEnabled,
-        tunnelPingIntervalSeconds = tunnelPingIntervalSeconds,
-        tunnelPingAttempts = tunnelPingAttempts,
-        tunnelPingTimeoutSeconds = tunnelPingTimeoutSeconds,
-        showDetailedPingStats = showDetailedPingStats,
+        tunnelStatisticsEnabled = tunnelStatisticsEnabled,
+        tunnelStatisticsPollInterval = tunnelStatisticsPollInterval,
         isLocalLogsEnabled = isLocalLogsEnabled,
     )

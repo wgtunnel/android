@@ -11,7 +11,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Launch
 import androidx.compose.material.icons.filled.AppShortcut
-import androidx.compose.material.icons.filled.SmartToy
+import androidx.compose.material.icons.filled.SettingsRemote
 import androidx.compose.material.icons.outlined.AdminPanelSettings
 import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.Key
@@ -35,31 +35,28 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ThemedSwitch
 import com.zaneschepke.wireguardautotunnel.ui.common.functions.rememberClipboardHelper
 import com.zaneschepke.wireguardautotunnel.ui.common.label.GroupLabel
-import com.zaneschepke.wireguardautotunnel.ui.common.security.SecureScreenFromRecording
 import com.zaneschepke.wireguardautotunnel.ui.common.text.DescriptionText
 import com.zaneschepke.wireguardautotunnel.util.extensions.launchVpnSettings
 import com.zaneschepke.wireguardautotunnel.viewmodel.SettingsViewModel
 import org.koin.androidx.compose.koinViewModel
+import org.orbitmvi.orbit.compose.collectAsState
 
 @Composable
 fun AndroidIntegrationsScreen(viewModel: SettingsViewModel = koinViewModel()) {
     val context = LocalContext.current
     val isTv = LocalIsAndroidTV.current
 
-    val settingsState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
+    val settingsState by viewModel.collectAsState()
 
     if (settingsState.isLoading) return
 
     val clipboard = rememberClipboardHelper()
-
-    SecureScreenFromRecording()
 
     val isAlwaysOnEnabled = settingsState.settings.isAlwaysOnVpnEnabled
 
@@ -136,20 +133,22 @@ fun AndroidIntegrationsScreen(viewModel: SettingsViewModel = koinViewModel()) {
                         onClick = { viewModel.setShortcutsEnabled(it) },
                     )
                 },
-                title = stringResource(R.string.enabled_app_shortcuts),
+                title = stringResource(R.string.app_shortcuts),
+                description = { DescriptionText(stringResource(R.string.app_shortcuts_desc)) },
                 onClick = {
                     viewModel.setShortcutsEnabled(!settingsState.settings.isShortcutsEnabled)
                 },
             )
             SurfaceRow(
-                leading = { Icon(Icons.Filled.SmartToy, contentDescription = null) },
+                leading = { Icon(Icons.Filled.SettingsRemote, contentDescription = null) },
                 trailing = {
                     ThemedSwitch(
                         checked = settingsState.isRemoteEnabled,
                         onClick = { viewModel.setRemoteEnabled(it) },
                     )
                 },
-                title = stringResource(R.string.enable_remote_app_control),
+                title = stringResource(R.string.remote_control),
+                description = { DescriptionText(stringResource(R.string.remote_control_desc)) },
                 onClick = { viewModel.setRemoteEnabled(!settingsState.isRemoteEnabled) },
             )
             AnimatedVisibility(settingsState.isRemoteEnabled) {

@@ -1,1 +1,1 @@
-WireGuardi & AmneziaWG VPNi klient automaatse tunnelduse, lukustuse ja proksiga.
+WireGuardi ja AmneziaWG VPN-klient automaattunnelduse ja lukustusega

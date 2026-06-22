@@ -1,4 +1,4 @@
-What's new:
-- Fixes deprecate location API bug by adding Wi-Fi info method selection
-- Simplified update check dialog UI
-- Improve auto-tunnel reliability with delayed recheck
+Novidades:
+- Corrige um bug na API de localização, adicionando a opção de seleção do método de informações de Wi-Fi.
+- Diálogo de verificação de atualização simplificado na UI.
+- Melhora a confiabilidade do túnel automático com a reavaliação atrasada.

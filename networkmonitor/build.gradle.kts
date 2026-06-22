@@ -1,8 +1,5 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
     alias(libs.plugins.androidLibrary)
-    alias(libs.plugins.kotlin.android)
 }
 
 android {
@@ -27,12 +24,6 @@ android {
 
         create(Constants.NIGHTLY) { initWith(getByName(Constants.RELEASE)) }
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-
-    kotlin { compilerOptions { jvmTarget = JvmTarget.JVM_17 } }
 }
 
 dependencies {
@@ -42,8 +33,6 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-
-    implementation(libs.tunnel)
 
     // shizuku
     implementation(libs.shizuku.api)

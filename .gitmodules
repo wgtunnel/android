@@ -1,0 +1,6 @@
+[submodule "hevtunnel/src/main/jni/hev-socks5-tunnel"]
+	path = hevtunnel/src/main/jni/hev-socks5-tunnel
+	url = https://github.com/heiher/hev-socks5-tunnel
+[submodule "tunnel/tools/amneziawg-tools"]
+	path = tunnel/tools/amneziawg-tools
+	url = https://github.com/amnezia-vpn/amneziawg-tools

@@ -1,6 +1,6 @@
 package com.zaneschepke.wireguardautotunnel.domain.model
 
-import com.zaneschepke.wireguardautotunnel.data.model.DnsProtocol
+import com.zaneschepke.wireguardautotunnel.domain.enums.DnsProtocol
 
 data class DnsSettings(
     val id: Int = 0,

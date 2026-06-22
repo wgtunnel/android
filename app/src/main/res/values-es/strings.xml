@@ -2,7 +2,6 @@
 <resources>
     <string name="allowed_ips">IPs permitidas</string>
     <string name="email_chooser">Enviar un email…</string>
-    <string name="kernel">Kernel</string>
     <string name="add_peer">Añadir peer</string>
     <string name="copy_public_key">Copiar clave pública</string>
     <string name="base64_key">Clave Base64</string>
@@ -22,7 +21,6 @@
     <string name="addresses">Direcciones</string>
     <string name="public_key">Clave pública</string>
     <string name="error_file_extension">No es un archivo .conf o .zip</string>
-    <string name="no_tunnels">¡Ningún túnel añadido aún!</string>
     <string name="tunnels">Túneles</string>
     <string name="tunnel_mobile_data">Activar túnel en datos móviles</string>
     <string name="privacy_policy">Política de privacidad</string>
@@ -35,7 +33,6 @@
     <string name="name">Nombre</string>
     <string name="always_on_vpn_support">Permitir VPN siempre activa</string>
     <string name="location_services_not_detected">Servicios de ubicación no detectados</string>
-    <string name="auto_tunneling">Túnel automático</string>
     <string name="vpn_on">VPN habilitada</string>
     <string name="vpn_off">VPN deshabilitada</string>
     <string name="create_import">Crear desde cero</string>
@@ -44,7 +41,6 @@
     <string name="optional">(opcional)</string>
     <string name="seconds">Segundos</string>
     <string name="cancel">Cancelar</string>
-    <string name="enabled_app_shortcuts">Habilitar acesos directos de app</string>
     <string name="unknown_error">Error desconocido</string>
     <string name="email_subject">Ayuda de WG Tunnel</string>
     <string name="interface_">Interfaz</string>
@@ -68,12 +64,10 @@
     <string name="pin_created">Pin creado con éxito</string>
     <string name="enter_pin">Introduce tu pin</string>
     <string name="create_pin">Crear pin</string>
-    <string name="enable_app_lock">Activar el bloqueo de aplicaciones</string>
     <string name="set_primary_tunnel">Establecer como túnel Principal</string>
     <string name="edit_tunnel">Editar túnel</string>
     <string name="settings">Ajustes</string>
     <string name="app_name">WG Tunnel</string>
-    <string name="vpn_channel_name">Canal de notificación VPN</string>
     <string name="prominent_background_location_message">La monitorización SSID Wi-Fi necesita de permiso de ubicación en segundo plano incluso si la app está cerrada. Mira el enlace a la Política de Privacidad en la pantalla de ayuda para más detalles.</string>
     <string name="junk_packet_count">Recuento de paquetes «ruido»</string>
     <string name="junk_packet_minimum_size">Tamaño mínimo de paquetes «ruido»</string>
@@ -81,14 +75,11 @@
     <string name="show_amnezia_properties">Mostrar propiedades de Amnezia</string>
     <string name="never">Nunca</string>
     <string name="transport_packet_magic_header">Encabezado del paquete de transporte</string>
-    <string name="getting_started_guide">Guía de inicio</string>
     <string name="always_on_message">Se ha denegado el permiso de conexión VPN. Por favor, compruebe el</string>
     <string name="always_on_message2">para asegurarse de que la VPN siempre activa esté desactivada para todas las demás aplicaciones e inténtelo de nuevo</string>
     <string name="response_packet_magic_header">Encabezado del paquete de respuesta</string>
     <string name="junk_packet_maximum_size">Tamaño máximo de paquetes «ruido»</string>
     <string name="init_packet_junk_size">Tamaño de «datos de ruido» añadidos al paquete de inicialización</string>
-    <string name="unsure_how">Si no estás seguro de cómo proceder</string>
-    <string name="see_the">Ver la</string>
     <string name="vpn_denied_dialog_title">Permiso denegado</string>
     <string name="vpn_settings">Configuraciones VPN del sistema</string>
     <string name="response_packet_junk_size">Tamaño de «datos ruido» del paquete de respuesta</string>
@@ -96,7 +87,6 @@
     <string name="root_accepted">Shell root permitida</string>
     <string name="restart_at_boot">Iniciar al arrancar</string>
     <string name="underload_packet_magic_header">Encabezado del paquete baja carga</string>
-    <string name="handshake">Último intercambio</string>
     <string name="donate">Donar al proyecto</string>
     <string name="appearance">Apariencia</string>
     <string name="logs">Registros</string>
@@ -111,11 +101,9 @@
     <string name="enable_amnezia_compatibility">Activar compatibilidad con Amnezia</string>
     <string name="include_lan">Incluir LAN</string>
     <string name="hide_scripts">Ocultar scripts</string>
-    <string name="advanced_settings">Configuración avanzada</string>
     <string name="show_scripts">Mostrar scripts</string>
     <string name="vpn_channel_description">Canal para notificaciones de estado de VPN</string>
     <string name="auto_tunnel_channel_description">Canal para notificaciones de estado del túnel automático</string>
-    <string name="debounce_delay">Retardo de rebote</string>
     <string name="hide_amnezia_properties">Ocultar propiedades de Amnezia</string>
     <string name="skip">Saltar</string>
     <string name="automatic">Automático</string>
@@ -123,22 +111,17 @@
     <string name="light">Claro</string>
     <string name="dark">Oscuro</string>
     <string name="use_root_shell_for_wifi">Utilizar la shell root para obtener el nombre de la red Wi-Fi, evitando la necesidad de los permisos de ubicación</string>
-    <string name="tunnel_running">Túnel conectado</string>
     <string name="monitoring_state_changes">Monitorizando cambios de estado</string>
     <string name="dynamic">Dinámico</string>
     <string name="language">Idioma</string>
     <string name="display_theme">Tema de la pantalla</string>
-    <string name="mobile_tunnel">Túnel en datos móviles</string>
     <string name="launch_app_settings">Iniciar la configuración de la aplicación</string>
     <string name="learn_more">Saber más</string>
     <string name="wildcards_active">Comodines activos</string>
     <string name="stop_on_no_internet">Detener cuando no hay internet</string>
-    <string name="stop_on_internet_loss">Detener túnel cuando se pierda el internet</string>
-    <string name="ethernet_tunnel">Túnel ethernet</string>
     <string name="native_kill_switch">Interruptor de apagado nativo</string>
     <string name="allow_lan_traffic">Permitir tráfico LAN</string>
     <string name="bypass_lan_for_kill_switch">Excluir LAN del interruptor de apagado</string>
-    <string name="auto_tunnel_channel_name">Canal de notificación del túnel automático</string>
     <string name="stop">Detener</string>
     <string name="splt_tunneling">Túnel dividido</string>
     <string name="pre_up">Antes de la activación</string>
@@ -149,7 +132,6 @@
     <string name="remove_amnezia_compatibility">Eliminar compatibilidad con Amnezia</string>
     <string name="tunnel_control">Control del túnel</string>
     <string name="auto_tunnel">Túnel automático</string>
-    <string name="multiple">Múltiple</string>
     <string name="add_from_url">Añadir desde URL</string>
     <string name="save">Guardar</string>
     <string name="select">Seleccionar</string>
@@ -160,15 +142,10 @@
     <string name="checking_for_update">Comprobando actualización</string>
     <string name="select_all">Seleccionar todos</string>
     <string name="permission_required">Permiso requerido</string>
-    <string name="active">Activo</string>
     <string name="copy">Copiar</string>
-    <string name="export_tunnels_wireguard">Exportar túneles como WireGuard</string>
-    <string name="export_tunnels_amnezia">Exportar túneles como Amnezia</string>
     <string name="add_tunnel">Añadir túnel</string>
     <string name="export_logs">Exportar registros almacenados</string>
-    <string name="inactive">Inactivo</string>
     <string name="search">Buscar</string>
-    <string name="kernel_name_error">Error en el nombre del módulo del kernel</string>
     <string name="camera_permission_required">Permiso de cámara requerido</string>
     <string name="dns_resolve_error">Error de resolución DNS</string>
     <string name="error_download_failed">Fallo al descargar configuración</string>
@@ -179,8 +156,6 @@
     <string name="delete">Eliminar</string>
     <string name="export_failed">Exportación fallida</string>
     <string name="app_permission_description">Controlar los túneles y las funciones de auto‑túnel.</string>
-    <string name="tunnel_error_template">Túnel fallido con: %1$s</string>
-    <string name="remote_key_template">Clave: %1$s</string>
     <string name="config_error">Configuración no válida</string>
     <string name="auth_error">Error de autenticación</string>
     <string name="service_running_error">El servicio no está en ejecución</string>
@@ -188,8 +163,6 @@
     <string name="check_for_update">Comprobar actualización</string>
     <string name="update_check_failed">Fallo al comprobar la actualización.</string>
     <string name="flavor_template">Variante: %1$s</string>
-    <string name="tunnel_starting">Iniciando túnel</string>
-    <string name="enable_remote_app_control">Activar control remoto de la app</string>
     <string name="export_success">Exportación completada</string>
     <string name="download">Descargar</string>
     <string name="latest_installed">Ya se está ejecutando la última versión.</string>
@@ -201,12 +174,8 @@
     <string name="darker">Más oscuro</string>
     <string name="amoled">AMOLED</string>
     <string name="show_qr">Mostrar QR</string>
-    <string name="amnezia">Amnezia</string>
-    <string name="wireguard">WireGuard</string>
     <string name="done">Hecho</string>
-    <string name="nothing_here_yet">¡No hay nada aquí de momento!</string>
     <string name="current_template">Actual: %1$s</string>
-    <string name="expiremental_template">%1$s (experimental)</string>
     <string name="root_required_template">%1$s (se necesita root)</string>
     <string name="recommended_template">%1$s (recomendado)</string>
     <string name="wifi_detection_method">Método de detección de red Wi-Fi</string>
@@ -222,7 +191,6 @@
     <string name="sort">Ordenar</string>
     <string name="move_up">Mover hacia arriba</string>
     <string name="move_down">Mover hacia abajo</string>
-    <string name="error_tunnel_name">El nombre del túnel debe ser como máximo de 15 caracteres en modo kérnel</string>
     <string name="tunnel">túnel</string>
     <string name="warning">Aviso</string>
     <string name="location_permissions">Permisos de ubicación</string>
@@ -233,28 +201,8 @@
     <string name="start">Iniciar</string>
     <string name="auto_tunnel_running">El túnel automático está activo</string>
     <string name="auto_tunnel_not_running">El túnel automático no está activo</string>
-    <string name="pinger_bounce_successful">El túnel se reinició automáticamente mediante «ping».</string>
-    <string name="pinger_bounce_recovery">No se pudo reiniciar el «pinger». El túnel se ha recuperado con las direcciones antiguas.</string>
-    <string name="bounce_failed_template">El «pinger» falló al recuperar el túnel con el error: %1$s</string>
     <string name="tunnel_monitoring">Monitoreo del túnel</string>
-    <string name="set_custom_ping_target">Objetivo de ping personalizado</string>
-    <string name="ip_or_hostname">IP o nombre de host</string>
-    <string name="ping_target_description">Por defecto se usa una IP de túnel interna, o bien se puede usar Cloudflare para configuraciones de túnel completo.</string>
-    <string name="tunnel_ping_interval">Intervalo de ping del túnel</string>
-    <string name="attempts_per_interval">Intentos de ping por cada intervalo</string>
-    <string name="ping_timeout">Tiempo de espera máximo de ping para el túnel</string>
-    <string name="timeout_all_attempts">Tiempo de espera máximo total para todos los intentos</string>
-    <string name="display_detailed_ping_stats">Mostrar estadísticas detalladas del ping</string>
-    <string name="reachable_template">Alcanzable: %1$s</string>
-    <string name="ping_success_template">Último ping recibido: %1$s</string>
-    <string name="latency_template">Latencia: %1$s</string>
-    <string name="jitter_template">Jitter: %1$s</string>
-    <string name="packets_sent_template">Paquetes enviados: %1$s</string>
-    <string name="packet_loss_template">Pérdida de paquetes: %.2f%%</string>
-    <string name="ping_target_template">Objetivo del ping: %1$s</string>
-    <string name="_true">Verdadero</string>
-    <string name="_false">Falso</string>
-    <string name="backup_success">Copia de seguridad realizada con éxito. %1$s</string>
+    <string name="backup_success">Copia de seguridad realizada con éxito</string>
     <string name="restore_success">Restauración completada. %1$s</string>
     <string name="restarting_app">Reiniciando la app para aplicar los cambios…</string>
     <string name="restore_failed">No se pudo restaurar la copia de seguridad.</string>
@@ -278,22 +226,12 @@
     <string name="defaults_to_template">(por defecto es %1$s)</string>
     <string name="dns_settings">Configuración DNS</string>
     <string name="locked_down">Aislado</string>
-    <string name="dns_provider">Proveedor de DNS</string>
-    <string name="dns_protocol">Protocolo de DNS</string>
     <string name="system">Sistema</string>
     <string name="doh">DNS sobre HTTPS (DoH)</string>
     <string name="comma_separated">Separado por comas</string>
     <string name="server_port">Servidor:Puerto</string>
     <string name="new_tunnel">Nuevo túnel</string>
     <string name="read_failed">Error al leer los datos.</string>
-    <string name="invalid_key">Clave inválida</string>
-    <string name="invalid_number">Número inválido</string>
-    <string name="invalid_value">Valor inválido</string>
-    <string name="missing_attribute">Falta atributo</string>
-    <string name="missing_section">Falta sección</string>
-    <string name="syntax_error">Error de sintaxis</string>
-    <string name="unknown_attribute">Atributo desconocido</string>
-    <string name="unknown_section">Sección desconocida</string>
     <string name="config_error_template">Configuración inválida. %1$s en la ubicación: %2$s.</string>
     <string name="ports_must_differ">Error. Los proxies deben tener puertos diferentes.</string>
     <string name="password_no_spaces">La contraseña no puede contener espacios.</string>
@@ -305,8 +243,6 @@
     <string name="active_tunnel_update_failed">Error al actualizar el tunel activo</string>
     <string name="ddns_auto_update">Actualizar automáticamente mediante el DNS dinámico</string>
     <string name="ddns_auto_update_description">Actualiza la IP cuando hay cambios en el DDNS</string>
-    <string name="prefer_ipv6_resolution">Preferir resolución IPv6 del peer</string>
-    <string name="disabled">Desactivado</string>
     <string name="mode_disabled_template">Característica no disponible en el modo %1$s.</string>
     <string name="lockdown">Aislamiento</string>
     <string name="donate_title">Donar</string>
@@ -319,12 +255,10 @@
     <string name="delete_active_message">No se puede borrar el túnel activo.</string>
     <string name="hint_template">(%1$s)</string>
     <string name="drag_handle">Control de arrastre</string>
-    <string name="tunnel_item_description">%1$s, %2$s, %3$s</string>
     <string name="github_sponsors">GitHub Sponsors</string>
     <string name="liberapay">Liberapay</string>
     <string name="kofi">Ko-fi</string>
     <string name="dual_stack">Dual-stack</string>
-    <string name="kernel_name_dots">El nombre del túnel no puede ser \'.\' o \'..\' en modo kernel</string>
     <string name="save_changes">Guardar cambios</string>
     <string name="dual_stack_description">Los túneles deben soportar IPv4 e IPv6</string>
     <string name="remote_key">Clave remota</string>
@@ -339,21 +273,17 @@
     <string name="all_services_disabled">El túnel automático y el resto de túneles deben ser desactivados para realizar esta operación.</string>
     <string name="no_network">No hay conexión de red</string>
     <string name="wifi">Wi-Fi</string>
-    <string name="ping_target">Objetivo del ping</string>
     <string name="resources">Recursos</string>
     <string name="back">Atrás</string>
     <string name="already_donated">Ya he donado</string>
-    <string name="global_split_tunneling">Túnel dividido global</string>
     <string name="active_network">Red activa:</string>
     <string name="help_translate">Ayuda a traducir la app</string>
     <string name="ethernet">Ethernet</string>
     <string name="other">Otros</string>
     <string name="kill_switch">kill switch</string>
     <string name="configuration">Configuración</string>
-    <string name="global_dns_servers">Servidores DNS globales</string>
     <string name="contact">Contacto</string>
     <string name="backup_and_restore">Copia de seguridad/Restaurar</string>
-    <string name="ping">Ping</string>
     <string name="about">Acerca de</string>
     <string name="donation_prompt_link">apoyar el proyecto</string>
     <string name="donation_prompt_suffix">para que siga siendo libre y siga mejorando.</string>
@@ -362,23 +292,18 @@
     <string name="security_type">Seguridad:</string>
     <string name="ddns_success_message">Endpoint del DNS dinámico actualizado correctamente.</string>
     <string name="translation">Traducción</string>
-    <string name="reliability">Fiabilidad</string>
     <string name="monitoring">Monitoreo</string>
     <string name="aovpn_description">Permite a Android iniciar túneles</string>
-    <string name="set_ping_target">Establecer el objetivo del ping</string>
     <string name="general">General</string>
     <string name="review">Valorar la app</string>
-    <string name="kernel_name_special_characters">El nombre del túnel en modo kernel no puede contener espacios o algunos caracteres especiales (permitidos: alfanuméricos, _, =, +, ., -)</string>
     <string name="_continue">Continuar</string>
     <string name="unavailable_in_mode">No disponible en el modo actual</string>
-    <string name="debounce_description">Retraso entre cambios rápidos de red</string>
     <string name="preferred_tunnel">Túnel preferido</string>
     <string name="tunnel_running_name_message">El nombre del túnel no se puede cambiar mientras está activo.</string>
     <string name="network_name">Red:</string>
     <string name="mapped">Mapeado</string>
     <string name="tunnel_mapping">Mapeo de túneles</string>
     <string name="preferred_tunnel_label">Túnel preferido:</string>
-    <string name="ping_monitor">Monitoreo de ping</string>
     <string name="restart_message_template">Guardar los cambios hara que el %1$s se reinicie, desea continuar?</string>
     <string name="already_donated_description">Desactiva recordatorios de donación</string>
     <string name="metered_tunnel">Túnel de uso medido</string>
@@ -426,4 +351,112 @@
     <string name="github_sponsors_url" translatable="false">https://github.com/sponsors/zaneschepke</string>
     <string name="transport_packet_junk_size">Tamaño de los datos «ruido» del paquete de transporte</string>
     <string name="cookie_packet_junk_size">Tamaño de los datos «ruido» del paquete de cookies</string>
+    <string name="fallback_to_ipv4">Fallback to IPv4</string>
+    <string name="excluded_apps">%1$s apps excluded</string>
+    <string name="kernel_wireguard_unsupported">Kernel does not include WireGuard support (module missing or not built-in into kernel)!</string>
+    <string name="resolution_method">Resolution method</string>
+    <string name="notification_ipv6_recovery_message">%1$s recovered IPv6 connectivity</string>
+    <string name="tunnel_state_resolving_dns">Resolving DNS</string>
+    <string name="handshake_template">handshake: %1$s</string>
+    <string name="peer_template">peer: %1$s</string>
+    <string name="errors">Errors</string>
+    <string name="no_system_dns_information">No system DNS information</string>
+    <string name="export_unsupported">Export is not supported on this device</string>
+    <string name="tunnel_globals">Tunnel globals</string>
+    <string name="sort_by_latency">Sort by latency</string>
+    <string name="ready">Ready</string>
+    <string name="no_system_dns_detected">No system DNS detected</string>
+    <string name="name_error_empty">Tunnel name cannot be empty</string>
+    <string name="notification_ipv4_fallback_message">%1$s switched to IPv4 connectivity</string>
+    <string name="notification_tunnel_status_format">%1$s • %2$s</string>
+    <string name="dns_error_invalid_ip_or_host">Invalid IP address or hostname</string>
+    <string name="proxy_channel_description">Notifications for proxy tunnels.</string>
+    <string name="system_dns_servers">Servers: %1$s</string>
+    <string name="balanced">Balanced (3s)</string>
+    <string name="import_url_description">The URL must be secure and serve a .conf file.</string>
+    <string name="dns_error_invalid_port">Port must be between 1 and 65535</string>
+    <string name="view_configuration">View configuration</string>
+    <string name="dot">DNS over TLS (DoT)</string>
+    <string name="ipv6_recovery">IPv6 recovery</string>
+    <string name="screen_recording_protection">Screen recording protection</string>
+    <string name="dns_error_invalid_host">Host cannot be empty</string>
+    <string name="toggle_sensitive_data_visibility">Toggle sensitive data visibility</string>
+    <string name="ipv4_fallback">IPv4 fallback</string>
+    <string name="dns_error_empty">Endpoint cannot be empty</string>
+    <string name="tunnel_state_connected">Connected</string>
+    <string name="dns_error_invalid_scheme">DoH must use HTTPS</string>
+    <string name="private_dns_hostname">Private DNS: hostname (%1$s)</string>
+    <string name="app">App</string>
+    <string name="refresh_rate">Statistics refresh rate</string>
+    <string name="app_selection">App selection</string>
+    <string name="tunnel_state_handshake_failure">Handshake failure</string>
+    <string name="notification_dynamic_dns_message">%1$s updated after Dynamic DNS change</string>
+    <string name="tunnel_state_establishing_connection">Establishing connection</string>
+    <string name="prefer_ipv6">Prefer IPv6</string>
+    <string name="peer_endpoints">Peer endpoints</string>
+    <string name="dns_endpoint_hint">IP, hostname, or DoH URL</string>
+    <string name="restore_ipv6">Restore IPv6</string>
+    <string name="network">Network</string>
+    <string name="fallback_to_ipv4_desc">Switch to IPv4 if IPv6 fails, without restarting the tunnel.</string>
+    <string name="tunnel_state_disconnected">Disconnected</string>
+    <string name="live">Real-time (1s)</string>
+    <string name="uptime_template">uptime: %1$s</string>
+    <string name="events">Events</string>
+    <string name="peer_resolution">Peer Resolution</string>
+    <string name="restore_ipv6_desc">Switch back to IPv6 when an IPv6 network is detected.</string>
+    <string name="errors_channel_description">A channel for application and tunnel errors</string>
+    <string name="vpn_permission_required">VPN permission required</string>
+    <string name="app_channel_description">A channel for general application notifications, like version updates</string>
+    <string name="automation">Automation</string>
+    <string name="balance_saver">Battery Saver (10s)</string>
+    <string name="pinging_servers">Pinging servers…</string>
+    <string name="dynamic_dns_update">Dynamic DNS update</string>
+    <string name="statistics">Statistics</string>
+    <string name="events_channel_description">A channel for app events, like automation event</string>
+    <string name="private_dns_automatic">Private DNS: automatic</string>
+    <string name="tunnel_statistics">Live tunnel statistics</string>
+    <string name="ipv6_settings">IPv6 settings</string>
+    <string name="error">Error</string>
+    <string name="dns_error_invalid_url">Invalid URL format</string>
+    <string name="view_live_tunnel">View live tunnel</string>
+    <string name="mode">Mode</string>
+    <string name="tunnel_state_starting">Starting</string>
+    <string name="dns_endpoint_label">DNS server endpoint</string>
+    <string name="plain_dns">Plain DNS (port 53)</string>
+    <string name="included_apps">%1$s apps included</string>
+    <string name="error_http_port_unavailable">HTTP listener port %1$d is already in use.\nPlease choose a different port.</string>
+    <string name="current_system_dns">Current system DNS</string>
+    <string name="security">Security</string>
+    <string name="more_options">More options</string>
+    <string name="status_template">status: %1$s</string>
+    <string name="export_canceled">Export canceled</string>
+    <string name="prefer_ipv6_desc">Use IPv6 endpoints when the network supports it.</string>
+    <string name="stop_all">Stop all</string>
+    <string name="copy_from">Copy from</string>
+    <string name="special_junk_packet">Special junk packet</string>
+    <string name="error_socks5_port_unavailable">SOCKS5 port %1$d is already in use.\nPlease choose a different port.</string>
+    <string name="tunnel_scripting">Pre/Post script support</string>
+    <string name="initializing">Initializing…</string>
+    <string name="errors_channel_id" translatable="false">Errors Channel</string>
+    <string name="s2" translatable="false">S2</string>
+    <string name="jc" translatable="false">Jc</string>
+    <string name="i2" translatable="false">I2</string>
+    <string name="events_channel_id" translatable="false">Events Channel</string>
+    <string name="proxy_channel_id" translatable="false">Proxy Channel</string>
+    <string name="jmax" translatable="false">Jmax</string>
+    <string name="h2" translatable="false">H2</string>
+    <string name="s3" translatable="false">S3</string>
+    <string name="i1" translatable="false">I1</string>
+    <string name="app_channel_id" translatable="false">App Channel</string>
+    <string name="i3" translatable="false">I3</string>
+    <string name="example_import_url" translatable="false">https://123.com/tun.conf</string>
+    <string name="i5" translatable="false">I5</string>
+    <string name="s4" translatable="false">S4</string>
+    <string name="fdroid_url" translatable="false">https://apt.izzysoft.de/fdroid/index/apk/com.zaneschepke.wireguardautotunnel</string>
+    <string name="h3" translatable="false">H3</string>
+    <string name="h1" translatable="false">H1</string>
+    <string name="jmin" translatable="false">Jmin</string>
+    <string name="i4" translatable="false">I4</string>
+    <string name="s1" translatable="false">S1</string>
+    <string name="h4" translatable="false">H4</string>
 </resources>

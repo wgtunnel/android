@@ -1,9 +1,8 @@
-import com.android.build.gradle.internal.api.BaseVariantOutputImpl
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import com.android.build.api.dsl.ApplicationExtension
+import com.android.build.api.variant.FilterConfiguration
 
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlinxSerialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.compose.compiler)
@@ -11,7 +10,19 @@ plugins {
     alias(libs.plugins.licensee)
 }
 
-android {
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
+}
+
+licensee {
+    allowedLicenses().forEach { allow(it) }
+    allowedLicenseUrls().forEach { allowUrl(it) }
+    // foss, but missing licenses
+    ignoreDependencies("com.github.T8RIN.QuickieExtended")
+    ignoreDependencies("com.github.topjohnwu.libsu")
+}
+
+configure<ApplicationExtension> {
     namespace = Constants.APP_ID
     compileSdk = Constants.TARGET_SDK
 
@@ -22,17 +33,16 @@ android {
         includeInBundle = false
     }
 
-    ksp { arg("room.schemaLocation", "$projectDir/schemas") }
-
     // fix okhttp proguard issue
     packaging { resources { pickFirsts.add("okhttp3/internal/publicsuffix/publicsuffixes.gz") } }
 
     splits {
         abi {
-            isEnable = !project.hasProperty("noSplits")
+            val noSplits = providers.gradleProperty("noSplits").isPresent
+            isEnable = !noSplits
             reset()
             include("armeabi-v7a", "arm64-v8a")
-            isUniversalApk = !project.hasProperty("noSplits")
+            isUniversalApk = !noSplits
         }
     }
 
@@ -40,12 +50,17 @@ android {
         applicationId = Constants.APP_ID
         minSdk = Constants.MIN_SDK
         targetSdk = Constants.TARGET_SDK
-        versionCode = computeVersionCode()
-        versionName = computeVersionName()
+        versionCode = Constants.VERSION_CODE
+        versionName = Constants.VERSION_NAME
 
-        sourceSets { getByName("debug").assets.srcDirs(files("$projectDir/schemas")) }
+        experimentalProperties["android.experimental.disableGitVersion"] = true
 
-        val languagesArray = buildLanguagesArray(languageList())
+        sourceSets {
+            getByName("debug").assets.directories += "$projectDir/schemas"
+        }
+
+        val languagesProvider = project.languageListProvider()
+        val languagesArray = buildLanguagesArray(languagesProvider.get())
         buildConfigField("String[]", "LANGUAGES", "new String[]{ $languagesArray }")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -115,56 +130,56 @@ android {
 
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-
-    kotlin {
-        compilerOptions {
-            jvmTarget = JvmTarget.JVM_17
-            freeCompilerArgs = listOf("-XXLanguage:+PropertyParamAnnotationDefaultTargetMode")
-        }
     }
 
     buildFeatures {
         compose = true
         buildConfig = true
+        resValues = true
     }
     packaging { resources { excludes += "/META-INF/{AL2.0,LGPL2.1}" } }
+}
 
-    licensee {
-        allowedLicenses().forEach { allow(it) }
-        allowedLicenseUrls().forEach { allowUrl(it) }
-        // foss, but missing license
-        ignoreDependencies("com.github.T8RIN.QuickieExtended")
-    }
+androidComponents {
+    onVariants { variant ->
+        val isNightly = project.isNightlyBuild()
 
-    android.applicationVariants.all {
-        val variant = this
+        if (isNightly) {
+            variant.outputs.forEach { output ->
 
-        val abiNameMap =
-            mapOf(
-                "armeabi-v7a" to "armv7",
-                "arm64-v8a" to "arm64",
-                "x86" to "x86",
-                "x86_64" to "x64",
-            )
+                output.versionCode.set(
+                    output.versionCode.get() + project.getVersionCodeIncrement()
+                )
 
-        variant.outputs.all {
-            val output = this as BaseVariantOutputImpl
-            val abi = output.getFilter("ABI")
+                val currentVersion = output.versionName.get()
+                val nextVersion = bumpToNextPatchVersion(currentVersion)
+                val gitHash = project.getGitCommitHash()
 
-            val baseFileName = "${Constants.APP_NAME}-${variant.flavorName}-v${variant.versionName}"
+                output.versionName.set("$nextVersion-nightly+git.$gitHash")
+            }
+        }
 
-            val outputFileName =
-                if (!abi.isNullOrEmpty()) {
-                    val shortAbiName = abiNameMap.getOrDefault(abi, abi)
-                    "${baseFileName}-${shortAbiName}.apk"
-                } else {
-                    "${baseFileName}.apk"
-                }
+        val abiNameMap = mapOf(
+            "armeabi-v7a" to "armv7",
+            "arm64-v8a" to "arm64",
+            "x86" to "x86",
+            "x86_64" to "x64",
+        )
 
-            output.outputFileName = outputFileName
+        variant.outputs.forEach { output ->
+            val abi = output.filters.find { it.filterType == FilterConfiguration.FilterType.ABI }?.identifier
+            val flavorName = variant.productFlavors.joinToString("-") { it.second }
+            val versionName = output.versionName.get()
+            val baseFileName = "${Constants.APP_NAME}-${flavorName}-v${versionName}"
+
+            val outputFileName = if (!abi.isNullOrEmpty()) {
+                val shortAbiName = abiNameMap.getOrDefault(abi, abi)
+                "${baseFileName}-${shortAbiName}.apk"
+            } else {
+                "${baseFileName}.apk"
+            }
+
+            output.outputFileName.set(outputFileName)
         }
     }
 }
@@ -172,6 +187,7 @@ android {
 dependencies {
     implementation(project(":logcatter"))
     implementation(project(":networkmonitor"))
+    implementation(project(":tunnel"))
 
     // Core foundations
     implementation(libs.bundles.androidx.core.full)
@@ -208,14 +224,13 @@ dependencies {
     // State management
     implementation(libs.bundles.orbit.mvi)
 
-    // Tunnel
-    implementation(libs.bundles.wireguard.tunnel)
-
     // Shizuku
     implementation(libs.bundles.shizuku)
 
     // UI utilities
     implementation(libs.bundles.ui.utilities)
+    implementation(libs.lottie.compose)
+    implementation(libs.sonner)
 
     // Misc utilities
     implementation(libs.bundles.misc.utilities)
@@ -268,7 +283,7 @@ tasks.register<Copy>("copyLicenseeJsonToAssets") {
 tasks.named("preBuild") { dependsOn("copyLicenseeJsonToAssets") }
 
 // https://gist.github.com/obfusk/61046e09cee352ae6dd109911534b12e#fix-proposed-by-linsui-disable-baseline-profiles
-tasks.whenTaskAdded {
+tasks.configureEach {
     if (name.contains("ArtProfile")) {
         enabled = false
     }

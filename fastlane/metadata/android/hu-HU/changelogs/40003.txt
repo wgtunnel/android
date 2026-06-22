@@ -1,4 +1,4 @@
-What's new:
-- Monitoring failing to shut down race bugfix
-- Notifications stop action bugfix
-- Notification relaunch activity when already active bugfix
+Újdonságok:
+Az alagútfigyelés leállításakor jelentkező versenyhelyzet (race condition) javítása
+Az értesítési sáv „Leállítás” gombjával kapcsolatos hiba javítása
+Már futó alkalmazás esetén az értesítésre kattintáskor fellépő újraindítási hiba javítása

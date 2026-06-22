@@ -4,7 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import com.zaneschepke.logcatter.LogReader
-import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
+import com.zaneschepke.wireguardautotunnel.core.orchestration.StartupCoordinator
 import com.zaneschepke.wireguardautotunnel.di.Scope
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppStateRepository
 import kotlinx.coroutines.CoroutineScope
@@ -19,7 +19,7 @@ class RestartReceiver : BroadcastReceiver(), KoinComponent {
 
     private val applicationScope: CoroutineScope = get(named(Scope.APPLICATION))
 
-    private val tunnelManager: TunnelManager by inject()
+    private val startupCoordinator: StartupCoordinator by inject()
 
     private val appStateRepository: AppStateRepository by inject()
 
@@ -32,11 +32,11 @@ class RestartReceiver : BroadcastReceiver(), KoinComponent {
                 Intent.ACTION_BOOT_COMPLETED,
                 "android.intent.action.QUICKBOOT_POWERON",
                 "com.htc.intent.action.QUICKBOOT_POWERON" -> {
-                    tunnelManager.handleReboot()
+                    startupCoordinator.applyStartupPolicy()
                 }
                 Intent.ACTION_MY_PACKAGE_REPLACED -> {
                     Timber.i("Restoring state on package upgrade")
-                    tunnelManager.handleRestore()
+                    startupCoordinator.applyStartupPolicy()
                     logReader.deleteAndClearLogs()
                     appStateRepository.setShouldShowDonationSnackbar(true)
                 }

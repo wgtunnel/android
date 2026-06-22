@@ -3,11 +3,17 @@ package com.zaneschepke.logcatter
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.zaneschepke.logcatter.model.LogMessage
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
@@ -46,13 +52,12 @@ class LogcatManager(pid: Int, logDir: String, maxFileSize: Long, maxFolderSize: 
         mutex.withLock {
             if (isStarted) return
             stopInternal()
-            logJob =
-                logScope.launch {
-                    logcatReader.readLogs().collect { logMessage ->
-                        _bufferedLogs.emit(logMessage)
-                        _liveLogs.emit(logMessage)
-                    }
+            logJob = logScope.launch {
+                logcatReader.readLogs().collect { logMessage ->
+                    _bufferedLogs.emit(logMessage)
+                    _liveLogs.emit(logMessage)
                 }
+            }
             isStarted = true
         }
     }

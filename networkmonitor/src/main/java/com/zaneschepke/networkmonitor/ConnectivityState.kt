@@ -1,5 +1,6 @@
 package com.zaneschepke.networkmonitor
 
+import android.net.Network
 import com.zaneschepke.networkmonitor.util.WifiSecurityType
 
 data class ConnectivityState(
@@ -7,6 +8,9 @@ data class ConnectivityState(
     val locationPermissionsGranted: Boolean,
     val locationServicesEnabled: Boolean,
     val vpnState: VpnState,
+    val effectiveDnsInfo: DnsInfo = DnsInfo(),
+    val underlyingDnsInfo: DnsInfo = DnsInfo(),
+    val hasIpv6: Boolean = false,
 ) {
     fun hasInternet(): Boolean = activeNetwork !is ActiveNetwork.Disconnected
 
@@ -31,14 +35,29 @@ data class ConnectivityState(
 data class Permissions(val locationServicesEnabled: Boolean, val locationPermissionGranted: Boolean)
 
 sealed class ActiveNetwork {
-    data object Disconnected : ActiveNetwork()
+    abstract val network: Network?
 
-    data class Wifi(val ssid: String, val securityType: WifiSecurityType?, val networkId: String) :
-        ActiveNetwork()
+    fun key(): String {
+        return when (this) {
+            is Wifi -> "wifi:${networkId}"
+            is Cellular -> "cell:${network?.hashCode() ?: 0}"
+            is Ethernet -> "eth:${network?.hashCode() ?: 0}"
+            is Disconnected -> "none"
+        }
+    }
 
-    data object Cellular : ActiveNetwork()
+    data class Disconnected(override val network: Network? = null) : ActiveNetwork()
 
-    data object Ethernet : ActiveNetwork()
+    data class Wifi(
+        val ssid: String,
+        val securityType: WifiSecurityType?,
+        val networkId: String,
+        override val network: Network?,
+    ) : ActiveNetwork()
+
+    data class Cellular(override val network: Network?) : ActiveNetwork()
+
+    data class Ethernet(override val network: Network?) : ActiveNetwork()
 }
 
 sealed interface VpnState {

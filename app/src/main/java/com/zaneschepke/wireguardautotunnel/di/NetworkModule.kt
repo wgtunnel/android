@@ -1,5 +1,7 @@
 package com.zaneschepke.wireguardautotunnel.di
 
+import android.os.StrictMode
+import com.zaneschepke.wireguardautotunnel.BuildConfig
 import com.zaneschepke.wireguardautotunnel.data.network.GitHubApi
 import com.zaneschepke.wireguardautotunnel.data.network.KtorClient
 import com.zaneschepke.wireguardautotunnel.data.network.KtorGitHubApi
@@ -12,7 +14,20 @@ import org.koin.dsl.bind
 import org.koin.dsl.lazyModule
 
 val networkModule = lazyModule {
-    single { KtorClient.create() }
+    single {
+        val client =
+            if (BuildConfig.DEBUG) {
+                val oldPolicy = StrictMode.allowThreadDiskReads()
+                try {
+                    KtorClient.create()
+                } finally {
+                    StrictMode.setThreadPolicy(oldPolicy)
+                }
+            } else {
+                KtorClient.create()
+            }
+        client
+    }
     singleOf(::KtorGitHubApi) bind GitHubApi::class
 
     single<UpdateRepository> {

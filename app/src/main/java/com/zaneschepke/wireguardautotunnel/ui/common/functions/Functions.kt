@@ -69,39 +69,58 @@ fun rememberFileImportLauncherForResult(
 @Composable
 fun rememberFileExportLauncherForResult(
     mimeType: String = FileUtils.ZIP_FILE_MIME_TYPE,
-    onResult: (Uri?) -> Unit,
+    onSuccess: (Uri) -> Unit,
+    onCanceled: () -> Unit,
+    onUnsupported: () -> Unit,
 ): ManagedActivityResultLauncher<String, Uri?> {
     val isTv = LocalIsAndroidTV.current
+
     return rememberLauncherForActivityResult(
         contract =
             object : ActivityResultContracts.CreateDocument(mimeType) {
                 override fun createIntent(context: Context, input: String): Intent {
-                    super.createIntent(context, input)
                     val intent =
-                        Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+                        super.createIntent(context, input).apply {
                             addCategory(Intent.CATEGORY_OPENABLE)
-                            type =
-                                if (isTv) {
-                                    FileUtils.ALLOWED_TV_FILE_TYPES
-                                } else {
-                                    mimeType
-                                }
                             putExtra(Intent.EXTRA_TITLE, input)
+                            type = if (isTv) FileUtils.ALLOWED_TV_FILE_TYPES else mimeType
                         }
 
-                    Timber.d("Returning SAF intent for launch")
+                    // Detect Android TV stub pickers that do nothing
+                    val activities =
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                            context.packageManager.queryIntentActivities(
+                                intent,
+                                PackageManager.ResolveInfoFlags.of(
+                                    PackageManager.MATCH_DEFAULT_ONLY.toLong()
+                                ),
+                            )
+                        } else {
+                            context.packageManager.queryIntentActivities(
+                                intent,
+                                PackageManager.MATCH_DEFAULT_ONLY,
+                            )
+                        }
+
+                    val isStubOnly = activities.all {
+                        val pkg = it.activityInfo.packageName
+                        pkg.startsWith(FileUtils.GOOGLE_TV_EXPLORER_STUB) ||
+                            pkg.startsWith(FileUtils.ANDROID_TV_EXPLORER_STUB)
+                    }
+
+                    if (isStubOnly) {
+                        Timber.w("Detected Android TV stub file picker — export not supported")
+                        onUnsupported()
+                    }
+
                     return intent
                 }
             }
     ) { uri ->
-        Timber.d("SAF onResult called with Uri: $uri")
         if (uri != null) {
-            Timber.d(
-                "Uri details: scheme=${uri.scheme}, authority=${uri.authority}, path=${uri.path}"
-            )
+            onSuccess(uri)
         } else {
-            Timber.d("SAF picker canceled or failed to return a Uri")
+            onCanceled()
         }
-        onResult(uri)
     }
 }

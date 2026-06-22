@@ -1,5 +1,5 @@
-What's new:
-- Resource usage bugfix
-- Improve network monitoring
-- Tab navigation bugfix
-- Tunnel metered default bugfix
+Újdonságok:
+Erőforrás-használattal kapcsolatos hibajavítás
+Hálózatfigyelés továbbfejlesztése
+Lapfülek közötti navigáció hibájának javítása
+Az alagutak alapértelmezett forgalmi korlátos (metered) beállításának javítása

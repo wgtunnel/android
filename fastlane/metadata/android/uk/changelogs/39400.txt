@@ -1,6 +1,6 @@
-What's new:
-- Tunnel sorting
-- Shizuku support for Wi-Fi SSIDs
-- Android TV hover visibility improvements
-- Auto-tunnel default detection method bug fix
-- Other UI changes and improvements
+Що нового:
+- Сортування тунелів
+- Підтримка Shizuku для SSID-адрес Wi-Fi
+- Покращення відображення підказки на Android TV
+- Виправлення помилки в методі автоматичного визначення тунелю за замовчуванням
+- Інші зміни та покращення інтерфейсу користувача

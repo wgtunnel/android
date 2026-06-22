@@ -1,5 +1,5 @@
-What's new:
-- App lock crash bugfix
-- Fdroid publishing bugfix
-- Exporting logs bugfix
-- Auto-tunnel ethernet toggle bugfix
+Újdonságok:
+Alkalmazás-zárolás leállási hibájának javítása
+F-Droid közzétételi hiba javítása
+Naplófájlok exportálási hibájának javítása
+Automatikus alagút ethernet-kapcsolójának hibajavítása

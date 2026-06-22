@@ -13,10 +13,43 @@ class LogcatStreamReader(pid: Int, private val fileManager: LogFileManager) {
     private val bufferSize = 1024
     private var process: Process? = null
     private var reader: BufferedReader? = null
-    private val command = "logcat -v epoch --pid=$pid"
+    private val command = buildString {
+        append("logcat")
+        append(" -v epoch")
+        append(" --pid=$pid")
+        append(" -b main -b crash")
+        append(" -T 300")
+    }
+
     private val clearCommand = "logcat -c"
 
     private val ioDispatcher = Dispatchers.IO
+
+    private val noisyTags =
+        setOf(
+            "SamsungIME",
+            "SPen",
+            "SmartManager",
+            "InputMethod",
+            "SurfaceFlinger",
+            "WindowManager",
+            "ActivityManager",
+            "SystemServer",
+            "PackageManager",
+            "ConnectivityService",
+        )
+
+    private val noisyPatterns =
+        listOf(
+            Regex(".*(Samsung|SPen|SmartView| Knox|MDM).*", RegexOption.IGNORE_CASE),
+            Regex(".*(Choreographer|HWUI|OpenGL|RenderThread).*"),
+        )
+
+    fun shouldLog(line: String): Boolean {
+        if (noisyTags.any { line.contains(it) }) return false
+        if (noisyPatterns.any { it.containsMatchIn(line) }) return false
+        return true
+    }
 
     fun readLogs(): Flow<LogMessage> =
         flow {
@@ -25,7 +58,7 @@ class LogcatStreamReader(pid: Int, private val fileManager: LogFileManager) {
                     process = Runtime.getRuntime().exec(command)
                     reader = BufferedReader(InputStreamReader(process!!.inputStream), bufferSize)
                     reader!!.lineSequence().forEach { line ->
-                        if (line.isNotEmpty()) {
+                        if (line.isNotEmpty() && shouldLog(line)) {
                             fileManager.writeLog(line)
                             emit(LogMessage.from(line))
                         }

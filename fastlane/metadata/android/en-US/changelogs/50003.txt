@@ -1,0 +1,5 @@
+What's new:
+- Improved tunnel start time
+- Added companion service to prevent new Android Auto app from detecting an active VPN
+- Improved notification sync with tunnel statuses
+- Various other minor fixes and improvements

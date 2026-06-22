@@ -1,5 +1,5 @@
-What's new:
-- App lock crash bugfix
-- Fdroid publishing bugfix
-- Exporting logs bugfix
-- Auto-tunnel ethernet toggle bugfix
+Nouveautés :
+- Correction d'un bug provoquant le plantage de l'application
+- Correction d'un bug lié à la publication sur F-Droid
+- Correction d'un bug lors de l'exportation des journaux
+- Correction d'un bug dans le bouton de basculement du tunnel automatique Ethernet

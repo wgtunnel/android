@@ -1,8 +1,8 @@
-What's new:
-- Metered tunnels settings
-- Lockdown dual-stack support
-- Lockdown multiple profile bugfix
-- Split tunneling improved installed packages querying
-- Restart active tunnels on configuration changes
-- Android TV UI bugfixes
-- Various other bugfixes and improvements
+Újdonságok:
+Forgalmi korlátos (metered) alagutak beállításai
+Zárolási mód (lockdown) dual-stack támogatása
+Zárolási mód többprofilos hibájának javítása
+Telepített csomagok lekérdezésének javítása az osztott alagutazáshoz
+Aktív alagutak újraindítása a konfiguráció módosításakor
+Android TV felületi hibajavítások
+Számos egyéb hibajavítás és fejlesztés

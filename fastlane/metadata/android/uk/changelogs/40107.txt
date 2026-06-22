@@ -1,6 +1,6 @@
-What's new:
-- Improved QR scanning and device support
-- Display tunnel uptime
-- Fixes quick tile crash bug when running app in multiple profiles
-- Fixes global overrides regression causing unexpected tunnel start errors
-- Fixes network detection race while VPN is active
+Що нового:
+- Покращено сканування QR-кодів та підтримку пристроїв
+- Відображення часу роботи тунелю
+- Виправлено помилку, що призводила до збою швидкої плитки під час роботи програми в декількох профілях
+- Виправлено регресію глобальних налаштувань, що спричиняла несподівані помилки під час запуску тунелю
+- Виправлено конфлікт виявлення мережі під час активної роботи VPN

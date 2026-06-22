@@ -6,6 +6,7 @@ import java.io.FileInputStream
 import java.io.InputStreamReader
 import kotlin.coroutines.resumeWithException
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import moe.shizuku.server.IRemoteProcess
@@ -30,7 +31,7 @@ class ShizukuShell(private val applicationScope: CoroutineScope) {
     }
 
     fun command(command: String, listener: CommandResultListener, lineBundle: Int = 50) {
-        applicationScope.launch {
+        applicationScope.launch(Dispatchers.IO) {
             var process: IRemoteProcess? = null
             var inputStreamPfd: ParcelFileDescriptor? = null
             var errorStreamPfd: ParcelFileDescriptor? = null

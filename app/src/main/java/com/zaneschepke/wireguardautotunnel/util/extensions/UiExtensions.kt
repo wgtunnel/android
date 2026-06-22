@@ -4,25 +4,24 @@ import android.content.Context
 import android.icu.text.MeasureFormat
 import android.icu.util.Measure
 import android.icu.util.MeasureUnit
+import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Lock
-import androidx.compose.material.icons.outlined.Terminal
 import androidx.compose.material.icons.outlined.VpnKey
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import com.zaneschepke.networkmonitor.AndroidNetworkMonitor
+import com.zaneschepke.tunnel.state.ActiveTunnel
 import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.data.model.AppMode
-import com.zaneschepke.wireguardautotunnel.data.model.WifiDetectionMethod
-import com.zaneschepke.wireguardautotunnel.domain.state.TunnelState
-import com.zaneschepke.wireguardautotunnel.ui.theme.AlertRed
-import com.zaneschepke.wireguardautotunnel.ui.theme.CoolGray
-import com.zaneschepke.wireguardautotunnel.ui.theme.SilverTree
-import com.zaneschepke.wireguardautotunnel.ui.theme.Straw
+import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelMode
+import com.zaneschepke.wireguardautotunnel.domain.enums.WifiDetectionMethod
+import com.zaneschepke.wireguardautotunnel.ui.state.DisplayTunnelState
+import com.zaneschepke.wireguardautotunnel.util.DnsError
 import java.util.Locale
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 fun WifiDetectionMethod.asTitleString(context: Context): String {
     return when (this) {
@@ -51,77 +50,89 @@ fun WifiDetectionMethod.asDescriptionString(context: Context): String? {
     }
 }
 
-fun AppMode.asTitleString(context: Context): String {
+fun TunnelMode.asTitleString(context: Context): String {
     return when (this) {
-        AppMode.VPN -> asString(context)
-        AppMode.PROXY -> context.getString(R.string.expiremental_template, asString(context))
-        AppMode.KERNEL -> context.getString(R.string.root_required_template, asString(context))
-        AppMode.LOCK_DOWN -> context.getString(R.string.expiremental_template, asString(context))
+        TunnelMode.VPN -> asString(context)
+        TunnelMode.PROXY -> asString(context)
+        TunnelMode.LOCK_DOWN -> asString(context)
     }
 }
 
-fun AppMode.asString(context: Context): String {
+fun TunnelMode.asString(context: Context): String {
     return when (this) {
-        AppMode.VPN -> context.getString(R.string.vpn)
-        AppMode.PROXY -> context.getString(R.string.proxy)
-        AppMode.KERNEL -> context.getString(R.string.kernel)
-        AppMode.LOCK_DOWN -> context.getString(R.string.lockdown)
+        TunnelMode.VPN -> context.getString(R.string.vpn)
+        TunnelMode.PROXY -> context.getString(R.string.local_proxy)
+        TunnelMode.LOCK_DOWN -> context.getString(R.string.lockdown)
     }
-}
-
-fun AppMode.description(context: Context): String? {
-    return if (this == AppMode.KERNEL)
-        context.getString(R.string.only_template, context.getString(R.string.wireguard))
-    else null
 }
 
 @Composable
-fun AppMode.asIcon(): ImageVector {
+fun TunnelMode.asIcon(): ImageVector {
     return when (this) {
-        AppMode.VPN -> Icons.Outlined.VpnKey
-        AppMode.PROXY -> ImageVector.vectorResource(R.drawable.proxy)
-        AppMode.KERNEL -> Icons.Outlined.Terminal
-        AppMode.LOCK_DOWN -> Icons.Outlined.Lock
+        TunnelMode.VPN -> Icons.Outlined.VpnKey
+        TunnelMode.PROXY -> ImageVector.vectorResource(R.drawable.proxy)
+        TunnelMode.LOCK_DOWN -> Icons.Outlined.Lock
     }
 }
 
-fun TunnelState.Health.asColor(): Color {
-    return when (this) {
-        TunnelState.Health.UNKNOWN -> CoolGray
-        TunnelState.Health.UNHEALTHY -> AlertRed
-        TunnelState.Health.HEALTHY -> SilverTree
-        TunnelState.Health.STALE -> Straw
-    }
-}
+fun Duration.localized(locale: Locale = Locale.getDefault()): String {
+    require(this >= Duration.ZERO) { "Duration cannot be negative" }
 
-fun Long.localizedDuration(locale: Locale = Locale.getDefault()): String {
-    require(this >= 0L) { "Duration cannot be negative" }
-
-    val duration = this.milliseconds
-
-    if (duration < 1000.milliseconds) {
+    if (this < 1.seconds) {
         return MeasureFormat.getInstance(locale, MeasureFormat.FormatWidth.SHORT)
             .format(Measure(0, MeasureUnit.SECOND))
     }
 
-    val totalSeconds = duration.inWholeSeconds
-
-    val days = totalSeconds / 86_400
-    val hours = (totalSeconds % 86_400) / 3_600
-    val minutes = (totalSeconds % 3_600) / 60
-    val seconds = totalSeconds % 60
-
     val measures = buildList {
-        if (days > 0) add(Measure(days, MeasureUnit.DAY))
-        if (hours > 0) add(Measure(hours, MeasureUnit.HOUR))
-        if (minutes > 0) add(Measure(minutes, MeasureUnit.MINUTE))
-        if (seconds > 0) add(Measure(seconds, MeasureUnit.SECOND))
+        if (inWholeDays > 0) add(Measure(inWholeDays, MeasureUnit.DAY))
+        if (inWholeHours % 24 > 0) add(Measure(inWholeHours % 24, MeasureUnit.HOUR))
+        if (inWholeMinutes % 60 > 0) add(Measure(inWholeMinutes % 60, MeasureUnit.MINUTE))
+        if (inWholeSeconds % 60 > 0) add(Measure(inWholeSeconds % 60, MeasureUnit.SECOND))
     }
 
     return MeasureFormat.getInstance(locale, MeasureFormat.FormatWidth.SHORT)
         .formatMeasures(*measures.toTypedArray())
 }
 
-fun Long.millisAgo(): Long {
-    return System.currentTimeMillis() - this
+fun Long?.toAgoDisplay(currentTimeMillis: Long = System.currentTimeMillis()): String? {
+    val timestamp = this ?: return null
+    if (timestamp <= 0L) return null
+
+    val nowSeconds = currentTimeMillis / 1000
+    val secondsAgo = (nowSeconds - timestamp).coerceAtLeast(0L)
+
+    return secondsAgo.seconds.localized()
+}
+
+fun Long.toUptimeDisplay(currentTimeMillis: Long = System.currentTimeMillis()): String {
+    val elapsedMillis = (currentTimeMillis - this).coerceAtLeast(0L)
+    return elapsedMillis.milliseconds.localized()
+}
+
+@StringRes
+fun DnsError.labelRes(): Int {
+    return when (this) {
+        DnsError.Empty -> R.string.dns_error_empty
+        DnsError.InvalidUrl -> R.string.dns_error_invalid_url
+        DnsError.InvalidScheme -> R.string.dns_error_invalid_scheme
+        DnsError.InvalidHost -> R.string.dns_error_invalid_host
+        DnsError.InvalidPort -> R.string.dns_error_invalid_port
+        DnsError.InvalidIpOrHost -> R.string.dns_error_invalid_ip_or_host
+    }
+}
+
+fun ActiveTunnel.statusText(context: Context): String {
+    return context.getString(
+        R.string.status_template,
+        DisplayTunnelState.from(this).asLocalizedString(context),
+    )
+}
+
+fun ActiveTunnel.uptimeText(context: Context, now: Long): String? {
+
+    val startedAt = uptime ?: return null
+
+    val uptimeDisplay = startedAt.toUptimeDisplay(now)
+
+    return context.getString(R.string.uptime_template, uptimeDisplay)
 }

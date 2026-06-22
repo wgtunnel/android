@@ -1,4 +1,4 @@
-What's new:
-- Fixes deprecate location API bug by adding Wi-Fi info method selection
-- Simplified update check dialog UI
-- Improve auto-tunnel reliability with delayed recheck
+Що нового:
+- Виправляє застарілу помилку API розташування, додавши вибір методу Info Wi-Fi
+- Спрощена перевірка оновлення діалогового вікна інтерфейсу користувача
+- Підвищення надійності автоматичного тунелю за допомогою затримки повторної перевірки

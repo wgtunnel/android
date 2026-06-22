@@ -1,3 +1,3 @@
-What's new:
-- Auto tunnel network detection bugfix
-- Tunnel notification sometimes don't start bugfix
+Újdonságok:
+Az automatikus alagút hálózatészlelési hibájának javítása
+Az alagút értesítéseinek esetenkénti elmaradásával kapcsolatos hibajavítás

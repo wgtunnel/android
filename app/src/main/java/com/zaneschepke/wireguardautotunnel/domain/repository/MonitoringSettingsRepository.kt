@@ -9,4 +9,8 @@ interface MonitoringSettingsRepository {
     val flow: Flow<MonitoringSettings>
 
     suspend fun getMonitoringSettings(): MonitoringSettings
+
+    suspend fun updateStatisticRefresh(statisticRefresh: Int)
+
+    suspend fun updateStatisticsEnabled(enabled: Boolean)
 }

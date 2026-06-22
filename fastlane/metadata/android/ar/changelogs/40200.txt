@@ -1,0 +1,5 @@
+What's new:
+- Amnezia 2.0 support
+- Copy split tunnel apps from existing config
+- Logger start bugfix
+- Quick tile added sync bugfix

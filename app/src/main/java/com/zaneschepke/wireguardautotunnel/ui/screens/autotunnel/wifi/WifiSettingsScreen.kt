@@ -3,6 +3,7 @@ package com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.wifi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -27,7 +28,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.common.banner.WarningBanner
@@ -47,13 +47,14 @@ import com.zaneschepke.wireguardautotunnel.util.extensions.launchLocationService
 import com.zaneschepke.wireguardautotunnel.util.extensions.openWebUrl
 import com.zaneschepke.wireguardautotunnel.viewmodel.AutoTunnelViewModel
 import org.koin.androidx.compose.koinViewModel
+import org.orbitmvi.orbit.compose.collectAsState
 
 @Composable
 fun WifiSettingsScreen(viewModel: AutoTunnelViewModel = koinViewModel()) {
     val context = LocalContext.current
     val navController = LocalNavController.current
 
-    val uiState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
+    val uiState by viewModel.collectAsState()
 
     if (uiState.isLoading) return
 
@@ -105,7 +106,7 @@ fun WifiSettingsScreen(viewModel: AutoTunnelViewModel = koinViewModel()) {
     Column(
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.Top),
-        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
+        modifier = Modifier.fillMaxSize().imePadding().verticalScroll(rememberScrollState()),
     ) {
         Column {
             WarningBanner(

@@ -1,11 +1,9 @@
 package com.zaneschepke.wireguardautotunnel.viewmodel
 
 import androidx.lifecycle.ViewModel
+import com.dokar.sonner.ToastType
 import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelManager
-import com.zaneschepke.wireguardautotunnel.domain.enums.BackendMode
-import com.zaneschepke.wireguardautotunnel.domain.model.LockdownSettings
-import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
+import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelProvider
 import com.zaneschepke.wireguardautotunnel.domain.repository.GlobalEffectRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.LockdownSettingsRepository
 import com.zaneschepke.wireguardautotunnel.domain.sideeffect.GlobalSideEffect
@@ -16,7 +14,7 @@ import org.orbitmvi.orbit.viewmodel.container
 
 class LockdownViewModel(
     private val lockdownSettingsRepository: LockdownSettingsRepository,
-    private val tunnelManager: TunnelManager,
+    private val tunnelProvider: TunnelProvider,
     private val globalEffectRepository: GlobalEffectRepository,
 ) : ContainerHost<LockdownSettingsUiState, Nothing>, ViewModel() {
 
@@ -26,28 +24,39 @@ class LockdownViewModel(
             buildSettings = { repeatOnSubscribedStopTimeout = 5000L },
         ) {
             lockdownSettingsRepository.flow.collect {
-                reduce { state.copy(lockdownSettings = it, isLoading = false) }
+                reduce {
+                    state.copy(
+                        lockdownSettings = it,
+                        metered = it.metered,
+                        dualStack = it.dualStack,
+                        bypassLan = it.bypassLan,
+                        isLoading = false,
+                    )
+                }
             }
         }
 
-    fun setLockdownSettings(lockdownSettings: LockdownSettings) = intent {
+    fun setLockdownSettings() = intent {
         reduce { state.copy(showSaveModal = false) }
-        lockdownSettingsRepository.upsert(lockdownSettings)
 
-        tunnelManager.setBackendMode(BackendMode.Inactive)
-        val allowedIps =
-            if (lockdownSettings.bypassLan) TunnelConfig.LAN_BYPASS_ALLOWED_IPS else emptySet()
-        tunnelManager.setBackendMode(
-            BackendMode.KillSwitch(
-                allowedIps = allowedIps,
-                isMetered = lockdownSettings.metered,
-                dualStack = lockdownSettings.dualStack,
+        val updated =
+            state.lockdownSettings.copy(
+                metered = state.metered,
+                dualStack = state.dualStack,
+                bypassLan = state.bypassLan,
             )
-        )
+
+        lockdownSettingsRepository.upsert(updated)
+
+        tunnelProvider.disableLockDown()
+        tunnelProvider.setLockDown(updated)
 
         postSideEffect(GlobalSideEffect.PopBackStack)
         postSideEffect(
-            GlobalSideEffect.Toast(StringValue.StringResource(R.string.config_changes_saved))
+            GlobalSideEffect.Snackbar(
+                StringValue.StringResource(R.string.config_changes_saved),
+                ToastType.Success,
+            )
         )
     }
 
@@ -56,4 +65,10 @@ class LockdownViewModel(
     }
 
     fun setShowSaveModal(to: Boolean) = intent { reduce { state.copy(showSaveModal = to) } }
+
+    fun setMetered(value: Boolean) = intent { reduce { state.copy(metered = value) } }
+
+    fun setDualStack(value: Boolean) = intent { reduce { state.copy(dualStack = value) } }
+
+    fun setBypassLan(value: Boolean) = intent { reduce { state.copy(bypassLan = value) } }
 }

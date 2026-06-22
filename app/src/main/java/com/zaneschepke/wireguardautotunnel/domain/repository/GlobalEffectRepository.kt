@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 class GlobalEffectRepository {
 
     private val _globalEffectFlow =
-        MutableSharedFlow<GlobalSideEffect>(replay = 0, extraBufferCapacity = 1)
+        MutableSharedFlow<GlobalSideEffect>(replay = 0, extraBufferCapacity = 0)
     val flow = _globalEffectFlow.asSharedFlow()
 
     suspend fun post(effect: GlobalSideEffect) {

@@ -11,7 +11,7 @@ fun Entity.toDomain(): Domain =
         isRestoreOnBootEnabled = isRestoreOnBootEnabled,
         isMultiTunnelEnabled = isMultiTunnelEnabled,
         isGlobalSplitTunnelEnabled = isGlobalSplitTunnelEnabled,
-        appMode = appMode,
+        tunnelMode = tunnelMode,
         theme = Theme.valueOf(theme.uppercase()),
         locale = locale,
         remoteKey = remoteKey,
@@ -19,6 +19,9 @@ fun Entity.toDomain(): Domain =
         isPinLockEnabled = isPinLockEnabled,
         isAlwaysOnVpnEnabled = isAlwaysOnVpnEnabled,
         alreadyDonated = alreadyDonated,
+        screenRecordingSecurityEnabled = screenRecordingSecurityEnabled,
+        isGlobalAmneziaEnabled = isGlobalAmneziaEnabled,
+        tunnelScriptingEnabled = tunnelScriptingEnabled,
     )
 
 fun Domain.toEntity(): Entity =
@@ -28,7 +31,7 @@ fun Domain.toEntity(): Entity =
         isRestoreOnBootEnabled = isRestoreOnBootEnabled,
         isMultiTunnelEnabled = isMultiTunnelEnabled,
         isGlobalSplitTunnelEnabled = isGlobalSplitTunnelEnabled,
-        appMode = appMode,
+        tunnelMode = tunnelMode,
         theme = theme.name,
         locale = locale,
         remoteKey = remoteKey,
@@ -36,4 +39,7 @@ fun Domain.toEntity(): Entity =
         isPinLockEnabled = isPinLockEnabled,
         isAlwaysOnVpnEnabled = isAlwaysOnVpnEnabled,
         alreadyDonated = alreadyDonated,
+        screenRecordingSecurityEnabled = screenRecordingSecurityEnabled,
+        isGlobalAmneziaEnabled = isGlobalAmneziaEnabled,
+        tunnelScriptingEnabled = tunnelScriptingEnabled,
     )

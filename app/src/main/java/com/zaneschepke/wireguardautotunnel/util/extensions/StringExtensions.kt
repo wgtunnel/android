@@ -1,31 +1,7 @@
 package com.zaneschepke.wireguardautotunnel.util.extensions
 
-import java.util.*
+import java.util.Locale
 import timber.log.Timber
-
-val hasNumberInParentheses = """^(.+?)\((\d+)\)$""".toRegex()
-
-fun String.isValidIpv4orIpv6Address(): Boolean {
-    val sanitized = removeSurrounding("[", "]")
-    val ipv6Pattern =
-        Regex(
-            "(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:)" +
-                "{1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]" +
-                "{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:" +
-                "[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4})" +
-                "{1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}" +
-                ":((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]" +
-                "{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}" +
-                "[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:)" +
-                "{1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))"
-        )
-    val ipv4Pattern =
-        Regex(
-            "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}" +
-                "(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
-        )
-    return ipv4Pattern.matches(sanitized) || ipv6Pattern.matches(sanitized)
-}
 
 fun String.abbreviateKey(prefixLength: Int = 6): String {
     val full = this
@@ -51,16 +27,6 @@ fun String.isValidAndroidProxyBindAddress(): Boolean {
 
     val port = this.substringAfter(":").toIntOrNull() ?: return false
     return port in 1024..65535
-}
-
-fun String.hasNumberInParentheses(): Boolean {
-    return hasNumberInParentheses.matches(this)
-}
-
-// Function to extract name and number
-fun String.extractNameAndNumber(): Pair<String, Int>? {
-    val matchResult = hasNumberInParentheses.matchEntire(this)
-    return matchResult?.let { Pair(it.groupValues[1], it.groupValues[2].toInt()) }
 }
 
 fun Set<String>.isMatchingToWildcardList(value: String): Boolean {
@@ -105,12 +71,12 @@ fun String.toTrimmedList(): List<String> {
 }
 
 inline fun String?.ifNotBlank(block: (String) -> Unit): String? {
-    if (this != null && isNotBlank()) {
+    if (!isNullOrBlank()) {
         block(this)
     }
     return this
 }
 
-fun String.isTextTooLargeForQr(maxBytes: Int = 1200): Boolean {
+fun String.isTextTooLargeForQr(maxBytes: Int = 1500): Boolean {
     return toByteArray(Charsets.UTF_8).size > maxBytes
 }

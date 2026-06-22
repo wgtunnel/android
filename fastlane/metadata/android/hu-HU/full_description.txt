@@ -1,14 +1,13 @@
-Features
-
-- Add tunnels via .conf file, zip, manual entry, or QR code
-- Auto connect to VPN based on Wi-Fi SSID, ethernet, or mobile data
-- Split tunneling by application with search
-- WireGuard support for kernel and userspace modes
-- Amnezia support for userspace mode for DPI/censorship protection
-- Always-On VPN support
-- Export Amnezia and WireGuard tunnels to zip
-- Quick tile support for VPN toggling
-- Static shortcuts support for primary tunnel for automation integration
-- Intent automation support for all tunnels
-- Automatic service restart after reboot
-- Battery preservation measures
+Funkciók
+Alagutak hozzáadása .conf fájlból, zip-ből, kézi megadással vagy QR-kóddal.
+Automatikus VPN-kapcsolódás Wi-Fi SSID, ethernet vagy mobiladat-forgalom alapján.
+Alkalmazásonkénti osztott alagutazás (split tunneling) keresési funkcióval.
+WireGuard támogatás kernel és felhasználói (userspace) módban.
+Amnezia támogatás felhasználói módban a DPI és cenzúra elleni védelemhez.
+„Állandó VPN” támogatás.
+Amnezia és WireGuard alagutak exportálása zip fájlba.
+Gyorsbeállítás-csempe a VPN egyszerű kapcsolásához.
+Statikus parancsikonok az elsődleges alagúthoz az automatizálási rendszerekbe való integráláshoz.
+Intent alapú automatizálási támogatás minden alagúthoz.
+Szolgáltatás automatikus újraindítása rendszerindítás után.
+Akkumulátorkímélő megoldások.

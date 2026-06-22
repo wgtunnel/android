@@ -1,4 +1,4 @@
-What's new:
-- Fixes deprecate location API bug by adding Wi-Fi info method selection
-- Simplified update check dialog UI
-- Improve auto-tunnel reliability with delayed recheck
+چه چیز جدیده :
+- مشکل منقضی شدن api location با اضافه کردن انتخاب روش اطلاعات وای‌فای، برطرف شد. 
+- رابط کاربری، پنجره‌ی بررسی به‌روزرسانی، ساده‌شده‌ی. 
+-  قابلیت اطمینان تونل خودکار با  ایجاد تأخیر در بررسی مجدد، رفع مشکل شد.

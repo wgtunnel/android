@@ -21,7 +21,7 @@ and [AmneziaWG](https://docs.amnezia.org/documentation/amnezia-wg/)
 <div align="center">
 
 [![Google Play](https://img.shields.io/badge/Google_Play-414141?style=for-the-badge&logo=google-play&logoColor=white)](https://play.google.com/store/apps/details?id=com.zaneschepke.wireguardautotunnel)
-[![F-Droid](https://img.shields.io/static/v1?style=for-the-badge&message=F-Droid&color=1976D2&logo=F-Droid&logoColor=FFFFFF&label=)](https://github.com/zaneschepke/fdroid)
+[![IzzyOnDroid](https://img.shields.io/static/v1?style=for-the-badge&message=IzzyOnDroid&color=1976D2&logo=F-Droid&logoColor=FFFFFF&label=)](https://apt.izzysoft.de/fdroid/index/apk/com.zaneschepke.wireguardautotunnel)
 [![Obtainium](https://img.shields.io/badge/Obtainium-414141?style=for-the-badge&logo=Obtainium&logoColor=white)](https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22com.zaneschepke.wireguardautotunnel%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2Fzaneschepke%2Fwgtunnel%22%2C%22author%22%3A%22zaneschepke%22%2C%22name%22%3A%22WG%20Tunnel%22%2C%22preferredApkIndex%22%3A0%2C%22additionalSettings%22%3A%22%7B%5C%22includePrereleases%5C%22%3Afalse%2C%5C%22fallbackToOlderReleases%5C%22%3Atrue%2C%5C%22filterReleaseTitlesByRegEx%5C%22%3A%5C%22%5C%22%2C%5C%22filterReleaseNotesByRegEx%5C%22%3A%5C%22%5C%22%2C%5C%22verifyLatestTag%5C%22%3Atrue%2C%5C%22sortMethodChoice%5C%22%3A%5C%22date%5C%22%2C%5C%22useLatestAssetDateAsReleaseDate%5C%22%3Afalse%2C%5C%22releaseTitleAsVersion%5C%22%3Afalse%2C%5C%22trackOnly%5C%22%3Afalse%2C%5C%22versionExtractionRegEx%5C%22%3A%5C%22%5C%22%2C%5C%22matchGroupToUse%5C%22%3A%5C%22%5C%22%2C%5C%22versionDetection%5C%22%3Atrue%2C%5C%22releaseDateAsVersion%5C%22%3Afalse%2C%5C%22useVersionCodeAsOSVersion%5C%22%3Afalse%2C%5C%22apkFilterRegEx%5C%22%3A%5C%22%5C%22%2C%5C%22invertAPKFilter%5C%22%3Afalse%2C%5C%22autoApkFilterByArch%5C%22%3Atrue%2C%5C%22appName%5C%22%3A%5C%22WG%20Tunnel%5C%22%2C%5C%22appAuthor%5C%22%3A%5C%22Zane%20Schepke%5C%22%2C%5C%22shizukuPretendToBeGooglePlay%5C%22%3Afalse%2C%5C%22allowInsecure%5C%22%3Afalse%2C%5C%22exemptFromBackgroundUpdates%5C%22%3Afalse%2C%5C%22skipUpdateNotifications%5C%22%3Afalse%2C%5C%22about%5C%22%3A%5C%22%5C%22%2C%5C%22refreshBeforeDownload%5C%22%3Afalse%7D%22%2C%22overrideSource%22%3Anull%7D)
 
 </div>
@@ -49,8 +49,8 @@ and [AmneziaWG](https://docs.amnezia.org/documentation/amnezia-wg/)
 
 ## About
 
-WG Tunnel is an alternative Android client for WireGuard and AmneziaWG, inspired by the official WireGuard Android app. It fills gaps in the official client by adding advanced features like auto-tunneling (on-demand VPN activation), while seamlessly supporting both protocols across app modes—including Kernel (for direct WireGuard kernel integration; AmneziaWG not supported), VPN (standard system-level tunneling), Lockdown (a custom kill switch for leak prevention), and Proxy (built-in HTTP/SOCKS5 forwarding)—for enhanced privacy, censorship resistance, and flexibility.
-
+WG Tunnel is an alternative Android client for WireGuard and AmneziaWG, inspired by the official WireGuard Android app. It fills gaps in the official client by adding advanced features like auto-tunneling, AmneziaWG support, different app modes like **Lockdown** (a custom kill switch for leak prevention), and **Local Proxy** (expose a tunnel over a local SOCKS5/HTTP proxy server) for enhanced privacy, censorship resistance, and flexibility.
+ 
 </div>
 
 <div style="text-align: left;">
@@ -67,21 +67,18 @@ WG Tunnel is an alternative Android client for WireGuard and AmneziaWG, inspired
 
 ## Features
 
-- **Tunnel Import Methods**: Easily add tunnels using .conf files, ZIP archives, manual entry, or QR code scanning.
-- **Auto-Tunneling**: Automatically activate tunnels based on Wi-Fi SSID, Ethernet connections, or mobile data networks.
-- **Split Tunneling**: Flexible support for routing specific apps or traffic through the VPN.
-- **WireGuard Modes**: Full compatibility with WireGuard in both kernel and userspace implementations.
-- **AmneziaWG Integration**: Userspace mode for AmneziaWG, providing robust censorship evasion.
-- **Always-On VPN**: Ensures continuous protection with Android's Always-On VPN feature.
-- **Quick Controls**: Quick Settings tile and home screen shortcuts for easy VPN toggling.
-- **Automation Support**: Intent-based automation for controlling tunnels.
-- **Auto-Restore**: Seamlessly restores auto-tunneling and active tunnels after device restarts or app updates.
-- **Proxying Options**: Built-in HTTP and SOCKS5 proxy support within tunnels.
-- **Lockdown Mode**: Custom kill switch for maximum leak prevention and security.
-- **Dynamic DNS Handling**: Detects and updates DNS changes without tunnel restarts.
-- **Monitoring Tools**: Advanced tunnel monitoring features for tunnel performance monitoring.
-- **Android TV Support**: Android TV support for secure streaming and browsing.
-- **Advanced DNS**: DNS over HTTPS support for tunnel endpoint resolutions.
+- **Auto-Tunneling:** Automatically activate tunnels based on your device's active network details.
+- **Deferred Endpoint Bootstrapping:** Safely resolves endpoints and updates peers after the tunnel is up for better reliability and leak protection on startup.
+- **Handshake Monitoring:** Real-time handshake monitoring for instant tunnel health feedback.
+- **AmneziaWG Support:** Full support for AmneziaWG 2.0, providing robust censorship protection.
+- **Split Tunneling:** Flexible support for routing specific apps or traffic through the VPN.
+- **Local Proxy Mode:** Expose WireGuard tunnels over a local SOCKS5 or HTTP proxy to browsers or firewall apps (like AdGuard).
+- **Lockdown Mode:** Advanced in-app kill switch that blocks all traffic while the tunnel is down.
+- **Quick Controls:** Quick Settings tile and home screen shortcuts for easy toggling.
+- **Remote Control Support:** Intent-based automation for controlling tunnels and auto-tunneling from automation apps (like Tasker).
+- **Dynamic DNS Handling:** Automatically detect and update endpoints on server IP changes without requiring a restart.
+- **IPv6 Endpoints:** Automatically upgrade to IPv6 endpoints or fall back to IPv4 based on network conditions without requiring a restart.
+- **Android TV Support:** Full support for nearly all features on Android TV.
 
 ## Building
 

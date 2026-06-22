@@ -11,7 +11,8 @@ import androidx.compose.material.icons.outlined.RemoveRedEye
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -21,20 +22,19 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.domain.model.ProxySettings
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ThemedSwitch
 import com.zaneschepke.wireguardautotunnel.ui.common.dialog.InfoDialog
 import com.zaneschepke.wireguardautotunnel.ui.common.label.GroupLabel
-import com.zaneschepke.wireguardautotunnel.ui.common.security.SecureScreenFromRecording
 import com.zaneschepke.wireguardautotunnel.ui.common.textbox.ConfigurationTextBox
 import com.zaneschepke.wireguardautotunnel.ui.sideeffect.LocalSideEffect
 import com.zaneschepke.wireguardautotunnel.viewmodel.ProxySettingsViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.SharedAppViewModel
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.viewmodel.koinActivityViewModel
+import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
 
 @Composable
@@ -42,58 +42,28 @@ fun ProxySettingsScreen(
     viewModel: ProxySettingsViewModel = koinViewModel(),
     sharedViewModel: SharedAppViewModel = koinActivityViewModel(),
 ) {
-    val uiState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
+    val uiState by viewModel.collectAsState()
 
     if (uiState.isLoading) return
 
     val locale = Locale.current.platformLocale
-
-    val proxySettings by remember(uiState) { mutableStateOf(uiState.proxySettings) }
-
-    var socks5Enabled by
-        remember(proxySettings) { mutableStateOf(uiState.proxySettings.socks5ProxyEnabled) }
-    var httpEnabled by
-        remember(proxySettings) { mutableStateOf(uiState.proxySettings.httpProxyEnabled) }
-    var socksBindAddress by
-        remember(proxySettings) {
-            mutableStateOf(uiState.proxySettings.socks5ProxyBindAddress ?: "")
-        }
-    var httpBindAddress by
-        remember(proxySettings) { mutableStateOf(uiState.proxySettings.httpProxyBindAddress ?: "") }
-    var proxyUsername by
-        remember(proxySettings) { mutableStateOf(uiState.proxySettings.proxyUsername ?: "") }
-    var proxyPassword by
-        remember(proxySettings) { mutableStateOf(uiState.proxySettings.proxyPassword ?: "") }
-    var passwordVisible by remember(proxySettings) { mutableStateOf(uiState.passwordVisible) }
 
     val keyboardController = LocalSoftwareKeyboardController.current
 
     val keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() })
     val keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
 
-    fun saveChanges() {
-        viewModel.save(
-            ProxySettings(
-                socks5ProxyEnabled = socks5Enabled,
-                socks5ProxyBindAddress = socksBindAddress,
-                httpProxyEnabled = httpEnabled,
-                httpProxyBindAddress = httpBindAddress,
-                proxyUsername = proxyUsername,
-                proxyPassword = proxyPassword,
-            )
-        )
-    }
-
     sharedViewModel.collectSideEffect { sideEffect ->
         if (sideEffect is LocalSideEffect.SaveChanges) {
-            if (uiState.activeTuns.isNotEmpty()) viewModel.setShowSaveModal(true) else saveChanges()
+            if (uiState.backendStatus.activeTunnels.isNotEmpty()) viewModel.setShowSaveModal(true)
+            else viewModel.save()
         }
     }
 
     if (uiState.showSaveModal) {
         InfoDialog(
             onDismiss = { viewModel.setShowSaveModal(false) },
-            onAttest = { saveChanges() },
+            onAttest = { viewModel.save() },
             title = stringResource(R.string.save_changes),
             body = {
                 Text(
@@ -107,8 +77,6 @@ fun ProxySettingsScreen(
         )
     }
 
-    SecureScreenFromRecording()
-
     Column(
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.Top),
@@ -119,11 +87,14 @@ fun ProxySettingsScreen(
                 leading = { Icon(Icons.Outlined.Forward5, contentDescription = null) },
                 title = stringResource(R.string.socks_5_proxy),
                 trailing = {
-                    ThemedSwitch(checked = socks5Enabled, onClick = { socks5Enabled = it })
+                    ThemedSwitch(
+                        checked = uiState.socks5Enabled,
+                        onClick = { viewModel.onSocks5EnabledChanged(it) },
+                    )
                 },
-                onClick = { socks5Enabled = !socks5Enabled },
+                onClick = { viewModel.onSocks5EnabledChanged(!uiState.socks5Enabled) },
             )
-            if (socks5Enabled) {
+            if (uiState.socks5Enabled) {
                 ConfigurationTextBox(
                     modifier = Modifier.padding(horizontal = 16.dp),
                     hint =
@@ -132,11 +103,11 @@ fun ProxySettingsScreen(
                             ProxySettings.DEFAULT_SOCKS_BIND_ADDRESS,
                         ),
                     label = stringResource(R.string.socks_5_bind_address),
-                    value = socksBindAddress,
+                    value = uiState.socksBindAddress,
                     isError = uiState.isSocks5BindAddressError,
                     onValueChange = {
                         if (uiState.isSocks5BindAddressError) viewModel.clearSocks5BindError()
-                        socksBindAddress = it
+                        viewModel.onSocksBindChanged(it)
                     },
                 )
             }
@@ -145,10 +116,15 @@ fun ProxySettingsScreen(
             SurfaceRow(
                 leading = { Icon(Icons.Outlined.Http, contentDescription = null) },
                 title = stringResource(R.string.http_proxy),
-                trailing = { ThemedSwitch(checked = httpEnabled, onClick = { httpEnabled = it }) },
-                onClick = { httpEnabled = !httpEnabled },
+                trailing = {
+                    ThemedSwitch(
+                        checked = uiState.httpEnabled,
+                        onClick = { viewModel.onHttpEnabledChanged(it) },
+                    )
+                },
+                onClick = { viewModel.onHttpEnabledChanged(!uiState.httpEnabled) },
             )
-            if (httpEnabled) {
+            if (uiState.httpEnabled) {
                 ConfigurationTextBox(
                     hint =
                         stringResource(
@@ -156,17 +132,17 @@ fun ProxySettingsScreen(
                             ProxySettings.DEFAULT_HTTP_BIND_ADDRESS,
                         ),
                     label = stringResource(R.string.http_bind_address),
-                    value = httpBindAddress,
+                    value = uiState.httpBindAddress,
                     isError = uiState.isHttpBindAddressError,
                     onValueChange = {
                         if (uiState.isSocks5BindAddressError) viewModel.clearHttpBindError()
-                        httpBindAddress = it
+                        viewModel.onHttpBindChanged(it)
                     },
                     modifier = Modifier.padding(horizontal = 12.dp),
                 )
             }
         }
-        if (socks5Enabled || httpEnabled) {
+        if (uiState.socks5Enabled || uiState.httpEnabled) {
             Column(
                 horizontalAlignment = Alignment.Start,
                 verticalArrangement = Arrangement.spacedBy(24.dp, Alignment.Top),
@@ -179,10 +155,10 @@ fun ProxySettingsScreen(
                     )
                 )
                 ConfigurationTextBox(
-                    value = proxyUsername,
+                    value = uiState.proxyUsername,
                     onValueChange = {
                         if (uiState.isUserNameError) viewModel.clearUsernameError()
-                        proxyUsername = it
+                        viewModel.onUsernameChanged(it)
                     },
                     label = stringResource(R.string.username),
                     isError = uiState.isUserNameError,
@@ -191,10 +167,10 @@ fun ProxySettingsScreen(
                     keyboardOptions = keyboardOptions,
                 )
                 ConfigurationTextBox(
-                    value = proxyPassword,
+                    value = uiState.proxyPassword,
                     onValueChange = {
                         if (uiState.isUserNameError) viewModel.clearPasswordError()
-                        proxyPassword = it
+                        viewModel.onPasswordChanged(it)
                     },
                     label = stringResource(R.string.password),
                     isError = uiState.isPasswordError,
@@ -202,7 +178,11 @@ fun ProxySettingsScreen(
                     keyboardActions = keyboardActions,
                     keyboardOptions = keyboardOptions,
                     trailing = {
-                        IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                        IconButton(
+                            onClick = {
+                                viewModel.onPasswordVisibilityChanged(!uiState.passwordVisible)
+                            }
+                        ) {
                             Icon(
                                 Icons.Outlined.RemoveRedEye,
                                 stringResource(R.string.show_password),
@@ -210,7 +190,7 @@ fun ProxySettingsScreen(
                         }
                     },
                     visualTransformation =
-                        if (!passwordVisible) PasswordVisualTransformation()
+                        if (!uiState.passwordVisible) PasswordVisualTransformation()
                         else VisualTransformation.None,
                 )
             }

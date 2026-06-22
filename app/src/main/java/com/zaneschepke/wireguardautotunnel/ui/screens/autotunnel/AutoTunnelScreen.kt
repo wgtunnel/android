@@ -17,7 +17,6 @@ import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.PublicOff
 import androidx.compose.material.icons.outlined.RestartAlt
-import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.SettingsEthernet
 import androidx.compose.material.icons.outlined.SignalCellular4Bar
 import androidx.compose.material.icons.outlined.Wifi
@@ -26,11 +25,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -41,10 +43,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.zaneschepke.networkmonitor.ActiveNetwork
 import com.zaneschepke.wireguardautotunnel.R
+import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SwitchWithDivider
@@ -58,6 +60,7 @@ import com.zaneschepke.wireguardautotunnel.viewmodel.AutoTunnelViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.SharedAppViewModel
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.viewmodel.koinActivityViewModel
+import org.orbitmvi.orbit.compose.collectAsState
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -67,12 +70,21 @@ fun AutoTunnelScreen(
 ) {
     val context = LocalContext.current
     val navController = LocalNavController.current
+    val isTv = LocalIsAndroidTV.current
     val clipboard = rememberClipboardHelper()
 
-    val globalUiState by sharedViewModel.container.stateFlow.collectAsStateWithLifecycle()
-    val uiState by viewModel.container.stateFlow.collectAsStateWithLifecycle()
+    val globalUiState by sharedViewModel.collectAsState()
+    val uiState by viewModel.collectAsState()
 
     if (uiState.isLoading) return
+
+    val focusRequester = remember { FocusRequester() }
+
+    LaunchedEffect(Unit) {
+        if (isTv) {
+            focusRequester.requestFocus()
+        }
+    }
 
     val batteryActivity =
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -125,7 +137,7 @@ fun AutoTunnelScreen(
             fun onAutoTunnelClick() {
                 if (!globalUiState.isBatteryOptimizationShown)
                     return requestDisableBatteryOptimizations()
-                viewModel.toggleAutoTunnel(globalUiState.appMode)
+                viewModel.toggleAutoTunnel(globalUiState.tunnelMode)
             }
 
             SurfaceRow(
@@ -144,6 +156,7 @@ fun AutoTunnelScreen(
                     }
                 },
                 onClick = { onAutoTunnelClick() },
+                modifier = Modifier.focusRequester(focusRequester),
             )
         }
         Column {
@@ -289,7 +302,9 @@ fun AutoTunnelScreen(
             SurfaceRow(
                 leading = { Icon(Icons.Outlined.PublicOff, contentDescription = null) },
                 title = stringResource(R.string.stop_on_no_internet),
-                description = { DescriptionText(stringResource(R.string.stop_on_internet_loss)) },
+                description = {
+                    DescriptionText(stringResource(R.string.stop_on_no_internet_desc))
+                },
                 trailing = {
                     ThemedSwitch(
                         checked = uiState.autoTunnelSettings.isStopOnNoInternetEnabled,
@@ -305,7 +320,7 @@ fun AutoTunnelScreen(
         }
         Column {
             GroupLabel(
-                stringResource(R.string.other),
+                stringResource(R.string.automation),
                 modifier = Modifier.padding(horizontal = 16.dp),
             )
             SurfaceRow(
@@ -317,12 +332,8 @@ fun AutoTunnelScreen(
                         onClick = { viewModel.setStartAtBoot(it) },
                     )
                 },
+                description = { DescriptionText(stringResource(R.string.start_on_boot_desc)) },
                 onClick = { viewModel.setStartAtBoot(!uiState.autoTunnelSettings.startOnBoot) },
-            )
-            SurfaceRow(
-                leading = { Icon(Icons.Outlined.Settings, contentDescription = null) },
-                title = stringResource(R.string.advanced_settings),
-                onClick = { navController.push(Route.AdvancedAutoTunnel) },
             )
         }
     }

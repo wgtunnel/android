@@ -2,6 +2,7 @@ package com.zaneschepke.wireguardautotunnel.viewmodel
 
 import android.net.Uri
 import androidx.lifecycle.ViewModel
+import com.dokar.sonner.ToastType
 import com.zaneschepke.logcatter.LogReader
 import com.zaneschepke.wireguardautotunnel.BuildConfig
 import com.zaneschepke.wireguardautotunnel.R
@@ -11,7 +12,11 @@ import com.zaneschepke.wireguardautotunnel.ui.state.LoggerUiState
 import com.zaneschepke.wireguardautotunnel.util.Constants
 import com.zaneschepke.wireguardautotunnel.util.FileUtils
 import com.zaneschepke.wireguardautotunnel.util.StringValue
+import com.zaneschepke.wireguardautotunnel.util.extensions.toUserFriendlyTimestamp
+import java.time.Instant
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.viewmodel.container
 import timber.log.Timber
@@ -36,9 +41,16 @@ class LoggerViewModel(
                                 state.messages.toMutableList().apply {
                                     if (size >= MAX_LOG_SIZE) removeAt(0)
                                     add(logMessage)
-                                }
+                                },
+                            isLoading = false,
                         )
                     }
+                }
+            }
+            intent {
+                delay(300.milliseconds)
+                if (state.isLoading) {
+                    reduce { state.copy(isLoading = false) }
                 }
             }
         }
@@ -48,24 +60,38 @@ class LoggerViewModel(
     }
 
     fun exportLogs(uri: Uri?) = intent {
+        if (uri == null) {
+            postSideEffect(
+                GlobalSideEffect.Snackbar(
+                    StringValue.StringResource(R.string.export_unsupported),
+                    ToastType.Warning,
+                )
+            )
+            return@intent
+        }
+
+        val timestamp = Instant.now().toUserFriendlyTimestamp()
         val result =
             fileUtils.createNewShareFile(
-                "${Constants.BASE_LOG_FILE_NAME}_${BuildConfig.VERSION_NAME}_${BuildConfig.FLAVOR}.zip"
+                "${Constants.BASE_LOG_FILE_NAME}_${timestamp}_${BuildConfig.VERSION_NAME}_${BuildConfig.FLAVOR}.zip"
             )
+
         val onFailure = { action: Throwable ->
             Timber.e(action)
             intent {
                 postSideEffect(
-                    GlobalSideEffect.Toast(
+                    GlobalSideEffect.Snackbar(
                         StringValue.StringResource(
                             R.string.export_failed,
                             ": ${action.localizedMessage}",
-                        )
+                        ),
+                        ToastType.Error,
                     )
                 )
             }
             Unit
         }
+
         result.fold(
             onSuccess = { file ->
                 try {

@@ -14,33 +14,26 @@ import android.os.Build
 import android.os.PowerManager
 import android.provider.Settings
 import android.service.quicksettings.TileService
-import android.widget.Toast
 import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import com.zaneschepke.wireguardautotunnel.MainActivity
 import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.core.service.tile.AutoTunnelControlTile
-import com.zaneschepke.wireguardautotunnel.core.service.tile.TunnelControlTile
+import com.zaneschepke.wireguardautotunnel.service.tile.AutoTunnelControlTile
+import com.zaneschepke.wireguardautotunnel.service.tile.TunnelControlTile
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.splittunnel.state.TunnelApp
 import com.zaneschepke.wireguardautotunnel.util.Constants
 import com.zaneschepke.wireguardautotunnel.util.FileUtils
 import java.io.File
 import java.io.InputStream
-import java.util.*
+import java.util.Locale
 import kotlin.system.exitProcess
 import timber.log.Timber
 
-fun Context.openWebUrl(url: String): Result<Unit> {
-    return kotlin
-        .runCatching {
-            val webpage: Uri = url.toUri()
-            val intent =
-                Intent(Intent.ACTION_VIEW, webpage).apply {
-                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                }
-            startActivity(intent)
-        }
-        .onFailure { showToast(R.string.no_browser_detected) }
+fun Context.openWebUrl(url: String): Result<Unit> = runCatching {
+    val webpage: Uri = url.toUri()
+    val intent =
+        Intent(Intent.ACTION_VIEW, webpage).apply { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) }
+    startActivity(intent)
 }
 
 fun Context.isBatteryOptimizationsDisabled(): Boolean {
@@ -109,15 +102,7 @@ fun Context.launchShareFile(file: File) {
     this.startActivity(chooserIntent)
 }
 
-fun Context.showToast(resId: Int) {
-    Toast.makeText(this, this.getString(resId), Toast.LENGTH_LONG).show()
-}
-
-fun Context.showToast(message: String) {
-    Toast.makeText(this, message, Toast.LENGTH_LONG).show()
-}
-
-fun Context.launchSupportEmail() {
+fun Context.launchSupportEmail(): Result<Unit> = runCatching {
     val intent =
         Intent(Intent.ACTION_SENDTO).apply {
             data = "mailto:".toUri()
@@ -132,7 +117,7 @@ fun Context.launchSupportEmail() {
             }
         )
     } else {
-        showToast(R.string.no_email_detected)
+        throw IllegalStateException("No email client found")
     }
 }
 
@@ -252,9 +237,9 @@ fun Context.installApk(apkFile: File) {
     startActivity(intent)
 }
 
-fun Context.launchPlayStoreListing() {
+fun Context.launchPlayStoreListing(): Result<Unit> = runCatching {
     val intent =
-        Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$packageName")).apply {
+        Intent(Intent.ACTION_VIEW, "market://details?id=$packageName".toUri()).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             setPackage("com.android.vending")
         }
@@ -262,12 +247,12 @@ fun Context.launchPlayStoreListing() {
     if (intent.resolveActivity(packageManager) != null) {
         startActivity(intent)
     } else {
-        openWebUrl("https://play.google.com/store/apps/details?id=$packageName")
+        throw IllegalStateException("Play Store not found")
     }
 }
 
-fun Context.launchPlayStoreReview() {
-    val uri = Uri.parse("market://details?id=$packageName&showAllReviews=true")
+fun Context.launchPlayStoreReview(): Result<Unit> = runCatching {
+    val uri = "market://details?id=$packageName&showAllReviews=true".toUri()
     val intent =
         Intent(Intent.ACTION_VIEW, uri).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -276,7 +261,7 @@ fun Context.launchPlayStoreReview() {
     if (intent.resolveActivity(packageManager) != null) {
         startActivity(intent)
     } else {
-        openWebUrl("https://play.google.com/store/apps/details?id=$packageName&showAllReviews=true")
+        throw IllegalStateException("Play Store not found")
     }
 }
 

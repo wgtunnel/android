@@ -1,7 +1,11 @@
 package com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.components
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.*
+import androidx.compose.material.icons.outlined.ContentPasteGo
+import androidx.compose.material.icons.outlined.Create
+import androidx.compose.material.icons.outlined.FileOpen
+import androidx.compose.material.icons.outlined.Link
+import androidx.compose.material.icons.outlined.QrCode
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource

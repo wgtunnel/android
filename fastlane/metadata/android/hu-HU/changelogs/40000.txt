@@ -1,8 +1,8 @@
-What's new:
-- Introduction of app modes
-- HTTP/SOCKS5 proxying of tunnels
-- Lockdown mode for leakproof kill switch
-- Dynamic DNS endpoint updates without tunnel restart
-- DoH for peer endpoint resolutions
-- AmneziaWG 1.5 with protocol mimic
-- Many bug fixes and performance improvements
+Újdonságok:
+Alkalmazásmódok bevezetése
+Alagutak HTTP/SOCKS5 proxyzása
+Zárolási mód (lockdown) a szivárgásmentes vészleállítóhoz
+Dinamikus DNS végpont-frissítések az alagút újraindítása nélkül
+DoH (DNS over HTTPS) támogatás a társ-végpontok feloldásához
+AmneziaWG 1.5 protokoll-mimikrivel (álcázással)
+Számos hibajavítás és teljesítménybeli fejlesztés

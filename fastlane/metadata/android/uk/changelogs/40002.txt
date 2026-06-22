@@ -1,5 +1,5 @@
-What's new:
-- App lock crash bugfix
-- Fdroid publishing bugfix
-- Exporting logs bugfix
-- Auto-tunnel ethernet toggle bugfix
+Що нового:
+- Виправлено помилку, що призводила до збою блокування додатків
+- Виправлено помилку під час публікації в F-Droid
+- Виправлено помилку під час експорту журналів
+- Виправлено помилку перемикання автоматичного тунелювання Ethernet

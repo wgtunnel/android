@@ -1,14 +1,13 @@
-Recursos
+O WG Tunnel é um cliente VPN WireGuard que oferece o equilíbrio perfeito entre simplicidade e robustez, tornando-o ideal tanto para usuários casuais quanto para usuários avançados.
+Seja para automatizar a conexão à sua VPN ou para usuários avançados com necessidades de privacidade complexas, o WG Tunnel atende a todas as suas necessidades.
 
-- Adiciona túneis por ficheiros .conf, zip, manualmente ou por código QR
-- Auto connecta à VPN baseado no nome (SSID) do Wi-Fi, ethernet ou dados móveis
-- Túnel dividido por aplicações com busca
-- Suporte à WireGuard em modo kernel ou utilizador
-- Suporte à Amnezia em modo utilizador para proteção contra censura e DPI (Inspeção Profunda de Pacote)
-- Suporte à VPN sempre ligada
-- Exportação de túneis Amnezia e WireGuard em ficheiros zip
-- Suporte à quick tile para ligar e desligar a VPN
-- Atalhos para o túnel principal para integração com automações
-- Intent automation para todos os túneis
-- Início automático depois de reiniciar o aparelho
-- Medidas para economia de pilha
+- **Tunelamento Automático:** Ative túneis automaticamente com base no SSID de Wi-Fi, conexões Ethernet ou redes de dados móveis.
+- **Tunelamento Dividido:** Suporte flexível para rotear aplicativos ou tráfego específicos pela VPN.
+- **Modos do APP:** Suporte para múltiplos modos de túnel, incluindo VPN padrão, kernel, bloqueio (kill switch personalizado) e proxy.
+- **Integração com AmneziaWG:** Suporte completo ao AmneziaWG, proporcionando evasão robusta de censura.
+- **Opções de Proxy:** Suporte integrado para proxy HTTP e SOCKS5, permitindo que aplicativos de terceiros encaminhem seu tráfego por meio de túneis.
+- **Controles Rápidos:** Atalhos na tela inicial e no bloco de Configurações Rápidas para ativar/desativar ações facilmente.
+- **Suporte à Automação:** Automação baseada em intenção para controlar túneis e tunelamento automático.
+- **Gerenciamento de DNS Dinâmico:** Detecta e atualiza alterações de DNS sem reiniciar o túnel.
+- **Ferramentas de Monitoramento:** Recursos avançados de monitoramento de túnel para acompanhar o desempenho do túnel.
+- **Suporte ao Android TV:** Suporte ao Android TV para quase todos os recursos do aplicativo.

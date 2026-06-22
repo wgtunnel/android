@@ -5,8 +5,8 @@ import com.zaneschepke.wireguardautotunnel.domain.model.AutoTunnelSettings
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 
 data class AutoTunnelUiState(
-    val autoTunnelActive: Boolean = false,
     val connectivityState: ConnectivityState? = null,
+    val autoTunnelActive: Boolean = false,
     val autoTunnelSettings: AutoTunnelSettings = AutoTunnelSettings(),
     val isBatteryOptimizationShown: Boolean = false,
     val isLocationDisclosureShown: Boolean = false,

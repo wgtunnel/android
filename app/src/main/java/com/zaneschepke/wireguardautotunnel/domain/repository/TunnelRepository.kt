@@ -12,13 +12,15 @@ interface TunnelRepository {
 
     suspend fun getAll(): List<TunnelConfig>
 
+    suspend fun setMetered(tunnelId: Int, value: Boolean)
+
+    suspend fun setDynamicDns(tunnelId: Int, value: Boolean)
+
     suspend fun save(tunnelConfig: TunnelConfig)
 
     suspend fun saveAll(tunnelConfigList: List<TunnelConfig>)
 
     suspend fun updatePrimaryTunnel(tunnelConfig: TunnelConfig?)
-
-    suspend fun resetActiveTunnels()
 
     suspend fun updateMobileDataTunnel(tunnelConfig: TunnelConfig?)
 
@@ -28,11 +30,7 @@ interface TunnelRepository {
 
     suspend fun getById(id: Int): TunnelConfig?
 
-    suspend fun getActive(): List<TunnelConfig>
-
     suspend fun getDefaultTunnel(): TunnelConfig?
-
-    suspend fun getStartTunnel(): TunnelConfig?
 
     suspend fun count(): Int
 
@@ -45,4 +43,6 @@ interface TunnelRepository {
     suspend fun findPrimary(): List<TunnelConfig>
 
     suspend fun delete(tunnels: List<TunnelConfig>)
+
+    suspend fun ensureGlobalConfigExists()
 }

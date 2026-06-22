@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Upsert
 import com.zaneschepke.wireguardautotunnel.data.entity.GeneralSettings
-import com.zaneschepke.wireguardautotunnel.data.model.AppMode
+import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelMode
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -26,6 +26,12 @@ interface GeneralSettingsDao {
     @Query("UPDATE general_settings SET is_pin_lock_enabled = :enabled WHERE id = 1")
     suspend fun updatePinLockEnabled(enabled: Boolean)
 
-    @Query("UPDATE general_settings SET app_mode = :appMode WHERE id = 1")
-    suspend fun updateAppMode(appMode: AppMode)
+    @Query("UPDATE general_settings SET app_mode = :tunnelMode WHERE id = 1")
+    suspend fun updateAppMode(tunnelMode: TunnelMode)
+
+    @Query("UPDATE general_settings SET global_amnezia_enabled = :enabled")
+    suspend fun updateGlobalAmneziaEnabled(enabled: Boolean)
+
+    @Query("UPDATE general_settings SET screen_recording_security = :enabled")
+    suspend fun updateScreenRecordingSecurity(enabled: Boolean)
 }
