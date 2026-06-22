@@ -31,15 +31,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CheckCircleOutline
-import androidx.compose.material.icons.outlined.Error
 import androidx.compose.material.icons.outlined.ErrorOutline
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material.icons.outlined.WarningAmber
-import androidx.compose.material.icons.rounded.Error
-import androidx.compose.material.icons.rounded.Info
-import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -182,9 +177,8 @@ class MainActivity : AppCompatActivity() {
 
         roomBackup = RoomBackup(this).database(appDatabase).enableLogDebug(true).maxFileCount(5)
 
-        handleIncomingIntent(intent)
-
-        handleWgIntent(intent)
+        handleConfigFileIntent(intent)
+        handleWgDeepLinkIntent(intent)
 
         installSplashScreen().apply {
             setKeepOnScreenCondition { !viewModel.container.stateFlow.value.isAppLoaded }
@@ -304,35 +298,11 @@ class MainActivity : AppCompatActivity() {
                             onDismiss = { viewModel.dismissWgImport() },
                             onAttest = { viewModel.importFromUrl(url) },
                             title = stringResource(R.string.add_from_url),
-                            body = {
-                                Text(stringResource(R.string.wg_url_confirm_message, host))
-                            },
+                            body = { Text(stringResource(R.string.wg_url_confirm_message, host)) },
                             confirmText = stringResource(R.string.okay),
                         )
                     }
 
-                    val annotatedMessage = buildAnnotatedString {
-                        append(context.getString(R.string.donation_prompt_prefix))
-                        append(" ")
-                        withLink(
-                            LinkAnnotation.Clickable(
-                                tag = context.getString(R.string.support),
-                                styles =
-                                    TextLinkStyles(
-                                        style =
-                                            SpanStyle(
-                                                textDecoration = TextDecoration.Underline,
-                                                color = MaterialTheme.colorScheme.primary,
-                                            ),
-                                        focusedStyle =
-                                            SpanStyle(
-                                                textDecoration = TextDecoration.Underline,
-                                                color = MaterialTheme.colorScheme.primary,
-                                                background =
-                                                    MaterialTheme.colorScheme.primary.copy(
-                                                        alpha = 0.2f
-                                                    ),
-                                            ),
                     LaunchedEffect(Unit) {
                         if (uiState.shouldShowDonationSnackbar && !uiState.alreadyDonated) {
                             viewModel.setShouldShowDonationSnackbar(false)
@@ -635,7 +605,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun handleWgIntent(intent: Intent) {
+    private fun handleWgDeepLinkIntent(intent: Intent) {
         if (intent.action == Intent.ACTION_VIEW) {
             val uri = intent.data ?: return
             if (uri.scheme == "wg") {
@@ -648,7 +618,8 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         networkMonitor.checkPermissionsAndUpdateState()
-        WireGuardAutoTunnel.setUiActive(true)
+    }
+
     fun performBackup(encrypt: Boolean = false, password: String? = null) {
         roomBackup
             .backupLocation(RoomBackup.BACKUP_FILE_LOCATION_CUSTOM_DIALOG)
@@ -725,19 +696,14 @@ class MainActivity : AppCompatActivity() {
             .restore()
     }
 
-    override fun onResume() {
-        super.onResume()
-        networkMonitor.checkPermissionsAndUpdateState()
-    }
-
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
-        handleIncomingIntent(intent)
-        handleWgIntent(intent)
+        handleConfigFileIntent(intent)
+        handleWgDeepLinkIntent(intent)
     }
 
-    private fun handleIncomingIntent(intent: Intent?) {
+    private fun handleConfigFileIntent(intent: Intent?) {
         intent ?: return
         when (intent.action) {
             Intent.ACTION_VIEW,

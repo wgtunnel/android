@@ -29,6 +29,7 @@ import com.zaneschepke.wireguardautotunnel.util.StringValue
 import com.zaneschepke.wireguardautotunnel.util.extensions.QuickConfig
 import com.zaneschepke.wireguardautotunnel.util.extensions.TunnelName
 import com.zaneschepke.wireguardautotunnel.util.extensions.asStringValue
+import com.zaneschepke.wireguardautotunnel.util.extensions.isHtmlResponse
 import com.zaneschepke.wireguardautotunnel.util.extensions.saveTunnelsUniquely
 import com.zaneschepke.wireguardautotunnel.util.network.NetworkUtils
 import io.ktor.client.HttpClient
@@ -274,26 +275,30 @@ class SharedAppViewModel(
 
     fun importFromQr(conf: String) = intent { importFromClipboard(conf) }
 
-    fun promptWgImport(url: String) = intent {
-        reduce { state.copy(pendingWgImportUrl = url) }
-    }
+    fun promptWgImport(url: String) = intent { reduce { state.copy(pendingWgImportUrl = url) } }
 
-    fun dismissWgImport() = intent {
-        reduce { state.copy(pendingWgImportUrl = null) }
-    }
+    fun dismissWgImport() = intent { reduce { state.copy(pendingWgImportUrl = null) } }
 
     fun importFromUrl(url: String) = intent {
         reduce { state.copy(pendingWgImportUrl = null) }
+
         try {
             httpClient.prepareGet(url).execute { response ->
-                if (response.status.value in 200..299) {
-                    val body = response.bodyAsText()
-                    importFromClipboard(body)
-                } else {
-                    throw IOException(
-                        "Failed to download file with error status: ${response.status.value}"
-                    )
+                if (response.status.value !in 200..299) {
+                    throw IOException("Server returned error: ${response.status.value}")
                 }
+
+                if (response.isHtmlResponse()) {
+                    postSideEffect(
+                        GlobalSideEffect.Snackbar(
+                            StringValue.StringResource(R.string.error_invalid_config_url),
+                            ToastType.Error,
+                        )
+                    )
+                    return@execute
+                }
+                val body = response.bodyAsText()
+                importFromClipboard(body)
             }
         } catch (e: Exception) {
             Timber.e(e)

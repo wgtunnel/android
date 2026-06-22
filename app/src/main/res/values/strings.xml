@@ -536,4 +536,5 @@
     <string name="hide_password">Hide password</string>
     <string name="restore_failed_wrong_password">Restore failed. Wrong password</string>
     <string name="restore_failed_invalid_file">Restore failed. Select a valid backup file (.sqlite3 or .sqlite3.aes)</string>
+    <string name="error_invalid_config_url">This link returned an invalid config file. Make sure you are using a direct download link</string>
 </resources>
