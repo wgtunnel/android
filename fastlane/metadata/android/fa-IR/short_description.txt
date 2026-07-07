@@ -1,1 +1,1 @@
-برنامه ای برای جایگزینی وایرگارد با امکانات بیشتر
+A WireGuard & AmneziaWG VPN client with auto-tunneling, lockdown & proxying.
