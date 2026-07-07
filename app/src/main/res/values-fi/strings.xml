@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">WG Tunnel</string>
     <string name="app_permission_title">Control tunnels and auto-tunnel features.</string>
-    <string name="app_permission_description">https://hosted.weblate.org/translate/wg-tunnel/strings/en/?checksum=e52d7eb2e28a9a12Control tunnels and auto-tunnel features.</string>
+    <string name="app_permission_description">Control tunnels and auto-tunnel features.</string>
     <string name="error_file_extension">Tiedosto ei ole .conf tai .zip-tiedosto</string>
     <string name="tunnels">Tunnelit</string>
     <string name="tunnel_mobile_data">Tunneloi mobiilidatalla</string>
