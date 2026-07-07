@@ -1,13 +1,17 @@
 O WG Tunnel é um cliente VPN WireGuard que oferece o equilíbrio perfeito entre simplicidade e robustez, tornando-o ideal tanto para usuários casuais quanto para usuários avançados.
 Seja para automatizar a conexão à sua VPN ou para usuários avançados com necessidades de privacidade complexas, o WG Tunnel atende a todas as suas necessidades.
 
+Features:
+
 - **Tunelamento Automático:** Ative túneis automaticamente com base no SSID de Wi-Fi, conexões Ethernet ou redes de dados móveis.
-- **Tunelamento Dividido:** Suporte flexível para rotear aplicativos ou tráfego específicos pela VPN.
-- **Modos do APP:** Suporte para múltiplos modos de túnel, incluindo VPN padrão, kernel, bloqueio (kill switch personalizado) e proxy.
+- **Deferred Endpoint Bootstrapping:** Safely resolves endpoints and updates peers after the tunnel is up for better reliability and leak protection on startup.
+- **Ferramentas de Monitoramento:** Recursos avançados de monitoramento de túnel para acompanhar o desempenho do túnel.
 - **Integração com AmneziaWG:** Suporte completo ao AmneziaWG, proporcionando evasão robusta de censura.
+- **Tunelamento Dividido:** Suporte flexível para rotear aplicativos ou tráfego específicos pela VPN.
 - **Opções de Proxy:** Suporte integrado para proxy HTTP e SOCKS5, permitindo que aplicativos de terceiros encaminhem seu tráfego por meio de túneis.
+- **Modos do APP:** Suporte para múltiplos modos de túnel, incluindo VPN padrão, kernel, bloqueio (kill switch personalizado) e proxy.
 - **Controles Rápidos:** Atalhos na tela inicial e no bloco de Configurações Rápidas para ativar/desativar ações facilmente.
 - **Suporte à Automação:** Automação baseada em intenção para controlar túneis e tunelamento automático.
 - **Gerenciamento de DNS Dinâmico:** Detecta e atualiza alterações de DNS sem reiniciar o túnel.
-- **Ferramentas de Monitoramento:** Recursos avançados de monitoramento de túnel para acompanhar o desempenho do túnel.
+- **IPv6 Endpoints:** Automatically upgrade to IPv6 endpoints or fall back to IPv4 based on network conditions without requiring a restart.
 - **Suporte ao Android TV:** Suporte ao Android TV para quase todos os recursos do aplicativo.
