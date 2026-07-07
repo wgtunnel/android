@@ -1,13 +1,17 @@
 WG Tunnel ist ein WireGuard-VPN-Client, der ein Gleichgewicht zwischen Einfachheit und Robustheit herstellt und somit der ideale Client sowohl für Gelegenheitsnutzer als auch für Power-User ist.
 Egal, ob du einfach nur die Verbindung zu deinem VPN automatisieren möchtest oder ein Power-User mit fortgeschrittenen Datenschutzanforderungen bist, WG Tunnel bietet dir alles, was du brauchst.
 
+Features:
+
 - **Auto-Tunneling:** Automatische Aktivierung von Tunneln basierend auf Wi-Fi-SSID, Ethernet-Verbindungen oder mobilen Datennetzen.
-- **Split-Tunneling:** Flexible Unterstützung für das Routing bestimmter Apps oder Datenverkehr über das VPN.
-- **App-Modi:** Unterstützung für mehrere Tunnelmodi, darunter Standard-VPN, Kernel, Lockdown (benutzerdefinierter Kill Switch) und Proxy-Modi.
+- **Deferred Endpoint Bootstrapping:** Safely resolves endpoints and updates peers after the tunnel is up for better reliability and leak protection on startup.
+- **Überwachungstools:** Erweiterte Tunnelüberwachungsfunktionen zur Überwachung der Tunnel-Leistung.
 - **AmneziaWG-Integration:** Vollständige Unterstützung für AmneziaWG, wodurch eine robuste Umgehung von Zensur ermöglicht wird.
+- **Split-Tunneling:** Flexible Unterstützung für das Routing bestimmter Apps oder Datenverkehr über das VPN.
 - **Proxy-Optionen:** Integrierte HTTP- und SOCKS5-Proxy-Unterstützung, die es Drittanbieter-Apps ermöglicht, ihren Datenverkehr zu tunneln.
+- **App-Modi:** Unterstützung für mehrere Tunnelmodi, darunter Standard-VPN, Kernel, Lockdown (benutzerdefinierter Kill Switch) und Proxy-Modi.
 - **Schnellsteuerung:** Kachel für Schnelleinstellungen und Verknüpfungen auf dem Startbildschirm für einfaches Umschalten.
 - **Automatisierungsunterstützung:** Intentionsbasierte Automatisierung zur Steuerung von Tunneln und automatischem Tunneling.
 - **Dynamische DNS-Verarbeitung:** Erkennt und aktualisiert DNS-Änderungen ohne Neustart des Tunnels.
-- **Überwachungstools:** Erweiterte Tunnelüberwachungsfunktionen zur Überwachung der Tunnel-Leistung.
+- **IPv6 Endpoints:** Automatically upgrade to IPv6 endpoints or fall back to IPv4 based on network conditions without requiring a restart.
 - **Android TV-Unterstützung:** Android TV-Unterstützung für fast alle App-Funktionen.
