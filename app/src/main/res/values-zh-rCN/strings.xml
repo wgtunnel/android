@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">WG Tunnel</string>
     <string name="app_permission_title">控制隧道和自动隧道功能。</string>
-    <string name="app_permission_description">控制隧道和自动隧道功能.</string>
+    <string name="app_permission_description">Control tunnels and auto-tunnel features.</string>
     <string name="error_file_extension">文件类型不是 .conf 或 .zip</string>
     <string name="tunnels">隧道列表</string>
     <string name="tunnel_mobile_data">允许隧道使用数据流量</string>
