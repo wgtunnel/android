@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">WG Tunnel</string>
     <string name="app_permission_title">WG Tunnel Vezérlő Híd.</string>
-    <string name="app_permission_description">Alagutak és automatikus alagút funkciók vezérlése.</string>
+    <string name="app_permission_description">Control tunnels and auto-tunnel features.</string>
     <string name="error_file_extension">A fájl nem .conf vagy .zip</string>
     <string name="tunnels">Alagutak</string>
     <string name="tunnel_mobile_data">Alagút mobiladat-forgalmon</string>
