@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">WG Tunnel</string>
     <string name="app_permission_title">Sterowanie tunelem i funkcje autotunelowania.</string>
-    <string name="app_permission_description">Sterowanie tunelami i funkcjami autotunelowania.</string>
+    <string name="app_permission_description">Control tunnels and auto-tunnel features.</string>
     <string name="error_file_extension">Plik nie jest w formacie .conf lub .zip</string>
     <string name="tunnels">Tunele</string>
     <string name="tunnel_mobile_data">Tunel przez mobilną transmisję danych</string>
