@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">WG Tunnel</string>
     <string name="app_permission_title">Kiểm soát tunnel và các tính năng auto-tunnel.</string>
-    <string name="app_permission_description">Kiểm soát tunnel &amp; các tính năng tự động kết nối tunnel.</string>
+    <string name="app_permission_description">Control tunnels and auto-tunnel features.</string>
     <string name="error_file_extension">Tệp không phải .conf hay .zip</string>
     <string name="tunnels">Các đường nối</string>
     <string name="tunnel_mobile_data">Tunnel trên dữ liệu di động</string>
