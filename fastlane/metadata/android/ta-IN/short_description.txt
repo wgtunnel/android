@@ -1,1 +1,1 @@
-கூடுதல் அம்சங்களுடன் வயர் கார்டுக்கான மாற்று வி.பி.என் வாங்கி பயன்பாடு
+A WireGuard & AmneziaWG VPN client with auto-tunneling, lockdown & proxying.
