@@ -1,1 +1,1 @@
-一款更具功能性的 WireGuard VPN 替代客户端应用程序
+A WireGuard & AmneziaWG VPN client with auto-tunneling, lockdown & proxying.
