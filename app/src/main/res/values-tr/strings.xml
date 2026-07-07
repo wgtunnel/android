@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">WG Tunnel</string>
     <string name="app_permission_title">WG Tunnel Kontrol Köprüsü</string>
-    <string name="app_permission_description">Kontrol tünelleri ve oto-tünel özellikleri.</string>
+    <string name="app_permission_description">Control tunnels and auto-tunnel features.</string>
     <string name="error_file_extension">Dosya .conf veya .zip değil</string>
     <string name="tunnels">Tüneller</string>
     <string name="tunnel_mobile_data">Mobil veride tünel</string>
