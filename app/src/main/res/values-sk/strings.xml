@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Tunel WG</string>
     <string name="app_permission_title">Control tunnels and auto-tunnel features.</string>
-    <string name="app_permission_description">Ovládanie tunelov a funkcie automatického tunela.</string>
+    <string name="app_permission_description">Control tunnels and auto-tunnel features.</string>
     <string name="error_file_extension">Súbor nie je typu .conf ani .zip</string>
     <string name="tunnels">Tunely</string>
     <string name="tunnel_mobile_data">Tunnel on mobile data</string>
