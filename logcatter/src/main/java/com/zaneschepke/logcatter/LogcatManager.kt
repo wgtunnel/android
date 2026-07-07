@@ -1,14 +1,11 @@
 package com.zaneschepke.logcatter
 
-import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.LifecycleOwner
 import com.zaneschepke.logcatter.model.LogMessage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -17,10 +14,16 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
-class LogcatManager(pid: Int, logDir: String, maxFileSize: Long, maxFolderSize: Long) :
-    LogReader, DefaultLifecycleObserver {
+class LogcatManager(
+    pid: Int,
+    logDir: String,
+    maxFileSize: Long,
+    maxFolderSize: Long,
+    appVersion: String,
+    flavor: String,
+) : LogReader {
     private val logScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-    private val fileManager = LogFileManager(logDir, maxFileSize, maxFolderSize)
+    private val fileManager = LogFileManager(logDir, maxFileSize, maxFolderSize, appVersion, flavor)
     private val logcatReader = LogcatStreamReader(pid, fileManager)
     private var logJob: Job? = null
     private var isStarted = false
@@ -37,16 +40,6 @@ class LogcatManager(pid: Int, logDir: String, maxFileSize: Long, maxFolderSize: 
 
     override val bufferedLogs: Flow<LogMessage> = _bufferedLogs.asSharedFlow()
     override val liveLogs: Flow<LogMessage> = _liveLogs.asSharedFlow()
-
-    override fun onCreate(owner: LifecycleOwner) {
-        // for auto start
-        // logScope.launch { start() }
-    }
-
-    override fun onDestroy(owner: LifecycleOwner) {
-        logScope.launch { stop() }
-        logScope.cancel()
-    }
 
     override suspend fun start() {
         mutex.withLock {

@@ -1,0 +1,3 @@
+What's new:
+- Bugfix for Android 17 local network permission requirement
+- Bugfix for app shortcuts causing crash

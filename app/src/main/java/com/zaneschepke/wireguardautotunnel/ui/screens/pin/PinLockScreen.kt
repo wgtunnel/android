@@ -9,6 +9,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
+import com.dokar.sonner.ToastType
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
@@ -45,11 +46,17 @@ fun PinLockScreen(sharedViewModel: SharedAppViewModel = koinActivityViewModel())
         textColor = MaterialTheme.colorScheme.onSurface,
         onPinCorrect = { onPinCorrect() },
         onPinIncorrect = {
-            sharedViewModel.showToast(StringValue.StringResource(R.string.incorrect_pin))
+            sharedViewModel.showSnackMessage(
+                StringValue.StringResource(R.string.incorrect_pin),
+                ToastType.Warning,
+            )
         },
         onPinCreated = {
             pinCreated = true
-            sharedViewModel.showToast(StringValue.StringResource(R.string.pin_created))
+            sharedViewModel.showSnackMessage(
+                StringValue.StringResource(R.string.pin_created),
+                ToastType.Success,
+            )
             sharedViewModel.setPinLockEnabled(true)
             onPinCorrect()
         },

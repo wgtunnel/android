@@ -26,4 +26,8 @@ class RoomAutoTunnelSettingsRepository(private val autoTunnelSettingsDao: AutoTu
     override suspend fun updateAutoTunnelEnabled(enabled: Boolean) {
         autoTunnelSettingsDao.updateAutoTunnelEnabled(enabled)
     }
+
+    override suspend fun updateDisableOnCaptivePortal(enabled: Boolean) {
+        autoTunnelSettingsDao.updateDisableOnCaptivePortal(enabled)
+    }
 }

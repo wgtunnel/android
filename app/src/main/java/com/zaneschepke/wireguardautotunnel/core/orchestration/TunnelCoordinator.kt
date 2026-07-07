@@ -2,7 +2,6 @@ package com.zaneschepke.wireguardautotunnel.core.orchestration
 
 import com.zaneschepke.tunnel.model.BackendMode
 import com.zaneschepke.wireguardautotunnel.core.event.TunnelErrorEvent
-import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelProvider
 import com.zaneschepke.wireguardautotunnel.data.repository.RoomDnsSettingsRepository
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelActionSource
@@ -10,13 +9,16 @@ import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelMode
 import com.zaneschepke.wireguardautotunnel.domain.events.TunnelActionEvent
 import com.zaneschepke.wireguardautotunnel.domain.model.DnsSettings
 import com.zaneschepke.wireguardautotunnel.domain.model.GeneralSettings
+import com.zaneschepke.wireguardautotunnel.domain.model.LockdownSettings
 import com.zaneschepke.wireguardautotunnel.domain.model.MonitoringSettings
 import com.zaneschepke.wireguardautotunnel.domain.model.ProxySettings
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
+import com.zaneschepke.wireguardautotunnel.domain.repository.LockdownSettingsRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.MonitoringSettingsRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.ProxySettingsRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
+import com.zaneschepke.wireguardautotunnel.service.ServiceManager
 import com.zaneschepke.wireguardautotunnel.ui.state.DisplayTunnelState
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.CoroutineScope
@@ -44,8 +46,12 @@ class TunnelCoordinator(
     dnsSettingsRepository: RoomDnsSettingsRepository,
     monitoringSettingsRepository: MonitoringSettingsRepository,
     proxyRepository: ProxySettingsRepository,
+    lockdownModeRepository: LockdownSettingsRepository,
     scope: CoroutineScope,
 ) {
+
+    private val _userOverrideFlow = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+    val userOverrideFlow = _userOverrideFlow.asSharedFlow()
 
     @OptIn(FlowPreview::class)
     val tunnelDisplayStates: StateFlow<Map<Int, DisplayTunnelState>> =
@@ -63,6 +69,7 @@ class TunnelCoordinator(
         val dns: DnsSettings,
         val monitoring: MonitoringSettings,
         val proxy: ProxySettings,
+        val lockdown: LockdownSettings,
     )
 
     private val runtimeSettingsSnapshot =
@@ -71,12 +78,14 @@ class TunnelCoordinator(
             dnsSettingsRepository.flow,
             monitoringSettingsRepository.flow,
             proxyRepository.flow,
-        ) { general, dns, monitoring, proxy ->
+            lockdownModeRepository.flow,
+        ) { general, dns, monitoring, proxy, lockdown ->
             RuntimeSettingsSnapshot(
                 general = general,
                 dns = dns,
                 monitoring = monitoring,
                 proxy = proxy,
+                lockdown = lockdown,
             )
         }
 
@@ -107,15 +116,34 @@ class TunnelCoordinator(
     ) = tunnelMutex.withLock {
         // wait for app to be bootstrapped
         bootstrapCoordinator.isReady.first { it }
+
+        if (source == TunnelActionSource.USER) {
+            _userOverrideFlow.tryEmit(Unit)
+        }
+
+        // enforce single tunnel, for now
+        if (backendStatus.value.activeTunnels.isNotEmpty()) {
+            stopActiveTunnelsInternal(source)
+        }
+
         startTunnelInternal(config, source)
     }
 
     suspend fun stopTunnel(id: Int, source: TunnelActionSource = TunnelActionSource.USER) =
         tunnelMutex.withLock {
+            if (source == TunnelActionSource.USER) {
+                _userOverrideFlow.tryEmit(Unit)
+            }
             stopTunnelInternal(id, source)
         }
 
-    suspend fun stopActiveTunnels() = tunnelMutex.withLock { stopActiveTunnelsInternal() }
+    suspend fun stopActiveTunnels(source: TunnelActionSource = TunnelActionSource.USER) =
+        tunnelMutex.withLock {
+            if (source == TunnelActionSource.USER) {
+                _userOverrideFlow.tryEmit(Unit)
+            }
+            stopActiveTunnelsInternal(source)
+        }
 
     private suspend fun startTunnelInternal(
         tunnelConfig: TunnelConfig,
@@ -127,8 +155,13 @@ class TunnelCoordinator(
         val dnsSettings = snapshot.dns
         val proxySettings = snapshot.proxy
         val monitoringSettings = snapshot.monitoring
+        val lockdownSettings = snapshot.lockdown
 
-        val config = tunnelConfig.getConfig()
+        var config = tunnelConfig.getConfig()
+
+        // makes sure Amnezia configs are 2.0 compatible
+        config = AmneziaConfigNormalizer.ensureAmneziaCompatibility(config)
+
         val policy =
             ConfigReconciler.ConfigReconcilePolicy(
                 dnsSettings.isGlobalTunnelDnsEnabled,
@@ -162,13 +195,12 @@ class TunnelCoordinator(
                 }
 
                 TunnelMode.LOCK_DOWN -> {
-
-                    BackendMode.Proxy.KillSwitchPrimary(runConfig)
+                    BackendMode.Proxy.KillSwitchPrimary(
+                        runConfig,
+                        lockdownSettings.toKillSwitchConfig(),
+                    )
                 }
             }
-
-        // TODO for now, enforce single tunnel until multi-tunneling is implement
-        stopActiveTunnelsInternal()
 
         tunnelProvider
             .startTunnel(
@@ -193,6 +225,10 @@ class TunnelCoordinator(
 
     suspend fun toggleTunnels(source: TunnelActionSource = TunnelActionSource.USER) =
         tunnelMutex.withLock {
+            if (source == TunnelActionSource.USER) {
+                _userOverrideFlow.tryEmit(Unit)
+            }
+
             val active = tunnelProvider.backendStatus.value.activeTunnels
             if (active.isNotEmpty()) {
                 lastActiveTunnels = active.keys.toList()
@@ -201,7 +237,7 @@ class TunnelCoordinator(
                     _actions.emit(TunnelActionEvent.Stopped(tunnelId = id, source = source))
                 }
 
-                stopActiveTunnelsInternal()
+                stopActiveTunnelsInternal(source)
                 return@withLock
             }
 
@@ -226,7 +262,15 @@ class TunnelCoordinator(
             .onFailure { _errors.emit(TunnelErrorEvent.from(it, id)) }
     }
 
-    private suspend fun stopActiveTunnelsInternal() {
+    private suspend fun stopActiveTunnelsInternal(
+        source: TunnelActionSource = TunnelActionSource.USER
+    ) {
+        val active = tunnelProvider.backendStatus.value.activeTunnels
+
+        active.keys.forEach { id ->
+            _actions.emit(TunnelActionEvent.Stopped(tunnelId = id, source = source))
+        }
+
         tunnelProvider.stopActiveTunnels()
     }
 }

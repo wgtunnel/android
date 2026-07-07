@@ -29,7 +29,7 @@ fun String.isValidAndroidProxyBindAddress(): Boolean {
     return port in 1024..65535
 }
 
-fun Set<String>.isMatchingToWildcardList(value: String): Boolean {
+fun List<String>.isMatchingToWildcardList(value: String): Boolean {
     val excludeValues =
         this.filter { it.startsWith("!") }.map { it.removePrefix("!").transformWildcardsToRegex() }
     Timber.d("Excluded values: $excludeValues")

@@ -1,0 +1,4 @@
+What's new:
+- Battery usage optimizations
+- Legacy Wi-Fi mode location access optimizations
+- Revert active to top of tunnel list

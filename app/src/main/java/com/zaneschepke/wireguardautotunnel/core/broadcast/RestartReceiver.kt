@@ -27,19 +27,31 @@ class RestartReceiver : BroadcastReceiver(), KoinComponent {
 
     override fun onReceive(context: Context, intent: Intent) {
         Timber.d("RestartReceiver triggered with action: ${intent.action}")
+
+        val pendingResult = goAsync()
+
         applicationScope.launch {
-            when (intent.action) {
-                Intent.ACTION_BOOT_COMPLETED,
-                "android.intent.action.QUICKBOOT_POWERON",
-                "com.htc.intent.action.QUICKBOOT_POWERON" -> {
-                    startupCoordinator.applyStartupPolicy()
+            try {
+                when (intent.action) {
+                    Intent.ACTION_BOOT_COMPLETED,
+                    "android.intent.action.QUICKBOOT_POWERON",
+                    "com.htc.intent.action.QUICKBOOT_POWERON" -> {
+                        startupCoordinator.applyStartupPolicy()
+                    }
+
+                    Intent.ACTION_MY_PACKAGE_REPLACED -> {
+                        Timber.i("Restoring state on package upgrade")
+                        startupCoordinator.applyStartupPolicy()
+                        logReader.deleteAndClearLogs()
+                        appStateRepository.setShouldShowDonationSnackbar(true)
+                    }
+
+                    else -> {
+                        Timber.w("Unhandled action in RestartReceiver: ${intent.action}")
+                    }
                 }
-                Intent.ACTION_MY_PACKAGE_REPLACED -> {
-                    Timber.i("Restoring state on package upgrade")
-                    startupCoordinator.applyStartupPolicy()
-                    logReader.deleteAndClearLogs()
-                    appStateRepository.setShouldShowDonationSnackbar(true)
-                }
+            } finally {
+                pendingResult.finish()
             }
         }
     }

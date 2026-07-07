@@ -1,0 +1,5 @@
+What's new:
+- Bugfix for certain scenarios that were not cleaning up the vpn service fully
+- Allows tunnel imports via wg:// url deep links
+- Improvements to Always-On VPN reliability
+- Improved cellular connectivity detection for dual sims

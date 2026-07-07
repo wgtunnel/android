@@ -20,6 +20,8 @@ interface TunnelProvider {
 
     suspend fun disableLockDown(): Result<Unit>
 
+    suspend fun setSeamlessRoaming(enabled: Boolean): Result<Unit>
+
     val backendStatus: StateFlow<BackendStatus>
 
     val events: Flow<TunnelEvent>

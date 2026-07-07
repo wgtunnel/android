@@ -1,5 +1,6 @@
 package com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.settings.config
 
+import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,6 +10,7 @@ import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.scrollbar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -26,14 +28,16 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.dokar.sonner.ToastType
 import com.zaneschepke.wireguardautotunnel.R
+import com.zaneschepke.wireguardautotunnel.domain.sideeffect.GlobalSideEffect
 import com.zaneschepke.wireguardautotunnel.ui.common.functions.rememberClipboardHelper
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.settings.config.components.QrCodeDialog
 import com.zaneschepke.wireguardautotunnel.ui.sideeffect.LocalSideEffect
 import com.zaneschepke.wireguardautotunnel.ui.theme.ConfigHeaderColor
 import com.zaneschepke.wireguardautotunnel.ui.theme.ConfigKeyColor
+import com.zaneschepke.wireguardautotunnel.util.StringValue
 import com.zaneschepke.wireguardautotunnel.util.extensions.isTextTooLargeForQr
-import com.zaneschepke.wireguardautotunnel.util.extensions.showToast
 import com.zaneschepke.wireguardautotunnel.viewmodel.SharedAppViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.TunnelViewModel
 import org.koin.compose.viewmodel.koinActivityViewModel
@@ -57,6 +61,8 @@ fun ConfigScreen(
 
     var showQrModal by rememberSaveable { mutableStateOf(false) }
 
+    val scrollState = rememberScrollState()
+
     val rawConfig by
         remember(liveConfig, uiState.activeConfig, uiState.tunnel?.quickConfig) {
             derivedStateOf {
@@ -72,7 +78,12 @@ fun ConfigScreen(
         when (sideEffect) {
             is LocalSideEffect.Modal.QR -> {
                 if (tunnel.quickConfig.isTextTooLargeForQr()) {
-                    context.showToast(R.string.text_too_large_for_qr)
+                    sharedViewModel.postSideEffect(
+                        GlobalSideEffect.Snackbar(
+                            StringValue.StringResource(R.string.text_too_large_for_qr),
+                            ToastType.Error,
+                        )
+                    )
                 } else {
                     showQrModal = true
                 }
@@ -90,7 +101,13 @@ fun ConfigScreen(
     Column(
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.Top),
-        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
+        modifier =
+            Modifier.fillMaxSize()
+                .verticalScroll(scrollState)
+                .scrollbar(
+                    state = scrollState.scrollIndicatorState,
+                    orientation = Orientation.Vertical,
+                ),
     ) {
         val displayText by
             remember(rawConfig, showKeys) { derivedStateOf { maskSensitive(rawConfig, showKeys) } }

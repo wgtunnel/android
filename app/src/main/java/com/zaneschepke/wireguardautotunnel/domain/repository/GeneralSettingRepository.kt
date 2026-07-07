@@ -23,4 +23,6 @@ interface GeneralSettingRepository {
     suspend fun updateGlobalAmneziaEnabled(enabled: Boolean)
 
     suspend fun updateScreenRecordingSecurity(enabled: Boolean)
+
+    suspend fun updateSeamlessRoaming(enabled: Boolean)
 }

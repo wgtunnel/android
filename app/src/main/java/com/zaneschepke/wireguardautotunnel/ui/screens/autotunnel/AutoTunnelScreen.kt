@@ -10,10 +10,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CheckCircle
-import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.PublicOff
 import androidx.compose.material.icons.outlined.RestartAlt
@@ -192,40 +192,46 @@ fun AutoTunnelScreen(
                 description =
                     (uiState.connectivityState?.activeNetwork as? ActiveNetwork.Wifi)?.let {
                         {
-                            Column {
-                                DescriptionText(
-                                    buildAnnotatedString {
-                                        append(stringResource(R.string.security_type))
-                                        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                                            append(
-                                                it.securityType?.name
-                                                    ?: stringResource(R.string.unknown)
-                                            )
+                            SelectionContainer {
+                                Column {
+                                    DescriptionText(
+                                        buildAnnotatedString {
+                                            append(stringResource(R.string.security_type))
+                                            withStyle(
+                                                style = SpanStyle(fontWeight = FontWeight.Bold)
+                                            ) {
+                                                append(
+                                                    it.securityType?.name
+                                                        ?: stringResource(R.string.unknown)
+                                                )
+                                            }
                                         }
-                                    }
-                                )
-                                DescriptionText(
-                                    buildAnnotatedString {
-                                        append(stringResource(R.string.network_name))
-                                        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                                            append(it.ssid)
+                                    )
+                                    DescriptionText(
+                                        buildAnnotatedString {
+                                            append(stringResource(R.string.network_name))
+                                            withStyle(
+                                                style = SpanStyle(fontWeight = FontWeight.Bold)
+                                            ) {
+                                                append(it.ssid)
+                                            }
                                         }
-                                    }
-                                )
+                                    )
+                                    DescriptionText(
+                                        buildAnnotatedString {
+                                            append(stringResource(R.string.bssid))
+                                            append(": ")
+                                            withStyle(
+                                                style = SpanStyle(fontWeight = FontWeight.Bold)
+                                            ) {
+                                                append(it.bssid)
+                                            }
+                                        }
+                                    )
+                                }
                             }
                         }
                     },
-                trailing =
-                    if (uiState.connectivityState?.activeNetwork is ActiveNetwork.Wifi) {
-                        { Icon(Icons.Outlined.ContentCopy, contentDescription = null) }
-                    } else null,
-                onClick = {
-                    when (val network = uiState.connectivityState?.activeNetwork) {
-                        is ActiveNetwork.Wifi ->
-                            clipboard.copy(network.ssid, context.getString(R.string.wifi))
-                        else -> Unit
-                    }
-                },
             )
 
             SurfaceRow(
@@ -302,7 +308,9 @@ fun AutoTunnelScreen(
             SurfaceRow(
                 leading = { Icon(Icons.Outlined.PublicOff, contentDescription = null) },
                 title = stringResource(R.string.stop_on_no_internet),
-                description = { DescriptionText(stringResource(R.string.stop_on_internet_loss)) },
+                description = {
+                    DescriptionText(stringResource(R.string.stop_on_no_internet_desc))
+                },
                 trailing = {
                     ThemedSwitch(
                         checked = uiState.autoTunnelSettings.isStopOnNoInternetEnabled,
@@ -318,7 +326,7 @@ fun AutoTunnelScreen(
         }
         Column {
             GroupLabel(
-                stringResource(R.string.other),
+                stringResource(R.string.automation),
                 modifier = Modifier.padding(horizontal = 16.dp),
             )
             SurfaceRow(
@@ -330,6 +338,7 @@ fun AutoTunnelScreen(
                         onClick = { viewModel.setStartAtBoot(it) },
                     )
                 },
+                description = { DescriptionText(stringResource(R.string.start_on_boot_desc)) },
                 onClick = { viewModel.setStartAtBoot(!uiState.autoTunnelSettings.startOnBoot) },
             )
         }

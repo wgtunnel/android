@@ -14,8 +14,8 @@ github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZb
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/stretchr/testify v1.11.1 h1:7s2iGBzp5EwR7/aIZr8ao5+dra3wiQyKjjFuvgVKu7U=
 github.com/stretchr/testify v1.11.1/go.mod h1:wZwfW3scLgRK+23gO65QZefKpKQRnfz6sD981Nm4B6U=
-github.com/wgtunnel/amneziawg-go v0.0.0-20260603224931-32188550b43d h1:ot5zeAuPCHfBHJ5ZPvd6tyuJYrfLY83RRywh9spkxK4=
-github.com/wgtunnel/amneziawg-go v0.0.0-20260603224931-32188550b43d/go.mod h1:BVaqPtD1zIBIBlRE8BTtK9RWIWipvA7ckCD4NlnU1I8=
+github.com/wgtunnel/amneziawg-go v0.0.0-20260618075902-e1b699b2104b h1:ok5tkAiGpx43dxPK5eeJ+4YTFnGVRyESCt8eiF29Wvo=
+github.com/wgtunnel/amneziawg-go v0.0.0-20260618075902-e1b699b2104b/go.mod h1:BVaqPtD1zIBIBlRE8BTtK9RWIWipvA7ckCD4NlnU1I8=
 github.com/wgtunnel/go-socks5 v0.0.0-20260307052555-86f8d93b9534 h1:hpF1TN8okGWv9j4lwPcWVMNDeu+1o52HB6NcEYw0WPs=
 github.com/wgtunnel/go-socks5 v0.0.0-20260307052555-86f8d93b9534/go.mod h1:1YBHVYG7Oli5ae+Pwkp630cPAwY1pjUPmohO1n0Emg0=
 github.com/wgtunnel/wireproxy-awg v0.0.0-20260309043206-ff4200f20ff2 h1:5U3FgY+o072foLwxWDg5T2XGHc/z1ixm6vEH4a1vC7k=

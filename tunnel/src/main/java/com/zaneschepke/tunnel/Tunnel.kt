@@ -21,6 +21,19 @@ interface Tunnel {
         data object Down : State
 
         data object Starting : State
+
+        data object Stopping : State
+
+        companion object {
+            fun fromNative(code: Int): State? {
+                return when (code) {
+                    0 -> Up.Healthy
+                    1 -> Up.HandshakeFailure
+                    99 -> Down
+                    else -> null
+                }
+            }
+        }
     }
 
     sealed interface IpStrategy {

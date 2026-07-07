@@ -61,7 +61,7 @@ fun TunnelMode.asTitleString(context: Context): String {
 fun TunnelMode.asString(context: Context): String {
     return when (this) {
         TunnelMode.VPN -> context.getString(R.string.vpn)
-        TunnelMode.PROXY -> context.getString(R.string.proxy)
+        TunnelMode.PROXY -> context.getString(R.string.local_proxy)
         TunnelMode.LOCK_DOWN -> context.getString(R.string.lockdown)
     }
 }

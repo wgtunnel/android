@@ -1,8 +1,10 @@
 package com.zaneschepke.wireguardautotunnel.viewmodel
 
 import androidx.lifecycle.ViewModel
-import com.zaneschepke.tunnel.backend.RootShell
+import com.dokar.sonner.ToastType
+import com.zaneschepke.tunnel.util.RootShell
 import com.zaneschepke.wireguardautotunnel.R
+import com.zaneschepke.wireguardautotunnel.core.orchestration.TunnelBackendCoordinator
 import com.zaneschepke.wireguardautotunnel.core.orchestration.TunnelCoordinator
 import com.zaneschepke.wireguardautotunnel.core.shortcut.ShortcutManager
 import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
@@ -26,6 +28,7 @@ class SettingsViewModel(
     private val monitoringRepository: MonitoringSettingsRepository,
     private val globalEffectRepository: GlobalEffectRepository,
     private val tunnelCoordinator: TunnelCoordinator,
+    private val tunnelBackendCoordinator: TunnelBackendCoordinator,
 ) : ContainerHost<SettingUiState, Nothing>, ViewModel() {
 
     override val container =
@@ -96,13 +99,25 @@ class SettingsViewModel(
     fun setTunnelScriptedEnabled(to: Boolean) = intent {
         if (to) {
             val accepted = RootShell.requestRootPermission()
-            val message =
-                if (!accepted) StringValue.StringResource(R.string.error_root_denied)
-                else StringValue.StringResource(R.string.root_accepted)
-            postSideEffect(GlobalSideEffect.Snackbar(message))
-            if (!accepted) return@intent
+            if (!accepted)
+                return@intent postSideEffect(
+                    GlobalSideEffect.Snackbar(
+                        StringValue.StringResource(R.string.error_root_denied),
+                        ToastType.Error,
+                    )
+                )
+            postSideEffect(
+                GlobalSideEffect.Snackbar(
+                    StringValue.StringResource(R.string.root_accepted),
+                    ToastType.Success,
+                )
+            )
         }
         settingsRepository.upsert(state.settings.copy(tunnelScriptingEnabled = to))
+    }
+
+    fun setSeamlessNetworkRoaming(enabled: Boolean) = intent {
+        tunnelBackendCoordinator.changeSeamlessRoaming(enabled)
     }
 
     fun setAlreadyDonated(to: Boolean) = intent {

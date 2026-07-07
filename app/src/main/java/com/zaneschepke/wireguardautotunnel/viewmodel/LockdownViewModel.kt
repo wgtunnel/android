@@ -1,6 +1,7 @@
 package com.zaneschepke.wireguardautotunnel.viewmodel
 
 import androidx.lifecycle.ViewModel
+import com.dokar.sonner.ToastType
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelProvider
 import com.zaneschepke.wireguardautotunnel.domain.repository.GlobalEffectRepository
@@ -52,7 +53,10 @@ class LockdownViewModel(
 
         postSideEffect(GlobalSideEffect.PopBackStack)
         postSideEffect(
-            GlobalSideEffect.Toast(StringValue.StringResource(R.string.config_changes_saved))
+            GlobalSideEffect.Snackbar(
+                StringValue.StringResource(R.string.config_changes_saved),
+                ToastType.Success,
+            )
         )
     }
 

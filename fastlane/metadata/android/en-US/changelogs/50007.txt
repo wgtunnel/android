@@ -1,0 +1,6 @@
+What's new:
+- Auto tunnel feature to disable active tunnels on captive portal networks
+- Improve local network permission dialog wording and theming
+- Bugfix for Dynamic DNS feature not working correctly
+- Bugfix for Lockdown mode with IPv4 only tunnels
+- Bugfix for DNS resolution hanging issues for peer resolution

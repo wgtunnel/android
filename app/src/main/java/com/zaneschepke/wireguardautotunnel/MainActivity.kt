@@ -1,12 +1,14 @@
 package com.zaneschepke.wireguardautotunnel
 
 import ProxySettingsScreen
+import android.Manifest
 import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
 import android.net.VpnService
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.view.WindowManager
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -19,17 +21,29 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.CheckCircleOutline
+import androidx.compose.material.icons.outlined.ErrorOutline
+import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.WarningAmber
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -38,20 +52,19 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.LinkAnnotation
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextLinkStyles
-import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.intl.Locale
-import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.withLink
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import androidx.core.app.ActivityCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
@@ -59,6 +72,10 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import com.dokar.sonner.TextToastAction
+import com.dokar.sonner.ToastType
+import com.dokar.sonner.Toaster
+import com.dokar.sonner.rememberToasterState
 import com.zaneschepke.networkmonitor.NetworkMonitor
 import com.zaneschepke.wireguardautotunnel.data.AppDatabase
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelMode
@@ -69,11 +86,9 @@ import com.zaneschepke.wireguardautotunnel.domain.sideeffect.GlobalSideEffect
 import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.common.banner.AppAlertBanner
+import com.zaneschepke.wireguardautotunnel.ui.common.dialog.InfoDialog
+import com.zaneschepke.wireguardautotunnel.ui.common.dialog.LocalNetworkPermissionDialog
 import com.zaneschepke.wireguardautotunnel.ui.common.dialog.VpnDeniedDialog
-import com.zaneschepke.wireguardautotunnel.ui.common.snackbar.CustomSnackBar
-import com.zaneschepke.wireguardautotunnel.ui.common.snackbar.SnackbarInfo
-import com.zaneschepke.wireguardautotunnel.ui.common.snackbar.SnackbarType
-import com.zaneschepke.wireguardautotunnel.ui.common.snackbar.rememberCustomSnackbarState
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
 import com.zaneschepke.wireguardautotunnel.ui.navigation.SecureRoute
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Tab
@@ -110,19 +125,29 @@ import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.settings.ipv6.IPv6
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.sort.SortScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.splittunnel.SplitTunnelScreen
 import com.zaneschepke.wireguardautotunnel.ui.theme.AlertRed
+import com.zaneschepke.wireguardautotunnel.ui.theme.Heart
 import com.zaneschepke.wireguardautotunnel.ui.theme.OffWhite
+import com.zaneschepke.wireguardautotunnel.ui.theme.SilverTree
+import com.zaneschepke.wireguardautotunnel.ui.theme.Straw
 import com.zaneschepke.wireguardautotunnel.ui.theme.WireguardAutoTunnelTheme
+import com.zaneschepke.wireguardautotunnel.util.FileUtils
 import com.zaneschepke.wireguardautotunnel.util.LocaleUtil
+import com.zaneschepke.wireguardautotunnel.util.StringValue
 import com.zaneschepke.wireguardautotunnel.util.extensions.installApk
 import com.zaneschepke.wireguardautotunnel.util.extensions.isRunningOnTv
 import com.zaneschepke.wireguardautotunnel.util.extensions.openWebUrl
 import com.zaneschepke.wireguardautotunnel.util.extensions.restartApp
-import com.zaneschepke.wireguardautotunnel.util.extensions.showToast
+import com.zaneschepke.wireguardautotunnel.util.permission.LocalNetworkPermissionHelper
 import com.zaneschepke.wireguardautotunnel.viewmodel.ConfigEditViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.SharedAppViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.SplitTunnelViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.TunnelViewModel
+import de.raphaelebner.roomdatabasebackup.core.OnCompleteListener.Companion.EXIT_CODE_ERROR
+import de.raphaelebner.roomdatabasebackup.core.OnCompleteListener.Companion.EXIT_CODE_ERROR_DECRYPTION_ERROR
+import de.raphaelebner.roomdatabasebackup.core.OnCompleteListener.Companion.EXIT_CODE_ERROR_RESTORE_BACKUP_IS_ENCRYPTED
+import de.raphaelebner.roomdatabasebackup.core.OnCompleteListener.Companion.EXIT_CODE_ERROR_WRONG_DECRYPTION_PASSWORD
 import de.raphaelebner.roomdatabasebackup.core.RoomBackup
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -132,6 +157,7 @@ import org.koin.androidx.compose.koinViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import org.orbitmvi.orbit.compose.collectAsState
+import timber.log.Timber
 import xyz.teamgravity.pin_lock_compose.PinManager
 
 class MainActivity : AppCompatActivity() {
@@ -155,9 +181,10 @@ class MainActivity : AppCompatActivity() {
         }
         super.onCreate(savedInstanceState)
 
-        handleIncomingIntent(intent)
+        roomBackup = RoomBackup(this).database(appDatabase).enableLogDebug(true).maxFileCount(5)
 
-        roomBackup = RoomBackup(this)
+        handleConfigFileIntent(intent)
+        handleWgDeepLinkIntent(intent)
 
         installSplashScreen().apply {
             setKeepOnScreenCondition { !viewModel.container.stateFlow.value.isAppLoaded }
@@ -175,11 +202,53 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-            val snackbarState = rememberCustomSnackbarState()
+            val toaster = rememberToasterState()
             var showVpnPermissionDialog by remember { mutableStateOf(false) }
             var vpnPermissionDenied by remember { mutableStateOf(false) }
             var requestingTunnelMode by remember {
                 mutableStateOf<Pair<TunnelMode?, TunnelConfig?>>(Pair(null, null))
+            }
+            var showLocalNetworkRationale by remember { mutableStateOf(false) }
+            var hasPromptedLocalNetwork by rememberSaveable { mutableStateOf(false) }
+
+            val localNetworkPermissionLauncher =
+                rememberLauncherForActivityResult(
+                    contract = ActivityResultContracts.RequestPermission()
+                ) { isGranted ->
+                    if (!isGranted) {
+                        val canAskAgain =
+                            ActivityCompat.shouldShowRequestPermissionRationale(
+                                this,
+                                Manifest.permission.ACCESS_LOCAL_NETWORK,
+                            )
+
+                        if (!canAskAgain) {
+                            val intent =
+                                Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                                    data = Uri.fromParts("package", packageName, null)
+                                }
+                            startActivity(intent)
+                        } else {
+                            toaster.show(
+                                message =
+                                    context.getString(R.string.local_network_permission_denied),
+                                type = ToastType.Warning,
+                                duration = 6000.milliseconds,
+                            )
+                        }
+                    }
+                }
+
+            LaunchedEffect(uiState.isAppLoaded) {
+                if (
+                    uiState.isAppLoaded &&
+                        !hasPromptedLocalNetwork &&
+                        LocalNetworkPermissionHelper.shouldRequestPermission() &&
+                        !LocalNetworkPermissionHelper.isPermissionGranted(context)
+                ) {
+                    hasPromptedLocalNetwork = true
+                    showLocalNetworkRationale = true
+                }
             }
 
             val startingStack = buildList {
@@ -232,22 +301,18 @@ class MainActivity : AppCompatActivity() {
                         }
 
                         is GlobalSideEffect.Snackbar -> {
-                            scope.launch {
-                                snackbarState.showSnackbar(
-                                    SnackbarInfo(
-                                        message =
-                                            buildAnnotatedString {
-                                                append(sideEffect.message.asString(context))
-                                            },
-                                        type = sideEffect.type ?: SnackbarType.INFO,
-                                        durationMs = sideEffect.durationMs ?: 4000L,
-                                    )
-                                )
+                            when (sideEffect.type) {
+                                ToastType.Warning,
+                                ToastType.Error -> toaster.dismissAll()
+                                else -> Unit
                             }
-                        }
 
-                        is GlobalSideEffect.Toast ->
-                            scope.launch { context.showToast(sideEffect.message.asString(context)) }
+                            toaster.show(
+                                message = sideEffect.message.asString(context),
+                                type = sideEffect.type,
+                                duration = (sideEffect.durationMs ?: 4000L).milliseconds,
+                            )
+                        }
 
                         is GlobalSideEffect.LaunchUrl -> context.openWebUrl(sideEffect.url)
                         is GlobalSideEffect.InstallApk -> context.installApk(sideEffect.apk)
@@ -275,49 +340,58 @@ class MainActivity : AppCompatActivity() {
                         },
                     )
 
-                    val annotatedMessage = buildAnnotatedString {
-                        append(context.getString(R.string.donation_prompt_prefix))
-                        append(" ")
-                        withLink(
-                            LinkAnnotation.Clickable(
-                                tag = context.getString(R.string.support),
-                                styles =
-                                    TextLinkStyles(
-                                        style =
-                                            SpanStyle(
-                                                textDecoration = TextDecoration.Underline,
-                                                color = MaterialTheme.colorScheme.primary,
-                                            ),
-                                        focusedStyle =
-                                            SpanStyle(
-                                                textDecoration = TextDecoration.Underline,
-                                                color = MaterialTheme.colorScheme.primary,
-                                                background =
-                                                    MaterialTheme.colorScheme.primary.copy(
-                                                        alpha = 0.2f
-                                                    ),
-                                            ),
-                                    ),
-                            ) {
-                                snackbarState.dismissCurrent()
-                                navController.push(Route.Donate)
-                            }
-                        ) {
-                            append(context.getString(R.string.donation_prompt_link))
-                        }
-                        append(" ")
-                        append(context.getString(R.string.donation_prompt_suffix))
+                    if (showLocalNetworkRationale) {
+                        LocalNetworkPermissionDialog(
+                            onDismiss = {
+                                showLocalNetworkRationale = false
+                                toaster.show(
+                                    message =
+                                        context.getString(R.string.local_network_permission_denied),
+                                    type = ToastType.Warning,
+                                    duration = 6000.milliseconds,
+                                )
+                            },
+                            onAttest = {
+                                showLocalNetworkRationale = false
+
+                                localNetworkPermissionLauncher.launch(
+                                    Manifest.permission.ACCESS_LOCAL_NETWORK
+                                )
+                            },
+                        )
+                    }
+
+                    uiState.pendingWgImportUrl?.let { url ->
+                        val host = Uri.parse(url).host ?: url
+                        InfoDialog(
+                            onDismiss = { viewModel.dismissWgImport() },
+                            onAttest = { viewModel.importFromUrl(url) },
+                            title = stringResource(R.string.add_from_url),
+                            body = { Text(stringResource(R.string.wg_url_confirm_message, host)) },
+                            confirmText = stringResource(R.string.okay),
+                        )
                     }
 
                     LaunchedEffect(Unit) {
                         if (uiState.shouldShowDonationSnackbar && !uiState.alreadyDonated) {
                             viewModel.setShouldShowDonationSnackbar(false)
-                            snackbarState.showSnackbar(
-                                SnackbarInfo(
-                                    message = annotatedMessage,
-                                    type = SnackbarType.THANK_YOU,
-                                    durationMs = 30_000L,
-                                )
+                            toaster.show(
+                                message =
+                                    context.getString(R.string.donation_prompt_prefix) +
+                                        " " +
+                                        context.getString(R.string.donation_prompt_link) +
+                                        " " +
+                                        context.getString(R.string.donation_prompt_suffix),
+                                type = ToastType.Normal,
+                                duration = 30_000L.milliseconds,
+                                action =
+                                    TextToastAction(
+                                        text = context.getString(R.string.donate_title),
+                                        onClick = { toastId ->
+                                            toaster.dismiss(toastId)
+                                            navController.push(Route.Donate)
+                                        },
+                                    ),
                             )
                         }
                     }
@@ -378,25 +452,6 @@ class MainActivity : AppCompatActivity() {
                                 )
                             }
                             Scaffold(
-                                snackbarHost = {
-                                    snackbarState.SnackbarHost(
-                                        modifier =
-                                            Modifier.align(Alignment.BottomCenter)
-                                                .padding(bottom = 80.dp)
-                                    ) { info ->
-                                        CustomSnackBar(
-                                            message = info.message,
-                                            type = info.type,
-                                            onDismiss = { snackbarState.dismissCurrent() },
-                                            containerColor =
-                                                MaterialTheme.colorScheme.surfaceColorAtElevation(
-                                                    2.dp
-                                                ),
-                                            modifier =
-                                                Modifier.wrapContentHeight(align = Alignment.Top),
-                                        )
-                                    }
-                                },
                                 topBar = { DynamicTopAppBar(navState) },
                                 bottomBar = {
                                     if (navState.showBottomItems) {
@@ -548,6 +603,76 @@ class MainActivity : AppCompatActivity() {
                                     )
                                 }
                             }
+                            Toaster(
+                                state = toaster,
+                                alignment = Alignment.BottomCenter,
+                                offset = IntOffset(0, -220),
+                                richColors = true,
+                                background = {
+                                    Brush.linearGradient(
+                                        listOf(
+                                            MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp),
+                                            MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp),
+                                        )
+                                    )
+                                },
+                                elevation = 1.dp,
+                                shadowAmbientColor =
+                                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f),
+                                shadowSpotColor =
+                                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+                                border = {
+                                    BorderStroke(
+                                        0.dp,
+                                        androidx.compose.ui.graphics.Color.Transparent,
+                                    )
+                                },
+                                actionSlot = { toast ->
+                                    (toast.action as? TextToastAction)?.let { action ->
+                                        TextButton(
+                                            onClick = { action.onClick(toast) },
+                                            colors =
+                                                ButtonDefaults.textButtonColors(
+                                                    contentColor = MaterialTheme.colorScheme.primary
+                                                ),
+                                            modifier = Modifier.fillMaxWidth(.25f),
+                                            contentPadding = PaddingValues(horizontal = 12.dp),
+                                        ) {
+                                            Text(
+                                                text = action.text,
+                                                fontWeight = FontWeight.Medium,
+                                                softWrap = true,
+                                                maxLines = 5,
+                                            )
+                                        }
+                                    }
+                                },
+                                iconSlot = { toast ->
+                                    val (icon, color) =
+                                        when (toast.type) {
+                                            ToastType.Success ->
+                                                Icons.Outlined.CheckCircleOutline to SilverTree
+                                            ToastType.Error ->
+                                                Icons.Outlined.ErrorOutline to AlertRed
+                                            ToastType.Warning ->
+                                                Icons.Outlined.WarningAmber to Straw
+                                            ToastType.Info ->
+                                                Icons.Outlined.Info to
+                                                    MaterialTheme.colorScheme.onSurface
+                                            ToastType.Normal ->
+                                                Icons.Outlined.FavoriteBorder to Heart
+                                        }
+                                    Icon(
+                                        imageVector = icon,
+                                        contentDescription = null,
+                                        tint = color,
+                                        modifier = Modifier.padding(end = 12.dp),
+                                    )
+                                },
+                                contentColor = { MaterialTheme.colorScheme.onSurface },
+                                shape = { RoundedCornerShape(16.dp) },
+                                showCloseButton = true,
+                            )
                         }
                     }
                 }
@@ -555,55 +680,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun performBackup() = lifecycleScope.launch {
-        roomBackup
-            .database(appDatabase)
-            .backupLocation(RoomBackup.BACKUP_FILE_LOCATION_CUSTOM_DIALOG)
-            .enableLogDebug(true)
-            .maxFileCount(5)
-            .apply {
-                onCompleteListener { success, _, _ ->
-                    lifecycleScope.launch {
-                        if (success) {
-                            showToast(
-                                getString(
-                                    R.string.backup_success,
-                                    getString(R.string.restarting_app),
-                                )
-                            )
-                            restartApp()
-                        } else {
-                            showToast(R.string.backup_failed)
-                        }
-                    }
-                }
+    private fun handleWgDeepLinkIntent(intent: Intent) {
+        if (intent.action == Intent.ACTION_VIEW) {
+            val uri = intent.data ?: return
+            if (uri.scheme == "wg") {
+                val httpsUrl = uri.toString().replaceFirst("wg://", "https://")
+                viewModel.promptWgImport(httpsUrl)
             }
-            .backup()
-    }
-
-    fun performRestore() = lifecycleScope.launch {
-        roomBackup
-            .database(appDatabase)
-            .enableLogDebug(true)
-            .backupLocation(RoomBackup.BACKUP_FILE_LOCATION_CUSTOM_DIALOG)
-            .apply {
-                onCompleteListener { success, _, _ ->
-                    lifecycleScope.launch {
-                        if (success) {
-                            showToast(
-                                getString(
-                                    R.string.restore_success,
-                                    getString(R.string.restarting_app),
-                                )
-                            )
-                            restartApp()
-                        } else {
-                            showToast(R.string.restore_failed)
-                        }
-                    }
-                }
-            }
-            .restore()
+        }
     }
 
     override fun onResume() {
@@ -611,21 +695,105 @@ class MainActivity : AppCompatActivity() {
         networkMonitor.checkPermissionsAndUpdateState()
     }
 
+    fun performBackup(encrypt: Boolean = false, password: String? = null) {
+        roomBackup
+            .backupLocation(RoomBackup.BACKUP_FILE_LOCATION_CUSTOM_DIALOG)
+            .apply {
+                if (encrypt && !password.isNullOrBlank()) {
+                    backupIsEncrypted(true)
+                    customEncryptPassword(password)
+                }
+            }
+            .onCompleteListener { success, _, _ ->
+                lifecycleScope.launch {
+                    val sideEffect =
+                        if (success) {
+                            GlobalSideEffect.Snackbar(
+                                StringValue.StringResource(R.string.backup_success),
+                                ToastType.Success,
+                            )
+                        } else {
+                            GlobalSideEffect.Snackbar(
+                                StringValue.StringResource(R.string.backup_failed),
+                                ToastType.Error,
+                            )
+                        }
+                    viewModel.postSideEffect(sideEffect)
+                }
+            }
+            .backup()
+    }
+
+    fun performRestore(encrypt: Boolean = false, password: String? = null) {
+        roomBackup
+            .backupLocation(RoomBackup.BACKUP_FILE_LOCATION_CUSTOM_DIALOG)
+            .apply {
+                if (encrypt && !password.isNullOrBlank()) {
+                    backupIsEncrypted(true)
+                    customEncryptPassword(password)
+                }
+            }
+            .onCompleteListener { success, message, exitCode ->
+                lifecycleScope.launch {
+                    if (success) {
+                        viewModel.postSideEffect(
+                            GlobalSideEffect.Snackbar(
+                                StringValue.StringResource(R.string.restore_success),
+                                ToastType.Success,
+                            )
+                        )
+                        roomBackup.restartApp(Intent(this@MainActivity, MainActivity::class.java))
+                    } else {
+                        Timber.w("Restore failed, exitCode=$exitCode, message=$message")
+
+                        val errorMessage =
+                            when (exitCode) {
+                                EXIT_CODE_ERROR_WRONG_DECRYPTION_PASSWORD ->
+                                    getString(R.string.restore_failed_wrong_password)
+
+                                EXIT_CODE_ERROR,
+                                EXIT_CODE_ERROR_DECRYPTION_ERROR,
+                                EXIT_CODE_ERROR_RESTORE_BACKUP_IS_ENCRYPTED ->
+                                    getString(R.string.restore_failed_invalid_file)
+
+                                else -> getString(R.string.restore_failed)
+                            }
+
+                        viewModel.postSideEffect(
+                            GlobalSideEffect.Snackbar(
+                                StringValue.DynamicString(errorMessage),
+                                ToastType.Error,
+                            )
+                        )
+                    }
+                }
+            }
+            .restore()
+    }
+
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
-        handleIncomingIntent(intent)
+        handleConfigFileIntent(intent)
+        handleWgDeepLinkIntent(intent)
     }
 
-    private fun handleIncomingIntent(intent: Intent?) {
+    private fun handleConfigFileIntent(intent: Intent?) {
         intent ?: return
-
         when (intent.action) {
             Intent.ACTION_VIEW,
             Intent.ACTION_EDIT,
             Intent.ACTION_SEND -> {
-                val uri: Uri? = intent.data
-                uri?.let { viewModel.importFromUri(it) }
+                val uri: Uri? = intent.data ?: return
+                val name = uri?.lastPathSegment?.lowercase() ?: return
+                if (
+                    !name.endsWith(FileUtils.CONF_FILE_EXTENSION) &&
+                        !name.endsWith(FileUtils.ZIP_FILE_EXTENSION)
+                ) {
+                    Timber.d("Ignoring non-config URI in handleIncomingIntent: $uri")
+                    return
+                }
+                viewModel.importFromUri(uri)
             }
         }
     }

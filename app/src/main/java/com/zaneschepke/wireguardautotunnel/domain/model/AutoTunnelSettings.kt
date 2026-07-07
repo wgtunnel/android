@@ -6,7 +6,7 @@ data class AutoTunnelSettings(
     val id: Int = 0,
     val isAutoTunnelEnabled: Boolean = false,
     val isTunnelOnMobileDataEnabled: Boolean = false,
-    val trustedNetworkSSIDs: Set<String> = emptySet(),
+    val trustedNetworkSSIDs: List<String> = emptyList(),
     val isTunnelOnEthernetEnabled: Boolean = false,
     val isTunnelOnWifiEnabled: Boolean = false,
     val isWildcardsEnabled: Boolean = false,
@@ -14,4 +14,6 @@ data class AutoTunnelSettings(
     val isTunnelOnUnsecureEnabled: Boolean = false,
     val wifiDetectionMethod: WifiDetectionMethod = WifiDetectionMethod.fromValue(0),
     val startOnBoot: Boolean = false,
+    val disableTunnelOnCaptivePortal: Boolean = true,
+    val trustedNetworkBSSIDs: List<String> = emptyList(),
 )

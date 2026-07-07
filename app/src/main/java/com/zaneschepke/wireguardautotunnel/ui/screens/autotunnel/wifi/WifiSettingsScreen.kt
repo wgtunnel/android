@@ -10,6 +10,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Filter1
 import androidx.compose.material.icons.outlined.Map
+import androidx.compose.material.icons.outlined.PublicOff
 import androidx.compose.material.icons.outlined.WifiFind
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -27,6 +28,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
@@ -34,20 +39,20 @@ import com.zaneschepke.wireguardautotunnel.ui.common.banner.WarningBanner
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ThemedSwitch
 import com.zaneschepke.wireguardautotunnel.ui.common.dialog.InfoDialog
+import com.zaneschepke.wireguardautotunnel.ui.common.functions.rememberRotatingHint
 import com.zaneschepke.wireguardautotunnel.ui.common.label.GroupLabel
 import com.zaneschepke.wireguardautotunnel.ui.common.text.DescriptionText
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
 import com.zaneschepke.wireguardautotunnel.ui.navigation.TunnelNetwork
-import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.components.TrustedNetworkTextBox
-import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.components.WildcardsLabel
-import com.zaneschepke.wireguardautotunnel.ui.screens.settings.components.LearnMoreLinkLabel
+import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.AutoTunnelScreenSideEffect
+import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.wifi.components.NetworkRuleInput
 import com.zaneschepke.wireguardautotunnel.util.extensions.asTitleString
 import com.zaneschepke.wireguardautotunnel.util.extensions.launchAppSettings
 import com.zaneschepke.wireguardautotunnel.util.extensions.launchLocationServicesSettings
-import com.zaneschepke.wireguardautotunnel.util.extensions.openWebUrl
 import com.zaneschepke.wireguardautotunnel.viewmodel.AutoTunnelViewModel
 import org.koin.androidx.compose.koinViewModel
 import org.orbitmvi.orbit.compose.collectAsState
+import org.orbitmvi.orbit.compose.collectSideEffect
 
 @Composable
 fun WifiSettingsScreen(viewModel: AutoTunnelViewModel = koinViewModel()) {
@@ -58,10 +63,27 @@ fun WifiSettingsScreen(viewModel: AutoTunnelViewModel = koinViewModel()) {
 
     if (uiState.isLoading) return
 
-    var showLocationDialog by remember { mutableStateOf(false) }
-    var currentText by rememberSaveable { mutableStateOf("") }
+    val wildcardEnabled = uiState.autoTunnelSettings.isWildcardsEnabled
 
-    LaunchedEffect(uiState.autoTunnelSettings.trustedNetworkSSIDs) { currentText = "" }
+    // Use hints from ViewModel
+    val ssidHint = rememberRotatingHint(viewModel.ssidHints, wildcardEnabled)
+    val bssidHint = rememberRotatingHint(viewModel.bssidHints, wildcardEnabled)
+
+    var showLocationDialog by remember { mutableStateOf(false) }
+    var currentSsidText by rememberSaveable { mutableStateOf("") }
+    var currentBssidText by rememberSaveable { mutableStateOf("") }
+
+    viewModel.collectSideEffect() {
+        when (it) {
+            AutoTunnelScreenSideEffect.BSSID_SAVED -> currentBssidText = ""
+            AutoTunnelScreenSideEffect.SSID_SAVED -> currentSsidText = ""
+        }
+    }
+
+    LaunchedEffect(uiState.autoTunnelSettings.trustedNetworkSSIDs) { currentSsidText = "" }
+    LaunchedEffect(uiState.autoTunnelSettings.trustedNetworkBSSIDs) { currentBssidText = "" }
+
+    val bssidFormatError = stringResource(R.string.invalid_bssid_format)
 
     val warnings by
         remember(
@@ -142,25 +164,41 @@ fun WifiSettingsScreen(viewModel: AutoTunnelViewModel = koinViewModel()) {
             GroupLabel(stringResource(R.string.general), Modifier.padding(horizontal = 16.dp))
             SurfaceRow(
                 leading = { Icon(Icons.Outlined.WifiFind, contentDescription = null) },
-                title = stringResource(R.string.wifi_detection_method),
-                description = {
-                    DescriptionText(
-                        stringResource(
-                            R.string.current_template,
-                            uiState.autoTunnelSettings.wifiDetectionMethod.asTitleString(context),
-                        )
-                    )
-                },
+                title =
+                    buildAnnotatedString {
+                        append(stringResource(R.string.wifi_detection_method))
+                        append(": ")
+                        withStyle(
+                            style = SpanStyle(color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        ) {
+                            append(
+                                uiState.autoTunnelSettings.wifiDetectionMethod.asTitleString(
+                                    context
+                                )
+                            )
+                        }
+                    },
+                description = { DescriptionText(stringResource(R.string.wifi_detection_desc)) },
                 onClick = { navController.push(Route.WifiDetectionMethod) },
             )
             SurfaceRow(
                 leading = { Icon(Icons.Outlined.Filter1, contentDescription = null) },
                 title = stringResource(R.string.use_wildcards),
                 description = {
-                    LearnMoreLinkLabel(
-                        { context.openWebUrl(it) },
-                        stringResource(R.string.docs_wildcards),
-                    )
+                    val descriptionText = stringResource(R.string.wildcard_desc)
+                    val learnMoreText = stringResource(R.string.learn_more)
+                    val url = stringResource(R.string.docs_wildcards)
+                    val annotatedString = buildAnnotatedString {
+                        append(descriptionText)
+                        append(" ")
+
+                        val start = length
+                        append(learnMoreText)
+                        val end = length
+
+                        addLink(url = LinkAnnotation.Url(url), start = start, end = end)
+                    }
+                    DescriptionText(annotatedString)
                 },
                 trailing = {
                     ThemedSwitch(
@@ -174,26 +212,54 @@ fun WifiSettingsScreen(viewModel: AutoTunnelViewModel = koinViewModel()) {
             )
         }
         Column {
-            GroupLabel(stringResource(R.string.networks), Modifier.padding(horizontal = 16.dp))
-            SurfaceRow(
-                title = stringResource(R.string.trusted_wifi_names),
-                expandedContent = {
-                    TrustedNetworkTextBox(
-                        uiState.autoTunnelSettings.trustedNetworkSSIDs,
-                        onDelete = { viewModel.removeTrustedNetworkName(it) },
-                        currentText = currentText,
-                        onSave = { ssid -> viewModel.saveTrustedNetworkName(ssid) },
-                        onValueChange = { currentText = it },
-                        supporting = {
-                            if (uiState.autoTunnelSettings.isWildcardsEnabled) WildcardsLabel()
-                        },
-                        modifier = Modifier.padding(top = 4.dp),
-                    )
+            GroupLabel(
+                stringResource(R.string.wifi_rules),
+                Modifier.padding(horizontal = 16.dp).padding(bottom = 8.dp),
+            )
+            NetworkRuleInput(
+                inputTitle = stringResource(R.string.trusted_wifi_names),
+                placeholder = ssidHint,
+                rules = uiState.autoTunnelSettings.trustedNetworkSSIDs,
+                onDelete = { viewModel.removeTrustedNetworkName(it) },
+                currentText = currentSsidText,
+                onValueChange = { currentSsidText = it },
+                onSave = { ssid -> viewModel.saveTrustedNetworkName(ssid) },
+                supportingContent = {
+                    if (uiState.autoTunnelSettings.isWildcardsEnabled)
+                        DescriptionText(stringResource(R.string.wildcard_wifi_desc))
                 },
             )
-        }
-        Column {
-            GroupLabel(stringResource(R.string.tunnels), Modifier.padding(horizontal = 16.dp))
+
+            NetworkRuleInput(
+                inputTitle = stringResource(R.string.trusted_bssid),
+                rules = uiState.autoTunnelSettings.trustedNetworkBSSIDs,
+                onDelete = { viewModel.removeTrustedBssid(it) },
+                currentText = currentBssidText,
+                onValueChange = { currentBssidText = it },
+                onSave = { bssid -> viewModel.saveTrustedBssid(bssid) },
+                supportingContent = {
+                    if (uiState.autoTunnelSettings.isWildcardsEnabled)
+                        DescriptionText(stringResource(R.string.wildcard_bssid_desc))
+                },
+                placeholder = bssidHint,
+            )
+
+            SurfaceRow(
+                leading = { Icon(Icons.Outlined.PublicOff, contentDescription = null) },
+                title = stringResource(R.string.stop_while_captive_portal),
+                onClick = {
+                    viewModel.setDisabledOnCaptivePortal(
+                        !uiState.autoTunnelSettings.disableTunnelOnCaptivePortal
+                    )
+                },
+                trailing = {
+                    ThemedSwitch(
+                        checked = uiState.autoTunnelSettings.disableTunnelOnCaptivePortal,
+                        onClick = { viewModel.setDisabledOnCaptivePortal(it) },
+                    )
+                },
+                description = { DescriptionText(stringResource(R.string.captive_portal_desc)) },
+            )
             SurfaceRow(
                 leading = { Icon(Icons.Outlined.Map, contentDescription = null) },
                 title = stringResource(R.string.tunnel_mapping),

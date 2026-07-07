@@ -1,6 +1,6 @@
 object Constants {
-    const val VERSION_NAME = "5.0.0"
-    const val VERSION_CODE = 50000
+    const val VERSION_NAME = "5.0.7"
+    const val VERSION_CODE = 50007
     const val TARGET_SDK = 37
     const val MIN_SDK = 26
 

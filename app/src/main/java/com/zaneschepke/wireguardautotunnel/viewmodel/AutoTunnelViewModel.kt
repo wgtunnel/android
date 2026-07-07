@@ -2,13 +2,12 @@ package com.zaneschepke.wireguardautotunnel.viewmodel
 
 import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
 import androidx.lifecycle.ViewModel
+import com.dokar.sonner.ToastType
 import com.zaneschepke.networkmonitor.NetworkMonitor
 import com.zaneschepke.networkmonitor.StableNetworkEngine
-import com.zaneschepke.tunnel.backend.RootShell
+import com.zaneschepke.tunnel.util.RootShell
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.core.orchestration.AutoTunnelCoordinator
-import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
-import com.zaneschepke.wireguardautotunnel.core.service.autotunnel.AutoTunnelStateHolder
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelMode
 import com.zaneschepke.wireguardautotunnel.domain.enums.WifiDetectionMethod
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
@@ -16,7 +15,12 @@ import com.zaneschepke.wireguardautotunnel.domain.repository.AutoTunnelSettingsR
 import com.zaneschepke.wireguardautotunnel.domain.repository.GlobalEffectRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.domain.sideeffect.GlobalSideEffect
+import com.zaneschepke.wireguardautotunnel.service.ServiceManager
+import com.zaneschepke.wireguardautotunnel.service.autotunnel.AutoTunnelStateHolder
+import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.AutoTunnelScreenSideEffect
 import com.zaneschepke.wireguardautotunnel.ui.state.AutoTunnelUiState
+import com.zaneschepke.wireguardautotunnel.util.BssidUtils.isValidBssidPattern
+import com.zaneschepke.wireguardautotunnel.util.BssidUtils.normalizeBssid
 import com.zaneschepke.wireguardautotunnel.util.StringValue
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.mapNotNull
@@ -33,14 +37,14 @@ class AutoTunnelViewModel(
     private val autoTunnelCoordinator: AutoTunnelCoordinator,
     private val tunnelsRepository: TunnelRepository,
     private val autoTunnelStateHolder: AutoTunnelStateHolder,
-) : ContainerHost<AutoTunnelUiState, Nothing>, ViewModel() {
+) : ContainerHost<AutoTunnelUiState, AutoTunnelScreenSideEffect>, ViewModel() {
 
     init {
         networkMonitor.checkPermissionsAndUpdateState()
     }
 
     override val container =
-        container<AutoTunnelUiState, Nothing>(
+        container<AutoTunnelUiState, AutoTunnelScreenSideEffect>(
             AutoTunnelUiState(),
             buildSettings = { repeatOnSubscribedStopTimeout = 5000L },
         ) {
@@ -82,6 +86,25 @@ class AutoTunnelViewModel(
         autoTunnelCoordinator.toggle()
     }
 
+    val wildcardEnabled: Boolean
+        get() = container.stateFlow.value.autoTunnelSettings.isWildcardsEnabled
+
+    val ssidHints: List<String>
+        get() =
+            if (wildcardEnabled) {
+                listOf("Office_WiFi", "Home*", "*Guest*", "!Hotel_WiFi", "Cafe?", "\\(Office\\) 5G")
+            } else {
+                listOf("Home_WiFi")
+            }
+
+    val bssidHints: List<String>
+        get() =
+            if (wildcardEnabled) {
+                listOf("AA:BB:CC:DD:EE:FF", "AA:BB:CC:*", "!AA:BB:CC:DD:EE:FF")
+            } else {
+                listOf("AA:BB:CC:DD:EE:FF")
+            }
+
     fun setAutoTunnelOnWifiEnabled(to: Boolean) = intent {
         autoTunnelRepository.upsert(state.autoTunnelSettings.copy(isTunnelOnWifiEnabled = to))
     }
@@ -99,20 +122,26 @@ class AutoTunnelViewModel(
         val trimmed = name.trim()
         if (state.autoTunnelSettings.trustedNetworkSSIDs.contains(name)) {
             return@intent postSideEffect(
-                GlobalSideEffect.Snackbar(StringValue.StringResource(R.string.error_ssid_exists))
+                GlobalSideEffect.Snackbar(
+                    StringValue.StringResource(R.string.network_name_in_use),
+                    ToastType.Error,
+                )
             )
         }
         setTrustedNetworkNames(
-            (state.autoTunnelSettings.trustedNetworkSSIDs + trimmed).toMutableSet()
+            (state.autoTunnelSettings.trustedNetworkSSIDs + trimmed).toMutableList()
         )
+        postSideEffect(AutoTunnelScreenSideEffect.SSID_SAVED)
     }
 
-    fun setTrustedNetworkNames(to: Set<String>) = intent {
+    fun setTrustedNetworkNames(to: List<String>) = intent {
         autoTunnelRepository.upsert(state.autoTunnelSettings.copy(trustedNetworkSSIDs = to))
     }
 
     fun removeTrustedNetworkName(name: String) = intent {
-        setTrustedNetworkNames((state.autoTunnelSettings.trustedNetworkSSIDs - name).toMutableSet())
+        setTrustedNetworkNames(
+            (state.autoTunnelSettings.trustedNetworkSSIDs - name).toMutableList()
+        )
     }
 
     fun setTunnelOnCellular(to: Boolean) = intent {
@@ -127,6 +156,44 @@ class AutoTunnelViewModel(
         autoTunnelRepository.upsert(state.autoTunnelSettings.copy(startOnBoot = to))
     }
 
+    fun saveTrustedBssid(bssid: String) = intent {
+        if (bssid.isBlank()) return@intent
+
+        val normalized = normalizeBssid(bssid)
+
+        if (!isValidBssidPattern(normalized)) {
+            return@intent postSideEffect(
+                GlobalSideEffect.Snackbar(
+                    StringValue.StringResource(R.string.invalid_bssid_format),
+                    ToastType.Error,
+                )
+            )
+        }
+
+        val current = state.autoTunnelSettings.trustedNetworkBSSIDs
+
+        if (current.contains(normalized)) {
+            return@intent postSideEffect(
+                GlobalSideEffect.Snackbar(
+                    StringValue.StringResource(R.string.bssid_in_use),
+                    ToastType.Error,
+                )
+            )
+        }
+
+        setTrustedNetworkBSSIDs(current + normalized)
+        postSideEffect(AutoTunnelScreenSideEffect.BSSID_SAVED)
+    }
+
+    fun setTrustedNetworkBSSIDs(to: List<String>) = intent {
+        autoTunnelRepository.upsert(state.autoTunnelSettings.copy(trustedNetworkBSSIDs = to))
+    }
+
+    fun removeTrustedBssid(bssid: String) = intent {
+        val current = state.autoTunnelSettings.trustedNetworkBSSIDs
+        setTrustedNetworkBSSIDs(current - bssid)
+    }
+
     fun setPreferredMobileDataTunnel(tunnel: TunnelConfig?) = intent {
         tunnelsRepository.updateMobileDataTunnel(tunnel)
     }
@@ -135,17 +202,78 @@ class AutoTunnelViewModel(
         tunnelsRepository.updateEthernetTunnel(tunnel)
     }
 
-    fun addTunnelNetwork(tunnel: TunnelConfig, ssid: String) = intent {
+    fun saveTunnelNetwork(tunnel: TunnelConfig, ssid: String) = intent {
+        if (ssid.isBlank()) return@intent
+
+        val trimmed = ssid.trim()
+
+        val alreadyExists = state.tunnels.any { t -> t.tunnelNetworks.contains(trimmed) }
+
+        if (alreadyExists) {
+            return@intent postSideEffect(
+                GlobalSideEffect.Snackbar(
+                    StringValue.StringResource(R.string.network_name_in_use),
+                    ToastType.Error,
+                )
+            )
+        }
+
         tunnelsRepository.save(
-            tunnel.copy(tunnelNetworks = tunnel.tunnelNetworks.toMutableSet().apply { add(ssid) })
+            tunnel.copy(
+                tunnelNetworks = tunnel.tunnelNetworks.toMutableList().apply { add(trimmed) }
+            )
         )
+        postSideEffect(AutoTunnelScreenSideEffect.SSID_SAVED)
+    }
+
+    fun saveTunnelBSSID(tunnel: TunnelConfig, bssid: String) = intent {
+        if (bssid.isBlank()) return@intent
+
+        val normalized = normalizeBssid(bssid)
+
+        if (!isValidBssidPattern(normalized)) {
+            return@intent postSideEffect(
+                GlobalSideEffect.Snackbar(
+                    StringValue.StringResource(R.string.invalid_bssid_format),
+                    ToastType.Error,
+                )
+            )
+        }
+
+        val alreadyExists = state.tunnels.any { t -> t.tunnelBSSIDs.contains(normalized) }
+
+        if (alreadyExists) {
+            return@intent postSideEffect(
+                GlobalSideEffect.Snackbar(
+                    StringValue.StringResource(R.string.bssid_in_use),
+                    ToastType.Error,
+                )
+            )
+        }
+
+        tunnelsRepository.save(
+            tunnel.copy(
+                tunnelBSSIDs = tunnel.tunnelBSSIDs.toMutableList().apply { add(normalized) }
+            )
+        )
+        postSideEffect(AutoTunnelScreenSideEffect.BSSID_SAVED)
+    }
+
+    fun setDisabledOnCaptivePortal(enabled: Boolean) = intent {
+        autoTunnelRepository.updateDisableOnCaptivePortal(enabled)
     }
 
     fun removeTunnelNetwork(tunnel: TunnelConfig, ssid: String) = intent {
         tunnelsRepository.save(
             tunnel.copy(
-                tunnelNetworks = tunnel.tunnelNetworks.toMutableSet().apply { remove(ssid) }
+                tunnelNetworks = tunnel.tunnelNetworks.toMutableList().apply { remove(ssid) }
             )
+        )
+    }
+
+    fun removeTunnelBSSID(tunnel: TunnelConfig, bssid: String) = intent {
+        tunnelsRepository.save(
+            tunnel.copy(tunnelBSSIDs = tunnel.tunnelBSSIDs.toMutableList().apply { remove(bssid) })
         )
     }
 
@@ -153,11 +281,19 @@ class AutoTunnelViewModel(
         when (method) {
             WifiDetectionMethod.ROOT -> {
                 val accepted = RootShell.requestRootPermission()
-                val message =
-                    if (!accepted) StringValue.StringResource(R.string.error_root_denied)
-                    else StringValue.StringResource(R.string.root_accepted)
-                postSideEffect(GlobalSideEffect.Snackbar(message))
-                if (!accepted) return@intent
+                if (!accepted)
+                    return@intent postSideEffect(
+                        GlobalSideEffect.Snackbar(
+                            StringValue.StringResource(R.string.error_root_denied),
+                            ToastType.Error,
+                        )
+                    )
+                postSideEffect(
+                    GlobalSideEffect.Snackbar(
+                        StringValue.StringResource(R.string.root_accepted),
+                        ToastType.Success,
+                    )
+                )
             }
             WifiDetectionMethod.SHIZUKU -> {
                 requestShizuku()
@@ -188,7 +324,10 @@ class AutoTunnelViewModel(
             )
         } catch (_: Exception) {
             postSideEffect(
-                GlobalSideEffect.Snackbar(StringValue.StringResource(R.string.shizuku_not_detected))
+                GlobalSideEffect.Snackbar(
+                    StringValue.StringResource(R.string.shizuku_not_detected),
+                    ToastType.Error,
+                )
             )
         }
     }

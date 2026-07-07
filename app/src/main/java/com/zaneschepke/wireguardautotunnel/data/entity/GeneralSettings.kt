@@ -34,4 +34,6 @@ data class GeneralSettings(
     val isGlobalAmneziaEnabled: Boolean = false,
     @ColumnInfo(name = "tunnel_scripting_enabled", defaultValue = "0")
     val tunnelScriptingEnabled: Boolean = true,
+    @ColumnInfo(name = "seamless_roaming_enabled", defaultValue = "0")
+    val seamlessRoamingEnabled: Boolean = true,
 )

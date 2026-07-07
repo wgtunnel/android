@@ -7,4 +7,6 @@ sealed interface AutoTunnelEvent {
     data class Sync(val start: Set<TunnelConfig>, val stop: Set<Int>) : AutoTunnelEvent
 
     data object DoNothing : AutoTunnelEvent
+
+    data object StopAllDueToNoInternet : AutoTunnelEvent
 }

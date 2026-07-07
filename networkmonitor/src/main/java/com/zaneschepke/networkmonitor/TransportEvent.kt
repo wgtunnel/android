@@ -1,5 +1,6 @@
 package com.zaneschepke.networkmonitor
 
+import android.net.LinkProperties
 import android.net.Network
 import android.net.NetworkCapabilities
 
@@ -21,4 +22,7 @@ sealed class TransportEvent {
         TransportEvent()
 
     data object Unknown : TransportEvent()
+
+    data class LinkPropertiesChanged(val network: Network, val linkProperties: LinkProperties) :
+        TransportEvent()
 }

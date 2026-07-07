@@ -1,8 +1,8 @@
 package com.zaneschepke.wireguardautotunnel.domain.sideeffect
 
+import com.dokar.sonner.ToastType
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelMode
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
-import com.zaneschepke.wireguardautotunnel.ui.common.snackbar.SnackbarType
 import com.zaneschepke.wireguardautotunnel.util.StringValue
 import java.io.File
 
@@ -10,13 +10,11 @@ sealed class GlobalSideEffect {
 
     data class Snackbar(
         val message: StringValue,
-        val type: SnackbarType? = null,
+        val type: ToastType,
         val actionLabel: String? = null,
         val onAction: (() -> Unit)? = null,
         val durationMs: Long? = null,
     ) : GlobalSideEffect()
-
-    data class Toast(val message: StringValue) : GlobalSideEffect()
 
     data object PopBackStack : GlobalSideEffect()
 

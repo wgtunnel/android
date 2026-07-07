@@ -19,6 +19,7 @@ import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ThemedSwitch
+import com.zaneschepke.wireguardautotunnel.ui.common.text.DescriptionText
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
 import com.zaneschepke.wireguardautotunnel.viewmodel.SharedAppViewModel
 import org.koin.compose.viewmodel.koinActivityViewModel
@@ -45,13 +46,16 @@ fun SecurityScreen(viewModel: SharedAppViewModel = koinActivityViewModel()) {
                     onClick = { viewModel.setScreenRecordingSecurity(it) },
                 )
             },
+            description = {
+                DescriptionText(stringResource(R.string.screen_recording_protection_desc))
+            },
             onClick = {
                 viewModel.setScreenRecordingSecurity(!uiState.isScreenRecordingProtectionEnabled)
             },
         )
         SurfaceRow(
             leading = { Icon(Icons.Outlined.Pin, contentDescription = null) },
-            title = stringResource(R.string.enable_app_lock),
+            title = stringResource(R.string.app_lock),
             trailing = {
                 ThemedSwitch(
                     checked = uiState.pinLockEnabled,
@@ -64,6 +68,7 @@ fun SecurityScreen(viewModel: SharedAppViewModel = koinActivityViewModel()) {
                     },
                 )
             },
+            description = { DescriptionText(stringResource(R.string.app_lock_desc)) },
             onClick = {
                 if (!uiState.pinLockEnabled) {
                     navController.push(Route.Lock)

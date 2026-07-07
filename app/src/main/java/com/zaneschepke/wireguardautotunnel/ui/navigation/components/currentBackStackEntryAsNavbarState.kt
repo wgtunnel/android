@@ -250,7 +250,7 @@ fun currentRouteAsNavbarState(
                     val global = route !is ConfigEdit
                     val tunnelName =
                         if (!global) globalState.tunnelNames[route.id]
-                        else context.getString(R.string.configuration_globals)
+                        else context.getString(R.string.tunnel_configuration)
                     NavbarState(
                         topLeading = { TvBackButton { navController.pop() } },
                         showBottomItems = true,
@@ -297,7 +297,7 @@ fun currentRouteAsNavbarState(
                 is SplitTunnelGlobal -> {
                     val tunnelName =
                         if (route is SplitTunnel) globalState.tunnelNames[route.id]
-                        else context.getString(R.string.global_split_tunneling)
+                        else context.getString(R.string.splt_tunneling)
                     NavbarState(
                         topLeading = { TvBackButton { navController.pop() } },
                         topTitle = tunnelName ?: "",

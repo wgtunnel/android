@@ -48,47 +48,51 @@ class RemoteControlReceiver : BroadcastReceiver(), KoinComponent {
     }
 
     override fun onReceive(context: Context, intent: Intent) {
-
-        val action = intent.action ?: return
-        val appAction = Action.fromAction(action) ?: return
-
+        val pendingResult = goAsync()
         applicationScope.launch {
-            val settings = settingsRepository.getGeneralSettings()
+            try {
+                val action = intent.action ?: return@launch
+                val appAction = Action.fromAction(action) ?: return@launch
 
-            if (!settings.isRemoteControlEnabled) return@launch
+                val settings = settingsRepository.getGeneralSettings()
 
-            if (!validateKey(settings, intent)) return@launch
+                if (!settings.isRemoteControlEnabled) return@launch
 
-            when (appAction) {
-                Action.START_TUNNEL -> {
-                    val tunnel =
-                        resolveTunnel(intent)
-                            ?: tunnelsRepository.getDefaultTunnel()
-                            ?: return@launch
+                if (!validateKey(settings, intent)) return@launch
 
-                    tunnelCoordinator.startTunnel(tunnel)
-                }
+                when (appAction) {
+                    Action.START_TUNNEL -> {
+                        val tunnel =
+                            resolveTunnel(intent)
+                                ?: tunnelsRepository.getDefaultTunnel()
+                                ?: return@launch
 
-                Action.STOP_TUNNEL -> {
-                    val tunnelName = intent.getStringExtra(EXTRA_TUN_NAME)
-
-                    if (tunnelName == null) {
-                        tunnelCoordinator.stopActiveTunnels()
-                        return@launch
+                        tunnelCoordinator.startTunnel(tunnel)
                     }
 
-                    val tunnel = tunnelsRepository.findByTunnelName(tunnelName) ?: return@launch
+                    Action.STOP_TUNNEL -> {
+                        val tunnelName = intent.getStringExtra(EXTRA_TUN_NAME)
 
-                    tunnelCoordinator.stopTunnel(tunnel.id)
-                }
+                        if (tunnelName == null) {
+                            tunnelCoordinator.stopActiveTunnels()
+                            return@launch
+                        }
 
-                Action.START_AUTO_TUNNEL -> {
-                    autoTunnelCoordinator.enable()
-                }
+                        val tunnel = tunnelsRepository.findByTunnelName(tunnelName) ?: return@launch
 
-                Action.STOP_AUTO_TUNNEL -> {
-                    autoTunnelCoordinator.disable()
+                        tunnelCoordinator.stopTunnel(tunnel.id)
+                    }
+
+                    Action.START_AUTO_TUNNEL -> {
+                        autoTunnelCoordinator.enable()
+                    }
+
+                    Action.STOP_AUTO_TUNNEL -> {
+                        autoTunnelCoordinator.disable()
+                    }
                 }
+            } finally {
+                pendingResult.finish()
             }
         }
     }

@@ -1,6 +1,5 @@
 package com.zaneschepke.wireguardautotunnel.util
 
-import LicenseFileEntry
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
@@ -23,7 +22,6 @@ import java.util.zip.ZipInputStream
 import java.util.zip.ZipOutputStream
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.json.Json
 import timber.log.Timber
 
 class FileUtils(private val context: Context, private val ioDispatcher: CoroutineDispatcher) {
@@ -291,15 +289,6 @@ class FileUtils(private val context: Context, private val ioDispatcher: Coroutin
             resolver.update(itemUri, contentValues, null, null)
 
             return@withContext itemUri
-        }
-
-    suspend fun readLibraryLicensesFromAssets(): List<LicenseFileEntry> =
-        withContext(ioDispatcher) {
-            val json = Json { ignoreUnknownKeys = true }
-
-            val jsonResult =
-                context.assets.open("licenses.json").bufferedReader().use { it.readText() }
-            json.decodeFromString(jsonResult)
         }
 
     companion object {

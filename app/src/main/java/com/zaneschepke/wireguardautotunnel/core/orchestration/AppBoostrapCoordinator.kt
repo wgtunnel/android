@@ -39,7 +39,7 @@ class AppBoostrapCoordinator(
             listOf(
                 async { bootstrapDns() },
                 async { ensureGlobalConfig() },
-                async { restoreLockdown() },
+                async { restoreBackendConfiguration() },
             )
 
         try {
@@ -73,8 +73,12 @@ class AppBoostrapCoordinator(
         tunnelRepository.ensureGlobalConfigExists()
     }
 
-    private suspend fun restoreLockdown() {
+    private suspend fun restoreBackendConfiguration() {
         val settings = settingsRepository.getGeneralSettings()
+
+        if (settings.seamlessRoamingEnabled) {
+            tunnelProvider.setSeamlessRoaming(true)
+        }
 
         when (settings.tunnelMode) {
             TunnelMode.LOCK_DOWN -> {

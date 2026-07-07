@@ -1,13 +1,10 @@
 package com.zaneschepke.logcatter
 
-import android.os.Handler
-import android.os.Looper
-import androidx.lifecycle.ProcessLifecycleOwner
 import java.io.File
 
 object LogcatReader {
-    private const val MAX_FILE_SIZE = 2097152L // 2MB
-    private const val MAX_FOLDER_SIZE = 10485760L // 10MB
+    private const val MAX_FILE_SIZE = 2_097_152L // 2MB
+    private const val MAX_FOLDER_SIZE = 10_485_760L // 10MB
 
     private lateinit var logcatManager: LogcatManager
     private var isInitialized = false
@@ -16,6 +13,8 @@ object LogcatReader {
         maxFileSize: Long = MAX_FILE_SIZE,
         maxFolderSize: Long = MAX_FOLDER_SIZE,
         storageDir: String,
+        appVersion: String,
+        appFlavor: String,
     ): LogReader {
         if (maxFileSize > maxFolderSize) {
             throw IllegalStateException("maxFileSize must be less than maxFolderSize")
@@ -30,14 +29,9 @@ object LogcatReader {
                     logDir = logDir,
                     maxFileSize = maxFileSize,
                     maxFolderSize = maxFolderSize,
+                    appVersion,
+                    appFlavor,
                 )
-            if (Looper.myLooper() == Looper.getMainLooper()) {
-                ProcessLifecycleOwner.get().lifecycle.addObserver(logcatManager)
-            } else {
-                Handler(Looper.getMainLooper()).post {
-                    ProcessLifecycleOwner.get().lifecycle.addObserver(logcatManager)
-                }
-            }
             isInitialized = true
             return logcatManager
         }

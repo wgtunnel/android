@@ -45,4 +45,8 @@ class RoomSettingsRepository(private val settingsDao: GeneralSettingsDao) :
     override suspend fun updateScreenRecordingSecurity(enabled: Boolean) {
         settingsDao.updateScreenRecordingSecurity(enabled)
     }
+
+    override suspend fun updateSeamlessRoaming(enabled: Boolean) {
+        settingsDao.updateSeamlessRoaming(enabled)
+    }
 }

@@ -11,4 +11,6 @@ interface AutoTunnelSettingsRepository {
     suspend fun getAutoTunnelSettings(): AutoTunnelSettings
 
     suspend fun updateAutoTunnelEnabled(enabled: Boolean)
+
+    suspend fun updateDisableOnCaptivePortal(enabled: Boolean)
 }

@@ -6,6 +6,4 @@ interface NetworkMonitor {
     val connectivityStateFlow: Flow<ConnectivityState>
 
     fun checkPermissionsAndUpdateState()
-
-    fun destroy()
 }

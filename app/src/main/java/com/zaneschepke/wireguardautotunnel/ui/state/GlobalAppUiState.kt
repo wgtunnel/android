@@ -18,5 +18,6 @@ data class GlobalAppUiState(
     val selectedTunnelCount: Int = 0,
     val alreadyDonated: Boolean = false,
     val isPinVerified: Boolean = false,
+    val pendingWgImportUrl: String? = null,
     val isScreenRecordingProtectionEnabled: Boolean = false,
 )

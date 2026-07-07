@@ -1,6 +1,7 @@
 package com.zaneschepke.wireguardautotunnel.viewmodel
 
 import androidx.lifecycle.ViewModel
+import com.dokar.sonner.ToastType
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.core.orchestration.TunnelCoordinator
 import com.zaneschepke.wireguardautotunnel.domain.enums.MimicMode
@@ -93,7 +94,6 @@ class ConfigEditViewModel(
                                 tunnel = tunnel,
                                 tunnels = tunnels,
                                 isRunning = isRunning,
-                                globalSettings = globalSettings,
                             )
                         }
                     }
@@ -106,7 +106,10 @@ class ConfigEditViewModel(
         if (state.isTunnelNameTaken) {
 
             postSideEffect(
-                GlobalSideEffect.Snackbar(StringValue.StringResource(R.string.tunnel_name_taken))
+                GlobalSideEffect.Snackbar(
+                    StringValue.StringResource(R.string.tunnel_name_taken),
+                    ToastType.Error,
+                )
             )
 
             return@intent
@@ -114,7 +117,10 @@ class ConfigEditViewModel(
 
         if (state.draft.tunnelName.isBlank()) {
             postSideEffect(
-                GlobalSideEffect.Snackbar(StringValue.StringResource(R.string.name_error_empty))
+                GlobalSideEffect.Snackbar(
+                    StringValue.StringResource(R.string.name_error_empty),
+                    ToastType.Error,
+                )
             )
             return@intent
         }
@@ -148,8 +154,9 @@ class ConfigEditViewModel(
                     }
 
                     postSideEffect(
-                        GlobalSideEffect.Toast(
-                            StringValue.StringResource(R.string.config_changes_saved)
+                        GlobalSideEffect.Snackbar(
+                            StringValue.StringResource(R.string.config_changes_saved),
+                            ToastType.Success,
                         )
                     )
 
@@ -165,7 +172,7 @@ class ConfigEditViewModel(
                         else -> StringValue.StringResource(R.string.unknown_error)
                     }
 
-                postSideEffect(GlobalSideEffect.Snackbar(message))
+                postSideEffect(GlobalSideEffect.Snackbar(message, ToastType.Error))
             }
     }
 
@@ -280,6 +287,7 @@ class ConfigEditViewModel(
             }
 
         onInterfaceChange(updated)
+        reduce { state.copy(ui = state.ui.copy(showAmneziaValues = true)) }
     }
 
     fun setGlobalAmneziaEnabled(to: Boolean) = intent {
@@ -301,7 +309,7 @@ class ConfigEditViewModel(
             if (current.isAmneziaCompatibilityModeSet()) {
                 false to current.resetAmneziaProperties()
             } else {
-                true to current.toAmneziaCompatibilityConfig()
+                true to current.applyAmneziaDefaults()
             }
 
         reduce {

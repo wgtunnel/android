@@ -1,5 +1,6 @@
 package com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.sort
 
+import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -17,6 +18,7 @@ import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.scrollbar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -107,7 +109,11 @@ fun SortScreen(sharedViewModel: SharedAppViewModel = koinActivityViewModel()) {
             Modifier.pointerInput(Unit) {
                     if (tunnelsUiState.tunnels.isEmpty()) return@pointerInput
                 }
-                .overscroll(rememberOverscrollEffect()),
+                .overscroll(rememberOverscrollEffect())
+                .scrollbar(
+                    state = lazyListState.scrollIndicatorState,
+                    orientation = Orientation.Vertical,
+                ),
         state = lazyListState,
         userScrollEnabled = true,
         reverseLayout = false,

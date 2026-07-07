@@ -24,7 +24,7 @@ require (
 	gvisor.dev/gvisor v0.0.0-20250503011706-39ed1f5ac29c // indirect
 )
 
-replace github.com/amnezia-vpn/amneziawg-go => github.com/wgtunnel/amneziawg-go v0.0.0-20260603224931-32188550b43d
+replace github.com/amnezia-vpn/amneziawg-go => github.com/wgtunnel/amneziawg-go v0.0.0-20260618075902-e1b699b2104b
 
 replace github.com/artem-russkikh/wireproxy-awg => github.com/wgtunnel/wireproxy-awg v0.0.0-20260309043206-ff4200f20ff2
 
@@ -32,4 +32,5 @@ replace github.com/things-go/go-socks5 => github.com/wgtunnel/go-socks5 v0.0.0-2
 
 // local dev
 //replace github.com/amnezia-vpn/amneziawg-go => ../../../../amneziawg-go
+
 //replace github.com/artem-russkikh/wireproxy-awg => ../../../../wireproxy-awg

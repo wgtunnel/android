@@ -1,8 +1,8 @@
 package com.zaneschepke.wireguardautotunnel.core.orchestration
 
-import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
-import com.zaneschepke.wireguardautotunnel.core.service.autotunnel.AutoTunnelStateHolder
 import com.zaneschepke.wireguardautotunnel.domain.repository.AutoTunnelSettingsRepository
+import com.zaneschepke.wireguardautotunnel.service.ServiceManager
+import com.zaneschepke.wireguardautotunnel.service.autotunnel.AutoTunnelStateHolder
 
 class AutoTunnelCoordinator(
     private val repository: AutoTunnelSettingsRepository,

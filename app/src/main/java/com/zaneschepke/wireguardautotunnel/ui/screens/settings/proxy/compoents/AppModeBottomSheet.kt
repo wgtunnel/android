@@ -2,6 +2,8 @@ package com.zaneschepke.wireguardautotunnel.ui.screens.settings.proxy.compoents
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelMode
 import com.zaneschepke.wireguardautotunnel.ui.common.sheet.CustomBottomSheet
 import com.zaneschepke.wireguardautotunnel.ui.common.sheet.SheetOption
@@ -27,6 +29,12 @@ fun AppModeBottomSheet(
                     onDismiss()
                     onAppModeChange(it)
                 },
+                description =
+                    when (it) {
+                        TunnelMode.VPN -> stringResource(R.string.vpn_desc)
+                        TunnelMode.PROXY -> stringResource(R.string.local_proxy_desc)
+                        TunnelMode.LOCK_DOWN -> stringResource(R.string.lockdown_desc)
+                    },
                 selected = tunnelMode == it,
             )
         }

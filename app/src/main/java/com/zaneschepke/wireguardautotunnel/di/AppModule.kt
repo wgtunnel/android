@@ -6,20 +6,19 @@ import android.os.StrictMode
 import com.zaneschepke.logcatter.LogReader
 import com.zaneschepke.logcatter.LogcatReader
 import com.zaneschepke.wireguardautotunnel.BuildConfig
-import com.zaneschepke.wireguardautotunnel.core.notification.AndroidNotificationService
-import com.zaneschepke.wireguardautotunnel.core.notification.NotificationService
-import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
-import com.zaneschepke.wireguardautotunnel.core.service.autotunnel.AutoTunnelStateHolder
 import com.zaneschepke.wireguardautotunnel.core.shortcut.DynamicShortcutManager
 import com.zaneschepke.wireguardautotunnel.core.shortcut.ShortcutManager
 import com.zaneschepke.wireguardautotunnel.domain.repository.GlobalEffectRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.SelectedTunnelsRepository
+import com.zaneschepke.wireguardautotunnel.notification.AndroidNotificationService
+import com.zaneschepke.wireguardautotunnel.notification.NotificationService
+import com.zaneschepke.wireguardautotunnel.service.ServiceManager
+import com.zaneschepke.wireguardautotunnel.service.autotunnel.AutoTunnelStateHolder
 import com.zaneschepke.wireguardautotunnel.util.FileUtils
 import com.zaneschepke.wireguardautotunnel.util.network.NetworkUtils
 import com.zaneschepke.wireguardautotunnel.viewmodel.AutoTunnelViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.ConfigEditViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.DnsViewModel
-import com.zaneschepke.wireguardautotunnel.viewmodel.LicenseViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.LockdownViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.LoggerViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.MonitoringViewModel
@@ -47,19 +46,21 @@ val appModule = module {
         CoroutineScope(SupervisorJob() + Dispatchers.Default)
     }
     single<LogReader> {
+        val version = BuildConfig.VERSION_NAME
+        val flavor = BuildConfig.FLAVOR
         if (BuildConfig.DEBUG) {
             val readPolicy = StrictMode.allowThreadDiskReads()
             val writePolicy = StrictMode.allowThreadDiskWrites()
             try {
                 val storageDir = androidContext().filesDir.absolutePath
-                LogcatReader.init(storageDir = storageDir)
+                LogcatReader.init(storageDir = storageDir, appVersion = version, appFlavor = flavor)
             } finally {
                 StrictMode.setThreadPolicy(readPolicy)
                 StrictMode.setThreadPolicy(writePolicy)
             }
         } else {
             val storageDir = androidContext().filesDir.absolutePath
-            LogcatReader.init(storageDir = storageDir)
+            LogcatReader.init(storageDir = storageDir, appVersion = version, appFlavor = flavor)
         }
     }
 
@@ -80,7 +81,6 @@ val appModule = module {
     viewModelOf(::AutoTunnelViewModel)
     viewModel { (id: Int?) -> ConfigEditViewModel(get(), get(), get(), get(), get(), id) }
     viewModelOf(::DnsViewModel)
-    viewModelOf(::LicenseViewModel)
     viewModelOf(::LockdownViewModel)
     viewModelOf(::LoggerViewModel)
     viewModelOf(::MonitoringViewModel)

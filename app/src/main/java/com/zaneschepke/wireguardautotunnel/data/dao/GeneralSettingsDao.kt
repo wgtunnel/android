@@ -34,4 +34,7 @@ interface GeneralSettingsDao {
 
     @Query("UPDATE general_settings SET screen_recording_security = :enabled")
     suspend fun updateScreenRecordingSecurity(enabled: Boolean)
+
+    @Query("UPDATE general_settings SET seamless_roaming_enabled = :enabled")
+    suspend fun updateSeamlessRoaming(enabled: Boolean)
 }

@@ -1,6 +1,7 @@
 package com.zaneschepke.wireguardautotunnel.viewmodel
 
 import androidx.lifecycle.ViewModel
+import com.dokar.sonner.ToastType
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.core.orchestration.TunnelCoordinator
 import com.zaneschepke.wireguardautotunnel.domain.repository.GlobalEffectRepository
@@ -27,21 +28,26 @@ class ProxySettingsViewModel(
             combine(tunnelCoordinator.backendStatus, proxySettingsRepository.flow) {
                     backendStatus,
                     settings ->
-                    ProxySettingsUiState(
-                        proxySettings = settings,
-                        backendStatus = backendStatus,
-                        isLoading = false,
-                        socks5Enabled = settings.socks5ProxyEnabled,
-                        httpEnabled = settings.httpProxyEnabled,
-                        socksBindAddress = settings.socks5ProxyBindAddress ?: "",
-                        httpBindAddress = settings.httpProxyBindAddress ?: "",
-                        proxyUsername = settings.proxyUsername ?: "",
-                        proxyPassword = settings.proxyPassword ?: "",
-                    )
+                    if (state.isLoading) {
+                        ProxySettingsUiState(
+                            proxySettings = settings,
+                            backendStatus = backendStatus,
+                            isLoading = false,
+                            socks5Enabled = settings.socks5ProxyEnabled,
+                            httpEnabled = settings.httpProxyEnabled,
+                            socksBindAddress = settings.socks5ProxyBindAddress ?: "",
+                            httpBindAddress = settings.httpProxyBindAddress ?: "",
+                            proxyUsername = settings.proxyUsername ?: "",
+                            proxyPassword = settings.proxyPassword ?: "",
+                        )
+                    } else {
+                        state.copy(backendStatus = backendStatus)
+                    }
                 }
                 .collect { reduce { it } }
         }
 
+    // TODO add a dialog requesting restart if any tunnels active
     fun save() = intent {
         reduce { state.copy(showSaveModal = false) }
 
@@ -74,7 +80,8 @@ class ProxySettingsViewModel(
             if (socksPort == null || httpPort == null || socksPort == httpPort) {
                 return@intent postSideEffect(
                     GlobalSideEffect.Snackbar(
-                        StringValue.StringResource(R.string.ports_must_differ)
+                        StringValue.StringResource(R.string.ports_must_differ),
+                        ToastType.Error,
                     )
                 )
             }
@@ -91,18 +98,21 @@ class ProxySettingsViewModel(
 
         if (updated.proxyPassword?.any { it.isWhitespace() } == true) {
             postSideEffect(
-                GlobalSideEffect.Snackbar(StringValue.StringResource(R.string.password_no_spaces))
+                GlobalSideEffect.Snackbar(
+                    StringValue.StringResource(R.string.password_no_spaces),
+                    ToastType.Error,
+                )
             )
             return@intent reduce { state.copy(isPasswordError = true) }
         }
 
         proxySettingsRepository.upsert(updated)
 
-        tunnelCoordinator.toggleTunnels()
-        tunnelCoordinator.toggleTunnels()
-
         postSideEffect(
-            GlobalSideEffect.Snackbar(StringValue.StringResource(R.string.config_changes_saved))
+            GlobalSideEffect.Snackbar(
+                StringValue.StringResource(R.string.config_changes_saved),
+                ToastType.Success,
+            )
         )
         postSideEffect(GlobalSideEffect.PopBackStack)
     }

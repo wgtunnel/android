@@ -9,4 +9,6 @@ sealed class BackendException : Exception() {
     class Socks5PortUnavailable(override val message: String, val port: Int) : BackendException()
 
     class HttpPortUnavailable(override val message: String, val port: Int) : BackendException()
+
+    class ListenPortUnavailable(override val message: String, val port: Int) : BackendException()
 }

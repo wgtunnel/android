@@ -4,10 +4,12 @@ import com.zaneschepke.logcatter.model.LogMessage
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
+import java.io.InterruptedIOException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import timber.log.Timber
 
 class LogcatStreamReader(pid: Int, private val fileManager: LogFileManager) {
     private val bufferSize = 1024
@@ -43,6 +45,11 @@ class LogcatStreamReader(pid: Int, private val fileManager: LogFileManager) {
         listOf(
             Regex(".*(Samsung|SPen|SmartView| Knox|MDM).*", RegexOption.IGNORE_CASE),
             Regex(".*(Choreographer|HWUI|OpenGL|RenderThread).*"),
+            Regex(".*setRequestedFrameRate.*", RegexOption.IGNORE_CASE),
+            Regex(
+                ".*(qdgralloc|AdrenoVK|BLASTBufferQueue|SurfaceComposerClient|BufferQueueProducer|VRI\\[).*",
+                RegexOption.IGNORE_CASE,
+            ),
         )
 
     fun shouldLog(line: String): Boolean {
@@ -54,17 +61,24 @@ class LogcatStreamReader(pid: Int, private val fileManager: LogFileManager) {
     fun readLogs(): Flow<LogMessage> =
         flow {
                 try {
-                    clearLogs()
                     process = Runtime.getRuntime().exec(command)
                     reader = BufferedReader(InputStreamReader(process!!.inputStream), bufferSize)
+
                     reader!!.lineSequence().forEach { line ->
                         if (line.isNotEmpty() && shouldLog(line)) {
                             fileManager.writeLog(line)
                             emit(LogMessage.from(line))
                         }
                     }
-                } catch (_: IOException) {
-                    // do nothing
+                } catch (_: InterruptedIOException) {
+                    Timber.d("Logcat reader has been shut down")
+                } catch (e: IOException) {
+                    Timber.w(
+                        e,
+                        "Logcat read failed (process may have been killed or permission issue)",
+                    )
+                } catch (e: Exception) {
+                    Timber.e(e, "Unexpected error in logcat reader")
                 } finally {
                     stop()
                 }
@@ -76,20 +90,29 @@ class LogcatStreamReader(pid: Int, private val fileManager: LogFileManager) {
             try {
                 process = Runtime.getRuntime().exec(command)
                 reader = BufferedReader(InputStreamReader(process!!.inputStream), bufferSize)
-            } catch (_: IOException) {
-                // do nothing
+            } catch (e: IOException) {
+                Timber.w(e, "Failed to start logcat reader")
             }
         }
     }
 
     fun stop() {
-        process?.destroy()
-        reader?.close()
-        process = null
-        reader = null
+        try {
+            process?.destroy()
+            reader?.close()
+        } catch (e: Exception) {
+            Timber.w(e, "Error while stopping logcat process")
+        } finally {
+            process = null
+            reader = null
+        }
     }
 
     fun clearLogs() {
-        Runtime.getRuntime().exec(clearCommand)
+        try {
+            Runtime.getRuntime().exec(clearCommand).waitFor()
+        } catch (e: Exception) {
+            Timber.w(e, "Failed to clear logcat buffers")
+        }
     }
 }

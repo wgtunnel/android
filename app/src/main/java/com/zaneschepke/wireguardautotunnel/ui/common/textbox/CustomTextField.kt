@@ -22,7 +22,9 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 
@@ -33,7 +35,7 @@ fun CustomTextField(
     modifier: Modifier = Modifier,
     textStyle: TextStyle =
         MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface),
-    label: @Composable () -> Unit,
+    label: @Composable (() -> Unit)? = null,
     containerColor: Color,
     onValueChange: (value: String) -> Unit = {},
     singleLine: Boolean = true,
@@ -47,10 +49,19 @@ fun CustomTextField(
     readOnly: Boolean = false,
     enabled: Boolean = true,
     visualTransformation: VisualTransformation = VisualTransformation.None,
-    interactionSource: MutableInteractionSource = MutableInteractionSource(),
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
 ) {
-    val space = " "
     var isFocused by remember { mutableStateOf(false) }
+    var textFieldValueState by remember { mutableStateOf(TextFieldValue(text = value)) }
+    val textFieldValue =
+        remember(value, textFieldValueState) {
+            if (textFieldValueState.text == value) {
+                textFieldValueState
+            } else {
+                textFieldValueState.copy(text = value, selection = TextRange(value.length))
+            }
+        }
+
     val cursorBrush =
         if (isFocused) SolidColor(MaterialTheme.colorScheme.primary)
         else SolidColor(Color.Transparent)
@@ -67,9 +78,14 @@ fun CustomTextField(
         }
 
     BasicTextField(
-        value = value,
+        value = textFieldValue,
         textStyle = effectiveTextStyle,
-        onValueChange = { onValueChange(it) },
+        onValueChange = { newTextFieldValue ->
+            textFieldValueState = newTextFieldValue
+            if (value != newTextFieldValue.text) {
+                onValueChange(newTextFieldValue.text)
+            }
+        },
         keyboardActions = keyboardActions,
         keyboardOptions = keyboardOptions,
         readOnly = readOnly,
@@ -90,15 +106,9 @@ fun CustomTextField(
         visualTransformation = visualTransformation,
     ) {
         OutlinedTextFieldDefaults.DecorationBox(
-            value = space + value,
-            innerTextField = {
-                if (value.isEmpty()) {
-                    if (placeholder != null) {
-                        placeholder()
-                    }
-                }
-                it.invoke()
-            },
+            value = value,
+            innerTextField = it,
+            placeholder = placeholder,
             contentPadding = OutlinedTextFieldDefaults.contentPadding(top = 14.dp, bottom = 14.dp),
             leadingIcon = leading,
             trailingIcon =
@@ -141,7 +151,6 @@ fun CustomTextField(
             label = label,
             visualTransformation = visualTransformation,
             interactionSource = interactionSource,
-            placeholder = placeholder,
             container = {
                 OutlinedTextFieldDefaults.Container(
                     enabled = enabled,

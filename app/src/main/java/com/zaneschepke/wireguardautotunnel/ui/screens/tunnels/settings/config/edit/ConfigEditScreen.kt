@@ -1,5 +1,6 @@
 package com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.settings.config.edit
 
+import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -12,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.HdrAuto
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.scrollbar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -49,10 +51,11 @@ fun ConfigEditScreen(
     val uiState by viewModel.collectAsState()
 
     if (uiState.isLoading) return
-
     val locale = Locale.current.platformLocale
 
     var showSelectionDialog by rememberSaveable { mutableStateOf(false) }
+
+    val scrollState = rememberScrollState()
 
     sharedViewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
@@ -104,7 +107,14 @@ fun ConfigEditScreen(
     Column(
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.Top),
-        modifier = Modifier.fillMaxSize().imePadding().verticalScroll(rememberScrollState()),
+        modifier =
+            Modifier.fillMaxSize()
+                .imePadding()
+                .verticalScroll(scrollState)
+                .scrollbar(
+                    state = scrollState.scrollIndicatorState,
+                    orientation = Orientation.Vertical,
+                ),
     ) {
         if (uiState.isGlobalConfig) {
             Column {
@@ -112,7 +122,7 @@ fun ConfigEditScreen(
                     leading = {
                         Icon(ImageVector.vectorResource(R.drawable.host), contentDescription = null)
                     },
-                    title = stringResource(R.string.global_dns_servers),
+                    title = stringResource(R.string.dns_servers),
                     trailing = { modifier ->
                         ThemedSwitch(
                             checked = uiState.globalSettings.dnsEnabled,
@@ -126,7 +136,7 @@ fun ConfigEditScreen(
                 )
                 SurfaceRow(
                     leading = { Icon(Icons.Outlined.HdrAuto, contentDescription = null) },
-                    title = stringResource(R.string.global_amnezia_configuration),
+                    title = stringResource(R.string.amnezia_configuration),
                     trailing = { modifier ->
                         ThemedSwitch(
                             checked = uiState.globalSettings.amneziaEnabled,

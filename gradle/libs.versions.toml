@@ -4,9 +4,9 @@ activityCompose = "1.13.0"
 androidx-junit = "1.3.0"
 icmp4a = "1.0.0"
 ipaddress = "5.6.2"
-koinBom = "4.2.1"
+koinBom = "4.2.2"
 kotlinxCoroutinesAndroid = "1.11.0"
-leakcanaryAndroid = "3.0-alpha-8"
+leakcanaryAndroid = "3.0-alpha-9"
 lottieCompose = "6.7.1"
 orbitCompose = "11.0.0"
 roomdatabasebackup = "1.1.0"
@@ -16,12 +16,12 @@ coreKtx = "1.19.0"
 datastorePreferences = "1.2.1"
 desugar_jdk_libs = "2.1.5"
 espressoCore = "3.7.0"
-navigation3 = "1.1.2"
+navigation3 = "1.1.4"
 junit = "4.13.2"
 kotlinx-serialization-json = "1.11.0"
-ktorClientCore = "3.5.0"
-lifecycle-runtime-compose = "2.10.0"
-material3 = "1.5.0-alpha21"
+ktorClientCore = "3.5.1"
+lifecycle-runtime-compose = "2.11.0"
+material3 = "1.5.0-alpha23"
 pinLockCompose = "1.0.5"
 qrose = "1.1.2"
 roomVersion = "2.8.4"
@@ -31,8 +31,8 @@ timber = "5.0.1"
 androidGradlePlugin = "9.2.1"
 kotlin = "2.4.0"
 ksp = "2.3.9"
-composeBom = "2026.05.01"
-compose = "1.11.2"
+composeBom = "2026.06.01"
+compose = "1.11.4"
 icons = "1.7.8"
 workRuntimeKtxVersion = "2.11.2"
 quickieFoss = "1.18.1"
@@ -43,11 +43,13 @@ material = "1.14.0"
 storage = "1.6.0"
 ktfmt = "0.26.0"
 licensee = "1.14.1"
-lifecycleViewmodelNavigation3 = "2.10.0"
+lifecycleViewmodelNavigation3 = "2.11.0"
 parser = "1.1.1"
 relinker = "1.4.5"
 libsu = "6.0.0"
 jetbrainsKotlinJvm = "2.4.0"
+sonner = "0.3.9"
+aboutlibraries = "15.0.3"
 
 [bundles]
 # Core AndroidX foundations
@@ -139,6 +141,7 @@ androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", versi
 androidx-material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
 androidx-navigation3-runtime = { module = "androidx.navigation3:navigation3-runtime", version.ref = "navigation3" }
 androidx-navigation3-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "navigation3" }
+sonner = { module = "io.github.dokar3:sonner", version.ref = "sonner" }
 
 # lifecycle
 androidx-lifecycle-process = { module = "androidx.lifecycle:lifecycle-process", version.ref = "lifecycle-runtime-compose" }
@@ -199,6 +202,8 @@ shizuku-provider = { module = "dev.rikka.shizuku:provider", version.ref = "shizu
 relinker = { module = "com.getkeepsafe.relinker:relinker", version.ref = "relinker" }
 libsu = { module = "com.github.topjohnwu.libsu:core", version.ref = "libsu" }
 
+aboutlibraries-compose = { module = "com.mikepenz:aboutlibraries-compose-m3", version.ref = "aboutlibraries" }
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
@@ -209,3 +214,4 @@ grgit = { id = "org.ajoberstar.grgit.service", version.ref = "gradlePlugins-grgi
 ktfmt = { id = "com.ncorti.ktfmt.gradle", version.ref = "ktfmt" }
 licensee = { id = "app.cash.licensee", version.ref = "licensee" }
 jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrainsKotlinJvm" }
+aboutlibraries = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "aboutlibraries" }

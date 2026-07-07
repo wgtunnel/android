@@ -19,9 +19,8 @@ class ShortcutsActivity : ComponentActivity() {
 
         super.onCreate(savedInstanceState)
 
-        applicationScope.launch {
-            shortcutCoordinator.handle(intent)
-            finish()
-        }
+        finish()
+
+        applicationScope.launch { shortcutCoordinator.handle(intent) }
     }
 }

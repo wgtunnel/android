@@ -78,7 +78,7 @@ jobs:
     name: publish-github
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           ref: ${{ github.event_name == 'push' && github.ref || 'master' }}
       - name: Install system dependencies
@@ -187,57 +187,61 @@ jobs:
           repository: wgtunnel/fdroid
           event-type: fdroid-update
 
+  build-google-aab:
+    if: >-
+      ${{
+        github.event_name == 'push' ||
+        inputs.track != 'none'
+      }}
+    uses: ./.github/workflows/build-aab.yml
+    secrets: inherit
+    with:
+      build_type: release
+      flavor: google
+
   publish-play:
     if: ${{ github.event_name == 'push' || inputs.track != 'none' }}
     name: Publish to Google Play
     runs-on: ubuntu-latest
-
-    env:
-      SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
-      SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
-      SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
-      KEY_STORE_FILE: 'android_keystore.jks'
-      KEY_STORE_LOCATION: ${{ github.workspace }}/app/keystore/
-
+    needs: build-google-aab
     steps:
-      - uses: actions/checkout@v6
-      - name: Set up JDK 17
-        uses: actions/setup-java@v5
+      - uses: actions/checkout@v7
         with:
-          distribution: 'temurin'
-          java-version: '17'
-          cache: gradle
+          ref: ${{ github.event_name == 'push' && github.ref || 'master' }}
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-
-      # Here we need to decode keystore.jks from base64 string and place it
-      # in the folder specified in the release signing configuration
-      - name: Decode Keystore
-        id: decode_keystore
-        uses: timheuer/base64-to-file@v2.0
+      - name: Download AAB artifact
+        uses: actions/download-artifact@v8
         with:
-          fileName: ${{ env.KEY_STORE_FILE }}
-          fileDir: ${{ env.KEY_STORE_LOCATION }}
-          encodedString: ${{ secrets.KEYSTORE }}
+          name: google-play-aab
+          path: ${{ github.workspace }}/aab
 
-      # create keystore path for gradle to read
-      - name: Create keystore path env var
+      - name: Find exact AAB file path
+        id: find-aab
         run: |
-          store_path=${{ env.KEY_STORE_LOCATION }}${{ env.KEY_STORE_FILE }}
-          echo "KEY_STORE_PATH=$store_path" >> $GITHUB_ENV
+          AAB_PATH=$(find "${{ github.workspace }}/aab" -name "*.aab" -type f | head -1)
+          if [ -z "$AAB_PATH" ]; then
+            echo "ERROR: No .aab file found after download!"
+            find "${{ github.workspace }}/aab" -type f
+            exit 1
+          fi
+          echo "Found AAB: $AAB_PATH"
+          echo "aab_path=$AAB_PATH" >> $GITHUB_OUTPUT
 
       - name: Create service_account.json
-        id: createServiceAccount
         run: echo '${{ secrets.SERVICE_ACCOUNT_JSON }}' > service_account.json
 
-      - name: Deploy with fastlane
+      - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.2' # Not needed with a .ruby-version file
+          ruby-version: '3.4'
           bundler-cache: true
 
-      - name: Distribute app to Prod track 🚀
+      - name: Upload to Google Play
         run: |
           track=${{ github.event_name == 'push' && 'production' || inputs.track }}
-          (cd ${{ github.workspace }} && bundle install && bundle exec fastlane $track --verbose)
+          bundle exec fastlane run upload_to_play_store \
+            track:"$track" \
+            aab:"${{ steps.find-aab.outputs.aab_path }}" \
+            json_key:"service_account.json" \
+            package_name:"com.zaneschepke.wireguardautotunnel" \
+            skip_upload_apk:true

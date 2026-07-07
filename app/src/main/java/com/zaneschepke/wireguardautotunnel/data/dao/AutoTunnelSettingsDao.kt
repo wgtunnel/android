@@ -18,4 +18,7 @@ interface AutoTunnelSettingsDao {
 
     @Query("UPDATE auto_tunnel_settings SET is_tunnel_enabled = :enabled")
     suspend fun updateAutoTunnelEnabled(enabled: Boolean)
+
+    @Query("UPDATE auto_tunnel_settings SET disable_on_captive_portal = :enabled")
+    suspend fun updateDisableOnCaptivePortal(enabled: Boolean)
 }

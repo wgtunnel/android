@@ -12,6 +12,8 @@ internal object ProxyBackend {
 
     external fun awgTurnProxyTunnelOff(handle: Int)
 
+    external fun awgTriggerProxyBindUpdate(handle: Int)
+
     external fun awgGetProxyConfig(handle: Int): String
 
     fun setSocketProtector(sp: SocketProtector?) {

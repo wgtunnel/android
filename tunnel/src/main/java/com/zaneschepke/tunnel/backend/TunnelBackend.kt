@@ -1,189 +1,367 @@
 package com.zaneschepke.tunnel.backend
 
 import com.zaneschepke.networkmonitor.ActiveNetwork
-import com.zaneschepke.networkmonitor.DnsInfo
-import com.zaneschepke.networkmonitor.NetworkMonitor
-import com.zaneschepke.networkmonitor.PrivateDnsMode
-import com.zaneschepke.tunnel.NotificationProvider
-import com.zaneschepke.tunnel.ProxyBackend
+import com.zaneschepke.networkmonitor.StableNetworkEngine
+import com.zaneschepke.tunnel.ApplicationProvider
+import com.zaneschepke.tunnel.StatusCallback
 import com.zaneschepke.tunnel.Tunnel
+import com.zaneschepke.tunnel.VpnBackend
+import com.zaneschepke.tunnel.backend.dns.EndpointResolver
 import com.zaneschepke.tunnel.event.TunnelEvent
 import com.zaneschepke.tunnel.model.BackendMode
-import com.zaneschepke.tunnel.model.DnsBoostrapConfig
 import com.zaneschepke.tunnel.model.DnsBoostrapMode
+import com.zaneschepke.tunnel.model.DnsBootstrapResult
+import com.zaneschepke.tunnel.model.Host
 import com.zaneschepke.tunnel.model.KillSwitchConfig
-import com.zaneschepke.tunnel.model.TunnelCommand
+import com.zaneschepke.tunnel.model.PublicKey
+import com.zaneschepke.tunnel.service.ServiceHolder
 import com.zaneschepke.tunnel.service.VpnService
+import com.zaneschepke.tunnel.state.ActiveTunnel
 import com.zaneschepke.tunnel.state.BackendStatus
+import com.zaneschepke.tunnel.state.BootstrapState
+import com.zaneschepke.tunnel.state.EngineStartResult
 import com.zaneschepke.tunnel.state.KillSwitchState
-import com.zaneschepke.tunnel.state.RuntimeDnsConfig
-import com.zaneschepke.tunnel.util.BackendException
-import java.lang.ref.WeakReference
-import kotlin.reflect.KClass
+import com.zaneschepke.tunnel.util.RootShell
+import com.zaneschepke.tunnel.util.RootShellException
+import com.zaneschepke.tunnel.util.buildResolvedPeers
+import com.zaneschepke.tunnel.util.toHostMap
+import com.zaneschepke.wireguardautotunnel.parser.ActiveConfig
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.distinctUntilChangedBy
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withTimeoutOrNull
+import kotlinx.coroutines.supervisorScope
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
 import org.koin.java.KoinJavaComponent.inject
 import timber.log.Timber
 
 class TunnelBackend(
     private val scope: CoroutineScope,
-    private val networkMonitor: NetworkMonitor,
-    override val notificationProvider: NotificationProvider,
+    override val applicationProvider: ApplicationProvider,
+    private val stableNetworkEngine: StableNetworkEngine,
 ) : Backend {
 
     private val serviceHolder: ServiceHolder by inject(ServiceHolder::class.java)
-    private val actor: TunnelActor by inject(TunnelActor::class.java)
+    private val engine: TunnelEngine by inject(TunnelEngine::class.java)
 
     private val _status = MutableStateFlow(BackendStatus())
     override val status: Flow<BackendStatus> = _status.asStateFlow()
 
+    private val _isSeamlessRoamingEnabled = MutableStateFlow(false)
+    override val isSeamlessRoamingEnabled: Boolean
+        get() = _isSeamlessRoamingEnabled.value
+
     private val _events = MutableSharedFlow<TunnelEvent>(extraBufferCapacity = 32)
     override val events = _events.asSharedFlow()
 
-    private var dnsConfigJob: Job? = null
+    private val tunnelMutex = Mutex()
 
-    init {
-        scope.launch {
-            var hadVpnTunnels = false
-            var hadProxyTunnels = false
+    private val tunnelJobs = ConcurrentHashMap<Int, Job>()
+    private val byHandle = ConcurrentHashMap<Int, Int>()
+    private val byTunnelId = ConcurrentHashMap<Int, Int>()
+    private val peerUpdateMutexes = ConcurrentHashMap<Int, Mutex>()
+    private val pendingResolutionJobs = ConcurrentHashMap<Int, Job>()
+    private var seamlessRoamingJob: Job? = null
 
-            var lastActiveTunnelIds: Set<Int> = emptySet()
+    private val endpointResolver =
+        EndpointResolver(
+            stableNetworkEngine = stableNetworkEngine,
+            getDnsMode = { _status.value.dnsMode },
+            isKillSwitchEnabled = { _status.value.killSwitch.enabled },
+        )
 
-            actor.state.collect { actorState ->
-                val hasVpnNow =
-                    actorState.byTunnelId.values.any { it.running.mode is BackendMode.Vpn }
+    enum class PeerUpdateReason {
+        DDNS_CHECK,
+        IPV4_FALLBACK,
+        IPV6_RECOVERY,
+        NETWORK_CHANGE_RESET,
+    }
 
-                val hasProxyNow =
-                    actorState.byTunnelId.values.any { it.running.mode is BackendMode.Proxy }
+    private val statusCallback = StatusCallback { handle, code ->
+        val state = Tunnel.State.fromNative(code) ?: return@StatusCallback
+        val tunnelId = byHandle[handle] ?: return@StatusCallback
+        val current = _status.value.activeTunnels[tunnelId]?.transportState
+        if (current != state) {
+            updateTunnelTransportState(tunnelId, state)
+        }
+    }
 
-                val activeTunnels = actorState.byTunnelId.mapValues { it.value.active }
+    override suspend fun start(tunnel: Tunnel, mode: BackendMode): Result<Unit> =
+        tunnelMutex.withLock {
+            runCatching {
+                    if (_status.value.activeTunnels.containsKey(tunnel.id)) {
+                        Timber.w("Tunnel ${tunnel.id} already running")
+                        return@runCatching
+                    }
 
-                _status.update { current -> current.copy(activeTunnels = activeTunnels) }
+                    val isFirst = _status.value.activeTunnels.isEmpty()
 
-                val currentTunnelIds = activeTunnels.keys
+                    addOrReplaceActiveTunnel(
+                        tunnel.id,
+                        ActiveTunnel(
+                            tunnel = tunnel,
+                            transportState = Tunnel.State.Starting,
+                            mode = mode,
+                        ),
+                    )
+                    applicationProvider.refreshTile(serviceHolder.context)
 
-                // update tile
-                if (currentTunnelIds != lastActiveTunnelIds) {
-                    notificationProvider.refreshTile(serviceHolder.context)
-                    lastActiveTunnelIds = currentTunnelIds
-                }
+                    val scriptsEnabled = tunnel.scriptsEnabled
 
-                // VPN cleanup
-                if (hadVpnTunnels && !hasVpnNow) {
+                    if (isFirst) VpnBackend.setStatusCallback(statusCallback)
 
-                    ensureActive()
-                    actor.runningHooks.first { it == 0 }
+                    if (scriptsEnabled)
+                        mode.config.`interface`.preUp?.let { runScripts(it, tunnel.id) }
 
-                    val latestState = actor.state.value
-                    val stillHasVpn =
-                        latestState.byTunnelId.values.any { it.running.mode is BackendMode.Vpn }
+                    setupServiceForMode(tunnel, mode)
 
-                    if (!shouldKeepVpnServiceAlive(stillHasVpn)) {
-                        Timber.d("Stopping VPN service after hooks completed")
-                        ProxyBackend.setSocketProtector(null)
-                        serviceHolder.stopVpnService()
+                    if (hasDynamicEndpoints(mode)) {
+                        pendingResolutionJobs[tunnel.id] = startTunnelBootstrapJob(tunnel, mode)
                     } else {
-                        Timber.d("VPN shutdown aborted — state changed during hook wait")
+                        val result = engine.start(tunnel, mode)
+                        onEngineStartResult(tunnel.id, result)
+
+                        if (scriptsEnabled) {
+                            mode.config.`interface`.postUp?.let { runScripts(it, tunnel.id) }
+                        }
+                        tunnelJobs[tunnel.id] = startTunnelJobs(result.handle, tunnel, mode)
                     }
                 }
+                .onFailure { cleanup(tunnel.id) }
+        }
 
-                // Proxy cleanup
-                if (hadProxyTunnels && !hasProxyNow) {
+    @OptIn(FlowPreview::class)
+    override suspend fun setSeamlessRoaming(enabled: Boolean): Result<Unit> = runCatching {
+        if (_isSeamlessRoamingEnabled.value == enabled) return@runCatching
+        _isSeamlessRoamingEnabled.value = enabled
+        seamlessRoamingJob?.cancel()
+        seamlessRoamingJob = null
 
-                    ensureActive()
-                    actor.runningHooks.first { it == 0 }
-
-                    val latestState = actor.state.value
-                    val stillHasProxy =
-                        latestState.byTunnelId.values.any { it.running.mode is BackendMode.Proxy }
-
-                    if (!stillHasProxy) {
-                        Timber.d("Stopping tunnel service after hooks completed")
-                        serviceHolder.stopTunnelService()
-                    } else {
-                        Timber.d("Proxy shutdown aborted — state changed during hook wait")
+        if (enabled) {
+            seamlessRoamingJob = scope.launch {
+                stableNetworkEngine.stableState
+                    .distinctUntilChangedBy { stable ->
+                        when (val net = stable?.state?.activeNetwork) {
+                            is ActiveNetwork.Wifi -> {
+                                // WiFi uses key with linkProperties and optional BSSID detection so
+                                // AP migration is detected
+                                "${net.key(true)}:${net.linkProperties}"
+                            }
+                            else -> net?.key()
+                        }
                     }
-                }
+                    .map { it?.state?.activeNetwork }
+                    .collectLatest { network ->
+                        delay(700.milliseconds) // give network time to stabilize
+                        if (
+                            network != null &&
+                                network !is ActiveNetwork.Disconnected &&
+                                _status.value.activeTunnels.isNotEmpty()
+                        ) {
+                            Timber.i(
+                                "Seamless Roaming: Network changed to ${network.key()}, updating bind on active tunnels"
+                            )
+                            updateBindForActiveTunnels()
+                        }
+                    }
+            }
+        } else {
+            Timber.i("Seamless Roaming disabled, rebinding to remove network bind")
+            updateBindForActiveTunnels()
+        }
+    }
 
-                hadVpnTunnels = hasVpnNow
-                hadProxyTunnels = hasProxyNow
+    private suspend fun updateBindForActiveTunnels() {
+        // Take a snapshot to avoid race
+        val currentTunnels = _status.value.activeTunnels.toMap()
+
+        currentTunnels.forEach { (id, activeTunnel) ->
+            val handle = byTunnelId[id] ?: return@forEach
+            val mode = activeTunnel.mode ?: return@forEach
+
+            try {
+                engine.updateBind(handle, mode)
+            } catch (t: Throwable) {
+                Timber.w(t, "Failed to update bind for tunnel $id during bulk update")
             }
         }
     }
 
-    private fun shouldKeepVpnServiceAlive(hasVpnTunnels: Boolean): Boolean {
-        return hasVpnTunnels || _status.value.killSwitch.enabled
+    private fun startTunnelBootstrapJob(tunnel: Tunnel, mode: BackendMode) = scope.launch {
+        try {
+            updateTunnelBootstrapState(tunnel.id, BootstrapState.ResolvingDns)
+
+            val resultMap = endpointResolver.resolvePeers(mode)
+            ensureActive()
+
+            val networkHasIpv6 = stableNetworkEngine.stableState.value?.state?.hasIpv6 ?: false
+            val hostMap =
+                resultMap.toHostMap(
+                    preferIpv6 = tunnel.ipStrategy is Tunnel.IpStrategy.PreferIpv6 && networkHasIpv6
+                )
+            val resolvedPeers = mode.config.buildResolvedPeers(hostMap)
+
+            updateTunnelBootstrapState(tunnel.id, BootstrapState.Complete)
+
+            val resolvedConfig = mode.config.copy(peers = resolvedPeers)
+            val updatedMode =
+                when (mode) {
+                    is BackendMode.Vpn -> mode.copy(config = resolvedConfig)
+                    is BackendMode.Proxy.Standard -> mode.copy(config = resolvedConfig)
+                    is BackendMode.Proxy.KillSwitchPrimary -> mode.copy(config = resolvedConfig)
+                }
+
+            val result = engine.start(tunnel, updatedMode)
+            onEngineStartResult(tunnel.id, result)
+
+            val scriptsEnabled = tunnel.scriptsEnabled
+            if (scriptsEnabled) {
+                mode.config.`interface`.postUp?.let { runScripts(it, tunnel.id) }
+            }
+
+            tunnelJobs[tunnel.id] = startTunnelJobs(result.handle, tunnel, mode)
+        } catch (t: Throwable) {
+            if (t is kotlinx.coroutines.CancellationException) {
+                Timber.d("Bootstrap job cancelled for tunnel ${tunnel.id}")
+            } else {
+                Timber.e(t, "Tunnel bootstrap failed for ${tunnel.id}")
+                cleanup(tunnel.id)
+            }
+            if (t is kotlinx.coroutines.CancellationException) throw t
+        }
     }
 
-    override suspend fun start(tunnel: Tunnel, mode: BackendMode): Result<Unit> = runCatching {
-        val existing = actor.state.value.byTunnelId[tunnel.id]
-
-        if (existing != null) {
-            Timber.d("Tunnel ${tunnel.id} already running — ignoring start")
-            return@runCatching
+    private suspend fun setupServiceForMode(tunnel: Tunnel, mode: BackendMode) {
+        when (mode) {
+            is BackendMode.Proxy.KillSwitchPrimary -> {
+                val service = serviceHolder.ensureVpnProtectorRegistered()
+                service.setKillSwitch(mode.killSwitchConfig)
+            }
+            is BackendMode.Proxy.Standard -> {
+                serviceHolder.getTunnelService()
+            }
+            is BackendMode.Vpn -> {
+                val service = serviceHolder.ensureVpnProtectorRegistered()
+                service.createTunInterface(tunnel, mode.config)
+            }
         }
+    }
 
-        val scriptsEnabled = tunnel.scriptsEnabled
-
-        val preUp = mode.config.`interface`.preUp
-        if (!preUp.isNullOrEmpty() && scriptsEnabled) {
-            actor.send(TunnelCommand.RunHook(tunnel.id, TunnelCommand.RunHook.Phase.PreUp, preUp))
+    private fun onEngineStartResult(tunnelId: Int, result: EngineStartResult) {
+        updateActiveTunnel(tunnelId) {
+            it.copy(interfaceName = result.interfaceName, uptime = System.currentTimeMillis())
         }
-        actor.send(TunnelCommand.Start(tunnel, mode))
+        byHandle[result.handle] = tunnelId
+        byTunnelId[tunnelId] = result.handle
+    }
 
-        val postUp = mode.config.`interface`.postUp
-        if (!postUp.isNullOrEmpty() && scriptsEnabled) {
-            actor.send(TunnelCommand.RunHook(tunnel.id, TunnelCommand.RunHook.Phase.PostUp, postUp))
+    private suspend fun cleanup(tunnelId: Int) {
+        pendingResolutionJobs.remove(tunnelId)?.cancel()
+        tunnelJobs.remove(tunnelId)?.cancel()
+
+        val activeTunnels = _status.value.activeTunnels
+
+        val vpnTypeCount = activeTunnels.values.count { it.mode is BackendMode.Vpn }
+
+        val proxyTypeCount = activeTunnels.values.count { it.mode is BackendMode.Proxy.Standard }
+
+        removeActiveTunnel(tunnelId)
+        byTunnelId[tunnelId]?.let { byHandle.remove(it) }
+        byTunnelId.remove(tunnelId)
+        peerUpdateMutexes.remove(tunnelId)
+
+        if (vpnTypeCount == 1 && !_status.value.killSwitch.enabled) {
+            serviceHolder.stopVpnService()
+        }
+        if (proxyTypeCount == 1) {
+            serviceHolder.stopTunnelService()
+        }
+    }
+
+    private suspend fun runScripts(commands: List<String>, tunnelId: Int) {
+        try {
+            commands.forEach { cmd ->
+                withTimeout(3_000.milliseconds) {
+                    withContext(Dispatchers.IO) { RootShell.run(cmd) }
+                }
+            }
+        } catch (t: Throwable) {
+            Timber.w(t, "Root shell commands failed")
+            if (t is RootShellException.NoRootAccess) {
+                _events.emit(TunnelEvent.NoRootShellAccess(tunnelId = tunnelId))
+            }
         }
     }
 
     override fun setAlwaysOnCallback(alwaysOnCallback: VpnService.AlwaysOnCallback) {
-        ServiceHolder.alwaysOnCallback = WeakReference(alwaysOnCallback)
+        ServiceHolder.alwaysOnCallback = alwaysOnCallback
     }
 
-    override suspend fun stop(id: Int): Result<Unit> = runCatching {
-        // TODO need a clean localized message for this passed by provider, but this error should
-        // never happen
-        val runtime =
-            actor.state.value.byTunnelId[id]
-                ?: throw BackendException.InternalError(
-                    "Tunnel $id is not active or no longer exists"
-                )
+    override suspend fun stop(id: Int): Result<Unit> = tunnelMutex.withLock {
+        runCatching {
+            val activeTun = _status.value.activeTunnels[id] ?: return@runCatching
+            updateTunnelTransportState(id, Tunnel.State.Stopping)
 
-        val scriptsEnabled = runtime.running.tunnel.scriptsEnabled
-        val mode = runtime.running.mode
-
-        val preDown = mode.config.`interface`.preDown
-        if (!preDown.isNullOrEmpty() && scriptsEnabled) {
-            actor.send(TunnelCommand.RunHook(id, TunnelCommand.RunHook.Phase.PreDown, preDown))
+            try {
+                stopTunnelInternal(id, activeTun)
+            } finally {
+                applicationProvider.refreshTile(serviceHolder.context)
+                if (_status.value.activeTunnels.isEmpty()) {
+                    VpnBackend.setStatusCallback(null)
+                }
+            }
         }
-        actor.send(TunnelCommand.Stop(id))
+    }
 
-        val postDown = mode.config.`interface`.postDown
-        if (!postDown.isNullOrEmpty() && scriptsEnabled) {
-            actor.send(TunnelCommand.RunHook(id, TunnelCommand.RunHook.Phase.PostDown, postDown))
+    private suspend fun stopTunnelInternal(tunnelId: Int, activeTunnel: ActiveTunnel) {
+        updateTunnelTransportState(tunnelId, Tunnel.State.Stopping)
+
+        val handle = byTunnelId[tunnelId]
+
+        if (handle == null) {
+            cleanup(tunnelId)
+            return
+        }
+
+        val scriptsEnabled = activeTunnel.tunnel?.scriptsEnabled == true
+        val mode = activeTunnel.mode ?: return
+
+        try {
+            if (scriptsEnabled) mode.config.`interface`.preDown?.let { runScripts(it, tunnelId) }
+            engine.stop(handle, activeTunnel.mode)
+            if (scriptsEnabled) mode.config.`interface`.postDown?.let { runScripts(it, tunnelId) }
+        } finally {
+            cleanup(tunnelId)
         }
     }
 
     override suspend fun setKillSwitch(config: KillSwitchConfig) = runCatching {
         val service = serviceHolder.getVpnService()
         service.setKillSwitch(config)
-
-        actor.send(TunnelCommand.UpdateKillSwitch(true))
-
         _status.update { current ->
             current.copy(killSwitch = current.killSwitch.copy(enabled = true, config = config))
         }
@@ -192,9 +370,6 @@ class TunnelBackend(
     override suspend fun disableKillSwitch() = runCatching {
         val service = serviceHolder.getVpnService()
         service.setKillSwitch(null)
-
-        actor.send(TunnelCommand.UpdateKillSwitch(false))
-
         _status.update { current ->
             current.copy(
                 killSwitch =
@@ -209,102 +384,386 @@ class TunnelBackend(
 
     override suspend fun setBootstrapDnsMode(mode: DnsBoostrapMode) {
         _status.update { it.copy(dnsMode = mode) }
+        Timber.d("DNS Bootstrap mode set to: $mode")
+    }
 
-        when (mode) {
-            is DnsBoostrapMode.Custom -> {
-                Timber.d(
-                    "DNS Bootstrap mode set to custom: ${mode.config.protocol} -> ${mode.config.upstream}"
-                )
+    override suspend fun stopAllActiveTunnels() = tunnelMutex.withLock {
+        _status.value.activeTunnels.forEach { (id, tunnel) -> stopTunnelInternal(id, tunnel) }
+        applicationProvider.refreshTile(serviceHolder.context)
+        VpnBackend.setStatusCallback(null)
+        serviceHolder.stopTunnelService()
+        if (!_status.value.killSwitch.enabled) {
+            serviceHolder.stopVpnService()
+        }
+        Result.success(Unit)
+    }
 
-                dnsConfigJob?.cancel()
-                dnsConfigJob = null
+    private fun hasDynamicEndpoints(mode: BackendMode): Boolean {
+        return mode.config.peers.any { !it.isStaticallyConfigured && it.endpoint != null }
+    }
 
-                actor.send(TunnelCommand.SetBootstrapConfig(RuntimeDnsConfig.from(mode.config)))
-            }
-            DnsBoostrapMode.System -> {
-                Timber.d("DNS Bootstrap mode set to System")
-                emitInitialSystemDnsConfig()
-                startSystemDnsMonitoring()
-            }
+    private fun updateStatus(transform: (BackendStatus) -> BackendStatus) {
+        _status.update(transform)
+    }
+
+    fun addOrReplaceActiveTunnel(id: Int, tunnel: ActiveTunnel) {
+        updateStatus { current ->
+            current.copy(activeTunnels = current.activeTunnels + (id to tunnel))
         }
     }
 
-    private suspend fun emitInitialSystemDnsConfig() {
-        val state =
-            withTimeoutOrNull(2_500L.milliseconds) {
-                networkMonitor.connectivityStateFlow.first { connectivityState ->
-                    val dns = connectivityState.underlyingDnsInfo
-                    dns.servers.isNotEmpty() ||
-                        connectivityState.activeNetwork is ActiveNetwork.Disconnected
-                }
-            } ?: networkMonitor.connectivityStateFlow.firstOrNull()
-
-        val dns = state?.underlyingDnsInfo ?: DnsInfo()
-
-        val config = determineSystemDnsBoostrapConfig(dns)
-
-        Timber.d("DNS initial emission: protocol=${config.protocol} upstream=${config.upstream}")
-
-        actor.send(TunnelCommand.SetBootstrapConfig(RuntimeDnsConfig.from(config)))
+    fun updateActiveTunnel(id: Int, transform: (ActiveTunnel) -> ActiveTunnel) {
+        updateStatus { current ->
+            val existing = current.activeTunnels[id] ?: return@updateStatus current
+            current.copy(activeTunnels = current.activeTunnels + (id to transform(existing)))
+        }
     }
 
-    override fun emergencyStopAllOfTypeSync(modeClass: KClass<out BackendMode>) {
-        actor.emergencyStopAllOfType(modeClass)
-        _status.update { it.copy(activeTunnels = emptyMap()) }
-        notificationProvider.refreshTile(serviceHolder.context)
+    fun removeActiveTunnel(id: Int) {
+        updateStatus { current -> current.copy(activeTunnels = current.activeTunnels - id) }
     }
 
-    override suspend fun stopAllActiveTunnels(): Result<Unit> = runCatching {
-        _status.value.activeTunnels.forEach { (id, _) -> stop(id) }
-        _status.update { it.copy(activeTunnels = emptyMap()) }
-        notificationProvider.refreshTile(serviceHolder.context)
+    fun updateTunnelTransportState(id: Int, newState: Tunnel.State) {
+        updateActiveTunnel(id) { tunnel ->
+            val stateChanged = tunnel.transportState != newState
+            tunnel.copy(
+                transportState = newState,
+                lastStateChangeMs =
+                    if (stateChanged) {
+                        System.currentTimeMillis()
+                    } else {
+                        tunnel.lastStateChangeMs
+                    },
+                lastHealthChangeMs =
+                    if (newState is Tunnel.State.Up.Healthy) {
+                        if (stateChanged || tunnel.lastHealthChangeMs == 0L)
+                            System.currentTimeMillis()
+                        else tunnel.lastHealthChangeMs
+                    } else {
+                        tunnel.lastHealthChangeMs
+                    },
+            )
+        }
     }
 
-    private fun determineSystemDnsBoostrapConfig(dnsInfo: DnsInfo): DnsBoostrapConfig {
-        return when (dnsInfo.privateDnsMode) {
-            PrivateDnsMode.OFF,
-            PrivateDnsMode.AUTOMATIC ->
-                DnsBoostrapConfig.Plain(
-                    dnsInfo.servers.firstOrNull() ?: DnsBoostrapConfig.DEFAULT_PLAIN_UPSTREAM
-                )
+    fun updateTunnelBootstrapState(id: Int, newState: BootstrapState) {
+        updateActiveTunnel(id) { tunnel -> tunnel.copy(bootstrapState = newState) }
+    }
 
-            PrivateDnsMode.HOSTNAME ->
-                dnsInfo.privateDnsHostname
-                    ?.takeIf { it.isNotBlank() }
-                    ?.let { upstream ->
-                        // handle special cases of DoH for private DNS on Android
-                        val dohUpstream = DnsBoostrapConfig.SPECIAL_ANDROID_DOH_SERVERS[upstream]
-                        if (dohUpstream != null) {
-                            DnsBoostrapConfig.DoH(dohUpstream)
-                        } else {
-                            DnsBoostrapConfig.DoT(upstream)
+    private fun startTunnelJobs(handle: Int, tunnel: Tunnel, mode: BackendMode): Job {
+        return scope.launch {
+            supervisorScope {
+                val isNotStaticConfig = mode.config.peers.any { !it.isStaticallyConfigured }
+                if (isNotStaticConfig) {
+                    when (val strategy = tunnel.ipStrategy) {
+                        Tunnel.IpStrategy.Ipv4Only -> Unit
+
+                        is Tunnel.IpStrategy.PreferIpv6 -> {
+                            if (strategy.recoveryEnabled || strategy.fallbackToIpv4Enabled) {
+                                startIpv6Job(handle, tunnel.id, strategy)
+                            }
                         }
                     }
-                    ?: DnsBoostrapConfig.Plain(
-                        dnsInfo.servers.firstOrNull() ?: DnsBoostrapConfig.DEFAULT_PLAIN_UPSTREAM
-                    )
+                }
+
+                tunnel.features.forEach { feature ->
+                    when (feature) {
+                        is Tunnel.Feature.ActiveConfigMonitor -> {
+                            startActiveConfigJob(handle, tunnel.id, mode, feature.intervalSeconds)
+                        }
+                        Tunnel.Feature.DynamicDNS -> {
+                            if (isNotStaticConfig) startDynamicDnsJob(handle, tunnel.id)
+                        }
+                    }
+                }
+
+                awaitCancellation()
+            }
         }
     }
 
-    private fun startSystemDnsMonitoring() {
-        if (dnsConfigJob?.isActive == true) return
+    private fun CoroutineScope.startActiveConfigJob(
+        handle: Int,
+        tunnelId: Int,
+        mode: BackendMode,
+        interval: Int,
+    ) = launch {
+        while (isActive) {
+            val activeConfig = engine.getActiveConfig(handle, mode)
+            updateActiveTunnel(tunnelId) { it.copy(activeConfig = activeConfig) }
+            delay(interval.seconds)
+        }
+    }
 
-        dnsConfigJob = scope.launch {
-            networkMonitor.connectivityStateFlow
-                .distinctUntilChangedBy { it.underlyingDnsInfo }
-                .collect { state ->
-                    val dns = state.underlyingDnsInfo
+    private fun CoroutineScope.startDynamicDnsJob(handle: Int, tunnelId: Int) = launch {
+        status
+            .mapNotNull { it.activeTunnels[tunnelId]?.transportState }
+            .map { it is Tunnel.State.Up.HandshakeFailure }
+            .distinctUntilChanged()
+            .collectLatest { isFailing ->
+                if (!isFailing) return@collectLatest
+
+                delay(DDNS_FAILURE_WINDOW.milliseconds)
+
+                while (isActive) {
+                    val stable = stableNetworkEngine.stableState.value
+                    if (stable?.state?.hasActiveNetwork() == true) {
+                        val tunnel = _status.value.activeTunnels[tunnelId] ?: continue
+                        tunnel.mode?.let { mode ->
+                            reconcilePeers(tunnelId, handle, mode, PeerUpdateReason.DDNS_CHECK)
+                        }
+                    }
+                    delay(DDNS_MIN_CHECK_INTERVAL.milliseconds)
+                }
+            }
+    }
+
+    private fun findEndpointMismatches(
+        freshDns: Map<PublicKey, DnsBootstrapResult>,
+        activeConfig: ActiveConfig,
+        preferIpv6: Boolean,
+    ): Map<PublicKey, Host> {
+        val currentEndpoints = activeConfig.peers.associateBy { it.publicKey }
+
+        return freshDns
+            .mapNotNull { (pubKey, dnsResult) ->
+                val current = currentEndpoints[pubKey] ?: return@mapNotNull null
+                val currentHost = current.host ?: return@mapNotNull null
+
+                val freshAddress =
+                    if (preferIpv6 && dnsResult.ipv6.isNotEmpty()) {
+                        dnsResult.ipv6.first()
+                    } else {
+                        dnsResult.ipv4.firstOrNull() ?: dnsResult.ipv6.firstOrNull()
+                    } ?: return@mapNotNull null
+
+                if (freshAddress != currentHost) {
+                    pubKey to freshAddress
+                } else {
+                    null
+                }
+            }
+            .toMap()
+    }
+
+    private fun CoroutineScope.startIpv6Job(
+        handle: Int,
+        tunnelId: Int,
+        strategy: Tunnel.IpStrategy.PreferIpv6,
+    ) = launch {
+        var currentNetworkKey: String? = null
+        var hasRecoveredOnThisNetwork = false
+        var hasFallenBackOnThisNetwork = false
+        var healthySinceMs: Long? = null
+        var failureCount = 0
+        var firstFailureTime = 0L
+        var ipv6Bad = false
+
+        combine(
+                stableNetworkEngine.stableState.filterNotNull(),
+                status.mapNotNull { it.activeTunnels[tunnelId] },
+            ) { stable, activeTunnel ->
+                stable to activeTunnel
+            }
+            .collect { (stable, activeTunnel) ->
+                val newKey = stable.key
+                val mode = activeTunnel.mode ?: return@collect
+
+                // Reset state upon network transition
+                if (newKey != currentNetworkKey) {
+                    // Capture the old state before we reset local variables
+                    val wasFallenBack = activeTunnel.isFallenBackToIpv4ForNetwork
+
+                    currentNetworkKey = newKey
+                    hasRecoveredOnThisNetwork = false
+                    hasFallenBackOnThisNetwork = false
+                    healthySinceMs = null
+                    failureCount = 0
+                    firstFailureTime = 0L
+                    ipv6Bad = false
+
+                    Timber.d("Stable network changed resetting IPv6 state ($newKey)")
+
+                    // Optimistically revert to IPv6 on a new network
+                    if (wasFallenBack) {
+                        Timber.d(
+                            "Network changed while in IPv4 fallback. Attempting optimistic reset."
+                        )
+                        reconcilePeers(
+                            tunnelId = tunnelId,
+                            handle = handle,
+                            mode = mode,
+                            reason = PeerUpdateReason.NETWORK_CHANGE_RESET,
+                        )
+                    }
+                }
+
+                val now = System.currentTimeMillis()
+
+                // Determine if currently using IPv6
+                val isUsingIpv6 =
+                    activeTunnel.activeConfig?.peers?.any { it.endpoint?.startsWith("[") == true }
+                        ?: mode.config.peers.any { it.endpoint?.startsWith("[") == true }
+
+                val isHealthy = activeTunnel.transportState is Tunnel.State.Up.Healthy
+                val isHandshakeFailure =
+                    activeTunnel.transportState is Tunnel.State.Up.HandshakeFailure
+
+                healthySinceMs = if (isHealthy) healthySinceMs ?: now else null
+                val healthyDuration = healthySinceMs?.let { now - it } ?: 0L
+
+                if (!isHandshakeFailure) {
+                    failureCount = 0
+                    firstFailureTime = 0L
+                }
+
+                // Fallback
+                if (
+                    strategy.fallbackToIpv4Enabled &&
+                        isHandshakeFailure &&
+                        isUsingIpv6 &&
+                        !hasFallenBackOnThisNetwork
+                ) {
+                    if (failureCount == 0) firstFailureTime = now
+                    failureCount++
+
+                    val failureDuration = now - firstFailureTime
 
                     Timber.d(
-                        "PrivateDNS mode=%s hostname=%s",
-                        dns.privateDnsMode,
-                        dns.privateDnsHostname,
+                        "IPv6 strategy | Fallback check: failureCount=$failureCount duration=${failureDuration}ms"
                     )
 
-                    val config = determineSystemDnsBoostrapConfig(dns)
+                    if (
+                        failureCount >= IPV4_FALLBACK_FAILURE_COUNT &&
+                            failureDuration >= IPV4_FALLBACK_FAILURE_DURATION
+                    ) {
+                        hasFallenBackOnThisNetwork = true
+                        ipv6Bad = true
 
-                    actor.send(TunnelCommand.SetBootstrapConfig(RuntimeDnsConfig.from(config)))
+                        Timber.d("Fallback to IPv4 triggered on $newKey (marking IPv6 bad)")
+
+                        reconcilePeers(
+                            tunnelId = tunnelId,
+                            handle = handle,
+                            mode = mode,
+                            reason = PeerUpdateReason.IPV4_FALLBACK,
+                        )
+                    }
                 }
+
+                // Recovery
+                if (
+                    strategy.recoveryEnabled &&
+                        !isUsingIpv6 &&
+                        !hasRecoveredOnThisNetwork &&
+                        healthySinceMs != null &&
+                        stable.state.hasIpv6 &&
+                        !ipv6Bad
+                ) {
+                    Timber.d(
+                        "IPv6 strategy | Recovery check: healthy for ${healthyDuration}ms (need >= ${RECOVERY_STABILITY_WINDOW}ms)"
+                    )
+
+                    if (healthyDuration >= RECOVERY_STABILITY_WINDOW) {
+                        hasRecoveredOnThisNetwork = true
+
+                        Timber.d("Recovered to IPv6 on $newKey (healthy for ${healthyDuration}ms)")
+
+                        reconcilePeers(
+                            tunnelId = tunnelId,
+                            handle = handle,
+                            mode = mode,
+                            reason = PeerUpdateReason.IPV6_RECOVERY,
+                        )
+                    }
+                }
+            }
+    }
+
+    fun markPeerUpdate(id: Int) {
+        updateActiveTunnel(id) { tunnel ->
+            tunnel.copy(lastPeerUpdateMs = System.currentTimeMillis())
         }
+    }
+
+    private suspend fun reconcilePeers(
+        tunnelId: Int,
+        handle: Int,
+        mode: BackendMode,
+        reason: PeerUpdateReason,
+    ) {
+        val mutex = peerUpdateMutexes.getOrPut(tunnelId) { Mutex() }
+        mutex.withLock {
+            when (reason) {
+                PeerUpdateReason.IPV4_FALLBACK -> {
+                    updateActiveTunnel(tunnelId) { it.copy(isFallenBackToIpv4ForNetwork = true) }
+                }
+                PeerUpdateReason.IPV6_RECOVERY,
+                PeerUpdateReason.NETWORK_CHANGE_RESET -> {
+                    updateActiveTunnel(tunnelId) { it.copy(isFallenBackToIpv4ForNetwork = false) }
+                    if (reason == PeerUpdateReason.NETWORK_CHANGE_RESET) return
+                }
+                PeerUpdateReason.DDNS_CHECK -> Unit
+            }
+
+            val updatedActiveTunnel = _status.value.activeTunnels[tunnelId] ?: return
+            val tunnel = updatedActiveTunnel.tunnel ?: return
+
+            val results = endpointResolver.resolvePeers(mode)
+            if (results.isEmpty()) return
+
+            val networkHasIpv6 = stableNetworkEngine.stableState.value?.state?.hasIpv6 == true
+            val preferIpv6 =
+                tunnel.ipStrategy is Tunnel.IpStrategy.PreferIpv6 &&
+                    networkHasIpv6 &&
+                    !updatedActiveTunnel.isFallenBackToIpv4ForNetwork
+
+            val activeConfig =
+                try {
+                    engine.getActiveConfig(handle, mode)
+                } catch (t: Throwable) {
+                    Timber.w(t, "UAPI query failed during peer reconciliation")
+                    return
+                } ?: return
+
+            val mismatches = findEndpointMismatches(results, activeConfig, preferIpv6)
+
+            Timber.d("Reconciliation complete for $reason. Mismatches found: ${mismatches.size}")
+
+            if (mismatches.isNotEmpty()) {
+                Timber.i("Updating peers due to $reason: $mismatches")
+
+                val resolvedPeers = mode.config.buildResolvedPeers(mismatches)
+
+                try {
+                    engine.updatePeers(handle, mode, resolvedPeers)
+                    markPeerUpdate(tunnelId)
+
+                    when (reason) {
+                        PeerUpdateReason.IPV4_FALLBACK ->
+                            _events.emit(TunnelEvent.FallbackToIpv4(tunnelId))
+                        PeerUpdateReason.IPV6_RECOVERY ->
+                            _events.emit(TunnelEvent.RecoveredToIpv6(tunnelId))
+                        PeerUpdateReason.DDNS_CHECK ->
+                            _events.emit(
+                                TunnelEvent.DynamicDnsUpdate(tunnelId, mismatches.keys.toList())
+                            )
+                        PeerUpdateReason.NETWORK_CHANGE_RESET -> Unit
+                    }
+                } catch (t: Throwable) {
+                    Timber.e(t, "Failed to apply peer updates to WireGuard engine")
+                }
+            } else {
+                Timber.d("No mismatches found, skipping event emission.")
+            }
+        }
+    }
+
+    companion object {
+        private const val DDNS_MIN_CHECK_INTERVAL = 30_000L
+        private const val DDNS_FAILURE_WINDOW = 15_000L
+        private const val IPV4_FALLBACK_FAILURE_COUNT = 4
+        private const val IPV4_FALLBACK_FAILURE_DURATION = 10_000L
+        private const val RECOVERY_STABILITY_WINDOW = 5_000L
     }
 }

@@ -48,8 +48,8 @@ fun InterfaceDropdown(
                         )
                     },
                     onClick = {
-                        onToggleScripts()
                         onToggleDropdown(false)
+                        onToggleScripts()
                     },
                 )
             if (!uiState.isGlobalConfig)
@@ -62,8 +62,8 @@ fun InterfaceDropdown(
                         )
                     },
                     onClick = {
-                        onToggleAmneziaValues()
                         onToggleDropdown(false)
+                        onToggleAmneziaValues()
                     },
                 )
             DropdownMenuItem(
@@ -75,31 +75,31 @@ fun InterfaceDropdown(
                     )
                 },
                 onClick = {
-                    onToggleAmneziaCompatibility()
                     onToggleDropdown(false)
+                    onToggleAmneziaCompatibility()
                 },
             )
             DropdownMenuItem(
                 text = { Text(stringResource(R.string.mimic_quic)) },
                 onClick = {
-                    onMimic(MimicMode.QUIC)
                     onToggleDropdown(false)
+                    onMimic(MimicMode.QUIC)
                 },
             )
 
             DropdownMenuItem(
                 text = { Text(stringResource(R.string.mimic_dns)) },
                 onClick = {
-                    onMimic(MimicMode.DNS)
                     onToggleDropdown(false)
+                    onMimic(MimicMode.DNS)
                 },
             )
 
             DropdownMenuItem(
                 text = { Text(stringResource(R.string.mimic_sip)) },
                 onClick = {
-                    onMimic(MimicMode.SIP)
                     onToggleDropdown(false)
+                    onMimic(MimicMode.SIP)
                 },
             )
         }

@@ -14,13 +14,12 @@ class DatabaseConverters {
 
     @TypeConverter
     fun stringToList(value: String): List<String> {
-        if (value.isBlank() || value.isEmpty()) return mutableListOf()
+        if (value.isBlank() || value == "[]") return emptyList()
+
         return try {
             Json.decodeFromString<List<String>>(value)
         } catch (e: Exception) {
-            val list = value.split(",").toMutableList()
-            val json = listToString(list)
-            Json.decodeFromString<List<String>>(json)
+            value.split(",").map { it.trim() }.filter { it.isNotEmpty() }
         }
     }
 
@@ -40,16 +39,6 @@ class DatabaseConverters {
                 emptyMap()
             }
         }
-    }
-
-    @TypeConverter
-    fun setToString(value: Set<String>): String {
-        return listToString(value.toList())
-    }
-
-    @TypeConverter
-    fun stringToSet(value: String): Set<String> {
-        return stringToList(value).toSet()
     }
 
     @TypeConverter fun fromStatus(status: WifiDetectionMethod): Int = status.value

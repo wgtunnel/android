@@ -87,10 +87,7 @@ fun InterfaceSection(
                             onToggleScripts = onToggleScripts,
                             onToggleAmneziaValues = onToggleAmneziaValues,
                             onToggleAmneziaCompatibility = onToggleAmneziaCompat,
-                            onMimic = {
-                                onToggleAmneziaValues()
-                                onMimic(it)
-                            },
+                            onMimic = onMimic,
                         )
                     }
             }

@@ -42,6 +42,6 @@ private fun TransferMetric(icon: ImageVector, text: String, style: TextStyle, co
             modifier = Modifier.size(12.dp),
         )
 
-        Text(text = text.lowercase(), style = style, color = color)
+        Text(text = text, style = style, color = color)
     }
 }

@@ -16,7 +16,7 @@ jobs:
       has_new_commits: ${{ steps.check.outputs.new_commits }}
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Check for new commits
         id: check
         env:
@@ -43,7 +43,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           submodules: recursive
 

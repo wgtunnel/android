@@ -9,6 +9,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ViewQuilt
 import androidx.compose.material.icons.outlined.Android
+import androidx.compose.material.icons.outlined.CellWifi
 import androidx.compose.material.icons.outlined.Dns
 import androidx.compose.material.icons.outlined.ExpandMore
 import androidx.compose.material.icons.outlined.MonitorHeart
@@ -38,6 +39,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
+import com.dokar.sonner.ToastType
 import com.zaneschepke.wireguardautotunnel.MainActivity
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelMode
@@ -51,12 +53,12 @@ import com.zaneschepke.wireguardautotunnel.ui.common.label.GroupLabel
 import com.zaneschepke.wireguardautotunnel.ui.common.text.DescriptionText
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.components.BackupBottomSheet
+import com.zaneschepke.wireguardautotunnel.ui.screens.settings.components.BackupEncryptionDialog
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.proxy.compoents.AppModeBottomSheet
 import com.zaneschepke.wireguardautotunnel.util.StringValue
 import com.zaneschepke.wireguardautotunnel.util.extensions.asString
 import com.zaneschepke.wireguardautotunnel.util.extensions.asTitleString
 import com.zaneschepke.wireguardautotunnel.util.extensions.capitalize
-import com.zaneschepke.wireguardautotunnel.util.extensions.showToast
 import com.zaneschepke.wireguardautotunnel.viewmodel.SettingsViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.SharedAppViewModel
 import org.koin.androidx.compose.koinViewModel
@@ -88,6 +90,9 @@ fun SettingsScreen(
     }
 
     var showBackupSheet by rememberSaveable { mutableStateOf(false) }
+    var showEncryptionDialog by rememberSaveable { mutableStateOf(false) }
+    var isRestoreAction by remember { mutableStateOf(false) }
+
     var showAppModeSheet by rememberSaveable { mutableStateOf(false) }
 
     val appMode = uiState.settings.tunnelMode
@@ -99,19 +104,53 @@ fun SettingsScreen(
         }
 
     fun performBackupRestore(action: () -> Unit) {
-        if (uiState.tunnelActive || globalUiState.isAutoTunnelActive)
-            return context.showToast(R.string.all_services_disabled)
         showBackupSheet = false
+        if (uiState.tunnelActive || globalUiState.isAutoTunnelActive) {
+            sharedViewModel.showSnackMessage(
+                StringValue.StringResource(R.string.all_services_disabled),
+                ToastType.Warning,
+            )
+            return
+        }
         action()
     }
 
-    if (showBackupSheet)
+    if (showBackupSheet) {
         BackupBottomSheet(
-            { performBackupRestore { (context as? MainActivity)?.performBackup() } },
-            { performBackupRestore { (context as? MainActivity)?.performRestore() } },
-        ) {
-            showBackupSheet = false
-        }
+            onBackup = {
+                showBackupSheet = false
+                isRestoreAction = false
+                showEncryptionDialog = true
+            },
+            onRestore = {
+                showBackupSheet = false
+                isRestoreAction = true
+                showEncryptionDialog = true
+            },
+            onDismiss = { showBackupSheet = false },
+        )
+    }
+
+    if (showEncryptionDialog) {
+        BackupEncryptionDialog(
+            isRestore = isRestoreAction,
+            onConfirm = { encrypt, password ->
+                showEncryptionDialog = false
+
+                if (isRestoreAction) {
+                    performBackupRestore {
+                        (context as? MainActivity)?.performRestore(encrypt, password)
+                    }
+                } else {
+                    performBackupRestore {
+                        (context as? MainActivity)?.performBackup(encrypt, password)
+                    }
+                }
+            },
+            onDismiss = { showEncryptionDialog = false },
+        )
+    }
+
     if (showAppModeSheet)
         AppModeBottomSheet(sharedViewModel::setAppMode, uiState.settings.tunnelMode) {
             showAppModeSheet = false
@@ -168,7 +207,8 @@ fun SettingsScreen(
                             StringValue.StringResource(
                                 R.string.mode_disabled_template,
                                 appMode.asString(context),
-                            )
+                            ),
+                            ToastType.Info,
                         )
                 },
             )
@@ -176,6 +216,7 @@ fun SettingsScreen(
                 leading = { Icon(Icons.Outlined.Public, contentDescription = null) },
                 title = stringResource(R.string.tunnel_globals),
                 onClick = { navController.push(Route.TunnelGlobals) },
+                description = { DescriptionText(stringResource(R.string.tunnel_globals_desc)) },
             )
             SurfaceRow(
                 leading = { Icon(Icons.Outlined.Terminal, contentDescription = null) },
@@ -192,6 +233,23 @@ fun SettingsScreen(
                 },
                 onClick = {
                     viewModel.setTunnelScriptedEnabled(!uiState.settings.tunnelScriptingEnabled)
+                },
+            )
+            SurfaceRow(
+                leading = { Icon(Icons.Outlined.CellWifi, contentDescription = null) },
+                title = stringResource(R.string.seamless_roaming),
+                trailing = { modifier ->
+                    ThemedSwitch(
+                        checked = uiState.settings.seamlessRoamingEnabled,
+                        onClick = { viewModel.setSeamlessNetworkRoaming(enabled = it) },
+                        modifier = modifier,
+                    )
+                },
+                description = {
+                    DescriptionText(stringResource(R.string.seamless_roaming_description))
+                },
+                onClick = {
+                    viewModel.setSeamlessNetworkRoaming(!uiState.settings.seamlessRoamingEnabled)
                 },
             )
             SurfaceRow(
@@ -232,6 +290,7 @@ fun SettingsScreen(
                         modifier = modifier,
                     )
                 },
+                description = { DescriptionText(stringResource(R.string.local_logging_desc)) },
                 onClick = { navController.push(Route.Logs) },
             )
             SurfaceRow(

@@ -7,5 +7,4 @@ data class EngineStartResult(
     val handle: Int,
     val interfaceName: String,
     val mode: BackendMode,
-    val removedPeerEndpoint: Boolean,
 )

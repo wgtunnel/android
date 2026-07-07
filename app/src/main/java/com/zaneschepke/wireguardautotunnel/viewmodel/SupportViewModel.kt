@@ -1,6 +1,7 @@
 package com.zaneschepke.wireguardautotunnel.viewmodel
 
 import androidx.lifecycle.ViewModel
+import com.dokar.sonner.ToastType
 import com.zaneschepke.wireguardautotunnel.BuildConfig
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.domain.model.AppUpdate
@@ -25,7 +26,10 @@ class SupportViewModel(
 
     fun checkForStandaloneUpdate() = intent {
         postSideEffect(
-            GlobalSideEffect.Toast(StringValue.StringResource(R.string.checking_for_update))
+            GlobalSideEffect.Snackbar(
+                StringValue.StringResource(R.string.checking_for_update),
+                ToastType.Info,
+            )
         )
         reduce { state.copy(isLoading = true) }
         updateRepository
@@ -33,15 +37,19 @@ class SupportViewModel(
             .onSuccess { update ->
                 if (update == null) {
                     postSideEffect(
-                        GlobalSideEffect.Toast(
-                            StringValue.StringResource(R.string.latest_installed)
+                        GlobalSideEffect.Snackbar(
+                            StringValue.StringResource(R.string.latest_installed),
+                            ToastType.Info,
                         )
                     )
                 } else reduce { state.copy(appUpdate = update.sanitized()) }
             }
             .onFailure {
                 postSideEffect(
-                    GlobalSideEffect.Toast(StringValue.StringResource(R.string.update_check_failed))
+                    GlobalSideEffect.Snackbar(
+                        StringValue.StringResource(R.string.update_check_failed),
+                        ToastType.Error,
+                    )
                 )
             }
         reduce { state.copy(isLoading = false) }
@@ -83,8 +91,9 @@ class SupportViewModel(
             .onSuccess { postSideEffect(GlobalSideEffect.InstallApk(it)) }
             .onFailure {
                 postSideEffect(
-                    GlobalSideEffect.Toast(
-                        StringValue.StringResource(R.string.update_download_failed)
+                    GlobalSideEffect.Snackbar(
+                        StringValue.StringResource(R.string.update_download_failed),
+                        ToastType.Error,
                     )
                 )
             }

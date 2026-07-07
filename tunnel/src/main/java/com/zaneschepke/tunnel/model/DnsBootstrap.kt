@@ -24,18 +24,6 @@ sealed class DnsBoostrapConfig(open val upstream: String?) {
         override val protocol: String
             get() = "dot"
     }
-
-    companion object {
-        const val DEFAULT_UNDERLYING_SERVERS = "1.1.1.1,8.8.8.8"
-        const val DEFAULT_PLAIN_UPSTREAM = "1.1.1.1"
-        const val DEFAULT_DOH_UPSTREAM = "https://cloudflare-dns.com/dns-query"
-        const val DEFAULT_DOT_UPSTREAM = "one.one.one.one"
-        val SPECIAL_ANDROID_DOH_SERVERS =
-            mapOf(
-                "cloudflare-dns.com" to "https://cloudflare-dns.com/dns-query",
-                "dns.google" to "https://dns.google/dns-query",
-            )
-    }
 }
 
 data class DnsBootstrapResult(

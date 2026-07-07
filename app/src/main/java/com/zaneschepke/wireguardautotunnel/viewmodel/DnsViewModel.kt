@@ -1,6 +1,7 @@
 package com.zaneschepke.wireguardautotunnel.viewmodel
 
 import androidx.lifecycle.ViewModel
+import com.dokar.sonner.ToastType
 import com.zaneschepke.networkmonitor.NetworkMonitor
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.core.orchestration.DnsSettingsCoordinator
@@ -9,7 +10,6 @@ import com.zaneschepke.wireguardautotunnel.domain.repository.DnsSettingsReposito
 import com.zaneschepke.wireguardautotunnel.domain.repository.GlobalEffectRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.domain.sideeffect.GlobalSideEffect
-import com.zaneschepke.wireguardautotunnel.ui.common.snackbar.SnackbarType
 import com.zaneschepke.wireguardautotunnel.ui.state.DnsUiState
 import com.zaneschepke.wireguardautotunnel.util.DnsValidator
 import com.zaneschepke.wireguardautotunnel.util.StringValue
@@ -70,7 +70,7 @@ class DnsViewModel(
                 postSideEffect(
                     GlobalSideEffect.Snackbar(
                         StringValue.StringResource(result.error.labelRes()),
-                        type = SnackbarType.WARNING,
+                        type = ToastType.Error,
                     )
                 )
                 return@intent
@@ -87,7 +87,10 @@ class DnsViewModel(
 
         postSideEffect(GlobalSideEffect.PopBackStack)
         postSideEffect(
-            GlobalSideEffect.Toast(StringValue.StringResource(R.string.config_changes_saved))
+            GlobalSideEffect.Snackbar(
+                StringValue.StringResource(R.string.config_changes_saved),
+                ToastType.Success,
+            )
         )
     }
 

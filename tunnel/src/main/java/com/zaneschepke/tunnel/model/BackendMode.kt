@@ -13,7 +13,10 @@ sealed class BackendMode {
             override fun withConfig(config: Config) = copy(config = config)
         }
 
-        data class KillSwitchPrimary(override val config: Config) : Proxy() {
+        data class KillSwitchPrimary(
+            override val config: Config,
+            val killSwitchConfig: KillSwitchConfig,
+        ) : Proxy() {
             override fun withConfig(config: Config) = copy(config = config)
         }
     }

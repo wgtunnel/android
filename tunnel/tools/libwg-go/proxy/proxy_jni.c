@@ -11,13 +11,12 @@ static pthread_mutex_t g_status_mutex = PTHREAD_MUTEX_INITIALIZER;
 #define LOG_TAG "AmneziaWG/BypassSocket"
 #define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
-#define LOGW(...) __android_log_print(ANDROID_LOG_WARN,  LOG_TAG, __VA_ARGS__)
 
 struct go_string { const char *str; long n; };
 
 extern int awgStartProxy(struct go_string ifname, struct go_string settings, struct go_string uapipath, int bypass);
-extern void awgStopProxy();
 extern char *awgGetProxyConfig(int handle);
+extern void awgTriggerProxyBindUpdate(int handle);
 extern int awgUpdateProxyTunnelPeers(int handle, struct go_string settings);
 extern void awgTurnProxyTunnelOff(int handle);
 
@@ -40,7 +39,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
 
 JNIEXPORT void JNICALL JNI_OnUnload(JavaVM *vm, void *reserved) {
     JNIEnv *env = NULL;
-    if ((*vm)->GetEnv(vm, (void**)&env, JNI_VERSION_1_6) == JNI_OK) {
+    if ((*vm)->GetEnv(vm, (JNIEnv **)&env, JNI_VERSION_1_6) == JNI_OK) {
         if (g_protector != NULL) {
             (*env)->DeleteGlobalRef(env, g_protector);
             g_protector = NULL;
@@ -132,74 +131,91 @@ JNIEXPORT void JNICALL Java_com_zaneschepke_tunnel_ProxyBackend_awgSetSocketProt
 
 int bypass_socket(int fd) {
     if (fd < 0) {
-        LOGE("Invalid FD passed to bypass_socket: %d", fd);
-        return 0;  // Fail early on bad FD
-    }
-
-    JNIEnv *env = NULL;
-    jboolean attached = JNI_FALSE;
-    jint rs = -1;
-
-    if (g_jvm == NULL) {
-        LOGE("g_jvm is NULL");
+        LOGE("bypass_socket: Invalid FD %d", fd);
         return 0;
     }
 
-    rs = (*g_jvm)->GetEnv(g_jvm, (void **)&env, JNI_VERSION_1_6);
+    JNIEnv *env = NULL;
+    if (g_jvm == NULL) {
+        LOGE("bypass_socket: g_jvm is NULL");
+        return 0;
+    }
+
+    jint rs = (*g_jvm)->GetEnv(g_jvm, (JNIEnv **)&env, JNI_VERSION_1_6);
+
+    // Short retry for AttachCurrentThreadAsDaemon
     if (rs == JNI_EDETACHED) {
         int retries = 3;
-        while (retries-- > 0 && (*g_jvm)->AttachCurrentThread(g_jvm, &env, NULL) != JNI_OK) {
-            usleep(10000); // 10ms backoff
+        while (retries-- > 0) {
+            if ((*g_jvm)->AttachCurrentThreadAsDaemon(g_jvm, (JNIEnv **)&env, NULL) == JNI_OK) {
+                break;
+            }
+            usleep(5000);
         }
-        if (retries < 0) {
-            LOGE("AttachCurrentThread failed after retries");
+        if (env == NULL) {
+            LOGE("bypass_socket: AttachCurrentThreadAsDaemon failed after retries (fd=%d)", fd);
             return 0;
         }
-        attached = JNI_TRUE;
     } else if (rs != JNI_OK) {
-        LOGE("GetEnv failed with %d", rs);
+        LOGE("bypass_socket: GetEnv failed with code %d (fd=%d)", rs, fd);
         return 0;
     }
 
     if (env == NULL) {
-        if (attached) (*g_jvm)->DetachCurrentThread(g_jvm);
+        LOGE("bypass_socket: env is NULL after attach/GetEnv (fd=%d)", fd);
         return 0;
     }
 
-    pthread_mutex_lock(&g_protector_mutex);
-    if (g_protector == NULL || g_protectMethod == NULL) {
+    // Short retry when protector is not yet visible
+    const int maxRetries = 4;
+    const useconds_t backoff = 8000;
+
+    for (int attempt = 0; attempt < maxRetries; attempt++) {
+        pthread_mutex_lock(&g_protector_mutex);
+
+        if (g_protector != NULL && g_protectMethod != NULL) {
+            jobject local = (*env)->NewLocalRef(env, g_protector);
+            jmethodID method = g_protectMethod;
+            pthread_mutex_unlock(&g_protector_mutex);
+
+            if (local == NULL) {
+                LOGE("bypass_socket: NewLocalRef failed (fd=%d)", fd);
+                return 0;
+            }
+
+            if ((*env)->ExceptionCheck(env)) (*env)->ExceptionClear(env);
+
+            int result = (*env)->CallIntMethod(env, local, method, fd);
+
+            if ((*env)->ExceptionCheck(env)) {
+                LOGE("bypass_socket: Exception from protector.bypass() (fd=%d)", fd);
+                (*env)->ExceptionDescribe(env);
+                (*env)->ExceptionClear(env);
+                result = 0;
+            }
+
+            (*env)->DeleteLocalRef(env, local);
+
+            if (attempt > 0) {
+                LOGD("bypass_socket: succeeded after %d retries (fd=%d)", attempt, fd);
+            }
+            LOGD("bypass_socket: fd=%d result=%d", fd, result);
+            return result;
+        }
+
         pthread_mutex_unlock(&g_protector_mutex);
-        if (attached) (*g_jvm)->DetachCurrentThread(g_jvm);
-        return 0;
+
+        if (attempt == 0) {
+            LOGD("bypass_socket: protector not visible yet, retrying (fd=%d)", fd);
+        }
+
+        if (attempt < maxRetries - 1) {
+            usleep(backoff);
+        }
     }
 
-    jobject local_protector = (*env)->NewLocalRef(env, g_protector);
-    jmethodID local_method = g_protectMethod;
-    pthread_mutex_unlock(&g_protector_mutex);
-
-    if (local_protector == NULL) {
-        if (attached) (*g_jvm)->DetachCurrentThread(g_jvm);
-        return 0;
-    }
-
-    if ((*env)->ExceptionCheck(env)) (*env)->ExceptionClear(env);
-
-    int result = (*env)->CallIntMethod(env, local_protector, local_method, fd);
-
-    if ((*env)->ExceptionCheck(env)) {
-        LOGE("Exception thrown from CallIntMethod");
-        (*env)->ExceptionDescribe(env);
-        (*env)->ExceptionClear(env);
-        result = 0;
-    }
-
-    (*env)->DeleteLocalRef(env, local_protector);
-
-    if (attached) {
-        (*g_jvm)->DetachCurrentThread(g_jvm);
-    }
-
-    return result;
+    LOGE("bypass_socket: protector still not ready after retries (fd=%d)", fd);
+    return 0;
 }
 
 JNIEXPORT jint JNICALL Java_com_zaneschepke_tunnel_ProxyBackend_awgUpdateProxyTunnelPeers(JNIEnv *env, jclass c, jint handle, jstring settings)
@@ -247,60 +263,47 @@ JNIEXPORT void JNICALL Java_com_zaneschepke_tunnel_VpnBackend_awgSetStatusCallba
 
 void awgNotifyStatus(int32_t handle, int32_t code) {
     JNIEnv *env = NULL;
-    jboolean attached = JNI_FALSE;
-    jint rs = -1;
-
     if (g_jvm == NULL) {
-        LOGE("JNI: awgNotifyStatus called but g_jvm is NULL");
+        LOGE("g_jvm is NULL in awgNotifyStatus");
         return;
     }
-
-    rs = (*g_jvm)->GetEnv(g_jvm, (void**)&env, JNI_VERSION_1_6);
+    jint rs = (*g_jvm)->GetEnv(g_jvm, (JNIEnv **)&env, JNI_VERSION_1_6);
     if (rs == JNI_EDETACHED) {
-        if ((*g_jvm)->AttachCurrentThread(g_jvm, &env, NULL) != JNI_OK) {
-            LOGE("JNI: AttachCurrentThread failed in awgNotifyStatus");
+        if ((*g_jvm)->AttachCurrentThreadAsDaemon(g_jvm, (JNIEnv **)&env, NULL) != JNI_OK) {
+            LOGE("AttachCurrentThreadAsDaemon failed in awgNotifyStatus");
             return;
         }
-        attached = JNI_TRUE;
     } else if (rs != JNI_OK) {
-        LOGE("JNI: GetEnv failed with %d in awgNotifyStatus", rs);
+        LOGE("GetEnv failed with code %d in awgNotifyStatus", rs);
         return;
     }
-
     if (env == NULL) {
-        if (attached) (*g_jvm)->DetachCurrentThread(g_jvm);
         return;
     }
-
     pthread_mutex_lock(&g_status_mutex);
     if (g_statusCallbackObj == NULL || g_statusCallbackMethod == NULL) {
         pthread_mutex_unlock(&g_status_mutex);
-        if (attached) (*g_jvm)->DetachCurrentThread(g_jvm);
         return;
     }
-
     jobject local_callback = (*env)->NewLocalRef(env, g_statusCallbackObj);
     jmethodID local_method = g_statusCallbackMethod;
     pthread_mutex_unlock(&g_status_mutex);
-
     if (local_callback == NULL) {
-        if (attached) (*g_jvm)->DetachCurrentThread(g_jvm);
         return;
     }
-
-    if ((*env)->ExceptionCheck(env)) (*env)->ExceptionClear(env);
-
-    (*env)->CallVoidMethod(env, local_callback, local_method, (jint)handle, (jint)code);
-
     if ((*env)->ExceptionCheck(env)) {
-        LOGE("Exception thrown from awgNotifyStatus CallVoidMethod");
+        (*env)->ExceptionClear(env);
+    }
+    (*env)->CallVoidMethod(env, local_callback, local_method, (jint)handle, (jint)code);
+    if ((*env)->ExceptionCheck(env)) {
+        LOGE("Exception thrown from status callback onStatusChanged()");
         (*env)->ExceptionDescribe(env);
         (*env)->ExceptionClear(env);
     }
-
     (*env)->DeleteLocalRef(env, local_callback);
+}
 
-    if (attached) {
-        (*g_jvm)->DetachCurrentThread(g_jvm);
-    }
+JNIEXPORT void JNICALL Java_com_zaneschepke_tunnel_ProxyBackend_awgTriggerProxyBindUpdate
+(JNIEnv *env, jclass clazz, jint handle) {
+    awgTriggerProxyBindUpdate(handle);
 }

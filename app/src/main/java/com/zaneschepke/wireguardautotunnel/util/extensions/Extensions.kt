@@ -18,10 +18,6 @@ fun <T, R : Comparable<R>> List<T>.isSortedBy(selector: (T) -> R): Boolean {
     return zipWithNext().all { (a, b) -> selector(a) <= selector(b) }
 }
 
-fun Int.toMillis(): Long {
-    return this * 1_000L
-}
-
 fun Double.round(decimals: Int): Double {
     val factor = 10.0.pow(decimals)
     return (this * factor).roundToInt() / factor

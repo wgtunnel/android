@@ -1,59 +1,49 @@
 package com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.preferred
 
+import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.ScrollableDefaults
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.overscroll
 import androidx.compose.foundation.rememberOverscrollEffect
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.scrollbar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
-import com.zaneschepke.wireguardautotunnel.ui.common.button.ClickableIconButton
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
+import com.zaneschepke.wireguardautotunnel.ui.common.functions.rememberRotatingHint
 import com.zaneschepke.wireguardautotunnel.ui.common.label.GroupLabel
-import com.zaneschepke.wireguardautotunnel.ui.common.textbox.CustomTextField
+import com.zaneschepke.wireguardautotunnel.ui.common.text.DescriptionText
 import com.zaneschepke.wireguardautotunnel.ui.navigation.TunnelNetwork
-import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.components.WildcardsLabel
+import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.AutoTunnelScreenSideEffect
+import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.wifi.components.NetworkRuleInput
 import com.zaneschepke.wireguardautotunnel.viewmodel.AutoTunnelViewModel
 import org.koin.androidx.compose.koinViewModel
 import org.orbitmvi.orbit.compose.collectAsState
+import org.orbitmvi.orbit.compose.collectSideEffect
 
 @Composable
 fun PreferredTunnelScreen(
@@ -62,32 +52,48 @@ fun PreferredTunnelScreen(
 ) {
     val navController = LocalNavController.current
 
-    val autoTunnelState by viewModel.collectAsState()
+    val uiState by viewModel.collectAsState()
 
-    if (autoTunnelState.isLoading) return
+    var currentSsidText by rememberSaveable { mutableStateOf("") }
+    var currentBssidText by rememberSaveable { mutableStateOf("") }
+
+    viewModel.collectSideEffect() {
+        when (it) {
+            AutoTunnelScreenSideEffect.BSSID_SAVED -> currentBssidText = ""
+            AutoTunnelScreenSideEffect.SSID_SAVED -> currentSsidText = ""
+        }
+    }
+
+    if (uiState.isLoading) return
 
     var selectedTunnel by remember { mutableStateOf<TunnelConfig?>(null) }
 
+    val wildcardEnabled = uiState.autoTunnelSettings.isWildcardsEnabled
+
+    val ssidHint = rememberRotatingHint(viewModel.ssidHints, wildcardEnabled)
+    val bssidHint = rememberRotatingHint(viewModel.bssidHints, wildcardEnabled)
+
     val currentSelection =
-        remember(autoTunnelState.tunnels) {
+        remember(uiState.tunnels) {
             when (tunnelNetwork) {
-                TunnelNetwork.MOBILE_DATA ->
-                    autoTunnelState.tunnels.firstOrNull { it.isMobileDataTunnel }
-                TunnelNetwork.ETHERNET ->
-                    autoTunnelState.tunnels.firstOrNull { it.isEthernetTunnel }
+                TunnelNetwork.MOBILE_DATA -> uiState.tunnels.firstOrNull { it.isMobileDataTunnel }
+
+                TunnelNetwork.ETHERNET -> uiState.tunnels.firstOrNull { it.isEthernetTunnel }
+
                 TunnelNetwork.WIFI -> null
             }
         }
+
+    val lazyListState = rememberLazyListState()
 
     LazyColumn(
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.Top,
         modifier =
-            Modifier.pointerInput(Unit) {
-                    if (autoTunnelState.tunnels.isEmpty()) return@pointerInput
-                }
-                .overscroll(rememberOverscrollEffect()),
-        state = rememberLazyListState(),
+            Modifier.pointerInput(Unit) { if (uiState.tunnels.isEmpty()) return@pointerInput }
+                .overscroll(rememberOverscrollEffect())
+                .scrollbar(lazyListState.scrollIndicatorState, Orientation.Vertical),
+        state = lazyListState,
         userScrollEnabled = true,
         reverseLayout = false,
         flingBehavior = ScrollableDefaults.flingBehavior(),
@@ -118,144 +124,89 @@ fun PreferredTunnelScreen(
                                 viewModel.setPreferredMobileDataTunnel(null)
                                 navController.pop()
                             }
+
                             TunnelNetwork.ETHERNET -> {
                                 viewModel.setPreferredEthernetTunnel(null)
                                 navController.pop()
                             }
+
                             TunnelNetwork.WIFI -> Unit
                         }
                     },
                 )
             }
         }
-        items(autoTunnelState.tunnels, key = { it.id }) { tunnel ->
-            SurfaceRow(
-                title = tunnel.name,
-                trailing =
-                    if (currentSelection?.id == tunnel.id) {
-                        {
-                            Icon(
-                                Icons.Outlined.Check,
-                                stringResource(id = R.string.selected),
-                                tint = MaterialTheme.colorScheme.primary,
-                            )
-                        }
-                    } else null,
-                onClick = {
-                    when (tunnelNetwork) {
-                        TunnelNetwork.MOBILE_DATA -> {
-                            viewModel.setPreferredMobileDataTunnel(tunnel)
-                            navController.pop()
-                        }
+        items(uiState.tunnels, key = { it.id }) { tunnel ->
+            Column {
+                SurfaceRow(
+                    title = tunnel.name,
+                    trailing =
+                        if (currentSelection?.id == tunnel.id) {
+                            {
+                                Icon(
+                                    Icons.Outlined.Check,
+                                    stringResource(id = R.string.selected),
+                                    tint = MaterialTheme.colorScheme.primary,
+                                )
+                            }
+                        } else null,
+                    onClick = {
+                        when (tunnelNetwork) {
+                            TunnelNetwork.MOBILE_DATA -> {
+                                viewModel.setPreferredMobileDataTunnel(tunnel)
+                                navController.pop()
+                            }
 
-                        TunnelNetwork.ETHERNET -> {
-                            viewModel.setPreferredEthernetTunnel(tunnel)
-                            navController.pop()
-                        }
+                            TunnelNetwork.ETHERNET -> {
+                                viewModel.setPreferredEthernetTunnel(tunnel)
+                                navController.pop()
+                            }
 
-                        TunnelNetwork.WIFI -> {
-                            selectedTunnel = tunnel
-                        }
-                    }
-                },
-                expandedContent =
-                    if (tunnelNetwork == TunnelNetwork.WIFI) {
-                        {
-                            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                                FlowRow(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement =
-                                        Arrangement.spacedBy(5.dp, Alignment.CenterHorizontally),
-                                ) {
-                                    tunnel.tunnelNetworks.forEach { ssid ->
-                                        ClickableIconButton(
-                                            onClick = {
-                                                viewModel.removeTunnelNetwork(tunnel, ssid)
-                                            },
-                                            text = ssid,
-                                            icon = Icons.Filled.Close,
-                                        )
-                                    }
-                                }
-                                if (selectedTunnel?.id == tunnel.id) {
-                                    val focusRequester = remember { FocusRequester() }
-                                    val keyboardController = LocalSoftwareKeyboardController.current
-
-                                    var currentText by remember { mutableStateOf("") }
-
-                                    LaunchedEffect(Unit) {
-                                        focusRequester.requestFocus()
-                                        keyboardController?.show()
-                                    }
-
-                                    CustomTextField(
-                                        textStyle =
-                                            MaterialTheme.typography.bodySmall.copy(
-                                                color = MaterialTheme.colorScheme.onSurface
-                                            ),
-                                        value = currentText,
-                                        onValueChange = { currentText = it },
-                                        interactionSource = remember { MutableInteractionSource() },
-                                        label = {
-                                            Text(
-                                                stringResource(R.string.add_wifi_name),
-                                                color = MaterialTheme.colorScheme.onSurface,
-                                                style = MaterialTheme.typography.labelMedium,
-                                            )
-                                        },
-                                        containerColor = MaterialTheme.colorScheme.surface,
-                                        supportingText =
-                                            if (
-                                                autoTunnelState.autoTunnelSettings
-                                                    .isWildcardsEnabled
-                                            ) {
-                                                { WildcardsLabel() }
-                                            } else null,
-                                        modifier =
-                                            Modifier.fillMaxWidth().focusRequester(focusRequester),
-                                        singleLine = true,
-                                        keyboardOptions =
-                                            KeyboardOptions(
-                                                capitalization = KeyboardCapitalization.None,
-                                                imeAction = ImeAction.Done,
-                                            ),
-                                        keyboardActions =
-                                            KeyboardActions(
-                                                onDone = {
-                                                    viewModel.addTunnelNetwork(tunnel, currentText)
-                                                    currentText = ""
-                                                }
-                                            ),
-                                        trailing = {
-                                            if (currentText != "") {
-                                                IconButton(
-                                                    onClick = {
-                                                        viewModel.addTunnelNetwork(
-                                                            tunnel,
-                                                            currentText,
-                                                        )
-                                                        currentText = ""
-                                                    }
-                                                ) {
-                                                    val icon = Icons.Outlined.Add
-                                                    Icon(
-                                                        imageVector = icon,
-                                                        contentDescription =
-                                                            stringResource(
-                                                                R.string
-                                                                    .trusted_ssid_value_description
-                                                            ),
-                                                        tint = MaterialTheme.colorScheme.primary,
-                                                    )
-                                                }
-                                            }
-                                        },
-                                    )
-                                }
+                            TunnelNetwork.WIFI -> {
+                                selectedTunnel = tunnel
                             }
                         }
-                    } else null,
-            )
+                    },
+                    description = {
+                        val totalMapped = tunnel.tunnelNetworks.size + tunnel.tunnelBSSIDs.size
+
+                        if (totalMapped > 0) {
+                            DescriptionText(
+                                stringResource(R.string.mapped_rules_count, totalMapped)
+                            )
+                        }
+                    },
+                )
+                if (tunnel.id == selectedTunnel?.id) {
+                    NetworkRuleInput(
+                        inputTitle = stringResource(R.string.add_wifi_name),
+                        placeholder = ssidHint,
+                        rules = tunnel.tunnelNetworks,
+                        onDelete = { viewModel.removeTunnelNetwork(tunnel, it) },
+                        currentText = currentSsidText,
+                        onValueChange = { currentSsidText = it },
+                        onSave = { ssid -> viewModel.saveTunnelNetwork(tunnel, ssid) },
+                        supportingContent = {
+                            if (wildcardEnabled)
+                                DescriptionText(stringResource(R.string.wildcard_wifi_desc))
+                        },
+                    )
+
+                    NetworkRuleInput(
+                        inputTitle = stringResource(R.string.add_bssid),
+                        rules = tunnel.tunnelBSSIDs,
+                        onDelete = { viewModel.removeTunnelBSSID(tunnel, it) },
+                        currentText = currentBssidText,
+                        onValueChange = { currentBssidText = it },
+                        onSave = { bssid -> viewModel.saveTunnelBSSID(tunnel, bssid) },
+                        supportingContent = {
+                            if (uiState.autoTunnelSettings.isWildcardsEnabled)
+                                DescriptionText(stringResource(R.string.wildcard_bssid_desc))
+                        },
+                        placeholder = bssidHint,
+                    )
+                }
+            }
         }
     }
 }

@@ -1,28 +1,28 @@
 package com.zaneschepke.tunnel.service
 
+import android.content.Context
 import android.content.Intent
 import android.net.TrafficStats
 import android.os.Build
 import android.os.ParcelFileDescriptor
 import android.system.OsConstants
-import androidx.core.app.ServiceCompat
 import com.zaneschepke.hevtunnel.HevTunnelConfig
 import com.zaneschepke.hevtunnel.TProxyService
-import com.zaneschepke.tunnel.ProxyBackend
 import com.zaneschepke.tunnel.Tunnel
 import com.zaneschepke.tunnel.backend.Backend
 import com.zaneschepke.tunnel.backend.KillSwitch
-import com.zaneschepke.tunnel.backend.ServiceHolder
-import com.zaneschepke.tunnel.backend.ServiceHolder.Companion.DEFAULT_MTU
-import com.zaneschepke.tunnel.backend.ServiceHolder.Companion.alwaysOnCallback
-import com.zaneschepke.tunnel.backend.ServiceHolder.Companion.vpnService
 import com.zaneschepke.tunnel.backend.SocketProtector
-import com.zaneschepke.tunnel.model.BackendMode
 import com.zaneschepke.tunnel.model.KillSwitchConfig
+import com.zaneschepke.tunnel.service.ServiceHolder.Companion.DEFAULT_MTU
+import com.zaneschepke.tunnel.service.ServiceHolder.Companion.alwaysOnCallback
 import com.zaneschepke.tunnel.util.parseDns
 import com.zaneschepke.tunnel.util.parseInetNetwork
 import com.zaneschepke.wireguardautotunnel.parser.Config
 import java.io.IOException
+import java.net.Inet4Address
+import java.net.Inet6Address
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -39,76 +39,98 @@ class VpnService : android.net.VpnService(), KillSwitch, SocketProtector {
     private val serviceHolder: ServiceHolder by inject(ServiceHolder::class.java)
 
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private val shutdownScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private var hevBridgeJob: Job? = null
+    @Volatile private var hevBridgeFd: ParcelFileDescriptor? = null
+    @Volatile private var vpnTunFd: ParcelFileDescriptor? = null
 
-    @Volatile private var fd: ParcelFileDescriptor? = null
-
-    val builder: Builder
-        get() = Builder()
+    @Volatile private var currentKillSwitchConfig: KillSwitchConfig? = null
 
     override fun onCreate() {
-        vpnService.complete(this)
-        // We call this for all backend modes as it is shared for bootstrapping bypass
-        ProxyBackend.setSocketProtector(this)
-        serviceHolder.ensureNativeCallbacksRegistered()
-        launchForegroundNotification()
+        serviceHolder.set(this)
         super.onCreate()
     }
 
-    fun launchForegroundNotification() {
-        ServiceCompat.startForeground(
-            this,
-            backend.notificationProvider.vpnNotificationId,
-            backend.notificationProvider.vpnInitNotification,
-            SYSTEM_EXEMPT_SERVICE_TYPE_ID,
-        )
-    }
-
+    @OptIn(ExperimentalAtomicApi::class)
     override fun onDestroy() {
         Timber.d("VpnService destroyed")
-
         try {
-            ProxyBackend.setSocketProtector(null)
+            serviceHolder.clearVpnService()
 
-            ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
+            // Stop the companion foreground service alongside the VPN teardown
+            stopService(Intent(this, VpnCompanionService::class.java))
 
+            closeVpnTunnelFd()
             disableKillSwitch()
             hevBridgeJob?.cancel()
-
             serviceScope.cancel()
-
-            backend.emergencyStopAllOfTypeSync(BackendMode.Vpn::class)
-            backend.emergencyStopAllOfTypeSync(BackendMode.Proxy.KillSwitchPrimary::class)
-
             stopHevSocks5Bridge()
-
-            serviceHolder.clear(this)
         } finally {
             super.onDestroy()
         }
     }
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        vpnService.complete(this)
-        launchForegroundNotification()
+    override fun onRevoke() {
+        Timber.w("VPN revoked by user via system settings")
+        disableKillSwitch()
+        stopHevSocks5Bridge()
+        shutdownScope.launch { backend.stopAllActiveTunnels() }
+        stopSelf()
+        super.onRevoke()
+    }
 
-        // Service restarted by system or Always-on VPN started
-        if (
-            intent == null ||
-                intent.component == null ||
-                (intent.component!!.packageName != packageName)
-        ) {
-            Timber.d("VpnService started by system")
-            alwaysOnCallback?.get()?.alwaysOnTriggered()
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        serviceHolder.set(this)
+
+        bootKeepaliveService()
+
+        // system recovery restart
+        if (intent == null) {
+            return START_STICKY
         }
+
+        val isUserLaunch = intent.getBooleanExtra(getUserLaunchExtraKey(this), false)
+
+        val platformSaysAlwaysOn =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                isAlwaysOn
+            } else {
+                false
+            }
+
+        val isAlwaysOnTrigger =
+            !isUserLaunch && (intent.action == SERVICE_INTERFACE || platformSaysAlwaysOn)
+
+        if (isAlwaysOnTrigger) {
+            Timber.d("VpnService started by system (Always-On trigger)")
+            alwaysOnCallback?.alwaysOnTriggered()
+        }
+
         return START_STICKY
+    }
+
+    fun shutdown() {
+        // have to close fds before we can trigger service shutdown
+        closeVpnTunnelFd()
+        disableKillSwitch()
+        stopSelf()
+    }
+
+    private fun bootKeepaliveService() {
+        try {
+            val intent = Intent(this, VpnCompanionService::class.java)
+            // Works for starts and within the temporary AOVPN boot window
+            startForegroundService(intent)
+        } catch (e: Exception) {
+            Timber.e(e, "Failed to start companion keepalive service")
+        }
     }
 
     private fun startHevBridge(port: Int, pass: String): Job {
         val job = serviceScope.launch {
             TrafficStats.setThreadStatsTag(HEV_BRIDGE_TRAFFIC_TAG)
             try {
-                val vpnFd = fd ?: throw IOException("No VPN interface fd available")
+                val vpnFd = hevBridgeFd ?: throw IOException("No VPN interface fd available")
 
                 repeat(60) { attempt ->
                     try {
@@ -141,7 +163,7 @@ class VpnService : android.net.VpnService(), KillSwitch, SocketProtector {
                         if (attempt % 5 == 0) {
                             Timber.d("SOCKS5 not ready yet, retrying...")
                         }
-                        delay(300)
+                        delay(300.milliseconds)
                     }
                 }
                 Timber.e("Timed out waiting for SOCKS5 proxy to be ready")
@@ -165,16 +187,26 @@ class VpnService : android.net.VpnService(), KillSwitch, SocketProtector {
     }
 
     private fun disableKillSwitch() {
-        fd?.close()
-        fd = null
+        hevBridgeFd?.close()
+        hevBridgeFd = null
+        currentKillSwitchConfig = null
     }
 
     override fun setKillSwitch(config: KillSwitchConfig?) {
         if (config == null) return disableKillSwitch()
-        fd =
-            builder
+
+        if (hevBridgeFd != null && currentKillSwitchConfig == config) {
+            Timber.d("Kill Switch already active with identical config, skipping")
+            return
+        }
+
+        hevBridgeFd?.close()
+        val intent = backend.applicationProvider.createVpnConfigurePendingIntent(this@VpnService)
+        hevBridgeFd =
+            Builder()
                 .apply {
                     setSession(LOCKDOWN_SESSION_NAME)
+                    setConfigureIntent(intent)
                     addAddress(IPV4_INTERFACE_ADDRESS, 32)
                     if (config.dualStack) addAddress(IPV6_INTERFACE_ADDRESS, 128)
                     if (config.allowedIps.isEmpty()) {
@@ -192,64 +224,99 @@ class VpnService : android.net.VpnService(), KillSwitch, SocketProtector {
                     addRoute(IPV6_DEFAULT_ROUTE, 0)
                     setMtu(DEFAULT_MTU)
                     addDnsServer(DEFAULT_DNS_SERVER)
+                }
+                .establish()
+        currentKillSwitchConfig = config
+    }
 
-                    // TODO could add an options to kill switch settings for this for ping
-                    // sorts/update checks, etc to bypass killswitch
-                    // addDisallowedApplication(this@VpnService.packageName)
+    fun createTunInterface(tunnel: Tunnel, config: Config) {
+        val intent = backend.applicationProvider.createVpnConfigurePendingIntent(this@VpnService)
+        vpnTunFd?.close()
+        vpnTunFd = null
+        vpnTunFd =
+            Builder()
+                .apply {
+                    setSession(tunnel.name)
+                    setConfigureIntent(intent)
+                    setMtu(config.`interface`.mtu ?: DEFAULT_MTU)
+                    setBlocking(true)
+                    setUnderlyingNetworks(null)
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        setMetered(tunnel.isMetered)
+                    }
+
+                    config.`interface`.includedApplications?.forEach { addAllowedApplication(it) }
+                    config.`interface`.excludedApplications?.forEach {
+                        addDisallowedApplication(it)
+                    }
+
+                    var hasIpv4 = false
+                    var hasIpv6 = false
+                    var sawDefaultRoute = false
+
+                    // Parse interface addresses
+                    config.`interface`.address?.split(",")?.forEach { rawAddress ->
+                        val (address, prefixLength) = rawAddress.parseInetNetwork()
+                        addAddress(address, prefixLength)
+                        if (address is Inet4Address) hasIpv4 = true else hasIpv6 = true
+                    }
+
+                    // Parse peer routes
+                    config.peers.forEach { peer ->
+                        peer.allowedIPs
+                            ?.split(",")
+                            ?.map { it.trim() }
+                            ?.filter { it.isNotEmpty() }
+                            ?.forEach { entry ->
+                                val (address, prefix) = entry.parseInetNetwork()
+                                addRoute(address, prefix)
+
+                                if (prefix == 0) {
+                                    sawDefaultRoute = true
+                                }
+                                if (address is Inet4Address) hasIpv4 = true else hasIpv6 = true
+                            }
+                    }
+
+                    // "Kill-switch" semantics (mirrors wireguard-android)
+                    val isKillSwitchRouting = sawDefaultRoute && config.peers.size == 1
+
+                    if (!isKillSwitchRouting) {
+                        allowFamily(OsConstants.AF_INET)
+                        allowFamily(OsConstants.AF_INET6)
+                    }
+
+                    // Only add DNS servers whose family is supported
+                    config.`interface`.dns?.let { rawDns ->
+                        val dnsConfig = rawDns.parseDns()
+                        dnsConfig.dnsServers.forEach { dnsServer ->
+                            val isIpv6 = dnsServer is Inet6Address
+                            if ((isIpv6 && hasIpv6) || (!isIpv6 && hasIpv4)) {
+                                addDnsServer(dnsServer)
+                            } else {
+                                Timber.w(
+                                    "Dropped DNS server $dnsServer: IP family not allowed by interface/routes"
+                                )
+                            }
+                        }
+                        dnsConfig.searchDomains.forEach { addSearchDomain(it) }
+                    }
                 }
                 .establish()
     }
 
-    fun createTunInterface(tunnel: Tunnel, config: Config): ParcelFileDescriptor? {
-        return builder
-            .apply {
-                setSession(tunnel.name)
+    fun detachVpnTunnelFd(): Int? {
+        val tunFd = vpnTunFd
+        vpnTunFd = null
+        return tunFd?.detachFd()
+    }
 
-                val isSplitTunneling =
-                    !config.`interface`.excludedApplications.isNullOrEmpty() ||
-                        !config.`interface`.includedApplications.isNullOrEmpty()
-
-                // important for Android Auto in split tunnel scenarios
-                // TODO Could make this a standalone feature toggle for strictness as it allows
-                // secondary network binding from other apps
-                if (isSplitTunneling) allowBypass()
-
-                config.`interface`.includedApplications?.forEach { addAllowedApplication(it) }
-                config.`interface`.excludedApplications?.forEach { addDisallowedApplication(it) }
-
-                config.`interface`.address?.split(",")?.forEach { rawAddress ->
-                    val (address, prefixLength) = rawAddress.parseInetNetwork()
-                    addAddress(address, prefixLength)
-                }
-
-                config.`interface`.dns?.let { rawDns ->
-                    val dnsConfig = rawDns.parseDns()
-                    dnsConfig.dnsServers.forEach { addDnsServer(it) }
-                    dnsConfig.searchDomains.forEach { addSearchDomain(it) }
-                }
-
-                config.peers.forEach { peer ->
-                    peer.allowedIPs?.split(",")?.forEach { entry ->
-                        val (address, prefix) = entry.parseInetNetwork()
-                        Timber.d("Adding route from config: $address/$prefix")
-                        addRoute(address, prefix)
-                    }
-                }
-
-                allowFamily(OsConstants.AF_INET)
-                allowFamily(OsConstants.AF_INET6)
-
-                val mtu = config.`interface`.mtu ?: DEFAULT_MTU
-                setMtu(mtu)
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    setMetered(tunnel.isMetered)
-                }
-
-                setUnderlyingNetworks(null)
-                setBlocking(true)
-            }
-            .establish()
+    fun closeVpnTunnelFd() {
+        try {
+            vpnTunFd?.close()
+        } catch (_: Exception) {}
+        vpnTunFd = null
     }
 
     override fun startHevSocks5Bridge(port: Int, pass: String) {
@@ -269,16 +336,12 @@ class VpnService : android.net.VpnService(), KillSwitch, SocketProtector {
     }
 
     override fun bypass(fd: Int): Int {
-        Timber.d("Bypassing VPN fd: $fd")
-        val bypassed =
-            try {
-                if (protect(fd)) 1 else 0
-            } catch (e: Exception) {
-                Timber.e(e, "Failed to protect VPN fd")
-                0
-            }
-        Timber.d("Socket protected result: $fd")
-        return bypassed
+        return try {
+            if (protect(fd)) 1 else 0
+        } catch (e: Exception) {
+            Timber.e(e, "Failed to protect/bypass fd=$fd")
+            0
+        }
     }
 
     interface AlwaysOnCallback {
@@ -286,7 +349,21 @@ class VpnService : android.net.VpnService(), KillSwitch, SocketProtector {
     }
 
     companion object {
-        const val HEV_BRIDGE_TRAFFIC_TAG = 0xF00D
+
+        private fun getUserLaunchExtraKey(context: Context): String {
+            return "${context.packageName}.EXTRA_IS_USER_LAUNCH"
+        }
+
+        @JvmStatic
+        fun start(context: Context, serviceClass: Class<out VpnService>) {
+            val intent =
+                Intent(context, serviceClass).apply {
+                    action = SERVICE_INTERFACE
+                    putExtra(getUserLaunchExtraKey(context), true)
+                }
+            context.startService(intent)
+        }
+
         private const val LOCKDOWN_SESSION_NAME = "Lockdown"
         private const val LOCALHOST = "127.0.0.1"
         private const val IPV4_INTERFACE_ADDRESS = "10.0.0.1"
@@ -295,7 +372,6 @@ class VpnService : android.net.VpnService(), KillSwitch, SocketProtector {
         private const val IPV4_DEFAULT_ROUTE = "0.0.0.0"
         private const val IPV6_DEFAULT_ROUTE = "::"
         private const val DEFAULT_DNS_SERVER = "1.1.1.1"
-
-        private const val SYSTEM_EXEMPT_SERVICE_TYPE_ID = 1 shl 10
+        const val HEV_BRIDGE_TRAFFIC_TAG = 0xF00D
     }
 }

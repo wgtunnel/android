@@ -1,48 +1,22 @@
 package com.zaneschepke.wireguardautotunnel.domain.state
 
-import com.zaneschepke.networkmonitor.ActiveNetwork as MonitorActiveNetwork
+import com.zaneschepke.networkmonitor.ActiveNetwork
 import com.zaneschepke.networkmonitor.ConnectivityState
-import com.zaneschepke.networkmonitor.util.WifiSecurityType
-
-sealed class ActiveNetwork {
-    data object Disconnected : ActiveNetwork()
-
-    data object Ethernet : ActiveNetwork()
-
-    data object Cellular : ActiveNetwork()
-
-    data class Wifi(val ssid: String, val isSecure: Boolean?) : ActiveNetwork()
-}
 
 data class NetworkState(
-    val activeNetwork: ActiveNetwork = ActiveNetwork.Disconnected,
+    val activeNetwork: ActiveNetwork = ActiveNetwork.Disconnected(),
     val locationServicesEnabled: Boolean = false,
     val locationPermissionGranted: Boolean = false,
-) {
-    fun hasInternet(): Boolean = activeNetwork !is ActiveNetwork.Disconnected
-}
+    // Has a network that can actually transfer data (not suspended)
+    val hasUsableNetwork: Boolean = false,
+)
 
 fun ConnectivityState.toDomain(): NetworkState {
-    val domainNetwork: ActiveNetwork =
-        when (val network = this.activeNetwork) {
-            is MonitorActiveNetwork.Wifi -> {
-                val isSecure =
-                    when (network.securityType) {
-                        WifiSecurityType.OPEN,
-                        WifiSecurityType.UNKNOWN -> false
-                        null -> null
-                        else -> true
-                    }
-                ActiveNetwork.Wifi(ssid = network.ssid, isSecure = isSecure)
-            }
-            is MonitorActiveNetwork.Cellular -> ActiveNetwork.Cellular
-            is MonitorActiveNetwork.Ethernet -> ActiveNetwork.Ethernet
-            is MonitorActiveNetwork.Disconnected -> ActiveNetwork.Disconnected
-        }
 
     return NetworkState(
-        activeNetwork = domainNetwork,
+        activeNetwork = activeNetwork,
         locationPermissionGranted = this.locationPermissionsGranted,
         locationServicesEnabled = this.locationServicesEnabled,
+        hasUsableNetwork = hasUsableNetwork(),
     )
 }

@@ -13,6 +13,7 @@ import (
 	"net"
 	"runtime/debug"
 	"strings"
+	"sync"
 
 	"github.com/amnezia-vpn/amneziawg-go/conn"
 	"github.com/amnezia-vpn/amneziawg-go/device"
@@ -29,8 +30,10 @@ type TunnelHandle struct {
 }
 
 var (
-	tag           string
-	tunnelHandles = make(map[int32]TunnelHandle)
+	tag              string
+	tunnelHandles    = make(map[int32]TunnelHandle)
+	lastTunnelStatus sync.Map
+	tunnelMu         sync.RWMutex
 )
 
 func init() {
@@ -40,7 +43,6 @@ func init() {
 //export awgTurnOn
 func awgTurnOn(interfaceName string, tunFd int32, settings string, uapiPath string) int32 {
 	tunnel, name, err := tun.CreateUnmonitoredTUNFromFD(int(tunFd))
-
 	if err != nil {
 		unix.Close(int(tunFd))
 		shared.LogError(tag, "CreateUnmonitoredTUNFromFD: %v", err)
@@ -50,52 +52,63 @@ func awgTurnOn(interfaceName string, tunFd int32, settings string, uapiPath stri
 	conf, err := wireproxyawg.ParseConfigString(settings)
 	if err != nil {
 		shared.LogError(tag, "Invalid config file", err)
-		unix.Close(int(tunFd))
 		if tunnel != nil {
 			tunnel.Close()
 		}
 		return -1
 	}
 
-	shared.LogDebug(tag, "Creating device with domain blocking enabled: %v", conf.Device.DomainBlockingEnabled)
-
-	handle, err2 := shared.GenerateUniqueHandle()
+	handle, err := shared.GenerateUniqueHandle()
+	if err != nil {
+		shared.LogError(tag, "Unable to generate handle: %v", err)
+		if tunnel != nil {
+			tunnel.Close()
+		}
+		return -1
+	}
 
 	statusCB := func(code device.StatusCode) {
+		key := handle
+		if prev, loaded := lastTunnelStatus.LoadOrStore(key, code); loaded {
+			if prev == code {
+				return // duplicate, skip
+			}
+			lastTunnelStatus.Store(key, code)
+		}
 		go C.awgNotifyStatus(C.int32_t(handle), C.int32_t(code))
 	}
 
-	tunDevice := device.NewDevice(tunnel, conn.NewStdNetBind(), shared.NewLogger("Tun/"+interfaceName), statusCB)
-
+	tunDevice := device.NewDevice(tunnel, conn.NewStdNetBindWithControl(shared.ProtectControlFunc), shared.NewLogger("Tun/"+interfaceName), statusCB)
 	tunDevice.DisableSomeRoamingForBrokenMobileSemantics()
 
 	ipcRequest, err := wireproxyawg.CreateIPCRequest(conf.Device, false)
 	if err != nil {
 		shared.LogError(tag, "CreateIPCRequest: %v", err)
-		unix.Close(int(tunFd))
 		shared.ReleaseHandle(handle)
+		tunDevice.Close()
 		return -1
 	}
 
 	err = tunDevice.IpcSet(ipcRequest.IpcRequest)
 	if err != nil {
-		unix.Close(int(tunFd))
-		shared.ReleaseHandle(handle)
 		shared.LogError(tag, "IpcSet: %v", err)
+		shared.ReleaseHandle(handle)
+		tunDevice.Close()
 		return -1
 	}
 
 	var uapi net.Listener
-
-	uapiFile, err := ipc.UAPIOpen(uapiPath, name)
-
-	if err != nil {
-		shared.LogError(tag, "UAPIOpen: %v", err)
+	uapiFile, uapiErr := ipc.UAPIOpen(uapiPath, name)
+	if uapiErr != nil {
+		shared.LogError(tag, "UAPIOpen: %v", uapiErr)
+		uapiFile = nil
 	} else {
-		uapi, err = ipc.UAPIListen(uapiPath, name, uapiFile) // uapiPath as rootdir, name as interface
+		uapi, err = ipc.UAPIListen(uapiPath, name, uapiFile)
 		if err != nil {
-			uapiFile.Close()
 			shared.LogError(tag, "UAPIListen: %v", err)
+			uapiFile.Close()
+			uapiFile = nil
+			uapi = nil
 		} else {
 			go func() {
 				for {
@@ -112,29 +125,33 @@ func awgTurnOn(interfaceName string, tunFd int32, settings string, uapiPath stri
 	err = tunDevice.Up()
 	if err != nil {
 		shared.LogError(tag, "Unable to bring up device: %v", err)
-		uapiFile.Close()
+		if uapiFile != nil {
+			uapiFile.Close()
+		}
+		if uapi != nil {
+			uapi.Close()
+		}
 		shared.ReleaseHandle(handle)
 		tunDevice.Close()
 		return -1
 	}
-	shared.LogDebug(tag, "Device started")
 
-	if err2 != nil {
-		shared.LogError(tag, "Unable to find empty handle", err2)
-		uapiFile.Close()
-		shared.ReleaseHandle(handle)
-		tunDevice.Close()
-		return -1
+	shared.LogDebug(tag, "Tunnel started successfully for handle %d", handle)
+
+	tunnelMu.Lock()
+	tunnelHandles[handle] = TunnelHandle{
+		device: tunDevice,
+		uapi:   uapi,
 	}
-
-	tunnelHandles[handle] = TunnelHandle{device: tunDevice, uapi: uapi}
-
+	tunnelMu.Unlock()
 	return handle
 }
 
 //export awgUpdateTunnelPeers
 func awgUpdateTunnelPeers(tunnelHandle int32, settings string) int32 {
+	tunnelMu.RLock()
 	handle, ok := tunnelHandles[tunnelHandle]
+	tunnelMu.RUnlock()
 	if !ok {
 		shared.LogError(tag, "Tunnel is not up")
 		return -1
@@ -158,76 +175,76 @@ func awgUpdateTunnelPeers(tunnelHandle int32, settings string) int32 {
 		return -1
 	}
 
-	shared.LogDebug(tag, "Configuration updated successfully")
+	shared.LogDebug(tag, "Configuration updated successfully with handle %d", handle)
 	return 0
 }
 
 //export awgTurnOff
 func awgTurnOff(tunnelHandle int32) {
+
+	tunnelMu.Lock()
+
 	handle, ok := tunnelHandles[tunnelHandle]
 	if !ok {
+		tunnelMu.Unlock()
+
 		shared.LogError(tag, "Tunnel is not up")
 		return
 	}
 
-	go C.awgNotifyStatus(
-		C.int32_t(tunnelHandle),
-		C.int32_t(shared.StatusStop),
-	)
-
 	delete(tunnelHandles, tunnelHandle)
+
+	tunnelMu.Unlock()
+
 	if handle.uapi != nil {
 		handle.uapi.Close()
 	}
-	handle.device.Close()
+
+	if handle.device != nil {
+		handle.device.Close()
+	}
+
+	lastTunnelStatus.Delete(tunnelHandle)
 	shared.ReleaseHandle(tunnelHandle)
-}
 
-//export awgGetSocketV4
-func awgGetSocketV4(tunnelHandle int32) int32 {
-	handle, ok := tunnelHandles[tunnelHandle]
-	if !ok {
-		return -1
-	}
-	bind, _ := handle.device.Bind().(conn.PeekLookAtSocketFd)
-	if bind == nil {
-		return -1
-	}
-	fd, err := bind.PeekLookAtSocketFd4()
-	if err != nil {
-		return -1
-	}
-	return int32(fd)
-}
-
-//export awgGetSocketV6
-func awgGetSocketV6(tunnelHandle int32) int32 {
-	handle, ok := tunnelHandles[tunnelHandle]
-	if !ok {
-		return -1
-	}
-	bind, _ := handle.device.Bind().(conn.PeekLookAtSocketFd)
-	if bind == nil {
-		return -1
-	}
-	fd, err := bind.PeekLookAtSocketFd6()
-	if err != nil {
-		return -1
-	}
-	return int32(fd)
+	C.awgNotifyStatus(
+		C.int32_t(tunnelHandle),
+		C.int32_t(shared.StatusStop),
+	)
 }
 
 //export awgGetConfig
 func awgGetConfig(tunnelHandle int32) *C.char {
+
+	tunnelMu.RLock()
 	handle, ok := tunnelHandles[tunnelHandle]
+	tunnelMu.RUnlock()
+
 	if !ok {
 		return nil
 	}
+
 	settings, err := handle.device.IpcGet()
 	if err != nil {
 		return nil
 	}
+
 	return C.CString(settings)
+}
+
+//export awgTriggerBindUpdate
+func awgTriggerBindUpdate(handle int32) {
+	tunnelMu.RLock()
+	h, ok := tunnelHandles[handle]
+	tunnelMu.RUnlock()
+	if !ok {
+		shared.LogDebug(tag, "awgTriggerBindUpdate: handle %d not found", handle)
+		return
+	}
+	if h.device != nil {
+		shared.LogDebug(tag, "Calling BindUpdate on VPN handle %d", handle)
+		h.device.BindUpdate()
+	}
 }
 
 //export awgVersion

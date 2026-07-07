@@ -4,7 +4,12 @@ import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelActionSource
 
 sealed interface TunnelActionEvent {
 
-    data class Started(val tunnelId: Int, val source: TunnelActionSource) : TunnelActionEvent
+    val source: TunnelActionSource
+    val tunnelId: Int
 
-    data class Stopped(val tunnelId: Int, val source: TunnelActionSource) : TunnelActionEvent
+    data class Started(override val tunnelId: Int, override val source: TunnelActionSource) :
+        TunnelActionEvent
+
+    data class Stopped(override val tunnelId: Int, override val source: TunnelActionSource) :
+        TunnelActionEvent
 }

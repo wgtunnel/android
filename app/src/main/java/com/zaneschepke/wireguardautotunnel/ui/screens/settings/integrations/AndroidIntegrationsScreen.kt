@@ -11,7 +11,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Launch
 import androidx.compose.material.icons.filled.AppShortcut
-import androidx.compose.material.icons.filled.SmartToy
+import androidx.compose.material.icons.filled.SettingsRemote
 import androidx.compose.material.icons.outlined.AdminPanelSettings
 import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.Key
@@ -133,20 +133,22 @@ fun AndroidIntegrationsScreen(viewModel: SettingsViewModel = koinViewModel()) {
                         onClick = { viewModel.setShortcutsEnabled(it) },
                     )
                 },
-                title = stringResource(R.string.enabled_app_shortcuts),
+                title = stringResource(R.string.app_shortcuts),
+                description = { DescriptionText(stringResource(R.string.app_shortcuts_desc)) },
                 onClick = {
                     viewModel.setShortcutsEnabled(!settingsState.settings.isShortcutsEnabled)
                 },
             )
             SurfaceRow(
-                leading = { Icon(Icons.Filled.SmartToy, contentDescription = null) },
+                leading = { Icon(Icons.Filled.SettingsRemote, contentDescription = null) },
                 trailing = {
                     ThemedSwitch(
                         checked = settingsState.isRemoteEnabled,
                         onClick = { viewModel.setRemoteEnabled(it) },
                     )
                 },
-                title = stringResource(R.string.enable_remote_app_control),
+                title = stringResource(R.string.remote_control),
+                description = { DescriptionText(stringResource(R.string.remote_control_desc)) },
                 onClick = { viewModel.setRemoteEnabled(!settingsState.isRemoteEnabled) },
             )
             AnimatedVisibility(settingsState.isRemoteEnabled) {

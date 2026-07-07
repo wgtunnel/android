@@ -16,14 +16,14 @@ val ElectricTeal = Color(0xFF4DD0E1)
 // Status colors
 val SilverTree = Color(0xFF6DB58B)
 val AlertRed = Color(0xFFCF6679)
-
 val Straw = Color(0xFFD4C483)
 
 val Disabled = CoolGray.copy(alpha = 0.4f)
 
-// Config colors
+// Other colors
 val ConfigHeaderColor = Color(0xFFBB86FC)
 val ConfigKeyColor = Color(0xFF03DAC5)
+val Heart = Color(0xFFDB61A2)
 
 sealed class ThemeColors(
     val background: Color,

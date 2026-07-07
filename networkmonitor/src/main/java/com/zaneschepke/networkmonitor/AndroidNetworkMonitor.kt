@@ -7,6 +7,7 @@ import android.content.IntentFilter
 import android.database.ContentObserver
 import android.location.LocationManager
 import android.net.ConnectivityManager
+import android.net.LinkProperties
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
@@ -17,14 +18,15 @@ import com.zaneschepke.networkmonitor.AndroidNetworkMonitor.WifiDetectionMethod.
 import com.zaneschepke.networkmonitor.AndroidNetworkMonitor.WifiDetectionMethod.LEGACY
 import com.zaneschepke.networkmonitor.AndroidNetworkMonitor.WifiDetectionMethod.ROOT
 import com.zaneschepke.networkmonitor.AndroidNetworkMonitor.WifiDetectionMethod.SHIZUKU
+import com.zaneschepke.networkmonitor.model.LinkPropertiesSnapshot
 import com.zaneschepke.networkmonitor.shizuku.ShizukuShell
-import com.zaneschepke.networkmonitor.util.getCurrentSecurityType
-import com.zaneschepke.networkmonitor.util.getWifiSsid
+import com.zaneschepke.networkmonitor.util.getLegacySecurityType
+import com.zaneschepke.networkmonitor.util.getWifiSecurityType
+import com.zaneschepke.networkmonitor.util.getWifiSsidAndBssid
 import com.zaneschepke.networkmonitor.util.hasRequiredLocationPermissions
 import com.zaneschepke.networkmonitor.util.isAirplaneModeOn
 import com.zaneschepke.networkmonitor.util.isLocationServicesEnabled
 import java.net.Inet6Address
-import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -34,14 +36,16 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 import timber.log.Timber
 
@@ -63,8 +67,8 @@ class AndroidNetworkMonitor(
     companion object {
         const val LOCATION_SERVICES_FILTER: String = "android.location.PROVIDERS_CHANGED"
         const val ANDROID_UNKNOWN_SSID: String = "<unknown ssid>"
-        const val WIFI_SSID_SHELL_COMMAND =
-            "cmd wifi status | grep -i 'connected to' | cut -d'\"' -f2"
+        const val ANDROID_UNKNOWN_BSSID: String = "02:00:00:00:00:00"
+        const val WIFI_INFO_SHELL_COMMAND = "cmd wifi status"
         const val SHELL_COMMAND_TIMEOUT_MS = 2_000L
     }
 
@@ -92,20 +96,134 @@ class AndroidNetworkMonitor(
 
     private val permissionsChangedFlow = MutableStateFlow(false)
 
-    private var permissionReceiver: BroadcastReceiver? = null
-    private var locationServicesReceiver: BroadcastReceiver? = null
-    private var airplaneReceiver: BroadcastReceiver? = null
-    private var defaultNetworkCallback: ConnectivityManager.NetworkCallback? = null
-    private var wifiCallback: ConnectivityManager.NetworkCallback? = null
-    private var cellularCallback: ConnectivityManager.NetworkCallback? = null
-    private var ethernetCallback: ConnectivityManager.NetworkCallback? = null
-
     private val airplaneModeState = MutableStateFlow(appContext.isAirplaneModeOn())
-    private val airplaneModeFlow: Flow<Boolean> = airplaneModeState.asStateFlow()
+    private val activeCellularNetworks =
+        MutableStateFlow<Map<Network, NetworkCapabilities>>(emptyMap())
+
+    private val permissionCheckFlow: Flow<Unit> = callbackFlow {
+        val receiver =
+            object : BroadcastReceiver() {
+                override fun onReceive(context: Context, intent: Intent) {
+                    if (intent.action == actionPermissionCheck) {
+                        val isGranted = appContext.hasRequiredLocationPermissions()
+                        Timber.d("Received permission check broadcast, isGranted: $isGranted")
+
+                        if (
+                            connectivityStateFlow.replayCache
+                                .firstOrNull()
+                                ?.locationPermissionsGranted != isGranted
+                        ) {
+                            Timber.d("Location permissions changed, restarting flows")
+                            permissionsChangedFlow.update { !permissionsChangedFlow.value }
+                        }
+                    }
+                }
+            }
+
+        val flags =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                Context.RECEIVER_NOT_EXPORTED
+            } else 0
+
+        appContext.registerReceiver(receiver, IntentFilter(actionPermissionCheck), flags)
+        awaitClose { appContext.unregisterReceiver(receiver) }
+    }
+
+    private val locationServicesFlow: Flow<Unit> = callbackFlow {
+        val receiver =
+            object : BroadcastReceiver() {
+                override fun onReceive(context: Context, intent: Intent) {
+                    if (intent.action == LOCATION_SERVICES_FILTER) {
+                        val enabled = locationManager?.isLocationServicesEnabled() ?: false
+                        Timber.d("Location services changed: $enabled")
+
+                        if (
+                            connectivityStateFlow.replayCache
+                                .firstOrNull()
+                                ?.locationServicesEnabled != enabled
+                        ) {
+                            Timber.d("Location services changed, restarting flows")
+                            permissionsChangedFlow.update { !permissionsChangedFlow.value }
+                        }
+                    }
+                }
+            }
+
+        val flags =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                Context.RECEIVER_EXPORTED
+            } else 0
+
+        appContext.registerReceiver(receiver, IntentFilter(LOCATION_SERVICES_FILTER), flags)
+        awaitClose { appContext.unregisterReceiver(receiver) }
+    }
+
+    private val airplaneModeReceiverFlow: Flow<Boolean> = callbackFlow {
+        val receiver =
+            object : BroadcastReceiver() {
+                override fun onReceive(context: Context, intent: Intent) {
+                    if (intent.action == Intent.ACTION_AIRPLANE_MODE_CHANGED) {
+                        val isOn = intent.getBooleanExtra("state", false)
+                        Timber.d("Airplane mode changed: $isOn")
+                        if (isOn) activeCellularNetworks.value = emptyMap()
+                        airplaneModeState.update { isOn }
+                    }
+                }
+            }
+
+        val flags =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                Context.RECEIVER_EXPORTED
+            } else 0
+
+        appContext.registerReceiver(
+            receiver,
+            IntentFilter(Intent.ACTION_AIRPLANE_MODE_CHANGED),
+            flags,
+        )
+        awaitClose { appContext.unregisterReceiver(receiver) }
+    }
+
+    init {
+        applicationScope.launch { permissionCheckFlow.collect() }
+        applicationScope.launch { locationServicesFlow.collect() }
+        applicationScope.launch { airplaneModeReceiverFlow.collect() }
+
+        // Set initial airplane mode state
+        airplaneModeState.update { appContext.isAirplaneModeOn() }
+    }
 
     // tracking to prevent races that occur when VPN is first activated and to prevent redundant
     // location queries in Legacy mode
-    private val lastKnownActiveNetwork = MutableStateFlow<ActiveNetwork>(ActiveNetwork.Disconnected)
+    private val lastKnownActiveNetwork =
+        MutableStateFlow<ActiveNetwork>(ActiveNetwork.Disconnected())
+
+    private data class WifiDetails(val ssid: String, val bssid: String)
+
+    private fun parseWifiStatusOutput(output: String): WifiDetails {
+        val ssidRegex = Regex("""(?i)connected to\s*"([^"]+)"""")
+        val bssidRegex = Regex("""(?i)BSSID:\s*([a-fA-F0-9:]{17})""")
+
+        val ssidMatch = ssidRegex.find(output)
+        val bssidMatch = bssidRegex.find(output)
+
+        val ssid =
+            ssidMatch
+                ?.groupValues
+                ?.get(1)
+                // Removes all whitespaces and newlines
+                ?.trim { it.isWhitespace() || it == '\\' }
+                ?.ifBlank { ANDROID_UNKNOWN_SSID } ?: ANDROID_UNKNOWN_SSID
+
+        val bssid =
+            bssidMatch
+                ?.groupValues
+                ?.get(1)
+                ?.trim { it.isWhitespace() || it == '\\' }
+                ?.ifBlank { ANDROID_UNKNOWN_BSSID } ?: ANDROID_UNKNOWN_BSSID
+
+        return WifiDetails(ssid, bssid.uppercase())
+    }
 
     private val privateDnsFlow: Flow<PrivateDnsSettings> = callbackFlow {
         val contentResolver = appContext.contentResolver
@@ -189,10 +307,11 @@ class AndroidNetworkMonitor(
             }
             .flatMapLatest { detectionMethod ->
                 callbackFlow {
-                    if (
-                        Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && detectionMethod == DEFAULT
-                    ) {
-                        defaultNetworkCallback =
+                    val defaultNetworkCallback =
+                        if (
+                            Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+                                detectionMethod == DEFAULT
+                        ) {
                             object :
                                 ConnectivityManager.NetworkCallback(FLAG_INCLUDE_LOCATION_INFO) {
                                 override fun onAvailable(network: Network) {
@@ -210,8 +329,7 @@ class AndroidNetworkMonitor(
                                     trySend(TransportEvent.CapabilitiesChanged(network, caps))
                                 }
                             }
-                    } else {
-                        defaultNetworkCallback =
+                        } else {
                             object : ConnectivityManager.NetworkCallback() {
                                 override fun onAvailable(network: Network) {
                                     Timber.d("Default onAvailable: $network")
@@ -228,8 +346,8 @@ class AndroidNetworkMonitor(
                                     trySend(TransportEvent.CapabilitiesChanged(network, caps))
                                 }
                             }
-                    }
-                    connectivityManager?.registerDefaultNetworkCallback(defaultNetworkCallback!!)
+                        }
+                    connectivityManager?.registerDefaultNetworkCallback(defaultNetworkCallback)
 
                     trySend(
                         TransportEvent.Permissions(
@@ -241,7 +359,7 @@ class AndroidNetworkMonitor(
                     )
 
                     awaitClose {
-                        connectivityManager?.unregisterNetworkCallback(defaultNetworkCallback!!)
+                        connectivityManager?.unregisterNetworkCallback(defaultNetworkCallback)
                     }
                 }
             }
@@ -256,183 +374,236 @@ class AndroidNetworkMonitor(
 
     private fun createWifiNetworkCallbackFlow(
         detectionMethod: WifiDetectionMethod
-    ): Flow<TransportEvent> = callbackFlow {
-        val onAvailable: (Network) -> Unit = { network ->
-            // ignore onAvailable has it doesn't contain detailed network information in
-            // capabilities
-            Timber.d("WiFi onAvailable: $network")
-        }
-        val onLost: (Network) -> Unit = { network ->
-            Timber.d("WiFi onLost: $network")
-            trySend(TransportEvent.Lost(network))
-        }
-        val onCapabilitiesChanged: (Network, NetworkCapabilities) -> Unit = { network, caps ->
-            if (caps.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
-                trySend(TransportEvent.CapabilitiesChanged(network, caps))
-            }
-        }
-
-        wifiCallback =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && detectionMethod == DEFAULT) {
-                object : ConnectivityManager.NetworkCallback(FLAG_INCLUDE_LOCATION_INFO) {
-                    override fun onAvailable(network: Network) = onAvailable(network)
-
-                    override fun onLost(network: Network) = onLost(network)
-
-                    override fun onCapabilitiesChanged(
-                        network: Network,
-                        caps: NetworkCapabilities,
-                    ) = onCapabilitiesChanged(network, caps)
+    ): Flow<TransportEvent> =
+        callbackFlow {
+                val onAvailable: (Network) -> Unit = { network ->
+                    // ignore onAvailable has it doesn't contain detailed network information in
+                    // capabilities
+                    Timber.d("WiFi onAvailable: $network")
                 }
-            } else {
-                object : ConnectivityManager.NetworkCallback() {
-                    override fun onAvailable(network: Network) = onAvailable(network)
+                val onLost: (Network) -> Unit = { network ->
+                    Timber.d("WiFi onLost: $network")
+                    trySend(TransportEvent.Lost(network))
+                }
+                val onCapabilitiesChanged: (Network, NetworkCapabilities) -> Unit =
+                    { network, caps ->
+                        if (caps.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
+                            trySend(TransportEvent.CapabilitiesChanged(network, caps))
+                        }
+                    }
 
-                    override fun onLost(network: Network) = onLost(network)
+                val onLinkPropertiesChanged: (Network, LinkProperties) -> Unit =
+                    { network, linkProps ->
+                        trySend(TransportEvent.LinkPropertiesChanged(network, linkProps))
+                    }
 
-                    override fun onCapabilitiesChanged(
-                        network: Network,
-                        caps: NetworkCapabilities,
-                    ) = onCapabilitiesChanged(network, caps)
+                val wifiCallback =
+                    if (
+                        Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && detectionMethod == DEFAULT
+                    ) {
+                        object : ConnectivityManager.NetworkCallback(FLAG_INCLUDE_LOCATION_INFO) {
+                            override fun onAvailable(network: Network) = onAvailable(network)
+
+                            override fun onLost(network: Network) = onLost(network)
+
+                            override fun onCapabilitiesChanged(
+                                network: Network,
+                                caps: NetworkCapabilities,
+                            ) = onCapabilitiesChanged(network, caps)
+
+                            override fun onLinkPropertiesChanged(
+                                network: Network,
+                                linkProperties: LinkProperties,
+                            ) = onLinkPropertiesChanged(network, linkProperties)
+                        }
+                    } else {
+                        object : ConnectivityManager.NetworkCallback() {
+                            override fun onAvailable(network: Network) = onAvailable(network)
+
+                            override fun onLost(network: Network) = onLost(network)
+
+                            override fun onCapabilitiesChanged(
+                                network: Network,
+                                caps: NetworkCapabilities,
+                            ) = onCapabilitiesChanged(network, caps)
+
+                            override fun onLinkPropertiesChanged(
+                                network: Network,
+                                linkProperties: LinkProperties,
+                            ) = onLinkPropertiesChanged(network, linkProperties)
+                        }
+                    }
+
+                val request =
+                    NetworkRequest.Builder()
+                        .apply { addTransportType(NetworkCapabilities.TRANSPORT_WIFI) }
+                        .build()
+
+                connectivityManager?.registerNetworkCallback(request, wifiCallback)
+
+                awaitClose {
+                    runCatching { connectivityManager?.unregisterNetworkCallback(wifiCallback) }
+                        .onFailure { Timber.e(it, "Error unregistering WiFi network callback") }
                 }
             }
+            .onStart { emit(TransportEvent.Unknown) }
 
-        val request =
-            NetworkRequest.Builder()
-                .apply { addTransportType(NetworkCapabilities.TRANSPORT_WIFI) }
-                .build()
+    private val cellularFlow: Flow<TransportEvent> =
+        callbackFlow {
+                val onAvailable: (Network) -> Unit = { network ->
+                    Timber.d("Cellular onAvailable: $network")
+                    val caps = connectivityManager?.getNetworkCapabilities(network)
+                    if (caps != null && caps.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
+                        activeCellularNetworks.update { it + (network to caps) }
+                        trySend(TransportEvent.CapabilitiesChanged(network, caps))
+                    }
+                }
 
-        connectivityManager?.registerNetworkCallback(request, wifiCallback!!)
+                val onLost: (Network) -> Unit = { network ->
+                    Timber.d("Cellular onLost: $network")
+                    activeCellularNetworks.update { it - network }
+                    trySend(TransportEvent.Lost(network))
+                }
 
-        trySend(TransportEvent.Unknown)
+                val onCapabilitiesChanged: (Network, NetworkCapabilities) -> Unit =
+                    { network, caps ->
+                        if (caps.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
+                            activeCellularNetworks.update { it + (network to caps) }
+                            trySend(TransportEvent.CapabilitiesChanged(network, caps))
+                        }
+                    }
 
-        awaitClose {
-            runCatching { connectivityManager?.unregisterNetworkCallback(wifiCallback!!) }
-                .onFailure { Timber.e(it, "Error unregistering WiFi network callback") }
-        }
-    }
+                val cellularCallback =
+                    object : ConnectivityManager.NetworkCallback() {
+                        override fun onAvailable(network: Network) = onAvailable(network)
 
-    private val cellularFlow: Flow<TransportEvent> = callbackFlow {
-        val onAvailable: (Network) -> Unit = { network ->
-            Timber.d("Cellular onAvailable: $network")
-        }
-        val onLost: (Network) -> Unit = { network ->
-            Timber.d("Cellular onLost: $network")
-            trySend(TransportEvent.Lost(network))
-        }
-        val onCapabilitiesChanged: (Network, NetworkCapabilities) -> Unit = { network, caps ->
-            Timber.d("Cellular onCapabilitiesChanged: $network")
-            trySend(TransportEvent.CapabilitiesChanged(network, caps))
-        }
+                        override fun onLost(network: Network) = onLost(network)
 
-        cellularCallback =
-            object : ConnectivityManager.NetworkCallback() {
-                override fun onAvailable(network: Network) = onAvailable(network)
+                        override fun onCapabilitiesChanged(
+                            network: Network,
+                            caps: NetworkCapabilities,
+                        ) = onCapabilitiesChanged(network, caps)
+                    }
 
-                override fun onLost(network: Network) = onLost(network)
+                val request =
+                    NetworkRequest.Builder()
+                        .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
+                        .build()
 
-                override fun onCapabilitiesChanged(network: Network, caps: NetworkCapabilities) =
-                    onCapabilitiesChanged(network, caps)
+                connectivityManager?.registerNetworkCallback(request, cellularCallback)
+
+                awaitClose {
+                    runCatching { connectivityManager?.unregisterNetworkCallback(cellularCallback) }
+                        .onFailure { Timber.e(it, "Error unregistering cellular network callback") }
+                }
             }
+            .onStart { emit(TransportEvent.Unknown) }
 
-        val request =
-            NetworkRequest.Builder()
-                .apply { addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR) }
-                .build()
+    private val ethernetFlow: Flow<TransportEvent> =
+        callbackFlow {
+                val onAvailable: (Network) -> Unit = { network ->
+                    Timber.d("Ethernet onAvailable: $network")
+                }
+                val onLost: (Network) -> Unit = { network ->
+                    Timber.d("Ethernet onLost: $network")
+                    trySend(TransportEvent.Lost(network))
+                }
+                val onCapabilitiesChanged: (Network, NetworkCapabilities) -> Unit =
+                    { network, caps ->
+                        Timber.d("Ethernet onCapabilitiesChanged: $network")
+                        trySend(TransportEvent.CapabilitiesChanged(network, caps))
+                    }
 
-        connectivityManager?.registerNetworkCallback(request, cellularCallback!!)
+                val ethernetCallback =
+                    object : ConnectivityManager.NetworkCallback() {
+                        override fun onAvailable(network: Network) = onAvailable(network)
 
-        trySend(TransportEvent.Unknown)
+                        override fun onLost(network: Network) = onLost(network)
 
-        awaitClose {
-            runCatching { connectivityManager?.unregisterNetworkCallback(cellularCallback!!) }
-                .onFailure { Timber.e(it, "Error unregistering cellular network callback") }
-        }
-    }
+                        override fun onCapabilitiesChanged(
+                            network: Network,
+                            caps: NetworkCapabilities,
+                        ) = onCapabilitiesChanged(network, caps)
+                    }
 
-    private val ethernetFlow: Flow<TransportEvent> = callbackFlow {
-        val onAvailable: (Network) -> Unit = { network ->
-            Timber.d("Ethernet onAvailable: $network")
-        }
-        val onLost: (Network) -> Unit = { network ->
-            Timber.d("Ethernet onLost: $network")
-            trySend(TransportEvent.Lost(network))
-        }
-        val onCapabilitiesChanged: (Network, NetworkCapabilities) -> Unit = { network, caps ->
-            Timber.d("Ethernet onCapabilitiesChanged: $network")
-            trySend(TransportEvent.CapabilitiesChanged(network, caps))
-        }
+                val request =
+                    NetworkRequest.Builder()
+                        .apply { addTransportType(NetworkCapabilities.TRANSPORT_ETHERNET) }
+                        .build()
 
-        ethernetCallback =
-            object : ConnectivityManager.NetworkCallback() {
-                override fun onAvailable(network: Network) = onAvailable(network)
+                connectivityManager?.registerNetworkCallback(request, ethernetCallback)
 
-                override fun onLost(network: Network) = onLost(network)
-
-                override fun onCapabilitiesChanged(network: Network, caps: NetworkCapabilities) =
-                    onCapabilitiesChanged(network, caps)
+                awaitClose {
+                    runCatching { connectivityManager?.unregisterNetworkCallback(ethernetCallback) }
+                        .onFailure { Timber.e(it, "Error unregistering ethernet network callback") }
+                }
             }
+            .onStart { emit(TransportEvent.Unknown) }
 
-        val request =
-            NetworkRequest.Builder()
-                .apply { addTransportType(NetworkCapabilities.TRANSPORT_ETHERNET) }
-                .build()
-
-        connectivityManager?.registerNetworkCallback(request, ethernetCallback!!)
-
-        trySend(TransportEvent.Unknown)
-
-        awaitClose {
-            runCatching { connectivityManager?.unregisterNetworkCallback(ethernetCallback!!) }
-                .onFailure { Timber.e(it, "Error unregistering ethernet network callback") }
-        }
-    }
-
-    private suspend fun getSsidByDetectionMethod(
+    private suspend fun getWifiDetailsByDetectionMethod(
         detectionMethod: WifiDetectionMethod?,
         networkCapabilities: NetworkCapabilities?,
         network: Network?,
-    ): String {
+    ): WifiDetails {
         val method = detectionMethod ?: DEFAULT
         return try {
                 when (method) {
-                        DEFAULT ->
-                            networkCapabilities?.getWifiSsid()
-                                ?: wifiManager?.getWifiSsid()
-                                ?: ANDROID_UNKNOWN_SSID
-                        LEGACY -> {
-                            // prevent redundant location queries in legacy mode
-                            val lastActive = lastKnownActiveNetwork.value
-                            if (
-                                lastActive is ActiveNetwork.Wifi &&
-                                    lastActive.networkId == network?.toString()
-                            ) {
-                                if (lastActive.ssid != ANDROID_UNKNOWN_SSID) {
-                                    Timber.d(
-                                        "Using last active network SSID for same network to prevent redundant location query"
-                                    )
-                                    return lastActive.ssid
-                                }
-                            }
-                            wifiManager?.getWifiSsid() ?: ANDROID_UNKNOWN_SSID
-                        }
-                        ROOT ->
-                            withTimeoutOrNull(SHELL_COMMAND_TIMEOUT_MS.milliseconds) {
-                                configurationListener.runRootShellCommand(WIFI_SSID_SHELL_COMMAND)
-                            } ?: ANDROID_UNKNOWN_SSID
-                        SHIZUKU ->
-                            withTimeoutOrNull(SHELL_COMMAND_TIMEOUT_MS.milliseconds) {
-                                ShizukuShell(applicationScope)
-                                    .singleResponseCommand(WIFI_SSID_SHELL_COMMAND)
-                            } ?: ANDROID_UNKNOWN_SSID
+                    DEFAULT -> {
+                        val (ssid, bssid) =
+                            networkCapabilities?.getWifiSsidAndBssid()
+                                ?: wifiManager?.getWifiSsidAndBssid()
+                                ?: (ANDROID_UNKNOWN_SSID to ANDROID_UNKNOWN_BSSID)
+                        WifiDetails(ssid, bssid.uppercase())
                     }
-                    .trim()
-                    .replace(Regex("[\n\r]"), "")
+                    LEGACY -> {
+                        val lastActive = lastKnownActiveNetwork.value
+                        if (
+                            lastActive is ActiveNetwork.Wifi &&
+                                lastActive.networkId == network?.toString() &&
+                                lastActive.ssid != ANDROID_UNKNOWN_SSID &&
+                                lastActive.bssid != ANDROID_UNKNOWN_BSSID
+                        ) {
+                            Timber.d("Using last active network SSID+BSSID (LEGACY cache)")
+                            return WifiDetails(lastActive.ssid, lastActive.bssid.uppercase())
+                        }
+                        Timber.d("Triggering new location ping for SSID and BSSID (LEGACY)")
+                        val (ssid, bssid) =
+                            wifiManager?.getWifiSsidAndBssid()
+                                ?: (ANDROID_UNKNOWN_SSID to ANDROID_UNKNOWN_BSSID)
+                        WifiDetails(ssid, bssid)
+                    }
+                    ROOT,
+                    SHIZUKU -> {
+                        val raw =
+                            withTimeoutOrNull(SHELL_COMMAND_TIMEOUT_MS.milliseconds) {
+                                if (method == ROOT) {
+                                    configurationListener.runRootShellCommand(
+                                        WIFI_INFO_SHELL_COMMAND
+                                    )
+                                } else {
+                                    ShizukuShell(applicationScope)
+                                        .singleResponseCommand(WIFI_INFO_SHELL_COMMAND)
+                                }
+                            } ?: ""
+                        parseWifiStatusOutput(raw)
+                    }
+                }
             } catch (e: Exception) {
-                Timber.e(e, "Failed to get SSID with method: ${method.name}")
-                ANDROID_UNKNOWN_SSID
+                Timber.e(e, "Failed to get WiFi details with method: ${method.name}")
+                WifiDetails(ANDROID_UNKNOWN_SSID, ANDROID_UNKNOWN_BSSID)
             }
-            .also { Timber.d("Current SSID via ${method.name}: $it") }
+            .also {
+                Timber.d(
+                    "Current WiFi details via ${method.name}: ssid=${it.ssid}, bssid=${it.bssid}"
+                )
+            }
+    }
+
+    private fun hasValidatedInternet(caps: NetworkCapabilities?): Boolean {
+        if (caps == null) return false
+        return caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
+            caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED) &&
+            hasNotSuspended(caps)
     }
 
     // default network events don't contain detailed capability information of underlying networks,
@@ -454,11 +625,54 @@ class AndroidNetworkMonitor(
             NetworkData(defaultEvent, wifiEvent, cellularEvent, ethernetEvent)
         }
 
-    @OptIn(ExperimentalCoroutinesApi::class, ExperimentalAtomicApi::class, FlowPreview::class)
+    private fun hasNotSuspended(caps: NetworkCapabilities?): Boolean {
+        if (caps == null) return false
+        return Build.VERSION.SDK_INT < Build.VERSION_CODES.P ||
+            caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_SUSPENDED)
+    }
+
+    // For multi-sim selection, prefers foreground, then validated internet, then not suspended
+    private fun pickBestCellularNetworkEntry(): Map.Entry<Network, NetworkCapabilities>? {
+        val networksMap = activeCellularNetworks.value
+        if (networksMap.isEmpty()) return null
+
+        return networksMap.entries.maxByOrNull { (_, caps) ->
+            // Network is an internal carrier MMS network
+            if (!caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_RESTRICTED)) {
+                return@maxByOrNull -1000
+            }
+
+            var score = 0
+
+            // OS prefers this network if Foreground
+            if (caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_FOREGROUND)) score += 100
+
+            if (hasValidatedInternet(caps)) score += 50
+
+            if (hasNotSuspended(caps)) score += 20
+
+            if (caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)) score += 10
+
+            if (
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.P &&
+                    caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_CONGESTED)
+            ) {
+                score += 5
+            }
+
+            // Prefer higher bandwidth network as tiebreaker
+            val bandwidthPoints = (caps.linkDownstreamBandwidthKbps / 100_000).coerceIn(0, 4)
+            score += bandwidthPoints
+
+            score
+        }
+    }
+
+    @OptIn(FlowPreview::class)
     override val connectivityStateFlow: SharedFlow<ConnectivityState> =
         combine(
                 networkFlows,
-                airplaneModeFlow,
+                airplaneModeState,
                 configurationListener.detectionMethod,
                 privateDnsFlow,
             ) { networkData, isAirplaneOn, detectionMethod, privateDnsSettings ->
@@ -486,9 +700,11 @@ class AndroidNetworkMonitor(
 
                 if (defaultCaps == null || defaultNetwork == null) {
                     return@combine ConnectivityState(
-                        activeNetwork = ActiveNetwork.Disconnected,
+                        activeNetwork = ActiveNetwork.Disconnected(),
+                        cellularNetworks = emptyMap(),
                         locationPermissionsGranted = permissions.locationPermissionGranted,
                         locationServicesEnabled = permissions.locationServicesEnabled,
+                        airplaneModeOn = isAirplaneOn,
                         vpnState = VpnState.Inactive,
                     )
                 }
@@ -510,58 +726,58 @@ class AndroidNetworkMonitor(
                 val physicalNetwork: ActiveNetwork =
                     when {
                         networkData.ethernetEvent is TransportEvent.CapabilitiesChanged &&
-                            networkData.ethernetEvent.networkCapabilities?.let { caps ->
-                                caps.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) &&
-                                    caps.hasCapability(
-                                        NetworkCapabilities.NET_CAPABILITY_INTERNET
-                                    ) &&
-                                    caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
-                            } == true -> {
-                            ActiveNetwork.Ethernet(networkData.ethernetEvent.network)
-                        }
-
-                        networkData.wifiNetworkEvent is TransportEvent.CapabilitiesChanged &&
-                            networkData.wifiNetworkEvent.networkCapabilities?.let { caps ->
-                                caps.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) &&
-                                    caps.hasCapability(
-                                        NetworkCapabilities.NET_CAPABILITY_INTERNET
-                                    ) &&
-                                    caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
-                            } == true -> {
-                            val wifiEvent = networkData.wifiNetworkEvent
-                            val ssid =
-                                getSsidByDetectionMethod(
-                                    detectionMethod,
-                                    wifiEvent.networkCapabilities,
-                                    wifiEvent.network,
-                                )
-                            ActiveNetwork.Wifi(
-                                ssid,
-                                wifiManager?.getCurrentSecurityType(),
-                                wifiEvent.network.toString(),
-                                wifiEvent.network,
+                            networkData.ethernetEvent.networkCapabilities?.hasTransport(
+                                NetworkCapabilities.TRANSPORT_ETHERNET
+                            ) == true -> {
+                            ActiveNetwork.Ethernet(
+                                networkData.ethernetEvent.network,
+                                networkData.ethernetEvent.networkCapabilities,
                             )
                         }
 
-                        // only count cellular as connected if validated AND not in airplane mode
-                        !isAirplaneOn &&
-                            networkData.cellularEvent is TransportEvent.CapabilitiesChanged &&
-                            networkData.cellularEvent.networkCapabilities?.let { caps ->
-                                caps.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) &&
-                                    caps.hasCapability(
-                                        NetworkCapabilities.NET_CAPABILITY_INTERNET
-                                    ) &&
-                                    caps.hasCapability(
-                                        NetworkCapabilities.NET_CAPABILITY_VALIDATED
-                                    ) &&
-                                    caps.hasCapability(
-                                        NetworkCapabilities.NET_CAPABILITY_NOT_SUSPENDED
-                                    )
-                            } == true -> {
-                            ActiveNetwork.Cellular(networkData.cellularEvent.network)
+                        networkData.wifiNetworkEvent is TransportEvent.CapabilitiesChanged &&
+                            networkData.wifiNetworkEvent.networkCapabilities?.hasTransport(
+                                NetworkCapabilities.TRANSPORT_WIFI
+                            ) == true -> {
+                            val wifiEvent = networkData.wifiNetworkEvent
+                            buildWifiNetwork(
+                                network = wifiEvent.network,
+                                caps = wifiEvent.networkCapabilities,
+                                detectionMethod = detectionMethod,
+                                lastActive = lastKnownActiveNetwork.value,
+                            )
                         }
 
-                        else -> ActiveNetwork.Disconnected
+                        // Fallback for WiFi
+                        defaultCaps?.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) == true &&
+                            defaultNetwork != null -> {
+                            buildWifiNetwork(
+                                network = defaultNetwork,
+                                caps = defaultCaps,
+                                detectionMethod = detectionMethod,
+                                lastActive = lastKnownActiveNetwork.value,
+                            )
+                        }
+
+                        // Fallback for Ethernet
+                        defaultCaps?.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) == true &&
+                            defaultNetwork != null -> {
+                            ActiveNetwork.Ethernet(defaultNetwork, defaultCaps)
+                        }
+                        else -> {
+                            val bestCellularEntry =
+                                pickBestCellularNetworkEntry()
+                                    ?: activeCellularNetworks.value.entries.firstOrNull()
+
+                            if (bestCellularEntry != null) {
+                                ActiveNetwork.Cellular(
+                                    bestCellularEntry.key,
+                                    bestCellularEntry.value,
+                                )
+                            } else {
+                                ActiveNetwork.Disconnected()
+                            }
+                        }
                     }
 
                 lastKnownActiveNetwork.value = physicalNetwork
@@ -589,9 +805,11 @@ class AndroidNetworkMonitor(
 
                 ConnectivityState(
                     activeNetwork = physicalNetwork,
+                    cellularNetworks = activeCellularNetworks.value,
                     locationPermissionsGranted = permissions.locationPermissionGranted,
                     locationServicesEnabled = permissions.locationServicesEnabled,
                     vpnState = vpnState,
+                    airplaneModeOn = isAirplaneOn,
                     effectiveDnsInfo = effectiveDns,
                     underlyingDnsInfo = underlyingDns,
                     hasIpv6 = hasIpv6Support(underlyingNetwork, physicalNetwork),
@@ -600,6 +818,52 @@ class AndroidNetworkMonitor(
             .distinctUntilChanged()
             .debounce(300.milliseconds)
             .shareIn(applicationScope, SharingStarted.Eagerly, replay = 1)
+
+    private suspend fun buildWifiNetwork(
+        network: Network,
+        caps: NetworkCapabilities,
+        detectionMethod: WifiDetectionMethod,
+        lastActive: ActiveNetwork?,
+    ): ActiveNetwork.Wifi {
+        val currentNetworkId = network.toString()
+
+        // Use cache in legacy mode
+        val (ssid, securityType, bssid) =
+            if (
+                detectionMethod == LEGACY &&
+                    lastActive is ActiveNetwork.Wifi &&
+                    lastActive.networkId == currentNetworkId &&
+                    lastActive.ssid != ANDROID_UNKNOWN_SSID &&
+                    lastActive.bssid != ANDROID_UNKNOWN_BSSID
+            ) {
+                Triple(lastActive.ssid, lastActive.securityType, lastActive.bssid)
+            } else {
+                // Fallback
+                val wifiDetails = getWifiDetailsByDetectionMethod(detectionMethod, caps, network)
+                val fetchedSecurity =
+                    if (
+                        detectionMethod == DEFAULT && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+                    ) {
+                        caps.getWifiSecurityType()
+                    } else {
+                        wifiManager?.getLegacySecurityType()
+                    }
+                Triple(wifiDetails.ssid, fetchedSecurity, wifiDetails.bssid)
+            }
+
+        val linkPropsSnapshot =
+            LinkPropertiesSnapshot.from(connectivityManager?.getLinkProperties(network))
+
+        return ActiveNetwork.Wifi(
+            ssid = ssid,
+            bssid = bssid,
+            securityType = securityType,
+            networkId = currentNetworkId,
+            network = network,
+            capabilities = caps,
+            linkProperties = linkPropsSnapshot,
+        )
+    }
 
     // utility to send local broadcast to trigger a recheck of location permissions onResume,
     // especially for getting SSID
@@ -610,102 +874,5 @@ class AndroidNetworkMonitor(
         val intent = Intent(action).apply { setPackage(appContext.packageName) }
         Timber.d("Sending broadcast: $action")
         appContext.sendBroadcast(intent)
-    }
-
-    init {
-        val exportedFlags =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                Context.RECEIVER_EXPORTED
-            } else {
-                0
-            }
-        val localFlags =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                Context.RECEIVER_NOT_EXPORTED
-            } else {
-                0
-            }
-
-        permissionReceiver =
-            object : BroadcastReceiver() {
-                override fun onReceive(context: Context, intent: Intent) {
-                    if (intent.action == actionPermissionCheck) {
-                        val isGranted = appContext.hasRequiredLocationPermissions()
-                        Timber.d("Received permission check broadcast, isGranted: $isGranted")
-                        if (
-                            connectivityStateFlow.replayCache
-                                .firstOrNull()
-                                ?.locationPermissionsGranted != isGranted
-                        ) {
-                            Timber.d(
-                                "Location permissions have changed, canceling and restarting callback flow"
-                            )
-                            permissionsChangedFlow.update { !permissionsChangedFlow.value }
-                        }
-                    }
-                }
-            }
-        appContext.registerReceiver(
-            permissionReceiver,
-            IntentFilter(actionPermissionCheck),
-            localFlags,
-        )
-
-        locationServicesReceiver =
-            object : BroadcastReceiver() {
-                override fun onReceive(context: Context, intent: Intent) {
-                    if (intent.action == LOCATION_SERVICES_FILTER) {
-                        Timber.d("Received location services broadcast")
-                        val isLocationServicesEnabled = locationManager?.isLocationServicesEnabled()
-                        if (
-                            connectivityStateFlow.replayCache
-                                .firstOrNull()
-                                ?.locationServicesEnabled != isLocationServicesEnabled
-                        ) {
-                            Timber.d(
-                                "Location services have changed, canceling and restarting callback flow"
-                            )
-                            permissionsChangedFlow.update { !permissionsChangedFlow.value }
-                        }
-                    }
-                }
-            }
-        appContext.registerReceiver(
-            locationServicesReceiver,
-            IntentFilter(LOCATION_SERVICES_FILTER),
-            exportedFlags,
-        )
-
-        airplaneReceiver =
-            object : BroadcastReceiver() {
-                override fun onReceive(context: Context, intent: Intent) {
-                    if (intent.action == Intent.ACTION_AIRPLANE_MODE_CHANGED) {
-                        val isAirplaneOn = intent.getBooleanExtra("state", false)
-                        Timber.d("Airplane mode changed to new state: $isAirplaneOn")
-                        airplaneModeState.update { isAirplaneOn }
-                    }
-                }
-            }
-
-        appContext.registerReceiver(
-            airplaneReceiver,
-            IntentFilter(Intent.ACTION_AIRPLANE_MODE_CHANGED),
-            exportedFlags,
-        )
-        airplaneModeState.update { appContext.isAirplaneModeOn() }
-    }
-
-    override fun destroy() {
-        runCatching {
-                permissionReceiver?.let { appContext.unregisterReceiver(it) }
-                locationServicesReceiver?.let { appContext.unregisterReceiver(it) }
-                airplaneReceiver?.let { appContext.unregisterReceiver(it) }
-                defaultNetworkCallback?.let { connectivityManager?.unregisterNetworkCallback(it) }
-                wifiCallback?.let { connectivityManager?.unregisterNetworkCallback(it) }
-                cellularCallback?.let { connectivityManager?.unregisterNetworkCallback(it) }
-                ethernetCallback?.let { connectivityManager?.unregisterNetworkCallback(it) }
-            }
-            .onFailure { Timber.e(it, "Error during cleanup") }
-        Timber.d("NetworkMonitor cleaned up")
     }
 }

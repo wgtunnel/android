@@ -3,11 +3,10 @@ package com.zaneschepke.wireguardautotunnel.viewmodel
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dokar.sonner.ToastType
 import com.zaneschepke.wireguardautotunnel.R
+import com.zaneschepke.wireguardautotunnel.core.orchestration.TunnelBackendCoordinator
 import com.zaneschepke.wireguardautotunnel.core.orchestration.TunnelCoordinator
-import com.zaneschepke.wireguardautotunnel.core.orchestration.TunnelModeCoordinator
-import com.zaneschepke.wireguardautotunnel.core.service.ServiceManager
-import com.zaneschepke.wireguardautotunnel.core.service.autotunnel.AutoTunnelStateHolder
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelMode
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppStateRepository
@@ -17,7 +16,10 @@ import com.zaneschepke.wireguardautotunnel.domain.repository.SelectedTunnelsRepo
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.domain.sideeffect.GlobalSideEffect
 import com.zaneschepke.wireguardautotunnel.parser.ConfigParseException
+import com.zaneschepke.wireguardautotunnel.service.ServiceManager
+import com.zaneschepke.wireguardautotunnel.service.autotunnel.AutoTunnelStateHolder
 import com.zaneschepke.wireguardautotunnel.ui.sideeffect.LocalSideEffect
+import com.zaneschepke.wireguardautotunnel.ui.state.DisplayTunnelState
 import com.zaneschepke.wireguardautotunnel.ui.state.GlobalAppUiState
 import com.zaneschepke.wireguardautotunnel.ui.state.TunnelsUiState
 import com.zaneschepke.wireguardautotunnel.ui.theme.Theme
@@ -32,6 +34,8 @@ import com.zaneschepke.wireguardautotunnel.util.network.NetworkUtils
 import io.ktor.client.HttpClient
 import io.ktor.client.request.prepareGet
 import io.ktor.client.statement.bodyAsText
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
 import java.io.File
 import java.io.IOException
 import kotlinx.coroutines.Dispatchers
@@ -58,7 +62,7 @@ class SharedAppViewModel(
     private val settingsRepository: GeneralSettingRepository,
     private val autoTunnelStateHolder: AutoTunnelStateHolder,
     private val selectedTunnelsRepository: SelectedTunnelsRepository,
-    private val tunnelModeCoordinator: TunnelModeCoordinator,
+    private val tunnelBackendCoordinator: TunnelBackendCoordinator,
     private val httpClient: HttpClient,
     private val fileUtils: FileUtils,
     private val networkUtils: NetworkUtils,
@@ -71,10 +75,16 @@ class SharedAppViewModel(
                 tunnelRepository.userTunnelsFlow,
                 tunnelCoordinator.backendStatus,
                 selectedTunnelsRepository.flow,
-                tunnelCoordinator.tunnelDisplayStates,
-            ) { tunnels, backendStatus, selectedTuns, displayStates ->
+            ) { tunnels, backendStatus, selectedTuns ->
+                val sortedTunnels = tunnels.sortedBy { it.position }
+
+                val displayStates =
+                    backendStatus.activeTunnels.mapValues { (_, activeTunnel) ->
+                        DisplayTunnelState.from(activeTunnel)
+                    }
+
                 TunnelsUiState(
-                    tunnels = tunnels,
+                    tunnels = sortedTunnels,
                     backendStatus = backendStatus,
                     displayStates = displayStates,
                     selectedTunnels = selectedTuns,
@@ -163,11 +173,15 @@ class SharedAppViewModel(
             }
         }
 
-        tunnelModeCoordinator.changeMode(mode)
+        tunnelBackendCoordinator.changeMode(mode)
     }
 
     fun setShouldShowDonationSnackbar(to: Boolean) = intent {
         appStateRepository.setShouldShowDonationSnackbar(to)
+    }
+
+    fun showSnackMessage(message: StringValue, type: ToastType) = intent {
+        postGlobalSideEffect(GlobalSideEffect.Snackbar(message, type))
     }
 
     suspend fun postSideEffect(globalSideEffect: GlobalSideEffect) {
@@ -180,12 +194,6 @@ class SharedAppViewModel(
         globalEffectRepository.post(sideEffect)
     }
 
-    fun showSnackMessage(message: StringValue) = intent {
-        postGlobalSideEffect(GlobalSideEffect.Snackbar(message))
-    }
-
-    fun showToast(message: StringValue) = intent { postSideEffect(GlobalSideEffect.Toast(message)) }
-
     fun disableBatteryOptimizationsShown() = intent {
         appStateRepository.setBatteryOptimizationDisableShown(true)
     }
@@ -193,14 +201,20 @@ class SharedAppViewModel(
     fun saveSortChanges(tunnels: List<TunnelConfig>) = intent {
         tunnelRepository.saveAll(tunnels.mapIndexed { index, conf -> conf.copy(position = index) })
         postSideEffect(
-            GlobalSideEffect.Snackbar(StringValue.StringResource(R.string.config_changes_saved))
+            GlobalSideEffect.Snackbar(
+                StringValue.StringResource(R.string.config_changes_saved),
+                ToastType.Success,
+            )
         )
         postSideEffect(GlobalSideEffect.PopBackStack)
     }
 
     fun sortByLatency(tunnels: List<TunnelConfig>) = intent {
         postSideEffect(
-            GlobalSideEffect.Snackbar(StringValue.StringResource(R.string.pinging_servers))
+            GlobalSideEffect.Snackbar(
+                StringValue.StringResource(R.string.pinging_servers),
+                ToastType.Info,
+            )
         )
         val sortedResult =
             withContext(Dispatchers.IO) {
@@ -242,12 +256,17 @@ class SharedAppViewModel(
                 TunnelConfig.tunnelConfFromQuick(config, name)
             }
             tunnelRepository.saveTunnelsUniquely(tunnelConfigs, state.tunnelNames.map { it.value })
-        } catch (_: IOException) {
-            postSideEffect(
-                GlobalSideEffect.Snackbar(StringValue.StringResource(R.string.read_failed))
-            )
-        } catch (e: ConfigParseException) {
-            postSideEffect(GlobalSideEffect.Snackbar(e.asStringValue()))
+        } catch (e: Exception) {
+            if (e is ConfigParseException) {
+                postSideEffect(GlobalSideEffect.Snackbar(e.asStringValue(), ToastType.Error))
+            } else {
+                postSideEffect(
+                    GlobalSideEffect.Snackbar(
+                        StringValue.StringResource(R.string.config_error),
+                        ToastType.Error,
+                    )
+                )
+            }
         }
     }
 
@@ -257,22 +276,47 @@ class SharedAppViewModel(
 
     fun importFromQr(conf: String) = intent { importFromClipboard(conf) }
 
+    fun promptWgImport(url: String) = intent { reduce { state.copy(pendingWgImportUrl = url) } }
+
+    fun dismissWgImport() = intent { reduce { state.copy(pendingWgImportUrl = null) } }
+
     fun importFromUrl(url: String) = intent {
+        reduce { state.copy(pendingWgImportUrl = null) }
         try {
             httpClient.prepareGet(url).execute { response ->
-                if (response.status.value in 200..299) {
-                    val body = response.bodyAsText()
-                    importFromClipboard(body)
-                } else {
-                    throw IOException(
-                        "Failed to download file with error status: ${response.status.value}"
-                    )
+                if (response.status.value !in 200..299) {
+                    throw IOException("Server returned error: ${response.status.value}")
                 }
+
+                val body = response.bodyAsText()
+
+                val contentType = response.contentType()
+                val isHtml =
+                    (contentType?.match(ContentType.Text.Html) == true) ||
+                        body.trimStart().let {
+                            it.startsWith("<!DOCTYPE", ignoreCase = true) ||
+                                it.startsWith("<html", ignoreCase = true)
+                        }
+
+                if (isHtml) {
+                    postSideEffect(
+                        GlobalSideEffect.Snackbar(
+                            StringValue.StringResource(R.string.error_invalid_config_url),
+                            ToastType.Error,
+                        )
+                    )
+                    return@execute
+                }
+
+                importFromClipboard(body)
             }
         } catch (e: Exception) {
             Timber.e(e)
             postSideEffect(
-                GlobalSideEffect.Toast(StringValue.StringResource(R.string.error_download_failed))
+                GlobalSideEffect.Snackbar(
+                    StringValue.StringResource(R.string.error_download_failed),
+                    ToastType.Error,
+                )
             )
         }
     }
@@ -287,7 +331,7 @@ class SharedAppViewModel(
                         is IOException -> StringValue.StringResource(R.string.error_download_failed)
                         else -> StringValue.StringResource(R.string.error_file_extension)
                     }
-                postSideEffect(GlobalSideEffect.Toast(message))
+                postSideEffect(GlobalSideEffect.Snackbar(message, ToastType.Error))
             }
     }
 
@@ -319,7 +363,8 @@ class SharedAppViewModel(
         if (selectedTuns.any { activeTunIds?.contains(it.id) == true })
             return@intent postSideEffect(
                 GlobalSideEffect.Snackbar(
-                    StringValue.StringResource(R.string.delete_active_message)
+                    StringValue.StringResource(R.string.delete_active_message),
+                    ToastType.Error,
                 )
             )
         tunnelRepository.delete(selectedTuns)
@@ -342,11 +387,12 @@ class SharedAppViewModel(
         val onFailure = { action: Throwable ->
             intent {
                 postSideEffect(
-                    GlobalSideEffect.Toast(
+                    GlobalSideEffect.Snackbar(
                         StringValue.StringResource(
                             R.string.export_failed,
                             ": ${action.localizedMessage}",
-                        )
+                        ),
+                        ToastType.Error,
                     )
                 )
             }
@@ -363,7 +409,10 @@ class SharedAppViewModel(
                     if (it.exists()) it.delete()
                 }
                 postSideEffect(
-                    GlobalSideEffect.Snackbar(StringValue.StringResource(R.string.export_success))
+                    GlobalSideEffect.Snackbar(
+                        StringValue.StringResource(R.string.export_success),
+                        ToastType.Success,
+                    )
                 )
                 clearSelectedTunnels()
             }

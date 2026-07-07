@@ -53,7 +53,6 @@
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.App.Start"
         tools:targetApi="tiramisu">
@@ -72,6 +71,13 @@
             <intent-filter>
                 <action android:name="android.intent.action.APPLICATION_PREFERENCES" />
                 <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="wg" />
             </intent-filter>
 
             <intent-filter>
@@ -150,7 +156,7 @@
 
 		<provider
 			android:name="androidx.core.content.FileProvider"
-			android:authorities="@string/provider"
+                android:authorities="${providerAuthority}"
 			android:exported="false"
 			android:grantUriPermissions="true">
 			<meta-data
@@ -169,9 +175,9 @@
                 tools:node="remove" />
         </provider>
         <service
-            android:name=".core.service.tile.TunnelControlTile"
+            android:name=".service.tile.TunnelControlTile"
             android:exported="true"
-            android:icon="@drawable/ic_notification"
+            android:icon="@drawable/qs_logo"
             android:label="@string/tunnel_control"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <meta-data
@@ -186,9 +192,9 @@
             </intent-filter>
         </service>
         <service
-            android:name=".core.service.tile.AutoTunnelControlTile"
+            android:name=".service.tile.AutoTunnelControlTile"
             android:exported="true"
-            android:icon="@drawable/ic_notification"
+            android:icon="@drawable/qs_logo"
             android:label="@string/auto_tunnel"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <meta-data
@@ -203,7 +209,7 @@
             </intent-filter>
         </service>
         <service
-            android:name=".core.service.autotunnel.AutoTunnelService"
+            android:name=".service.autotunnel.AutoTunnelService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="specialUse"

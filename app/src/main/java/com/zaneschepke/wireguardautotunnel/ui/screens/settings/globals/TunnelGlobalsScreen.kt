@@ -56,7 +56,7 @@ fun TunnelGlobalsScreen(
                 )
             },
             enabled = sharedUiState.tunnelMode != TunnelMode.PROXY,
-            title = stringResource(R.string.global_split_tunneling),
+            title = stringResource(R.string.splt_tunneling),
             trailing = { modifier ->
                 SwitchWithDivider(
                     checked = uiState.settings.isGlobalSplitTunnelEnabled,
@@ -82,7 +82,7 @@ fun TunnelGlobalsScreen(
         )
         SurfaceRow(
             leading = { Icon(Icons.Outlined.Description, contentDescription = null) },
-            title = stringResource(R.string.configuration_globals),
+            title = stringResource(R.string.tunnel_configuration),
             onClick = {
                 uiState.globalTunnelConfig?.let {
                     navController.push(Route.ConfigGlobal(id = it.id))

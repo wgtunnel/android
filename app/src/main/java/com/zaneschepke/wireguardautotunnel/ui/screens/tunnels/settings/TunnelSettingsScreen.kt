@@ -141,6 +141,10 @@ fun TunnelSettingsScreen(
                 onClick = { navController.push(Route.IPv6(tunnel.id)) },
             )
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                val meteredDisabled = sharedUiState.tunnelMode == TunnelMode.PROXY
+                val meteredTunnelDesc =
+                    if (meteredDisabled) stringResource(R.string.unavailable_in_mode)
+                    else stringResource(R.string.metered_tunnel_desc)
                 SurfaceRow(
                     leading = {
                         Icon(
@@ -153,15 +157,9 @@ fun TunnelSettingsScreen(
                     },
                     title = stringResource(R.string.metered_tunnel),
                     enabled = sharedUiState.tunnelMode != TunnelMode.PROXY,
-                    description =
-                        if (sharedUiState.tunnelMode == TunnelMode.PROXY) {
-                            {
-                                DescriptionText(
-                                    stringResource(R.string.unavailable_in_mode),
-                                    disabled = true,
-                                )
-                            }
-                        } else null,
+                    description = {
+                        DescriptionText(meteredTunnelDesc, disabled = meteredDisabled)
+                    },
                     trailing = {
                         ThemedSwitch(
                             checked = tunnel.isMetered,
@@ -172,26 +170,26 @@ fun TunnelSettingsScreen(
                     onClick = { viewModel.onMetered(!tunnel.isMetered) },
                 )
             }
-            Column {
-                GroupLabel(
-                    stringResource(R.string.automation),
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                )
-                SurfaceRow(
-                    leading = { Icon(Icons.Outlined.Dns, contentDescription = null) },
-                    title = stringResource(R.string.ddns_auto_update),
-                    description = {
-                        DescriptionText(stringResource(R.string.ddns_auto_update_description))
-                    },
-                    trailing = {
-                        ThemedSwitch(
-                            checked = tunnel.dynamicDnsEnabled,
-                            onClick = { viewModel.onDynamicDns(it) },
-                        )
-                    },
-                    onClick = { viewModel.onDynamicDns(!tunnel.dynamicDnsEnabled) },
-                )
-            }
+        }
+        Column {
+            GroupLabel(
+                stringResource(R.string.automation),
+                modifier = Modifier.padding(horizontal = 16.dp),
+            )
+            SurfaceRow(
+                leading = { Icon(Icons.Outlined.Dns, contentDescription = null) },
+                title = stringResource(R.string.ddns_auto_update),
+                description = {
+                    DescriptionText(stringResource(R.string.ddns_auto_update_description))
+                },
+                trailing = {
+                    ThemedSwitch(
+                        checked = tunnel.dynamicDnsEnabled,
+                        onClick = { viewModel.onDynamicDns(it) },
+                    )
+                },
+                onClick = { viewModel.onDynamicDns(!tunnel.dynamicDnsEnabled) },
+            )
         }
     }
 }

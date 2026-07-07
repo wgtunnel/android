@@ -1,0 +1,10 @@
+What's new:
+- Improved tunnel reliability and leak protection with new deferred endpoint bootstrapping
+- Improved tunnel status monitoring with real time handshake status monitoring
+- Kernel mode and ping monitoring removed
+- Full config and live tunnel view in quick format
+- Automatic ipv4/ipv6 endpoint fallback and recovery
+- Added support got DoT and custom endpoints for peer resolution DNS
+- Amnezia tunnel globals
+- Improved notifications
+- Various bug fix and app performance improvements

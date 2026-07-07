@@ -26,38 +26,33 @@ sealed class DisplayTunnelState {
 
     data object Connected : DisplayTunnelState()
 
-    data object Degraded : DisplayTunnelState()
+    data object HandshakeFailure : DisplayTunnelState()
 
     @StringRes
-    fun labelRes(): Int {
-        return when (this) {
+    fun labelRes(): Int =
+        when (this) {
             Disconnected -> R.string.tunnel_state_disconnected
-            Connecting -> R.string.tunnel_state_starting
-            ResolvingDns -> R.string.tunnel_state_resolving_dns
+            Connecting,
             EstablishingConnection -> R.string.tunnel_state_establishing_connection
+            ResolvingDns -> R.string.tunnel_state_resolving_dns
             Ready -> R.string.ready
             Connected -> R.string.tunnel_state_connected
-            Degraded -> R.string.tunnel_state_handshake_failure
+            HandshakeFailure -> R.string.tunnel_state_handshake_failure
         }
-    }
 
-    fun asLocalizedString(context: Context): String {
-        return context.getString(labelRes())
-    }
-
-    fun asColor(): Color {
-        return when (this) {
+    fun asColor(): Color =
+        when (this) {
             Disconnected -> CoolGray
-
             Connecting,
             ResolvingDns,
             EstablishingConnection,
             Ready -> Straw
-
             Connected -> SilverTree
-
-            Degraded -> AlertRed
+            HandshakeFailure -> AlertRed
         }
+
+    fun asLocalizedString(context: Context): String {
+        return context.getString(labelRes())
     }
 
     companion object {
@@ -67,49 +62,21 @@ sealed class DisplayTunnelState {
             val mode = activeTunnel.mode
             val isVpnStyle = mode is BackendMode.Vpn || mode is BackendMode.Proxy.KillSwitchPrimary
 
-            // Static peers bootstrap never goes to complete, treat none the same
-            val bootstrapPhaseDone =
-                bootstrap is BootstrapState.Complete || bootstrap is BootstrapState.None
-
             return when {
                 transport is Tunnel.State.Down -> Disconnected
+                bootstrap is BootstrapState.Failed -> HandshakeFailure
 
-                bootstrap is BootstrapState.Failed -> Degraded
-
-                // DNS resolution still in progress
                 bootstrap is BootstrapState.ResolvingDns ||
                     bootstrap is BootstrapState.UpdatingPeers -> ResolvingDns
 
                 transport is Tunnel.State.Up.Healthy -> Connected
 
-                transport is Tunnel.State.Up.HandshakeFailure -> {
-                    val age = System.currentTimeMillis() - activeTunnel.lastStateChangeMs
+                transport is Tunnel.State.Up.HandshakeFailure -> HandshakeFailure
 
-                    if (age > 15_000L && bootstrapPhaseDone) {
-                        Degraded
-                    } else if (isVpnStyle && bootstrapPhaseDone) {
-                        EstablishingConnection
-                    } else if (bootstrapPhaseDone) {
-                        // For regular proxy mode, we go to ready once past bootstrap phase
-                        Ready
-                    } else {
-                        Connecting
-                    }
-                }
+                transport is Tunnel.State.Starting ->
+                    if (isVpnStyle) EstablishingConnection else Ready
 
-                transport is Tunnel.State.Starting -> {
-                    when {
-                        bootstrapPhaseDone -> {
-                            if (isVpnStyle) EstablishingConnection else Ready
-                        }
-                        else -> Connecting
-                    }
-                }
-
-                // Final fallback after bootstrap phase is done
-                bootstrapPhaseDone -> if (isVpnStyle) EstablishingConnection else Ready
-
-                else -> Connecting
+                else -> if (isVpnStyle) EstablishingConnection else Ready
             }
         }
     }

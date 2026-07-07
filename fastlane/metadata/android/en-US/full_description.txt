@@ -1,13 +1,17 @@
 WG Tunnel is a WireGuard VPN client that strikes the balance between simplicity and robustness, making it the ideal client for casual and power users alike.
 Whether you simply want to automate when you're connected to your VPN or you're a power user with advanced privacy use cases, WG Tunnel has you covered.
 
-- **Auto-Tunneling:** Automatically activate tunnels based on Wi-Fi SSID, Ethernet connections, or mobile data networks.
+Features:
+
+- **Auto-Tunneling:** Automatically activate tunnels based on your device's active network details.
+- **Deferred Endpoint Bootstrapping:** Safely resolves endpoints and updates peers after the tunnel is up for better reliability and leak protection on startup.
+- **Handshake Monitoring:** Real-time handshake monitoring for instant tunnel health feedback.
+- **AmneziaWG Support:** Full support for AmneziaWG 2.0, providing robust censorship protection.
 - **Split Tunneling:** Flexible support for routing specific apps or traffic through the VPN.
-- **App Modes:** Support for multiple tunnel modes, including standard VPN, kernel, lockdown (custom kill switch), and proxy modes.
-- **AmneziaWG Integration:** Full support for AmneziaWG, providing robust censorship evasion.
-- **Proxying Options:** Built-in HTTP and SOCKS5 proxy support allowing third-party apps to tunnel their traffic.
-- **Quick Controls:** Quick Settings tile and home screen shortcuts for easy toggling actions.
-- **Automation Support:** Intent-based automation for controlling tunnels and auto-tunneling.
-- **Dynamic DNS Handling:** Detects and updates DNS changes without tunnel restarts.
-- **Monitoring Tools:** Advanced tunnel monitoring features for tunnel performance monitoring.
-- **Android TV Support:** Android TV support for nearly all app features.
+- **Local Proxy Mode:** Expose WireGuard tunnels over a local SOCKS5 or HTTP proxy to browsers or firewall apps (like AdGuard).
+- **Lockdown Mode:** Advanced in-app kill switch that blocks all traffic while the tunnel is down.
+- **Quick Controls:** Quick Settings tile and home screen shortcuts for easy toggling.
+- **Remote Control Support:** Intent-based automation for controlling tunnels and auto-tunneling from automation apps (like Tasker).
+- **Dynamic DNS Handling:** Automatically detect and update endpoints on server IP changes without requiring a restart.
+- **IPv6 Endpoints:** Automatically upgrade to IPv6 endpoints or fall back to IPv4 based on network conditions without requiring a restart.
+- **Android TV Support:** Full support for nearly all features on Android TV.

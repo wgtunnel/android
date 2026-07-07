@@ -81,7 +81,7 @@ object DnsValidator {
         return Result.Valid
     }
 
-    private fun validateUdp(value: String): DnsValidator.Result {
+    private fun validateUdp(value: String): Result {
         val parts = value.split(":")
 
         val host = parts.getOrNull(0)?.trim()
@@ -93,14 +93,14 @@ object DnsValidator {
 
         // basic IP/hostname sanity check
         if (!isValidHostOrIp(host)) {
-            return DnsValidator.Result.Invalid(DnsError.InvalidIpOrHost)
+            return Result.Invalid(DnsError.InvalidIpOrHost)
         }
 
         if (port !in 1..65535) {
-            return DnsValidator.Result.Invalid(DnsError.InvalidPort)
+            return Result.Invalid(DnsError.InvalidPort)
         }
 
-        return DnsValidator.Result.Valid
+        return Result.Valid
     }
 
     private fun isValidHostOrIp(value: String): Boolean {

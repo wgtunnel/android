@@ -1,1 +1,1 @@
-Alternatívna aplikácia VPN klienta pre WireGuard a AmneziaWG s ďalšími funkciami
+Alternatívny VPN klient pre WireGuard a AmneziaWG s extra funkciami

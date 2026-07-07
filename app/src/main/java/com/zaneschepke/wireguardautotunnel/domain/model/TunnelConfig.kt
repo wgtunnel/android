@@ -12,7 +12,7 @@ import com.zaneschepke.wireguardautotunnel.util.extensions.defaultName
 data class TunnelConfig(
     val id: Int = 0,
     val name: String,
-    val tunnelNetworks: Set<String> = setOf(),
+    val tunnelNetworks: List<String> = emptyList(),
     val isMobileDataTunnel: Boolean = false,
     val isPrimaryTunnel: Boolean = false,
     val quickConfig: String = "",
@@ -21,10 +21,11 @@ data class TunnelConfig(
     val isEthernetTunnel: Boolean = false,
     val isIpv6Preferred: Boolean = false,
     val position: Int = 0,
-    val autoTunnelApps: Set<String> = setOf(),
+    val autoTunnelApps: List<String> = listOf(),
     val isMetered: Boolean = false,
     val ipv4FallbackEnabled: Boolean = false,
     val ipv6RestoreEnabled: Boolean = false,
+    val tunnelBSSIDs: List<String> = emptyList(),
 ) {
 
     fun toSummary() = TunnelSummary(id = id, name = name)

@@ -9,11 +9,24 @@ plugins {
 	alias(libs.plugins.ktfmt)
 	alias(libs.plugins.licensee) apply false
     alias(libs.plugins.jetbrains.kotlin.jvm) apply false
+	alias(libs.plugins.aboutlibraries) apply false
 }
 
 subprojects {
 	apply {
 		plugin(rootProject.libs.plugins.ktfmt.get().pluginId)
+	}
+
+	plugins.withId("org.jetbrains.kotlin.android") {
+		extensions.configure<org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension> {
+			jvmToolchain(21)
+		}
+	}
+
+	plugins.withId("org.jetbrains.kotlin.jvm") {
+		extensions.configure<org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension> {
+			jvmToolchain(21)
+		}
 	}
 
 	tasks.register<KtfmtFormatTask>("format") {

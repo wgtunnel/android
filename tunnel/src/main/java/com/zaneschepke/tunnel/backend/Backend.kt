@@ -1,6 +1,6 @@
 package com.zaneschepke.tunnel.backend
 
-import com.zaneschepke.tunnel.NotificationProvider
+import com.zaneschepke.tunnel.ApplicationProvider
 import com.zaneschepke.tunnel.Tunnel
 import com.zaneschepke.tunnel.event.TunnelEvent
 import com.zaneschepke.tunnel.model.BackendMode
@@ -8,12 +8,11 @@ import com.zaneschepke.tunnel.model.DnsBoostrapMode
 import com.zaneschepke.tunnel.model.KillSwitchConfig
 import com.zaneschepke.tunnel.service.VpnService
 import com.zaneschepke.tunnel.state.BackendStatus
-import kotlin.reflect.KClass
 import kotlinx.coroutines.flow.Flow
 
 interface Backend {
 
-    val notificationProvider: NotificationProvider
+    val applicationProvider: ApplicationProvider
 
     suspend fun start(tunnel: Tunnel, mode: BackendMode): Result<Unit>
 
@@ -27,10 +26,11 @@ interface Backend {
 
     suspend fun setBootstrapDnsMode(mode: DnsBoostrapMode)
 
-    // Emergency synchronous teardown to be called only from Service.onDestroy()
-    fun emergencyStopAllOfTypeSync(modeClass: KClass<out BackendMode>)
-
     suspend fun stopAllActiveTunnels(): Result<Unit>
+
+    suspend fun setSeamlessRoaming(enabled: Boolean): Result<Unit>
+
+    val isSeamlessRoamingEnabled: Boolean
 
     val status: Flow<BackendStatus>
 

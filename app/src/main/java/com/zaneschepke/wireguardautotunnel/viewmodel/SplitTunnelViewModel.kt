@@ -1,6 +1,7 @@
 package com.zaneschepke.wireguardautotunnel.viewmodel
 
 import androidx.lifecycle.ViewModel
+import com.dokar.sonner.ToastType
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.domain.repository.GlobalEffectRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.InstalledPackageRepository
@@ -88,9 +89,14 @@ class SplitTunnelViewModel(
             editableInterface.copy(includedApplications = included, excludedApplications = excluded)
         val updatedProxyConfig = editableConfig.copy(`interface` = updatedInterface)
         val updatedConfig = updatedProxyConfig.buildConfig()
-        tunnelRepository.save(tunnel.copy(quickConfig = updatedConfig.asQuickString()))
+        tunnelRepository.save(
+            tunnel.copy(quickConfig = updatedConfig.withName(tunnel.name).asQuickString())
+        )
         postSideEffect(
-            GlobalSideEffect.Snackbar(StringValue.StringResource(R.string.config_changes_saved))
+            GlobalSideEffect.Snackbar(
+                StringValue.StringResource(R.string.config_changes_saved),
+                ToastType.Success,
+            )
         )
         postSideEffect(GlobalSideEffect.PopBackStack)
     }

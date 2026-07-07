@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.dokar.sonner.ToastType
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.common.dialog.InfoDialog
@@ -50,11 +51,15 @@ fun TunnelsScreen(sharedViewModel: SharedAppViewModel = koinActivityViewModel())
         rememberFileExportLauncherForResult(
             onSuccess = { uri -> sharedViewModel.exportSelectedTunnels(uri) },
             onCanceled = {
-                sharedViewModel.showToast(StringValue.StringResource(R.string.export_canceled))
+                sharedViewModel.showSnackMessage(
+                    StringValue.StringResource(R.string.export_canceled),
+                    ToastType.Warning,
+                )
             },
             onUnsupported = {
                 sharedViewModel.showSnackMessage(
-                    StringValue.StringResource(R.string.export_unsupported)
+                    StringValue.StringResource(R.string.export_unsupported),
+                    ToastType.Warning,
                 )
             },
         )
@@ -73,7 +78,8 @@ fun TunnelsScreen(sharedViewModel: SharedAppViewModel = koinActivityViewModel())
                     selectedTunnelsExportLauncher.launch(fileName)
                 } else {
                     sharedViewModel.showSnackMessage(
-                        StringValue.StringResource(R.string.error_no_file_explorer)
+                        StringValue.StringResource(R.string.error_no_file_explorer),
+                        ToastType.Error,
                     )
                 }
             }
@@ -87,7 +93,8 @@ fun TunnelsScreen(sharedViewModel: SharedAppViewModel = koinActivityViewModel())
         rememberFileImportLauncherForResult(
             onNoFileExplorer = {
                 sharedViewModel.showSnackMessage(
-                    StringValue.StringResource(R.string.error_no_file_explorer)
+                    StringValue.StringResource(R.string.error_no_file_explorer),
+                    ToastType.Error,
                 )
             },
             onData = { data -> sharedViewModel.importFromUri(data) },
@@ -101,13 +108,15 @@ fun TunnelsScreen(sharedViewModel: SharedAppViewModel = koinActivityViewModel())
                 }
                 QRResult.QRMissingPermission -> {
                     sharedViewModel.showSnackMessage(
-                        StringValue.StringResource(R.string.camera_permission_required)
+                        StringValue.StringResource(R.string.camera_permission_required),
+                        ToastType.Warning,
                     )
                 }
                 is QRResult.QRSuccess -> {
                     result.content.rawValue?.let { sharedViewModel.importFromQr(it) }
                         ?: sharedViewModel.showSnackMessage(
-                            StringValue.StringResource(R.string.config_error)
+                            StringValue.StringResource(R.string.config_error),
+                            ToastType.Error,
                         )
                 }
                 QRResult.QRUserCanceled -> Unit
@@ -119,7 +128,8 @@ fun TunnelsScreen(sharedViewModel: SharedAppViewModel = koinActivityViewModel())
             ->
             if (!isGranted) {
                 sharedViewModel.showSnackMessage(
-                    StringValue.StringResource(R.string.camera_permission_required)
+                    StringValue.StringResource(R.string.camera_permission_required),
+                    ToastType.Warning,
                 )
                 return@rememberLauncherForActivityResult
             }

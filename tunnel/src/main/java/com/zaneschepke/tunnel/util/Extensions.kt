@@ -1,9 +1,13 @@
 package com.zaneschepke.tunnel.util
 
 import android.os.Build
+import com.zaneschepke.tunnel.model.BackendMode
 import com.zaneschepke.tunnel.model.DnsBootstrapResult
 import com.zaneschepke.tunnel.model.DnsConfig
-import com.zaneschepke.tunnel.model.RunningTunnel
+import com.zaneschepke.tunnel.model.Host
+import com.zaneschepke.tunnel.model.PublicKey
+import com.zaneschepke.tunnel.state.BackendStatus
+import com.zaneschepke.wireguardautotunnel.parser.Config
 import com.zaneschepke.wireguardautotunnel.parser.PeerSection
 import java.net.Inet4Address
 import java.net.InetAddress
@@ -63,27 +67,37 @@ internal fun String.parseDns(): DnsConfig {
     return DnsConfig(servers, domains)
 }
 
-internal fun RunningTunnel.buildResolvedPeers(preferIpv6: Boolean): List<PeerSection> {
-
-    fun selectIp(cache: DnsBootstrapResult, preferIpv6: Boolean): String? {
-
-        val ipv4 = cache.ipv4.firstOrNull()
-        val ipv6 = cache.ipv6.firstOrNull()
-
-        return when {
-            preferIpv6 -> ipv6 ?: ipv4
-            else -> ipv4 ?: ipv6
-        }
+internal fun Config.buildResolvedPeers(hostMap: Map<PublicKey, Host>): List<PeerSection> {
+    return this.peers.map { peer ->
+        val updatedHost = hostMap[peer.publicKey] ?: return@map peer
+        val port = peer.endpoint?.substringAfterLast(":") ?: return@map peer
+        peer.copy(endpoint = "$updatedHost:$port")
     }
+}
 
-    return mode.config.peers.map { peer ->
-        val endpoint = peer.endpoint ?: return@map peer
-        val port = endpoint.substringAfterLast(":")
+fun Map<PublicKey, DnsBootstrapResult>.toHostMap(preferIpv6: Boolean): Map<PublicKey, Host> =
+    mapNotNull { (pubKey, result) ->
+            val host =
+                if (preferIpv6) {
+                    result.ipv6.firstOrNull() ?: result.ipv4.firstOrNull()
+                } else {
+                    result.ipv4.firstOrNull() ?: result.ipv6.firstOrNull()
+                }
+            host?.let { pubKey to it }
+        }
+        .toMap()
 
-        val dnsCache = peerBootstrapCache[peer.publicKey] ?: return@map peer
-
-        val selectedIp = selectIp(cache = dnsCache, preferIpv6 = preferIpv6) ?: return@map peer
-
-        peer.copy(endpoint = "$selectedIp:$port")
+fun BackendStatus.isLastTunnelOfServiceType(tunnelId: Int): Boolean {
+    val mode = activeTunnels[tunnelId]?.mode ?: return false
+    return when (mode) {
+        is BackendMode.Vpn,
+        is BackendMode.Proxy.KillSwitchPrimary -> {
+            activeTunnels.values.count {
+                it.mode is BackendMode.Vpn || it.mode is BackendMode.Proxy.KillSwitchPrimary
+            } == 1
+        }
+        is BackendMode.Proxy.Standard -> {
+            activeTunnels.values.count { it.mode is BackendMode.Proxy.Standard } == 1
+        }
     }
 }

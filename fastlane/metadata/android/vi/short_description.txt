@@ -1,1 +1,1 @@
-Một ứng dụng client VPN WireGuard & AmneziaWG với tính năng auto-tunneling, lockdown và proxying.
+Ứng dụng VPN WireGuard & AmneziaWG với auto-tunneling, lockdown, proxy
