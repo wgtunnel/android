@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">WG Tunnel</string>
     <string name="app_permission_title">터널 및 자동 터널 기능을 제어합니다.</string>
-    <string name="app_permission_description">터널 및 자동 터널 기능을 제어합니다.</string>
+    <string name="app_permission_description">Control tunnels and auto-tunnel features.</string>
     <string name="error_file_extension">파일이 .conf 혹은 .zip 형식이 아닙니다</string>
     <string name="tunnels">터널</string>
     <string name="tunnel_mobile_data">모바일 데이터에서 터널 사용</string>
