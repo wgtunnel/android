@@ -1,14 +1,17 @@
+WG Tunnel is a WireGuard VPN client that strikes the balance between simplicity and robustness, making it the ideal client for casual and power users alike.
+Whether you simply want to automate when you're connected to your VPN or you're a power user with advanced privacy use cases, WG Tunnel has you covered.
+
 功能：
 
-- 支持通过 .conf 文件、压缩文件、手动输入或 QR 码添加隧道
-- 根据 Wi-Fi SSID、以太网或移动数据自动连接 VPN
-- 支持按应用程序进行分流隧道，并支持搜索功能
-- 支持内核和用户空间模式的 WireGuard
-- 支持 Amnezia 用户空间模式，以应对 DPI/审查保护
-- 支持“始终在线” VPN
-- 支持将 Amnezia 和 WireGuard 隧道导出为压缩文件
-- 支持快速切换 VPN 的快捷方式
-- 支持主要隧道的静态快捷方式，便于自动化集成
-- 支持所有隧道的意图自动化
-- 支持重启手机后自动重启服务
-- 耗电优化
+- **Auto-Tunneling:** Automatically activate tunnels based on your device's active network details.
+- **Deferred Endpoint Bootstrapping:** Safely resolves endpoints and updates peers after the tunnel is up for better reliability and leak protection on startup.
+- **Handshake Monitoring:** Real-time handshake monitoring for instant tunnel health feedback.
+- **AmneziaWG Support:** Full support for AmneziaWG 2.0, providing robust censorship protection.
+- **Split Tunneling:** Flexible support for routing specific apps or traffic through the VPN.
+- **Local Proxy Mode:** Expose WireGuard tunnels over a local SOCKS5 or HTTP proxy to browsers or firewall apps (like AdGuard).
+- **Lockdown Mode:** Advanced in-app kill switch that blocks all traffic while the tunnel is down.
+- **Quick Controls:** Quick Settings tile and home screen shortcuts for easy toggling.
+- **Remote Control Support:** Intent-based automation for controlling tunnels and auto-tunneling from automation apps (like Tasker).
+- **Dynamic DNS Handling:** Automatically detect and update endpoints on server IP changes without requiring a restart.
+- **IPv6 Endpoints:** Automatically upgrade to IPv6 endpoints or fall back to IPv4 based on network conditions without requiring a restart.
+- **Android TV Support:** Full support for nearly all features on Android TV.
