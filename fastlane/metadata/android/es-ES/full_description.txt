@@ -1,13 +1,17 @@
 WG Tunnel es un cliente VPN WireGuard que equilibra simplicidad y solidez, lo que lo convierte en el cliente ideal tanto para usuarios ocasionales como avanzados.
 Ya sea que quieras simplemente automatizar cuándo te conectas a la VPN o seas un usuario avanzado con casos de uso de privacidad complejos, WG Tunnel te cubre.
 
+Features:
+
 - **Auto-túneles:** Activa túneles automáticamente en función del SSID de la Wi‑Fi, conexiones Ethernet o redes de datos móviles.
-- **Túnel dividido (Split Tunneling):** Soporte flexible para enrutar aplicaciones o tráfico específicos a través de la VPN.
-- **Modos de la app:** Soporta múltiples modos de túnel, incluidos VPN estándar, kernel, bloqueo (kill switch personalizado) y modos proxy.
+- **Deferred Endpoint Bootstrapping:** Safely resolves endpoints and updates peers after the tunnel is up for better reliability and leak protection on startup.
+- **Herramientas de monitorización:** Funciones avanzadas de supervisión para el rendimiento de los túneles.
 - **Integración con AmneziaWG:** Soporte completo para AmneziaWG, proporcionando robusta evasión de censura.
+- **Túnel dividido (Split Tunneling):** Soporte flexible para enrutar aplicaciones o tráfico específicos a través de la VPN.
 - **Opciones de proxy:** Soporte integrado para proxy HTTP y SOCKS5 que permite a aplicaciones de terceros enrutar su tráfico.
+- **Modos de la app:** Soporta múltiples modos de túnel, incluidos VPN estándar, kernel, bloqueo (kill switch personalizado) y modos proxy.
 - **Controles rápidos:** Tile de Ajustes rápidos y accesos directos en la pantalla principal para conmutaciones rápidas.
 - **Soporte de automatización:** Automatización basada en intents para controlar túneles y auto-túneles.
 - **Gestión dinámica de DNS:** Detecta y actualiza cambios de DNS sin reiniciar túneles.
-- **Herramientas de monitorización:** Funciones avanzadas de supervisión para el rendimiento de los túneles.
+- **IPv6 Endpoints:** Automatically upgrade to IPv6 endpoints or fall back to IPv4 based on network conditions without requiring a restart.
 - **Compatibilidad con Android TV:** Soporte en Android TV para casi todas las funciones de la app.
