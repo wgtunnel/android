@@ -1,1 +1,1 @@
-複数の追加機能を備えるWireGuardの代替VPNクライアントアプリ
+A WireGuard & AmneziaWG VPN client with auto-tunneling, lockdown & proxying.
