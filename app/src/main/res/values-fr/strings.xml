@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">WG Tunnel</string>
     <string name="app_permission_title">Pont de contrôle du tunnel WG.</string>
-    <string name="app_permission_description">Contrôler les tunnels et les fonctions automatiques des tunnels.</string>
+    <string name="app_permission_description">Control tunnels and auto-tunnel features.</string>
     <string name="error_file_extension">Le fichier n\'est pas un .conf ou .zip</string>
     <string name="tunnels">Tunnels</string>
     <string name="tunnel_mobile_data">Tunnel sur données mobiles</string>
