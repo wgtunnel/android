@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">WG Tunnel</string>
     <string name="app_permission_title">Halda tunneleid ja automaatset tunneldust.</string>
-    <string name="app_permission_description">Halda tunneleid ja tunnelite automaatse käivitamise seadistusi.</string>
+    <string name="app_permission_description">Control tunnels and auto-tunnel features.</string>
     <string name="error_file_extension">See pole .conf või .zip fail</string>
     <string name="tunnels">Tunnelid</string>
     <string name="tunnel_mobile_data">Loo tunnel mobiilse andmesidega</string>
