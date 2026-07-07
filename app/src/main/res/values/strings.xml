@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">WG Tunnel</string>
     <string name="app_permission_title">Control tunnels and auto-tunnel features.</string>
-    <string name="app_permission_description">https://hosted.weblate.org/translate/wg-tunnel/strings/en/?checksum=e52d7eb2e28a9a12Control tunnels and auto-tunnel features.</string>
+    <string name="app_permission_description">Control tunnels and auto-tunnel features.</string>
     <string name="vpn_channel_id" translatable="false">VPN Channel</string>
     <string name="proxy_channel_id" translatable="false">Proxy Channel</string>
     <string name="github_url" translatable="false">https://github.com/wgtunnel/wgtunnel/issues</string>
@@ -11,7 +11,7 @@
     <string name="liberapay_url" translatable="false">https://liberapay.com/zaneschepke</string>
     <string name="docs_url" translatable="false">https://wgtunnel.com/docs/getting-started</string>
     <string name="website_url" translatable="false">https://wgtunnel.com</string>
-    <string name="translation_url" translatable="false">https://hosted.weblate.org/engage/wg-tunnel/</string>
+    <string name="translation_url" translatable="false">https://translate.android.wgtunnel.com/project/wgtunnel/invite?h=11b5b7bf2099293095775d4477320c772818907</string>
     <string name="privacy_policy_url" translatable="false">https://wgtunnel.com/privacy-policy/</string>
     <string name="docs_wildcards" translatable="false">https://wgtunnel.com/docs/auto-tunneling/#use-name-wildcards</string>
     <string name="matrix_url" translatable="false">https://matrix.to/#/#wg-tunnel-space:matrix.org</string>
