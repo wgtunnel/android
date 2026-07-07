@@ -1,13 +1,17 @@
 WG Tunnel to klient VPN WireGuard, który łączy w sobie prostotę i solidność, dzięki czemu jest idealnym klientem zarówno dla okazjonalnych, jak i zaawansowanych użytkowników.
 Niezależnie od tego, czy chcesz po prostu zautomatyzować działanie po połączeniu z VPN, czy jesteś zaawansowanym użytkownikiem z rozbudowanymi przypadkami wykorzystania prywatności, WG Tunnel może Ci pomóc.
 
+Features:
+
 - **Autotunelowanie:** automatyczna aktywacja tuneli na podstawie identyfikatora SSID Wi-Fi, połączeń Ethernet lub sieci komórkowych.
-- **Tunelowanie dzielone:** elastyczna obsługa routingu określonych aplikacji lub ruchu przez VPN.
-- **Tryby aplikacji:** obsługa wielu trybów tunelowania, w tym standardowego VPN, jądra, blokady (niestandardowego wyłącznika awaryjnego) i trybu proxy.
+- **Deferred Endpoint Bootstrapping:** Safely resolves endpoints and updates peers after the tunnel is up for better reliability and leak protection on startup.
+- **Handshake Monitoring:** Real-time handshake monitoring for instant tunnel health feedback.
 - **Integracja z AmneziaWG:** pełna obsługa AmneziaWG, zapewniająca skuteczne omijanie cenzury.
+- **Tunelowanie dzielone:** elastyczna obsługa routingu określonych aplikacji lub ruchu przez VPN.
 - **Opcje proxy:** wbudowana obsługa proxy HTTP i SOCKS5, umożliwiająca aplikacjom innych dostawców tunelowanie ich ruchu.
+- **Lockdown Mode:** Advanced in-app kill switch that blocks all traffic while the tunnel is down.
 - **Szybkie sterowanie:** kafelek szybkich ustawień i skróty na ekranie głównym ułatwiające przełączanie akcji.
 - **Obsługa automatyzacji:** automatyzacja oparta na intencjach do kontrolowania tuneli i autotunelowania.
 - **Dynamiczne zarządzanie DNS:** wykrywa i aktualizuje zmiany DNS bez ponownego uruchamiania tunelu.
-- **Narzędzia monitorujące:** zaawansowane funkcje monitorowania tunelu do monitorowania wydajności tunelu.
+- **IPv6 Endpoints:** Automatically upgrade to IPv6 endpoints or fall back to IPv4 based on network conditions without requiring a restart.
 - **Obsługa Android TV:** obsługa Android TV dla niemal wszystkich funkcji aplikacji.
