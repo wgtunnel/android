@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Wg சுரங்கப்பாதை</string>
     <string name="app_permission_title">WG சுரங்கப்பாதை கட்டுப்பாட்டு பாலம்</string>
-    <string name="app_permission_description">சுரங்கங்கள் மற்றும் ஆட்டோ-டன்னல் அம்சங்களைக் கட்டுப்படுத்தவும்.</string>
+    <string name="app_permission_description">Control tunnels and auto-tunnel features.</string>
     <string name="error_file_extension">கோப்பு ஒரு .conf அல்லது .zip அல்ல</string>
     <string name="tunnels">சுரங்கங்கள்</string>
     <string name="tunnel_mobile_data">மொபைல் தரவுகளில் சுரங்கப்பாதை</string>
