@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">ვგ ტუნელი</string>
     <string name="app_permission_title">ვგ ტუნელის კონტროლის ხიდი</string>
-    <string name="app_permission_description">მართე ტუნელის და ავტო-ტუნელის ფუნქციები.</string>
+    <string name="app_permission_description">Control tunnels and auto-tunnel features.</string>
     <string name="error_file_extension">ფაილი არ წარმოადგენს .conf ან .zip ფორმატს</string>
     <string name="tunnels">ტუნელები</string>
     <string name="tunnel_mobile_data">ტუნელი მობილური ინტერნეტით</string>
