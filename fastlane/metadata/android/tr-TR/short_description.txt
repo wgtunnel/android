@@ -1,1 +1,1 @@
-WireGuard için ek özelliklere sahip alternatif bir VPN istemci uygulaması
+A WireGuard & AmneziaWG VPN client with auto-tunneling, lockdown & proxying.
