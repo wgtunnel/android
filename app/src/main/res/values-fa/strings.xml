@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">WG Tunnel</string>
     <string name="app_permission_title">پل کنترل تونل وایرگاردکنترل تونل‌ها و قابلیت‌های تونل خودکار.</string>
-    <string name="app_permission_description">تونل‌های کنترل و ویژگی‌های تونل خودکار.</string>
+    <string name="app_permission_description">Control tunnels and auto-tunnel features.</string>
     <string name="error_file_extension">فایل .conf یا .zip نیست.</string>
     <string name="tunnels">تونل‌ها</string>
     <string name="tunnel_mobile_data">تونل روی داده تلفن همراه</string>
