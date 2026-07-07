@@ -1,13 +1,17 @@
 WG Tunnel è un client VPN WireGuard che offre il giusto equilibrio tra semplicità e robustezza, rendendolo il client ideale sia per gli utenti occasionali che per quelli esperti.
 Sia che tu voglia semplicemente automatizzare la connessione alla tua VPN o che tu sia un utente esperto con esigenze avanzate in materia di privacy, WG Tunnel fa al caso tuo.
 
+Features:
+
 - **Tunneling automatico:** attiva automaticamente i tunnel in base all'SSID Wi-Fi, alle connessioni Ethernet o alle reti dati mobili.
-- **Split Tunneling:** supporto flessibile per il routing di app o traffico specifici attraverso la VPN.
-- **Modalità app:** supporto per più modalità tunnel, tra cui VPN standard, kernel, lockdown (kill switch personalizzato) e modalità proxy.
+- **Deferred Endpoint Bootstrapping:** Safely resolves endpoints and updates peers after the tunnel is up for better reliability and leak protection on startup.
+- **Strumenti di monitoraggio:** funzionalità avanzate di monitoraggio del tunnel per il controllo delle prestazioni del tunnel.
 - **Integrazione AmneziaWG:** supporto completo per AmneziaWG, che fornisce una solida elusione della censura.
+- **Split Tunneling:** supporto flessibile per il routing di app o traffico specifici attraverso la VPN.
 - **Opzioni di proxy:** supporto proxy HTTP e SOCKS5 integrato che consente alle app di terze parti di instradare il loro traffico.
+- **Modalità app:** supporto per più modalità tunnel, tra cui VPN standard, kernel, lockdown (kill switch personalizzato) e modalità proxy.
 - **Controlli rapidi:** riquadro Impostazioni rapide e scorciatoie sulla schermata iniziale per azioni di attivazione/disattivazione facili.
 - **Supporto dell'automazione:** automazione basata sull'intento per il controllo dei tunnel e il tunneling automatico.
 - **Gestione DNS dinamica:** rileva e aggiorna le modifiche DNS senza riavviare il tunnel.
-- **Strumenti di monitoraggio:** funzionalità avanzate di monitoraggio del tunnel per il controllo delle prestazioni del tunnel.
+- **IPv6 Endpoints:** Automatically upgrade to IPv6 endpoints or fall back to IPv4 based on network conditions without requiring a restart.
 - **Supporto Android TV:** supporto Android TV per quasi tutte le funzionalità dell'app.
