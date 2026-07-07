@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">ڈبلیو جی ٹنل</string>
     <string name="app_permission_title">ڈبلیو جی ٹنل کنٹرول برج</string>
-    <string name="app_permission_description">ٹنل اور خودکار ٹنل کی خصوصیات کو کنٹرول کریں۔</string>
+    <string name="app_permission_description">Control tunnels and auto-tunnel features.</string>
     <string name="error_file_extension">فائل conf یا zip نہیں ہے</string>
     <string name="tunnels">ٹنلز</string>
     <string name="tunnel_mobile_data">موبائل ڈیٹا پر ٹنل</string>
