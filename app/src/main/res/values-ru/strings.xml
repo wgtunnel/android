@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">WG Tunnel</string>
-    <string name="app_permission_title">Управление туннелями и автотуннелированием</string>
-    <string name="app_permission_description">Управление туннелями и функцией автоматического туннелирования.</string>
+    <string name="app_permission_title">Управление туннелями и авто-туннелированием</string>
+    <string name="app_permission_description">Управление туннелями и функцией авто-туннелирования.</string>
     <string name="error_file_extension">Файл не имеет расширение .conf или .zip</string>
     <string name="tunnels">Туннели</string>
     <string name="tunnel_mobile_data">Туннелирование через сотовую сеть</string>
@@ -13,11 +13,11 @@
     <string name="prominent_background_location_title">Фоновое отслеживание местоположения</string>
     <string name="thank_you">Благодарим вас за использование WG Tunnel!</string>
     <string name="trusted_ssid_value_description">Отправить SSID</string>
-    <string name="add_tunnels_text">Добавить из файла или архива</string>
+    <string name="add_tunnels_text">Добавить из файла или zip-архива</string>
     <string name="add_from_qr">Добавить из QR-кода</string>
     <string name="tunnel_name">Имя туннеля</string>
     <string name="exclude">Исключить</string>
-    <string name="include">Включить</string>
+    <string name="include">Добавить</string>
     <string name="config_changes_saved">Изменения конфигурации сохранены.</string>
     <string name="public_key">Открытый ключ</string>
     <string name="addresses">Адреса</string>
@@ -42,7 +42,7 @@
     <string name="random">(случайно)</string>
     <string name="optional">(необязательно)</string>
     <string name="preshared_key">Общий ключ</string>
-    <string name="seconds">секунд</string>
+    <string name="seconds">Секунд</string>
     <string name="persistent_keepalive">Интервал поддержки соединения</string>
     <string name="cancel">Отмена</string>
     <string name="unknown_error">Неизвестная ошибка</string>
@@ -62,7 +62,7 @@
     <string name="no_email_detected">Приложение для отправки почты не найдено</string>
     <string name="no_browser_detected">Браузер не найден</string>
     <string name="open_issue">Сообщить о проблеме</string>
-    <string name="auto">(авто)</string>
+    <string name="auto">(Авто)</string>
     <string name="incorrect_pin">Некорректный PIN-код</string>
     <string name="pin_created">PIN-код создан успешно</string>
     <string name="enter_pin">Введите PIN-код</string>
@@ -86,8 +86,8 @@
     <string name="always_on_message">Разрешение на VPN-соединение было отклонено, проверьте</string>
     <string name="always_on_message2">, чтобы убедиться, что функция «Постоянный VPN» отключена для всех других приложений, и повторите попытку</string>
     <string name="root_accepted">Root-доступ разрешён</string>
-    <string name="show_amnezia_properties">Показать настройки Amnezia</string>
-    <string name="never">никогда</string>
+    <string name="show_amnezia_properties">Показать свойства Amnezia</string>
+    <string name="never">Никогда</string>
     <string name="logs">Журналы</string>
     <string name="appearance">Внешний вид</string>
     <string name="notifications">Уведомления</string>
@@ -126,10 +126,10 @@
     <string name="pre_down">До отключения</string>
     <string name="post_down">После отключения</string>
     <string name="quick_actions">Быстрые действия</string>
-    <string name="hide_amnezia_properties">Скрыть настройки Amnezia</string>
+    <string name="hide_amnezia_properties">Скрыть свойства Amnezia</string>
     <string name="hide_scripts">Скрыть сценарии</string>
-    <string name="enable_amnezia_compatibility">Включить совместимость с Amnezia</string>
-    <string name="remove_amnezia_compatibility">Отключить совместимость с Amnezia</string>
+    <string name="enable_amnezia_compatibility">Вкл. совместимость с Amnezia</string>
+    <string name="remove_amnezia_compatibility">Откл. совместимость с Amnezia</string>
     <string name="exclude_lan">Исключить LAN</string>
     <string name="include_lan">Включить LAN</string>
     <string name="tunnel_control">Управление туннелями</string>
