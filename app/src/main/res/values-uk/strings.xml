@@ -327,9 +327,9 @@
     <string name="network">Мережа</string>
     <string name="view_configuration">Перегляд конфігурації</string>
     <string name="view_live_tunnel">Переглянути живий тунель</string>
-    <string name="toggle_sensitive_data_visibility">Toggle sensitive data visibility</string>
-    <string name="ipv6_settings">IPv6 settings</string>
-    <string name="automation">Automation</string>
+    <string name="toggle_sensitive_data_visibility">Показати/приховати конфіденційні дані</string>
+    <string name="ipv6_settings">Параметри IPv6</string>
+    <string name="automation">Автоматизація</string>
     <string name="peer_resolution">Peer Resolution</string>
     <string name="resolution_method">Resolution method</string>
     <string name="dot">DNS over TLS (DoT)</string>
