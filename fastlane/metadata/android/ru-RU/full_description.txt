@@ -1,17 +1,17 @@
-WG Tunnel is a WireGuard VPN client that strikes the balance between simplicity and robustness, making it the ideal client for casual and power users alike.
-Whether you simply want to automate when you're connected to your VPN or you're a power user with advanced privacy use cases, WG Tunnel has you covered.
+WG Tunnel - это VPN-клиент WireGuard, который обеспечивает баланс между простотой и надёжностью, что делает его идеальным клиентом как для обычных, так и для опытных пользователей. 
+Независимо от того, хотите ли вы просто автоматизировать, когда вы подключены к VPN, или вы опытный пользователь с расширенными вариантами использования конфиденциальности, WG Tunnel вам позаботится.
 
-Features:
+Особенности:
 
-- **Auto-Tunneling:** Automatically activate tunnels based on your device's active network details.
-- **Deferred Endpoint Bootstrapping:** Safely resolves endpoints and updates peers after the tunnel is up for better reliability and leak protection on startup.
-- **Handshake Monitoring:** Real-time handshake monitoring for instant tunnel health feedback.
-- **AmneziaWG Support:** Full support for AmneziaWG 2.0, providing robust censorship protection.
-- **Split Tunneling:** Flexible support for routing specific apps or traffic through the VPN.
-- **Local Proxy Mode:** Expose WireGuard tunnels over a local SOCKS5 or HTTP proxy to browsers or firewall apps (like AdGuard).
-- **Lockdown Mode:** Advanced in-app kill switch that blocks all traffic while the tunnel is down.
-- **Quick Controls:** Quick Settings tile and home screen shortcuts for easy toggling.
-- **Remote Control Support:** Intent-based automation for controlling tunnels and auto-tunneling from automation apps (like Tasker).
-- **Dynamic DNS Handling:** Automatically detect and update endpoints on server IP changes without requiring a restart.
-- **IPv6 Endpoints:** Automatically upgrade to IPv6 endpoints or fall back to IPv4 based on network conditions without requiring a restart.
-- **Android TV Support:** Full support for nearly all features on Android TV.
+- **Авто-туннелирование:** Автоматически активируйте туннели на основе данных об активной сети вашего устройства.
+- **Отложенная загрузка конечных точек:** безопасно разрешает конечные точки и обновляет пиры после того, как туннель будет готов для лучшей надёжности и защиты от утечек при запуске.
+- ** Мониторинг рукопожатия:** Мониторинг рукопожатий в режиме реального времени для мгновенной обратной связи о состоянии туннеля.
+- ** Поддержка AmneziaWG:** Полная поддержка AmneziaWG 2.0, обеспечивающая надёжную защиту от цензуры.
+- **Раздельное туннелирование:** Гибкая поддержка маршрутизации определённых приложений или трафика через VPN.
+- **Режим локального прокси:** Пускать туннели WireGuard через локальный SOCKS5 или HTTP-прокси для браузеров или приложений брандмауэра (таких как AdGuard).
+- **Режим блокировки:** Расширенный аварийный переключатель в приложении, который блокирует все движение, пока туннель не работает.
+- **Быстрые плитки и ярлыки:** Быстрые настройки плиток и ярлыков на главном экране для удобства переключения.
+- ** Поддержка удалённого управления:** Автоматизация на основе намерения для управления туннелями и авто-туннелирования из приложений автоматизации (таких как Tasker).
+- **Динамическая обработка DNS:** Автоматическое обнаружение и обновление конечных точек на изменениях IP-адреса сервера без необходимости перезапуска.
+- **Конечные точки IPv6:** Автоматическое обновление до конечных точек IPv6 или возвращение к IPv4 в зависимости от условий сети, не требуя перезапуска.
+- ** Поддержка Android TV:** Полная поддержка почти всех функций на Android TV.
