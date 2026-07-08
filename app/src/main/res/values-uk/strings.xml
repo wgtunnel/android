@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">WG Tunnel</string>
     <string name="app_permission_title">Керування тунелями та функції автоматичного тунелювання.</string>
-    <string name="app_permission_description">Control tunnels and auto-tunnel features.</string>
+    <string name="app_permission_description">Керування тунелями та функції автоматичного тунелювання.</string>
     <string name="error_file_extension">Файл не є .conf або .zip файлом</string>
     <string name="tunnels">Тунелі</string>
     <string name="tunnel_mobile_data">Тунелювати мобільні дані</string>
@@ -137,7 +137,7 @@
     <string name="add_from_url">Додати з URL-адреси</string>
     <string name="enter_config_url">Введіть URL-адресу конфігурації</string>
     <string name="error_download_failed">Не вдалося завантажити конфігурацію</string>
-    <string name="wg_url_confirm_message">Are you sure you want to add tunnels from %1$s? Never connect to an untrusted VPN!</string>
+    <string name="wg_url_confirm_message">Ви впевнені, що хочете додати тунелі з %1$s? Ніколи не під’єднуватися до ненадійної мережі VPN!</string>
     <string name="save">Зберегти</string>
     <string name="search">Знайти</string>
     <string name="select">Вибрати</string>
@@ -191,8 +191,8 @@
     <string name="release_notes">Примітки до випуску</string>
     <string name="shizuku_not_detected">Shizuku не виявлено</string>
     <string name="sort">Сортування</string>
-    <string name="sort_by_latency">Sort by latency</string>
-    <string name="pinging_servers">Pinging servers…</string>
+    <string name="sort_by_latency">Сортувати за затримкою</string>
+    <string name="pinging_servers">Пінгування серверів…</string>
     <string name="drag_handle">Елемент перетягування</string>
     <string name="move_up">Перемістити вгору</string>
     <string name="move_down">Перемістити вниз</string>
@@ -263,7 +263,7 @@
     <string name="delete_active_message">Неможливо видалити активний тунель.</string>
     <string name="back">Назад</string>
     <string name="configuration">Конфігурація</string>
-    <string name="kernel_wireguard_unsupported">Kernel does not include WireGuard support (module missing or not built-in into kernel)!</string>
+    <string name="kernel_wireguard_unsupported">Ядро не включає підтримку WireGuard (модуль відсутній або не вбудований в ядро)!</string>
     <string name="about">Про</string>
     <string name="resources">Ресурси</string>
     <string name="website">Веб-сторінка застосунку</string>
@@ -315,18 +315,18 @@
     <string name="donation_prompt_suffix">щоб він залишався вільним та покращувався.</string>
     <string name="cookie_packet_junk_size">Розмір «сміття» в cookie-пакетах</string>
     <string name="transport_packet_junk_size">Розмір «сміття» в транспортних пакетах</string>
-    <string name="special_junk_packet">Special junk packet</string>
-    <string name="copy_from">Copy from</string>
-    <string name="mode">Mode</string>
-    <string name="app_selection">App selection</string>
-    <string name="import_url_description">The URL must be secure and serve a .conf file.</string>
-    <string name="export_unsupported">Export is not supported on this device</string>
-    <string name="export_canceled">Export canceled</string>
+    <string name="special_junk_packet">Спеціальний пакет мотлоху</string>
+    <string name="copy_from">Копіювати з</string>
+    <string name="mode">Режим</string>
+    <string name="app_selection">Вибір застосунку</string>
+    <string name="import_url_description">URL-адреса має бути захищена та вести на .conf файл.</string>
+    <string name="export_unsupported">Експорт не підтримується на цьому пристрої</string>
+    <string name="export_canceled">Експорт скасовано</string>
     <string name="proxy_channel_description">Notifications for proxy tunnels.</string>
-    <string name="initializing">Initializing…</string>
-    <string name="network">Network</string>
-    <string name="view_configuration">View configuration</string>
-    <string name="view_live_tunnel">View live tunnel</string>
+    <string name="initializing">Ініціалізація…</string>
+    <string name="network">Мережа</string>
+    <string name="view_configuration">Перегляд конфігурації</string>
+    <string name="view_live_tunnel">Переглянути живий тунель</string>
     <string name="toggle_sensitive_data_visibility">Toggle sensitive data visibility</string>
     <string name="ipv6_settings">IPv6 settings</string>
     <string name="automation">Automation</string>
