@@ -415,7 +415,7 @@
     <string name="dns_error_invalid_host">Host cannot be empty</string>
     <string name="dns_error_invalid_port">Port must be between 1 and 65535</string>
     <string name="dns_error_invalid_ip_or_host">Invalid IP address or hostname</string>
-    <string name="dns_endpoint_label">DNS server endpoint</string>
+    <string name="dns_endpoint_label">endpoint (Dyn)DNS server (ie. authoritative=fast/nocache)</string>
     <string name="dns_endpoint_hint">IP, hostname, or DoH URL</string>
     <string name="no_system_dns_information">No system DNS information</string>
     <string name="private_dns_automatic">Private DNS: automatic</string>
