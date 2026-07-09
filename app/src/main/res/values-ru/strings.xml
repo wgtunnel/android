@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">WG Tunnel</string>
-    <string name="app_permission_title">Управление туннелями и авто-туннелированием</string>
-    <string name="app_permission_description">Управление туннелями и функцией авто-туннелирования.</string>
+    <string name="app_permission_title">Управление туннелями и автотуннелированием</string>
+    <string name="app_permission_description">Управление туннелями и функцией автоматического туннелирования.</string>
     <string name="error_file_extension">Файл не имеет расширение .conf или .zip</string>
     <string name="tunnels">Туннели</string>
     <string name="tunnel_mobile_data">Туннелирование через сотовую сеть</string>
@@ -86,7 +86,7 @@
     <string name="always_on_message">Разрешение на VPN-соединение было отклонено, проверьте</string>
     <string name="always_on_message2">, чтобы убедиться, что функция «Постоянный VPN» отключена для всех других приложений, и повторите попытку</string>
     <string name="root_accepted">Root-доступ разрешён</string>
-    <string name="show_amnezia_properties">Показать свойства Amnezia</string>
+    <string name="show_amnezia_properties">Показать настройки Amnezia</string>
     <string name="never">Никогда</string>
     <string name="logs">Журналы</string>
     <string name="appearance">Внешний вид</string>
@@ -126,10 +126,10 @@
     <string name="pre_down">До отключения</string>
     <string name="post_down">После отключения</string>
     <string name="quick_actions">Быстрые действия</string>
-    <string name="hide_amnezia_properties">Скрыть свойства Amnezia</string>
+    <string name="hide_amnezia_properties">Скрыть настройки Amnezia</string>
     <string name="hide_scripts">Скрыть сценарии</string>
-    <string name="enable_amnezia_compatibility">Вкл. совместимость с Amnezia</string>
-    <string name="remove_amnezia_compatibility">Откл. совместимость с Amnezia</string>
+    <string name="enable_amnezia_compatibility">Включить совместимость с Amnezia</string>
+    <string name="remove_amnezia_compatibility">Отключить совместимость с Amnezia</string>
     <string name="exclude_lan">Исключить LAN</string>
     <string name="include_lan">Включить LAN</string>
     <string name="tunnel_control">Управление туннелями</string>
