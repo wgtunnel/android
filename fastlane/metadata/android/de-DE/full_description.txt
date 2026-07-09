@@ -1,17 +1,17 @@
-WG Tunnel ist ein WireGuard-VPN-Client, der ein Gleichgewicht zwischen Einfachheit und Robustheit herstellt und somit der ideale Client sowohl für Gelegenheitsnutzer als auch für Power-User ist.
+WG Tunnel ist ein WireGuard-VPN-Client, der Einfachheit und Zuverlässigkeit vereint und somit der ideale Client sowohl für Gelegenheitsnutzer als auch für Power-User ist.
 Egal, ob du einfach nur die Verbindung zu deinem VPN automatisieren möchtest oder ein Power-User mit fortgeschrittenen Datenschutzanforderungen bist, WG Tunnel bietet dir alles, was du brauchst.
 
-Features:
+Funktionen:
 
-- **Auto-Tunneling:** Automatische Aktivierung von Tunneln basierend auf Wi-Fi-SSID, Ethernet-Verbindungen oder mobilen Datennetzen.
-- **Deferred Endpoint Bootstrapping:** Safely resolves endpoints and updates peers after the tunnel is up for better reliability and leak protection on startup.
-- **Überwachungstools:** Erweiterte Tunnelüberwachungsfunktionen zur Überwachung der Tunnel-Leistung.
-- **AmneziaWG-Integration:** Vollständige Unterstützung für AmneziaWG, wodurch eine robuste Umgehung von Zensur ermöglicht wird.
+- **Auto-Tunneling:** Automatische Aktivierung von Tunneln basierend auf WLAN-SSID, Ethernet-Verbindungen oder mobilen Datennetzen.
+-**Verzögerte Endpunktinitialisierung:** Zur Erhöhung der Zuverlässigkeit zum Schutz vor Datenlecks werden Endpunkte erst nach dem Aufbau des Tunnels aufgelöst und die Peers anschließend aktualisiert.
+- **Überwachungstools:** Echtzeit Handshake-Überwachung der Tunnel-Leistung.
+- **AmneziaWG-Integration:** Die Vollständige Unterstützung für AmneziaWG 2.0 bietet robusten Schutz vor Zensur.
 - **Split-Tunneling:** Flexible Unterstützung für das Routing bestimmter Apps oder Datenverkehr über das VPN.
-- **Proxy-Optionen:** Integrierte HTTP- und SOCKS5-Proxy-Unterstützung, die es Drittanbieter-Apps ermöglicht, ihren Datenverkehr zu tunneln.
-- **App-Modi:** Unterstützung für mehrere Tunnelmodi, darunter Standard-VPN, Kernel, Lockdown (benutzerdefinierter Kill Switch) und Proxy-Modi.
+- **Lokaler Proxy-Modus:** WireGuard-Tunnel über einen lokalen SOCKS5 oder HTTP-Proxy gegenüber Browsern oder Firewall-Apps (wie AdGuard) bereitstellen.
+- **Sperrmodus:** Erweiterter Kill-Schalter, der den gesamten Datenverkehr blockiert, wenn der Tunnel ausgeschaltet ist.
 - **Schnellsteuerung:** Kachel für Schnelleinstellungen und Verknüpfungen auf dem Startbildschirm für einfaches Umschalten.
-- **Automatisierungsunterstützung:** Intentionsbasierte Automatisierung zur Steuerung von Tunneln und automatischem Tunneling.
-- **Dynamische DNS-Verarbeitung:** Erkennt und aktualisiert DNS-Änderungen ohne Neustart des Tunnels.
-- **IPv6 Endpoints:** Automatically upgrade to IPv6 endpoints or fall back to IPv4 based on network conditions without requiring a restart.
+- **Automatisierungsunterstützung:** Intentionsbasierte Automatisierung zur Steuerung von Tunneln und automatischem Tunneling aus Apps wie Tasker.
+- **Dynamische DNS-Verarbeitung:** Erkennt und aktualisiert die Endpunkte bei Änderungen der Server IP ohne Neustart des Tunnels.
+- **IPv6 Endpunkte:** Aktualisiert basierend auf Netzwerkbedingungen automatisch auf IPv6 Endpunkte oder fällt auf IPv4 zurück, ohne dass ein Neustart erforderlich ist.
 - **Android TV-Unterstützung:** Android TV-Unterstützung für fast alle App-Funktionen.
