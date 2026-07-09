@@ -351,7 +351,7 @@
     <!-- Tunnel states -->
     <string name="tunnel_state_connected">Connected</string>
     <string name="tunnel_state_resolving_dns">Resolving DNS</string>
-    <string name="tunnel_state_handshake_failure">Handshake failure</string>
+    <string name="tunnel_state_handshake_failure"></string>
     <string name="tunnel_state_disconnected">Disconnected</string>
     <string name="tunnel_state_starting">Starting</string>
     <string name="status_template">status: %1$s</string>
@@ -364,18 +364,24 @@
     <string name="ipv4_fallback">IPv4 fallback</string>
     <string name="ipv6_recovery">IPv6 recovery</string>
     <string name="dynamic_dns_update">Dynamic DNS update</string>
-    <string name="notification_ipv4_fallback_message">        %1$s switched to IPv4 connectivity
+    <string name="notification_ipv4_fallback_message">
+        %1$s switched to IPv4 connectivity
     </string>
-    <string name="notification_ipv6_recovery_message">        %1$s recovered IPv6 connectivity
+    <string name="notification_ipv6_recovery_message">
+        %1$s recovered IPv6 connectivity
     </string>
-    <string name="notification_dynamic_dns_message">        %1$s updated after Dynamic DNS change
+    <string name="notification_dynamic_dns_message">
+        %1$s updated after Dynamic DNS change
     </string>
     <!-- Errors -->
-    <string name="vpn_permission_required">        VPN permission required
+    <string name="vpn_permission_required">
+        VPN permission required
     </string>
-    <string name="included_apps">        %1$s apps included
+    <string name="included_apps">
+        %1$s apps included
     </string>
-    <string name="excluded_apps">        %1$s apps excluded
+    <string name="excluded_apps">
+        %1$s apps excluded
     </string>
     <string name="error">Error</string>
     <string name="tunnel_globals">Tunnel globals</string>
