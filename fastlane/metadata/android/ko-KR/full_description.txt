@@ -1,11 +1,11 @@
 WG Tunnel은 단순함과 견고함 사이의 균형을 갖춘 WireGuard VPN 클라이언트로, 일반 사용자와 고급 사용자 모두에게 이상적인 클라이언트입니다.
 VPN 연결 시점을 단순히 자동화하고 싶은 경우든, 고급 프라이버시 사용 사례를 다루는 파워 유저든, WG Tunnel이 모두 해결해 드립니다.
 
-Features:
+기능:
 
 - **자동 터널링:** Wi-Fi SSID, 이더넷 연결 또는 모바일 데이터 네트워크에 따라 터널을 자동으로 활성화합니다.
 - **Deferred Endpoint Bootstrapping:** Safely resolves endpoints and updates peers after the tunnel is up for better reliability and leak protection on startup.
-- **Handshake Monitoring:** Real-time handshake monitoring for instant tunnel health feedback.
+- **핸드셰이크 모니터링:** 실시간 핸드셰이크 모니터링으로 터널 상태를 즉시 확인할 수 있습니다.
 - **AmneziaWG 통합:** AmneziaWG를 완전히 지원하여 강력한 검열 우회 기능을 제공합니다.
 - **스플릿 터널링:** 특정 앱 또는 트래픽을 VPN을 통해 라우팅하는 유연한 지원을 제공합니다.
 - **프록시 옵션:** 서드파티 앱이 트래픽을 터널링할 수 있도록 내장 HTTP 및 SOCKS5 프록시를 지원합니다.
@@ -13,5 +13,5 @@ Features:
 - **빠른 제어:** 간편한 토글 작업을 위한 빠른 설정 타일 및 홈 화면 바로가기를 제공합니다.
 - **자동화 지원:** 터널 및 자동 터널링 제어를 위한 인텐트 기반 자동화를 지원합니다.
 - **동적 DNS 처리:** 터널 재시작 없이 DNS 변경 사항을 감지하고 업데이트합니다.
-- **IPv6 Endpoints:** Automatically upgrade to IPv6 endpoints or fall back to IPv4 based on network conditions without requiring a restart.
+- **IPv6 엔드포인트:** 네트워크 환경에 따라 재시작 없이 자동으로 IPv6 엔드포인트로 업그레이드하거나 IPv4로 폴백합니다.
 - **Android TV 지원:** 거의 모든 앱 기능에 대한 Android TV 지원을 제공합니다.
