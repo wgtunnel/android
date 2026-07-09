@@ -4,12 +4,12 @@ VPN 연결 시점을 단순히 자동화하고 싶은 경우든, 고급 프라�
 기능:
 
 - **자동 터널링:** Wi-Fi SSID, 이더넷 연결 또는 모바일 데이터 네트워크에 따라 터널을 자동으로 활성화합니다.
-- **Deferred Endpoint Bootstrapping:** Safely resolves endpoints and updates peers after the tunnel is up for better reliability and leak protection on startup.
+- **지연된 엔드포인트 부트스트래핑:** 터널을 가동한 뒤 엔드포인트를 안전하게 리졸브하고 피어를 업데이트하여 시작 시 안정성을 높이고 데이터 유출을 방지합니다.
 - **핸드셰이크 모니터링:** 실시간 핸드셰이크 모니터링으로 터널 상태를 즉시 확인할 수 있습니다.
 - **AmneziaWG 통합:** AmneziaWG를 완전히 지원하여 강력한 검열 우회 기능을 제공합니다.
 - **스플릿 터널링:** 특정 앱 또는 트래픽을 VPN을 통해 라우팅하는 유연한 지원을 제공합니다.
 - **프록시 옵션:** 서드파티 앱이 트래픽을 터널링할 수 있도록 내장 HTTP 및 SOCKS5 프록시를 지원합니다.
-- **Lockdown Mode:** Advanced in-app kill switch that blocks all traffic while the tunnel is down.
+- **락다운 모드:** 터널이 비활성화되었을 때 모든 트래픽을 차단하는 앱 내 고급 킬 스위치입니다.
 - **빠른 제어:** 간편한 토글 작업을 위한 빠른 설정 타일 및 홈 화면 바로가기를 제공합니다.
 - **자동화 지원:** 터널 및 자동 터널링 제어를 위한 인텐트 기반 자동화를 지원합니다.
 - **동적 DNS 처리:** 터널 재시작 없이 DNS 변경 사항을 감지하고 업데이트합니다.
