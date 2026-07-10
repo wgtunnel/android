@@ -455,8 +455,6 @@
     <string name="local_network_permission_nearby_devices">참고: Android에서는 해당 권한을 “근처 기기”라고 부릅니다.</string>
     <string name="local_network_permission_denied">로컬 네트워크 접근이 거부되었습니다. 일부 기능이 제대로 동작하지 않을 수 있습니다</string>
     <string name="stop_while_captive_portal">캡티브 포털에서 터널 중지</string>
-    <string name="seamless_roaming">끊김 없는 로밍</string>
-    <string name="seamless_roaming_description">Wi-Fi 액세스 포인트 로밍이나 비행기 모드와 같은 네트워크 변경 시 터널 복구 향상</string>
     <string name="wifi_rules">Wi-Fi 규칙</string>
     <string name="add">추가</string>
     <string name="bssid">BSSID</string>
@@ -473,4 +471,7 @@
     <string name="network_name_in_use">이 네트워크 이름이나 패턴은 이미 사용 중입니다</string>
     <string name="log_export_success">로그 내보내기 성공</string>
     <string name="stored_logs_deleted">저장된 로그 삭제 성공</string>
+    <string name="seamless_recovery">Seamless tunnel recovery</string>
+    <string name="seamless_recovery_desc">Maintains protection while recovering from DDNS changes, network switches, and NAT issues</string>
+    <string name="now_in_template">Now in %1$s</string>
 </resources>
