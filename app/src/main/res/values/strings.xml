@@ -553,8 +553,6 @@
 
     <string name="local_network_permission_denied">Local network access denied. Some features may not work properly</string>
     <string name="stop_while_captive_portal">Stop tunnel on captive portal</string>
-    <string name="seamless_roaming">Seamless roaming</string>
-    <string name="seamless_roaming_description">Improve tunnel recovery during network changes such as WiFi access point roaming and airplane mode</string>
     <string name="wifi_rules">Wi-Fi Rules</string>
     <string name="add">Add</string>
     <string name="bssid">BSSID</string>
@@ -571,4 +569,7 @@
     <string name="network_name_in_use">This network name or pattern is already in use</string>
     <string name="log_export_success">Logs exported successfully</string>
     <string name="stored_logs_deleted">Stored logs deleted successfully</string>
+    <string name="seamless_recovery">Seamless tunnel recovery</string>
+    <string name="seamless_recovery_desc">Maintains protection while recovering from DDNS changes, network switches, and NAT issues</string>
+    <string name="now_in_template">Now in %1$s</string>
 </resources>
