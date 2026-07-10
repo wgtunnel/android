@@ -455,8 +455,6 @@
     <string name="local_network_permission_nearby_devices">Hinweis: Android nennt diese Berechtigung „Geräte in der Nähe“.</string>
     <string name="local_network_permission_denied">Lokaler Netzwerkzugriff verweigert. Einige Funktionen funktionieren möglicherweise nicht korrekt</string>
     <string name="stop_while_captive_portal">Tunnel bei Captive Portal stoppen</string>
-    <string name="seamless_roaming">Nahtloses Roaming</string>
-    <string name="seamless_roaming_description">Verbessere Tunnelwiederherstellung bei Netzwerkänderungen wie Wechsel des WLAN-Zugangspunktes oder des Flugmodus</string>
     <string name="wifi_rules">WLAN-Regeln</string>
     <string name="add">Hinzufügen</string>
     <string name="bssid">BSSID</string>
@@ -473,4 +471,7 @@
     <string name="network_name_in_use">Dieser Netzwerkname oder dieses Muster wird bereits verwendet</string>
     <string name="log_export_success">Logs erfolgreich exportiert</string>
     <string name="stored_logs_deleted">Gespeicherte Logs erfolgreich gelöscht</string>
+    <string name="seamless_recovery">Seamless tunnel recovery</string>
+    <string name="seamless_recovery_desc">Maintains protection while recovering from DDNS changes, network switches, and NAT issues</string>
+    <string name="now_in_template">Now in %1$s</string>
 </resources>
