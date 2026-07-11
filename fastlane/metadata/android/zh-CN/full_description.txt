@@ -1,15 +1,15 @@
-WG Tunnel is a WireGuard VPN client that strikes the balance between simplicity and robustness, making it the ideal client for casual and power users alike.
-Whether you simply want to automate when you're connected to your VPN or you're a power user with advanced privacy use cases, WG Tunnel has you covered.
+WG Tunnel 是一款兼顾简洁易用与功能强大的 WireGuard VPN 客户端，既适合普通用户，也能满足高级用户的需求。
+无论您只是想自动管理 VPN 连接，还是作为高级用户有更复杂的隐私需求，WG Tunnel 都能满足您的需求。
 
 功能：
 
-- **Auto-Tunneling:** Automatically activate tunnels based on your device's active network details.
-- **Deferred Endpoint Bootstrapping:** Safely resolves endpoints and updates peers after the tunnel is up for better reliability and leak protection on startup.
-- **Handshake Monitoring:** Real-time handshake monitoring for instant tunnel health feedback.
-- **AmneziaWG Support:** Full support for AmneziaWG 2.0, providing robust censorship protection.
-- **Split Tunneling:** Flexible support for routing specific apps or traffic through the VPN.
-- **Local Proxy Mode:** Expose WireGuard tunnels over a local SOCKS5 or HTTP proxy to browsers or firewall apps (like AdGuard).
-- **Lockdown Mode:** Advanced in-app kill switch that blocks all traffic while the tunnel is down.
+- **自动隧道：** 根据设备当前连接的网络信息自动启用隧道。
+- **延迟端点初始化：** 在隧道建立后再安全地解析端点并更新对等端，以提高启动时的可靠性并增强防泄漏保护。
+- **握手监测：** 实时监测握手状态，及时反馈隧道健康状况。
+- **AmneziaWG 支持：** 完整支持 AmneziaWG 2.0，提供强大的抗审查能力。
+- **分流：** 灵活支持仅让特定应用或网络流量通过 VPN。
+- **本地代理模式：** 通过本地 SOCKS5 或 HTTP 代理将 WireGuard 隧道提供给浏览器或防火墙应用（如 AdGuard）使用。
+- **锁定模式：** 高级应用内 Kill Switch 功能，在隧道关闭时阻止所有流量。
 - **Quick Controls:** Quick Settings tile and home screen shortcuts for easy toggling.
 - **Remote Control Support:** Intent-based automation for controlling tunnels and auto-tunneling from automation apps (like Tasker).
 - **Dynamic DNS Handling:** Automatically detect and update endpoints on server IP changes without requiring a restart.
