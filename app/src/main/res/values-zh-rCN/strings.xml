@@ -7,11 +7,11 @@
     <string name="tunnels">隧道列表</string>
     <string name="tunnel_mobile_data">允许隧道使用数据流量</string>
     <string name="privacy_policy">隐私政策</string>
-    <string name="okay">好</string>
+    <string name="okay">好的</string>
     <string name="tunnel_on_ethernet">在局域网中使用隧道</string>
     <string name="prominent_background_location_message">此功能意味着允许软件在后台自动扫描 Wi-Fi SSID，这要求开启后台位置信息访问权限。更多信息，请在支持页面查看隐私政策。</string>
     <string name="prominent_background_location_title">后台定位披露</string>
-    <string name="thank_you">谢谢您使用 WG Tunnel!</string>
+    <string name="thank_you">感谢您使用 WG Tunnel!</string>
     <string name="trusted_ssid_value_description">确认修改 SSID</string>
     <string name="add_tunnels_text">从文件或 zip 添加</string>
     <string name="add_from_qr">从二维码添加</string>
@@ -330,7 +330,7 @@
     <string name="toggle_sensitive_data_visibility">切换敏感数据的显示状态</string>
     <string name="ipv6_settings">IPv6配置</string>
     <string name="automation">自动化</string>
-    <string name="peer_resolution">对等端解析</string>
+    <string name="peer_resolution">节点解析</string>
     <string name="resolution_method">解析方法</string>
     <string name="dot">DNS over TLS (DoT)</string>
     <string name="plain_dns">明文 DNS（53 端口）</string>
@@ -356,7 +356,7 @@
     <string name="tunnel_state_starting">正在启动</string>
     <string name="status_template">状态：%1$s</string>
     <string name="uptime_template">运行时间： %1$s</string>
-    <string name="peer_template">对等端：%1$s</string>
+    <string name="peer_template">节点：%1$s</string>
     <string name="handshake_template">握手：%1$s</string>
     <!-- Notification formatting -->
     <string name="notification_tunnel_status_format">%1$s • %2$s</string>
@@ -407,7 +407,7 @@
     <string name="app_channel_description">A channel for general application notifications, like version updates</string>
     <string name="stop_all">Stop all</string>
     <string name="tunnel_state_establishing_connection">Establishing connection</string>
-    <string name="peer_endpoints">Peer endpoints</string>
+    <string name="peer_endpoints">节点端点</string>
     <string name="prefer_ipv6">Prefer IPv6</string>
     <string name="prefer_ipv6_desc">Use IPv6 endpoints when the network supports it</string>
     <string name="fallback_to_ipv4">Fallback to IPv4</string>
