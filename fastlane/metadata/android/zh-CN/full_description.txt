@@ -10,8 +10,8 @@ WG Tunnel 是一款兼顾简洁易用与功能强大的 WireGuard VPN 客户端�
 - **分流：** 灵活支持仅让特定应用或网络流量通过 VPN。
 - **本地代理模式：** 通过本地 SOCKS5 或 HTTP 代理将 WireGuard 隧道提供给浏览器或防火墙应用（如 AdGuard）使用。
 - **锁定模式：** 高级应用内 Kill Switch 功能，在隧道关闭时阻止所有流量。
-- **Quick Controls:** Quick Settings tile and home screen shortcuts for easy toggling.
-- **Remote Control Support:** Intent-based automation for controlling tunnels and auto-tunneling from automation apps (like Tasker).
-- **Dynamic DNS Handling:** Automatically detect and update endpoints on server IP changes without requiring a restart.
-- **IPv6 Endpoints:** Automatically upgrade to IPv6 endpoints or fall back to IPv4 based on network conditions without requiring a restart.
-- **Android TV Support:** Full support for nearly all features on Android TV.
+- **快捷控制：** 提供快速设置磁贴和主屏幕快捷方式，方便快速切换。
+- **远程控制支持：** 支持基于 Intent 的自动化，通过自动化应用（如 Tasker）控制隧道和自动隧道功能。
+- **动态 DNS 处理：** 在服务器 IP 地址发生变化时自动检测并更新端点，无需重启。
+- **IPv6 端点：** 根据网络状况自动升级到 IPv6 端点或回退到 IPv4，无需重启。
+- **Android TV 支持：** 在 Android TV 上完整支持几乎所有功能。
