@@ -9,7 +9,7 @@
     <string name="privacy_policy">隐私政策</string>
     <string name="okay">好的</string>
     <string name="tunnel_on_ethernet">在局域网中使用隧道</string>
-    <string name="prominent_background_location_message">此功能意味着允许软件在后台自动扫描 Wi-Fi SSID，这要求开启后台位置信息访问权限。更多信息，请在支持页面查看隐私政策。</string>
+    <string name="prominent_background_location_message">此功能意味着允许软件在后台自动扫描 Wi-Fi SSID，这要求开启后台位置信息访问权限。欲了解更多信息，请在支持页面查看隐私政策。</string>
     <string name="prominent_background_location_title">后台定位披露</string>
     <string name="thank_you">感谢您使用 WG Tunnel!</string>
     <string name="trusted_ssid_value_description">确认修改 SSID</string>
@@ -364,25 +364,23 @@
     <string name="ipv4_fallback">IPv4 回退</string>
     <string name="ipv6_recovery">恢复 IPv6</string>
     <string name="dynamic_dns_update">动态 DNS 更新</string>
-    <string name="notification_ipv4_fallback_message">
-        %1$s switched to IPv4 connectivity
+    <string name="notification_ipv4_fallback_message">        %1$s 切换到了 IPv4 连接
     </string>
     <string name="notification_ipv6_recovery_message">
         %1$s recovered IPv6 connectivity
     </string>
     <string name="notification_dynamic_dns_message">
-        %1$s updated after Dynamic DNS change
+        在动态 DNS 更改后更新了 %1$s
     </string>
     <!-- Errors -->
-    <string name="vpn_permission_required">需要 VPN 权限</string>
-    <string name="included_apps">
-        %1$s apps included
+    <string name="vpn_permission_required">        需要 VPN 权限
     </string>
-    <string name="excluded_apps">
-        %1$s apps excluded
+    <string name="included_apps">        包括了 %1$s 个应用
+    </string>
+    <string name="excluded_apps">        排除了 %1$s 个应用
     </string>
     <string name="error">错误</string>
-    <string name="tunnel_globals">Tunnel globals</string>
+    <string name="tunnel_globals">全局隧道</string>
     <string name="screen_recording_protection">屏幕录制保护</string>
     <string name="security">安全</string>
     <string name="ready">就绪</string>
@@ -417,23 +415,23 @@
     <string name="getting_started_guide_link">查看入门指南</string>
     <string name="metered_tunnel_desc">Mark this tunnel as metered so apps treat it like mobile data</string>
     <string name="local_proxy">本地代理</string>
-    <string name="local_proxy_desc">Expose the tunnel as a local SOCKS5/HTTP proxy</string>
+    <string name="local_proxy_desc">将隧道作为本地的 SOCKS5/HTTP 代理</string>
     <string name="lockdown_desc">Permanent kill switch that blocks all non-tunnel traffic</string>
-    <string name="vpn_desc">Standard system-wide VPN mode</string>
-    <string name="stop_on_no_internet_desc">Stop the tunnel when the device has no network connection</string>
-    <string name="start_on_boot_desc">Start auto-tunnel automatically on boot</string>
+    <string name="vpn_desc">全局标准 VPN 模式</string>
+    <string name="stop_on_no_internet_desc">当设备没有网络连接时停止隧道连接</string>
+    <string name="start_on_boot_desc">启动时自动启动自动隧道</string>
     <string name="local_logging_desc">Local log storage with live viewer</string>
     <string name="tunnel_globals_desc">Global configuration overrides for all tunnels</string>
     <string name="tunnel_configuration">隧道配置</string>
     <string name="amnezia_configuration">Amnezia 配置</string>
-    <string name="screen_recording_protection_desc">Block screen recording on screens with sensitive data</string>
+    <string name="screen_recording_protection_desc">阻止屏幕录制敏感数据</string>
     <string name="app_lock">应用锁</string>
     <string name="app_lock_desc">需要 PIN 才能访问应用</string>
     <string name="app_shortcuts">App shortcuts</string>
     <string name="app_shortcuts_desc">Add quick actions to the app icon</string>
-    <string name="remote_control">Remote control</string>
-    <string name="remote_control_desc">Allow other apps (like Tasker) to control tunnels</string>
-    <string name="endpoint_template">endpoint: %1$s</string>
+    <string name="remote_control">远程控制</string>
+    <string name="remote_control_desc">允许其他应用 (例如Tasker) 控制隧道</string>
+    <string name="endpoint_template">端点: %1$s</string>
     <string name="encrypted">已加密</string>
     <string name="confirm_password">确认密码</string>
     <string name="passwords_do_not_match">密码不一致</string>
@@ -441,26 +439,26 @@
     <string name="restore">恢复</string>
     <string name="hide_password">隐藏密码</string>
     <string name="restore_failed_wrong_password">恢复失败。密码错误</string>
-    <string name="restore_failed_invalid_file">Restore failed. Select a valid backup file (.sqlite3 or .sqlite3.aes)</string>
+    <string name="restore_failed_invalid_file">恢复失败。请选择有效的备份文件（.sqlite3 或 .sqlite3.aes）</string>
     <string name="error_invalid_config_url">This link returned an invalid config file. Make sure you are using a direct download link</string>
-    <string name="local_network_permission_title">Local Network Access Needed</string>
-    <string name="local_network_permission_intro">WG Tunnel needs access to your local network for several features to work properly.</string>
-    <string name="local_network_permission_issues_intro">Without this permission, you may experience issues with:</string>
+    <string name="local_network_permission_title">需要本地网络访问权限</string>
+    <string name="local_network_permission_intro">WG Tunnel 需要访问您的本地网络才能正常运行。</string>
+    <string name="local_network_permission_issues_intro">没有这个权限，你可能会遇到以下问题：</string>
     <string name="local_network_permission_feature_tunnels">- Connection issues with split tunneling, LAN bypass, or servers hosted on your local network</string>
     <string name="local_network_permission_feature_autotunnel">- Auto-tunneling and split tunneling features</string>
     <string name="local_network_permission_feature_proxy">- Local proxy and bypass functionality</string>
     <string name="local_network_permission_recommendation">Granting this permission is strongly recommended.</string>
-    <string name="local_network_permission_nearby_devices">Note: Android labels this permission as “nearby devices”.</string>
-    <string name="local_network_permission_denied">Local network access denied. Some features may not work properly</string>
+    <string name="local_network_permission_nearby_devices">注意：Android 将此权限标为“附近设备”。</string>
+    <string name="local_network_permission_denied">本地网络访问被拒绝。某些功能可能无法正常工作</string>
     <string name="stop_while_captive_portal">Stop tunnel on captive portal</string>
-    <string name="wifi_rules">Wi-Fi Rules</string>
-    <string name="add">Add</string>
+    <string name="wifi_rules">Wi-Fi 规则</string>
+    <string name="add">添加</string>
     <string name="bssid">BSSID</string>
-    <string name="wifi_detection_desc">Select how your network details are detected</string>
+    <string name="wifi_detection_desc">选择如何检测到您的网络详细信息</string>
     <string name="wildcard_desc">Enable advanced matching for networks using patterns</string>
     <string name="wildcard_wifi_desc">Supports *, ?, and ! for blacklisting</string>
-    <string name="invalid_bssid_format">Invalid BSSID format</string>
-    <string name="trusted_bssid">Trusted BSSID</string>
+    <string name="invalid_bssid_format">BSSID 格式无效</string>
+    <string name="trusted_bssid">信任的 BSSID</string>
     <string name="wildcard_bssid_desc">Supports * and ! for blacklisting</string>
     <string name="captive_portal_desc">Keeps tunnels disabled until captive portal is completed</string>
     <string name="add_bssid">添加 BSSID</string>
