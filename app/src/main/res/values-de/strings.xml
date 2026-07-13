@@ -262,6 +262,7 @@
     <string name="google_donation_message">Aufgrund der Richtlinien von Google sind Spendenlinks in der Play Store-Version dieser App leider nicht erlaubt. Bitte durchsuche die Webseiten des Projekts, um herauszufinden, wo du spenden kannst.</string>
     <string name="delete_active_message">Aktiver Tunnel kann nicht gelöscht werden.</string>
     <string name="back">Zurück</string>
+    <string name="configuration">Konfiguration</string>
     <string name="kernel_wireguard_unsupported">Kernel enthält keine WireGuard-Unterstützung (Modul fehlt oder nicht in Kernel eingebaut)!</string>
     <string name="about">Über</string>
     <string name="resources">Resourcen</string>
@@ -283,11 +284,10 @@
     <string name="unknown">Unbekannt</string>
     <string name="no_network">Keine Netzwerkverbindung</string>
     <string name="active_network">Aktives Netzwerk:</string>
-    <string name="configuration">Konfiguration</string>
-    <string name="text_too_large_for_qr">Der Text ist zu groß, um den QR-Code anzuzeigen.</string>
     <string name="security_type">Sicherheit:</string>
     <string name="network_name">Netzwerk:</string>
     <string name="wifi">WLAN</string>
+    <string name="text_too_large_for_qr">Der Text ist zu groß, um den QR-Code anzuzeigen.</string>
     <string name="all_services_disabled">Auto-Tunnel und Tunnel müssen deaktiviert sein, um diese Aktion ausführen zu können.</string>
     <string name="ddns_success_message">Dynamischer DNS-Endpunkt erfolgreich aktualisiert.</string>
     <string name="aovpn_description">Ermöglicht Android das Starten von Tunneln</string>
