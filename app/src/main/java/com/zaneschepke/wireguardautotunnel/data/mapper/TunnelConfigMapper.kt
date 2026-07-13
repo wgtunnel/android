@@ -18,6 +18,10 @@ fun Entity.toDomain(): Domain =
         isMetered = isMetered,
         ipv6RestoreEnabled = ipv6RestoreEnabled,
         tunnelBSSIDs = tunnelBSSIDs,
+        wsTunnelEnabled = wsTunnelEnabled,
+        wsTunnelServerUrl = wsTunnelServerUrl,
+        wsTunnelPathPrefix = wsTunnelPathPrefix,
+        wsTunnelSniOverride = wsTunnelSniOverride,
     )
 
 fun Domain.toEntity(): Entity =
@@ -35,4 +39,8 @@ fun Domain.toEntity(): Entity =
         isMetered = isMetered,
         ipv6RestoreEnabled = ipv6RestoreEnabled,
         tunnelBSSIDs = tunnelBSSIDs,
+        wsTunnelEnabled = wsTunnelEnabled,
+        wsTunnelServerUrl = wsTunnelServerUrl,
+        wsTunnelPathPrefix = wsTunnelPathPrefix,
+        wsTunnelSniOverride = wsTunnelSniOverride,
     )

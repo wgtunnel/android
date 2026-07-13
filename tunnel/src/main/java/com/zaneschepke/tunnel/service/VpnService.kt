@@ -18,9 +18,13 @@ import com.zaneschepke.tunnel.service.ServiceManager.Companion.alwaysOnCallback
 import com.zaneschepke.tunnel.util.parseDns
 import com.zaneschepke.tunnel.util.parseInetNetwork
 import com.zaneschepke.wireguardautotunnel.parser.Config
+import com.zaneschepke.wstunnel.WsTunnelConfig
+import com.zaneschepke.wstunnel.WsTunnelService
 import java.io.IOException
+import java.net.DatagramSocket
 import java.net.Inet4Address
 import java.net.Inet6Address
+import java.net.SocketException
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.CoroutineScope
@@ -43,6 +47,7 @@ class VpnService : android.net.VpnService(), KillSwitch, SocketProtector {
     private var hevBridgeJob: Job? = null
     @Volatile private var hevBridgeFd: ParcelFileDescriptor? = null
     @Volatile private var vpnTunFd: ParcelFileDescriptor? = null
+    private var wsTunnelJob: Job? = null
 
     @Volatile private var currentKillSwitchConfig: KillSwitchConfig? = null
 
@@ -61,6 +66,7 @@ class VpnService : android.net.VpnService(), KillSwitch, SocketProtector {
             hevBridgeJob?.cancel()
             serviceScope.cancel()
             stopHevSocks5Bridge()
+            stopWsTunnelBridge()
         } finally {
             super.onDestroy()
         }
@@ -70,6 +76,7 @@ class VpnService : android.net.VpnService(), KillSwitch, SocketProtector {
         Timber.w("VPN revoked by user via system settings")
         disableKillSwitch()
         stopHevSocks5Bridge()
+        stopWsTunnelBridge()
         shutdownScope.launch { backend.stopAllActiveTunnels() }
         // Stop the companion foreground service alongside the VPN teardown from revoke
         stopService(Intent(this, VpnCompanionService::class.java))
@@ -218,7 +225,11 @@ class VpnService : android.net.VpnService(), KillSwitch, SocketProtector {
         currentKillSwitchConfig = config
     }
 
-    fun createTunInterface(tunnel: Tunnel, config: Config) {
+    fun createTunInterface(
+        tunnel: Tunnel,
+        config: Config,
+        excludeSelfFromTunnel: Boolean = false,
+    ) {
         val intent = backend.applicationProvider.createVpnConfigurePendingIntent(this@VpnService)
         vpnTunFd?.close()
         vpnTunFd = null
@@ -238,6 +249,17 @@ class VpnService : android.net.VpnService(), KillSwitch, SocketProtector {
                     config.`interface`.includedApplications?.forEach { addAllowedApplication(it) }
                     config.`interface`.excludedApplications?.forEach {
                         addDisallowedApplication(it)
+                    }
+
+                    // The WSTunnel client subprocess shares our app's UID, so its outbound
+                    // WebSocket connection would otherwise be captured by our own tunnel and
+                    // deadlock against itself. Excluding our own package covers it.
+                    if (excludeSelfFromTunnel) {
+                        try {
+                            addDisallowedApplication(packageName)
+                        } catch (e: Exception) {
+                            Timber.e(e, "Failed to exclude own package from tunnel")
+                        }
                     }
 
                     var hasIpv4 = false
@@ -324,6 +346,66 @@ class VpnService : android.net.VpnService(), KillSwitch, SocketProtector {
         }
     }
 
+    /**
+     * Starts the local WSTunnel bridge and suspends until it has bound its local UDP port (or the
+     * timeout elapses). The caller (WireGuardTunnelEngine) rewrites the WireGuard peer endpoint to
+     * 127.0.0.1:[WsTunnelConfig.localPort] and should only proceed once this returns successfully.
+     */
+    suspend fun startWsTunnelBridge(config: WsTunnelConfig, timeoutMs: Long = 5_000L) {
+        if (wsTunnelJob != null) return
+
+        val job =
+            serviceScope.launch {
+                TrafficStats.setThreadStatsTag(WSTUNNEL_TRAFFIC_TAG)
+                try {
+                    WsTunnelService.start(this@VpnService, config)
+                } catch (e: Exception) {
+                    Timber.e(e, "Failed to start WSTunnel bridge")
+                } finally {
+                    TrafficStats.clearThreadStatsTag()
+                }
+            }
+        wsTunnelJob = job
+
+        job.invokeOnCompletion { cause ->
+            if (cause != null) {
+                Timber.d("WSTunnel bridge job stopped")
+                WsTunnelService.stop()
+            }
+            wsTunnelJob = null
+        }
+
+        val deadline = System.currentTimeMillis() + timeoutMs
+        while (System.currentTimeMillis() < deadline) {
+            if (isLocalUdpPortBound(config.localPort)) {
+                Timber.d("WSTunnel bridge is listening on 127.0.0.1:${config.localPort}")
+                return
+            }
+            delay(50.milliseconds)
+        }
+        Timber.w("Timed out waiting for WSTunnel bridge to bind port ${config.localPort}")
+    }
+
+    fun stopWsTunnelBridge() {
+        wsTunnelJob?.cancel()
+        wsTunnelJob = null
+        try {
+            WsTunnelService.stop()
+        } catch (e: Exception) {
+            Timber.w(e, "WsTunnelService.stop failed, may already be stopped")
+        }
+    }
+
+    /** A UDP port that fails to bind is (almost certainly) already held by our own bridge. */
+    private fun isLocalUdpPortBound(port: Int): Boolean {
+        return try {
+            DatagramSocket(port).close()
+            false
+        } catch (_: SocketException) {
+            true
+        }
+    }
+
     override fun bypass(fd: Int): Int {
         return try {
             if (protect(fd)) 1 else 0
@@ -362,5 +444,6 @@ class VpnService : android.net.VpnService(), KillSwitch, SocketProtector {
         private const val IPV6_DEFAULT_ROUTE = "::"
         private const val DEFAULT_DNS_SERVER = "1.1.1.1"
         const val HEV_BRIDGE_TRAFFIC_TAG = 0xF00D
+        const val WSTUNNEL_TRAFFIC_TAG = 0xF00E
     }
 }

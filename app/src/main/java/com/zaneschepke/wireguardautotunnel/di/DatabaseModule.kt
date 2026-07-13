@@ -10,6 +10,7 @@ import com.zaneschepke.wireguardautotunnel.data.DatabaseCallback
 import com.zaneschepke.wireguardautotunnel.data.migrations.MIGRATION_23_24
 import com.zaneschepke.wireguardautotunnel.data.migrations.MIGRATION_25_26
 import com.zaneschepke.wireguardautotunnel.data.migrations.MIGRATION_28_29
+import com.zaneschepke.wireguardautotunnel.data.migrations.MIGRATION_34_35
 import com.zaneschepke.wireguardautotunnel.data.repository.DataStoreAppStateRepository
 import com.zaneschepke.wireguardautotunnel.data.repository.InstalledAndroidPackageRepository
 import com.zaneschepke.wireguardautotunnel.data.repository.RoomAutoTunnelSettingsRepository
@@ -47,6 +48,7 @@ val databaseModule = module {
                 MIGRATION_23_24(get<DataStoreManager>().dataStore),
                 MIGRATION_25_26,
                 MIGRATION_28_29,
+                MIGRATION_34_35,
             )
             .fallbackToDestructiveMigration(true)
             .addCallback(get())

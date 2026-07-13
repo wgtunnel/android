@@ -15,6 +15,7 @@ import androidx.compose.material.icons.outlined.DataUsage
 import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.Dns
 import androidx.compose.material.icons.outlined.Public
+import androidx.compose.material.icons.outlined.Shield
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -145,6 +146,24 @@ fun TunnelSettingsScreen(
                 leading = { Icon(Icons.Outlined.Public, contentDescription = null) },
                 title = stringResource(R.string.ipv6_settings),
                 onClick = { navController.push(Route.IPv6(tunnel.id)) },
+            )
+            SurfaceRow(
+                leading = { Icon(Icons.Outlined.Shield, contentDescription = null) },
+                title = stringResource(R.string.wstunnel_title),
+                description = {
+                    DescriptionText(
+                        stringResource(
+                            if (tunnel.wsTunnelEnabled) R.string.wstunnel_status_enabled
+                            else R.string.wstunnel_status_disabled
+                        )
+                    )
+                },
+                trailing = {
+                    IconButton({ navController.push(Route.WsTunnel(tunnel.id)) }) {
+                        Icon(Icons.AutoMirrored.Outlined.ArrowForward, null)
+                    }
+                },
+                onClick = { navController.push(Route.WsTunnel(tunnel.id)) },
             )
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 val meteredDisabled = sharedUiState.tunnelMode == TunnelMode.PROXY

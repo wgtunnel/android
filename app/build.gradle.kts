@@ -43,6 +43,11 @@ configure<ApplicationExtension> {
     // fix okhttp proguard issue
     packaging { resources { pickFirsts.add("okhttp3/internal/publicsuffix/publicsuffixes.gz") } }
 
+    // Required so libwstunnel.so (a plain executable, not a JNI library) is actually extracted
+    // to nativeLibraryDir on disk instead of being mmap'd straight out of the APK - we need a
+    // real file on disk to exec() as a subprocess.
+    packaging { jniLibs.useLegacyPackaging = true }
+
     splits {
         abi {
             val noSplits = providers.gradleProperty("noSplits").isPresent

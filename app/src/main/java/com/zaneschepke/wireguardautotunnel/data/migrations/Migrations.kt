@@ -464,3 +464,21 @@ val MIGRATION_28_29 =
             )
         }
     }
+
+val MIGRATION_34_35 =
+    object : Migration(34, 35) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            database.execSQL(
+                "ALTER TABLE `tunnel_config` ADD COLUMN `ws_tunnel_enabled` INTEGER NOT NULL DEFAULT 0"
+            )
+            database.execSQL(
+                "ALTER TABLE `tunnel_config` ADD COLUMN `ws_tunnel_server_url` TEXT DEFAULT NULL"
+            )
+            database.execSQL(
+                "ALTER TABLE `tunnel_config` ADD COLUMN `ws_tunnel_path_prefix` TEXT DEFAULT NULL"
+            )
+            database.execSQL(
+                "ALTER TABLE `tunnel_config` ADD COLUMN `ws_tunnel_sni_override` TEXT DEFAULT NULL"
+            )
+        }
+    }

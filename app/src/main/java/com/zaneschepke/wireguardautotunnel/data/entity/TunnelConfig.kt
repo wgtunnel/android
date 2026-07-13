@@ -27,6 +27,14 @@ data class TunnelConfig(
     val ipv6RestoreEnabled: Boolean = false,
     @ColumnInfo(name = "tunnel_bssids", defaultValue = "[]")
     val tunnelBSSIDs: List<String> = emptyList(),
+    @ColumnInfo(name = "ws_tunnel_enabled", defaultValue = "0") 
+    val wsTunnelEnabled: Boolean = false,
+    @ColumnInfo(name = "ws_tunnel_server_url") 
+    val wsTunnelServerUrl: String? = null,
+    @ColumnInfo(name = "ws_tunnel_path_prefix") 
+    val wsTunnelPathPrefix: String? = null,
+    @ColumnInfo(name = "ws_tunnel_sni_override") 
+    val wsTunnelSniOverride: String? = null
 ) {
     companion object {
         const val GLOBAL_CONFIG_NAME = "4675ab06-903a-438b-8485-6ea4187a9512"

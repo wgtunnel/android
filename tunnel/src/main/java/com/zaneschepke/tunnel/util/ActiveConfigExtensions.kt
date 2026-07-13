@@ -2,6 +2,12 @@ package com.zaneschepke.tunnel.util
 
 import com.zaneschepke.tunnel.model.DnsBootstrapResult
 import com.zaneschepke.wireguardautotunnel.parser.ActiveConfig
+import com.zaneschepke.wstunnel.WsTunnelConfig
+
+internal fun ActiveConfig.withRealEndpoint(wsTunnelConfig: WsTunnelConfig): ActiveConfig {
+    val realEndpoint = "${wsTunnelConfig.remoteHost}:${wsTunnelConfig.remotePort}"
+    return copy(peers = peers.map { it.copy(endpoint = realEndpoint) })
+}
 
 fun ActiveConfig.findEndpointMismatches(
     freshDns: Map<PublicKey, DnsBootstrapResult>,

@@ -152,6 +152,28 @@ fun buildLibsWithAdditionalLibraries(context: Context): Libs {
                 funding = emptySet(),
                 tag = "native",
             ),
+            Library(
+                uniqueId = "github.com.erebe:wstunnel",
+                artifactVersion = "10.6.1",
+                name = "wstunnel",
+                description = "Tunnel traffic over WebSocket/HTTP2 to bypass DPI/firewalls",
+                website = "https://github.com/erebe/wstunnel",
+                developers =
+                    listOf(Developer(name = "Erèbe (Romain Gerard)", organisationUrl = null)),
+                organization = null,
+                scm = Scm(null, null, "https://github.com/erebe/wstunnel"),
+                licenses =
+                    setOf(
+                        License(
+                            name = "BSD 3-Clause \"New\" or \"Revised\" License",
+                            url = "https://opensource.org/licenses/BSD-3-Clause",
+                            spdxId = "BSD-3-Clause",
+                            hash = "bsd3-wstunnel",
+                        )
+                    ),
+                funding = emptySet(),
+                tag = "native",
+            ),
         )
 
     val additionalLibraries =

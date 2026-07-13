@@ -73,6 +73,18 @@ internal fun Config.buildResolvedPeers(hostMap: Map<PublicKey, Host>): List<Peer
     }
 }
 
+/**
+ * Rewrites every peer's endpoint to point at the local WSTunnel bridge instead of the real
+ * server. WireGuard-go never sees the real endpoint at all in this mode - the bridge process is
+ * the only thing that talks to it. Note: this assumes a single-hop client config (one primary
+ * peer), which covers the standard tunnel-everything use case; multi-peer mesh configs would need
+ * one bridge (and one local port) per distinct remote endpoint.
+ */
+internal fun Config.withWsTunnelLocalEndpoint(localPort: Int): Config {
+    val rewrittenPeers = peers.map { peer -> peer.copy(endpoint = "127.0.0.1:$localPort") }
+    return copy(peers = rewrittenPeers)
+}
+
 fun Map<PublicKey, DnsBootstrapResult>.toHostMap(preferIpv6: Boolean): Map<PublicKey, Host> =
     mapNotNull { (pubKey, result) ->
             val host =

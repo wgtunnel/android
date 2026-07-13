@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import com.zaneschepke.wireguardautotunnel.core.orchestration.TunnelCoordinator
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.settings.ipv6.IPv6Intent
+import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.settings.wstunnel.WsTunnelIntent
 import com.zaneschepke.wireguardautotunnel.ui.state.TunnelUiState
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
@@ -68,6 +69,31 @@ class TunnelViewModel(
 
                 is IPv6Intent.ToggleRestore -> {
                     tunnel.copy(ipv6RestoreEnabled = iPv6Intent.value)
+                }
+            }
+
+        tunnelRepository.save(updated)
+    }
+
+    fun onWsTunnelAction(wsTunnelIntent: WsTunnelIntent) = intent {
+        val tunnel = state.tunnel ?: return@intent
+
+        val updated =
+            when (wsTunnelIntent) {
+                is WsTunnelIntent.ToggleEnabled -> {
+                    tunnel.copy(wsTunnelEnabled = wsTunnelIntent.value)
+                }
+
+                is WsTunnelIntent.UpdateServerUrl -> {
+                    tunnel.copy(wsTunnelServerUrl = wsTunnelIntent.value.ifBlank { null })
+                }
+
+                is WsTunnelIntent.UpdatePathPrefix -> {
+                    tunnel.copy(wsTunnelPathPrefix = wsTunnelIntent.value.ifBlank { null })
+                }
+
+                is WsTunnelIntent.UpdateSniOverride -> {
+                    tunnel.copy(wsTunnelSniOverride = wsTunnelIntent.value.ifBlank { null })
                 }
             }
 
