@@ -1,3 +1,0 @@
-Novità:
-- Risolve il crash sulle versioni Android precedenti in cui l'override del tunnel a consumo non è disponibile
-- Risolve il problema del monitor di rete del tunnel automatico che rileva in modo errato le modifiche VPN

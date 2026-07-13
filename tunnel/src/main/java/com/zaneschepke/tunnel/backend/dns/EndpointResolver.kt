@@ -4,7 +4,7 @@ import com.zaneschepke.networkmonitor.StableNetworkEngine
 import com.zaneschepke.tunnel.model.BackendMode
 import com.zaneschepke.tunnel.model.DnsBoostrapMode
 import com.zaneschepke.tunnel.model.DnsBootstrapResult
-import com.zaneschepke.tunnel.model.PublicKey
+import com.zaneschepke.tunnel.util.PublicKey
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay

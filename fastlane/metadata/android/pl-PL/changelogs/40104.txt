@@ -1,3 +1,0 @@
-Co nowego:
-- Naprawiono błąd wykrywania sieci autotunelowania.
-- Naprawiono błąd, który czasami uniemożliwiał uruchomienie powiadomień o tunelu.

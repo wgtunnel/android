@@ -1,8 +1,0 @@
-Mida on meil uut:
-- Mahupõhiste tunnelite seadistused
-- Kahepinulise lukustuse tugi
-- Mitme profiili lukustuse veaparandused
-- Parem paigaldatud pakettide tuvastamine jagatud tunnelduse jaoks
-- Aktiivsete tunnelite uuesti käivitamine seadistuste muutudes
-- Erinevad Android TV UI kasutajaliidese veaparandused
-- Erinevad muud parandused ja optimeerimised

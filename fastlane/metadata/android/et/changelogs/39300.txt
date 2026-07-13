@@ -1,4 +1,0 @@
-Mida on meil uut:
-- Aegunud asukohatuvastuse API veaparandus - selleks lisasime WiFi teavet kasutava meetodi
-- Lihtsam uuenduste kontrollimise vaade
-- Parem automaatse tunnelduse töökindlus, kasutusel on viivitusega korduskontroll

@@ -1,4 +1,0 @@
-Novità:
-- Correzione del problema di mancato avvio ricerca dominio dei tunnel
-- Correzione problema ripiego DNS a IPv4 su network solo IPv4
-- Correzione alla destinazione ping non editabile

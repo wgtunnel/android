@@ -1,3 +1,0 @@
-Co nowego:
-- Naprawiono błąd regresji autotunelu.
-- Naprawiono błąd wykorzystania zasobów w trybie wyłącznika awaryjnego.

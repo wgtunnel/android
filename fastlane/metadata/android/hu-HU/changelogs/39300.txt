@@ -1,4 +1,0 @@
-Újdonságok:
-Az elavult helymeghatározási API hibájának javítása Wi-Fi információ-lekérdezési mód választó hozzáadásával
-Egyszerűsített frissítésellenőrző ablak (UI)
-Az automatikus alagút (auto-tunnel) megbízhatóságának javítása késleltetett újraellenőrzéssel

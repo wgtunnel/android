@@ -1,4 +1,0 @@
-Was ist neu:
-- Fehlerbehebung: Suchdomänen-Tunnel lassen sich nicht starten
-- Fehlerbehebung: DNS-Fallback auf IPv4 in reinen IPv4-Netzwerken
-- Fehlerbehebung: Ping-Ziel nicht editierbar

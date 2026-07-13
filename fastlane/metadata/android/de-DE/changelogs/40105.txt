@@ -1,3 +1,0 @@
-Was ist neu:
-- Behebt Absturz bei älteren Android-Versionen, bei denen die Übersteuerung des getakteten Tunnels nicht verfügbar ist
-- Behebt fehlerhafte Erkennung von VPN-Änderungen durch den Auto-Tunnel-Netzwerkmonitor

@@ -1,8 +1,0 @@
-Co nowego:
-- Wprowadzenie trybów aplikacji.
-- Proxy HTTP/SOCKS5 dla tuneli.
-- Tryb blokady dla wyłącznika awaryjnego zabezpieczającego przed wyciekami.
-- Dynamiczne aktualizacje punktów końcowych DNS bez restartu tunelu.
-- DoH do rozwiązywania punktów końcowych peerów.
-- AmneziaWG 1.5 z naśladowaniem protokołu.
-- Wiele poprawek błędów i ulepszeń wydajności.

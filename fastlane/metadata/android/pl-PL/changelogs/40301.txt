@@ -1,7 +1,0 @@
-Co nowego:
-- Naprawiono uzgadnianie trybu drzemki.
-- Opcjonalnie naprawiono błąd I2-5.
-- Naprawiono błąd powodujący awarię podczas tworzenia od podstaw.
-- Wyświetlanie statystyk tunelu w powiadomieniach.
-- Filtrowanie tunelu według opóźnienia.
-- Tłumaczenia.

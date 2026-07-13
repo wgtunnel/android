@@ -1,3 +1,0 @@
-Novedades:
-- Corrección: error en la interfaz al iniciar auto-túneles
-- Corrección: error en la interfaz de estadísticas de pares

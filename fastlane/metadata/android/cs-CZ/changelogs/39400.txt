@@ -1,6 +1,0 @@
-Co je nového:
-- Řazení tunelů
-- Podpora Shizuku pro Wi-Fi SSID
-- Vylepšení viditelnosti při najetí kurzorem pro Android TV
-- Oprava chyby ve výchozí metodě detekce automatického tunelu
-- Další změny a vylepšení uživatelského rozhraní

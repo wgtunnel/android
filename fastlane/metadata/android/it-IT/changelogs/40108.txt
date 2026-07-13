@@ -1,2 +1,0 @@
-Novità:
-- Rapidi cambi di rete causano bug relativi allo stato della rete non valido

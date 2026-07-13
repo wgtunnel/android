@@ -1,3 +1,0 @@
-Yang baru:
-- Perbaikan bug regresi terowongan otomatis
-- Perbaikan bug penggunaan sumber daya untuk mode kill switch

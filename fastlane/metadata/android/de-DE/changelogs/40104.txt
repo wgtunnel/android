@@ -1,3 +1,0 @@
-Was neu ist:
-- Fehlerbehebung bei der automatischen Erkennung von Tunnelnetzen
-- Fehlerbehebung bei der manchmal nicht funktionierenden Tunnelbenachrichtigung

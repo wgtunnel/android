@@ -1,5 +1,0 @@
-Co nowego:
-- Naprawiono błąd powodujący awarię blokady aplikacji.
-- Naprawiono błąd publikowania w FDroid.
-- Naprawiono błąd eksportowania dzienników.
-- Naprawiono błąd przełączania autotunelowania Ethernetu.

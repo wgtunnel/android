@@ -1,2 +1,0 @@
-Yang baru:
-- Perbaikan bug perubahan jaringan yang cepat menyebabkan status jaringan tidak valid

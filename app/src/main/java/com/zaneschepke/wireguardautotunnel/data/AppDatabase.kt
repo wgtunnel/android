@@ -34,7 +34,7 @@ import com.zaneschepke.wireguardautotunnel.data.entity.TunnelConfig
             DnsSettings::class,
             LockdownSettings::class,
         ],
-    version = 33,
+    version = 34,
     autoMigrations =
         [
             AutoMigration(from = 1, to = 2),
@@ -66,6 +66,7 @@ import com.zaneschepke.wireguardautotunnel.data.entity.TunnelConfig
             AutoMigration(from = 30, to = 31),
             AutoMigration(from = 31, to = 32),
             AutoMigration(from = 32, to = 33),
+            AutoMigration(from = 33, to = 34, spec = SeamlessRecoveryMigration::class),
         ],
     exportSchema = true,
 )
@@ -207,3 +208,10 @@ class SingleConfigMigration : AutoMigrationSpec {
         )
     }
 }
+
+@DeleteColumn.Entries(
+    DeleteColumn(tableName = "general_settings", columnName = "seamless_roaming_enabled"),
+    DeleteColumn(tableName = "tunnel_config", columnName = "ipv4_fallback"),
+    DeleteColumn(tableName = "tunnel_config", columnName = "dynamic_dns"),
+)
+class SeamlessRecoveryMigration : AutoMigrationSpec

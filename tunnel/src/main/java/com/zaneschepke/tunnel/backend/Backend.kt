@@ -28,9 +28,7 @@ interface Backend {
 
     suspend fun stopAllActiveTunnels(): Result<Unit>
 
-    suspend fun setSeamlessRoaming(enabled: Boolean): Result<Unit>
-
-    val isSeamlessRoamingEnabled: Boolean
+    suspend fun bounceTunnelDevice(tunnelId: Int)
 
     val status: Flow<BackendStatus>
 

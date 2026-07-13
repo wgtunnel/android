@@ -1,8 +1,0 @@
-Novità:
-- Impostazioni tunnel a consumo
-- Supporto dual-stack blocco
-- Correzione blocco profili multipli
-- Migliorata la richiesta di pacchetti installati di divisione tunneling
-- Riavvio tunnel attivi al cambiamento configurazione
-- Correzione problemi UI Android TV
-- Varie altre correzioni e migliorie

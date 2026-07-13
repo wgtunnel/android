@@ -1,5 +1,0 @@
-Újdonságok:
-Erőforrás-használattal kapcsolatos hibajavítás
-Hálózatfigyelés továbbfejlesztése
-Lapfülek közötti navigáció hibájának javítása
-Az alagutak alapértelmezett forgalmi korlátos (metered) beállításának javítása

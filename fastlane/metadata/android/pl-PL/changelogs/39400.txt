@@ -1,6 +1,0 @@
-Co nowego:
-- Sortowanie tuneli.
-- Obsługa Shizuku dla identyfikatorów SSID Wi-Fi.
-- Ulepszenia widoczności najechania kursorem w systemie Android TV.
-- Naprawiono błąd domyślnej metody wykrywania automatycznego tunelowania.
-- Inne zmiany i ulepszenia interfejsu użytkownika.

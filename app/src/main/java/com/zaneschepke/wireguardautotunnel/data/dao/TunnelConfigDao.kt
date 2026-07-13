@@ -19,9 +19,6 @@ interface TunnelConfigDao {
     @Query("UPDATE tunnel_config SET is_metered = :value WHERE id = :id")
     suspend fun setMetered(id: Int, value: Boolean)
 
-    @Query("UPDATE tunnel_config SET dynamic_dns = :value WHERE id = :id")
-    suspend fun setDynamicDns(id: Int, value: Boolean)
-
     @Query("SELECT * FROM tunnel_config WHERE id=:id") suspend fun getById(id: Long): TunnelConfig?
 
     @Query("SELECT * FROM tunnel_config WHERE name=:name")

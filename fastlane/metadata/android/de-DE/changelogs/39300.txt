@@ -1,4 +1,0 @@
-Was ist neu:
-- Behebt den Fehler der veralteten Standort-API durch Hinzufügen der Auswahl der Wi-Fi-Info-Methode
-- Vereinfachte Benutzeroberfläche für den Aktualisierungsprüfungsdialog 
-- Verbesserte Zuverlässigkeit des Autotunnels mit verzögerter erneuter Prüfung

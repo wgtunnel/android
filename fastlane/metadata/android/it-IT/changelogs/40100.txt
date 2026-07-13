@@ -1,8 +1,0 @@
-Novità:
-- Rivista UI
-- Correzioni DNS dinamico
-- Correzione utilizzo batteria
-- Miglioramento stabilità auto-tunnel
-- Sostituzioni globali divisione tunneling e configurazione
-- Correzioni riavvia al boot e AOVPN
-- Varie altre migliore e ottimizzazioni

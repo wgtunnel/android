@@ -1,8 +1,0 @@
-Nouveautés :
-- Introduction des modes d'application
-- Proxy HTTP/SOCKS5 pour les tunnels
-- Mode verrouillage pour un kill switch sans fuite
-- Mises à jour dynamiques des points de terminaison DNS sans redémarrage du tunnel
-- DoH pour la résolution des points de terminaison des pairs
-- AmneziaWG 1.5 avec imitation de protocole
-- Nombreuses corrections de bogues et améliorations des performances

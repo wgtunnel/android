@@ -76,10 +76,6 @@ class AppBoostrapCoordinator(
     private suspend fun restoreBackendConfiguration() {
         val settings = settingsRepository.getGeneralSettings()
 
-        if (settings.seamlessRoamingEnabled) {
-            tunnelProvider.setSeamlessRoaming(true)
-        }
-
         when (settings.tunnelMode) {
             TunnelMode.LOCK_DOWN -> {
                 val lockdownSettings = lockdownRepository.getLockdownSettings()

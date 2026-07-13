@@ -1,5 +1,0 @@
-Yang baru:
-- Perbaikan bug penggunaan sumber daya
-- Peningkatan pemantauan jaringan
-- Perbaikan bug navigasi tab
-- Perbaikan bug default terukur terowongan

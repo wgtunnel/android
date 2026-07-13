@@ -1,6 +1,0 @@
-Újdonságok:
-Továbbfejlesztett QR-kód beolvasás és szélesebb eszköztámogatás
-Az alagút üzemidejének (uptime) megjelenítése
-Többprofilos használat esetén a gyorsbeállítás-csempe összeomlásának javítása
-A globális felülbírálások visszatérő hibájának (regresszió) javítása, amely váratlan indítási hibákat okozott
-Aktív VPN melletti hálózatészlelési versenyhelyzet javítása

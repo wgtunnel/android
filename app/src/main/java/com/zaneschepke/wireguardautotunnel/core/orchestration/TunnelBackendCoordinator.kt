@@ -49,9 +49,4 @@ class TunnelBackendCoordinator(
             TunnelMode.PROXY -> Unit
         }
     }
-
-    suspend fun changeSeamlessRoaming(enabled: Boolean) {
-        tunnelProvider.setSeamlessRoaming(enabled).getOrThrow()
-        settingsRepository.updateSeamlessRoaming(enabled)
-    }
 }

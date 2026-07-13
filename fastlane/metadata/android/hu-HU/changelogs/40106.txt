@@ -1,3 +1,0 @@
-Újdonságok:
-Az automatikus alagút visszatérő hibájának (regresszió) javítása
-Erőforrás-használattal kapcsolatos hibajavítás vészleállító (kill switch) módban

@@ -6,6 +6,57 @@ preserve_hierarchy: true
 files:
   - source: "/app/src/main/res/values/strings.xml"
     translation: "/app/src/main/res/values-%android_code%/%original_file_name%"
+    languages_mapping:
+      android_code:
+        # Spanish
+        es: es
+        es-ES: es
+
+        # Indonesian
+        in: in
+        id: in
+
+        # Chinese
+        zh-CN: zh-rCN
+        zh-TW: zh-rTW
+        zh-HK: zh-rHK
+
+        # Urdu
+        ur-PK: ur
+        ur-IN: ur-rIN
+
+        # Portuguese
+        pt-BR: pt-rBR
+        pt-PT: pt-rPT
+
+        cs: cs
+        de: de
+        et: et
+        fa: fa
+        fi: fi
+        fr: fr
+        hu: hu
+        it: it
+        ja: ja
+        ka: ka
+        ko: ko
+        nl: nl
+        pl: pl
+        ru: ru
+        sk: sk
+        ta: ta
+        tr: tr
+        uk: uk
+        vi: vi
+
+  - source: "/fastlane/metadata/android/en-US/title.txt"
+    translation: "/fastlane/metadata/android/%locale%/%original_file_name%"
+
+  - source: "/fastlane/metadata/android/en-US/short_description.txt"
+    translation: "/fastlane/metadata/android/%locale%/%original_file_name%"
+
+  - source: "/fastlane/metadata/android/en-US/full_description.txt"
+    translation: "/fastlane/metadata/android/%locale%/%original_file_name%"
 
 commit_message: "chore: update translations from Crowdin"
 append_commit_message: false

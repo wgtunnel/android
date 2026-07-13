@@ -1,6 +1,0 @@
-Co nowego:
-- Naprawiono błąd trybu blokady profilu prywatnego.
-- Optymalizacja wydajności interfejsu użytkownika.
-- Naprawiono błąd powodujący awarię nawigacji wstecznej w niektórych scenariuszach.
-- Naprawiono błąd automatycznego wyścigu tunelowania po zmianach w Amnezia 2.0.
-- Lokalizacje.

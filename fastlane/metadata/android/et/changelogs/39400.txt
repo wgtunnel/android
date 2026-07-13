@@ -1,6 +1,0 @@
-Mida on meil uut:
-- Tunnelite järjestamine
-- Shizuku tugi WiFi SSID-de jaoks
-- Parem nähtavus Android TV liideses ülelibistamisel
-- Automaatse tunnelduse vaikimisi tuvastuse meetodi veaparandus
-- Teised kasutajaliidese muudatused ja parandused

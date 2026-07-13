@@ -1,5 +1,0 @@
-Mida on meil uut:
-- Ressursikasutuse veaparandus
-- Parem võrgumonitooring
-- Vahekartidel liikumise veaparandus
-- Mahupõhise tunneli veaparandus

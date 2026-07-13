@@ -1,8 +1,0 @@
-Co je nového:
-- Zavedení nových režimů aplikací
-- HTTP/SOCKS5 proxy tunelů
-- Režim uzamčení pro nepropustný kill switch
-- Dynamické aktualizace koncových bodů DNS bez restartu tunelu
-- DoH pro rozpoznávání peer koncových bodů
-- AmneziaWG 1.5 s protokolem mimic
-- Mnoho oprav chyb a vylepšení výkonu

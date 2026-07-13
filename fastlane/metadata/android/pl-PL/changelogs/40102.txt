@@ -1,8 +1,0 @@
-Co nowego:
-- Ustawienia tuneli taryfowych.
-- Obsługa blokady sieci dual-stack.
-- Naprawiono błąd blokady wielu profili.
-- Poprawiono wyszukiwanie zainstalowanych pakietów tunelowania dzielonego.
-- Ponowne uruchamianie aktywnych tuneli po zmianie konfiguracji.
-- Naprawiono błędy interfejsu użytkownika Android TV.
-- Różne inne poprawki błędów i udoskonalenia.

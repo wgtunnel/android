@@ -1,5 +1,0 @@
-Novedades:
-- Corrección: uso de recursos
-- Mejora: monitorización de red
-- Corrección: navegación por pestañas
-- Corrección: valor por defecto de túneles medidos

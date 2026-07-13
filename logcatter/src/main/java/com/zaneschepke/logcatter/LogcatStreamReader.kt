@@ -38,18 +38,45 @@ class LogcatStreamReader(pid: Int, private val fileManager: LogFileManager) {
             "ActivityManager",
             "SystemServer",
             "PackageManager",
-            "ConnectivityService",
+            "Choreographer",
+            "HWUI",
+            "RenderThread",
+            "InsetsController",
+            "InsetsSourceConsumer",
+            "ImeTracker",
+            "NativeCustomFrequencyManager",
+            "BpCustomFrequencyManager",
+            "WindowOnBackDispatcher",
+            "InputTransport",
+            "DecorView",
+            "ViewRootImpl",
+            "BBA2",
+            "LOTTIE",
+            "ProfileInstaller",
+            "WM-SystemJobService",
+            "WM-Processor",
+            "WM-WorkerWrapper",
+            "WM-GreedyScheduler",
+            "WM-SystemJobScheduler",
         )
 
     private val noisyPatterns =
         listOf(
             Regex(".*(Samsung|SPen|SmartView| Knox|MDM).*", RegexOption.IGNORE_CASE),
-            Regex(".*(Choreographer|HWUI|OpenGL|RenderThread).*"),
-            Regex(".*setRequestedFrameRate.*", RegexOption.IGNORE_CASE),
+            Regex(".*(Choreographer|HWUI|OpenGL|RenderThread|setRequestedFrameRate).*"),
             Regex(
                 ".*(qdgralloc|AdrenoVK|BLASTBufferQueue|SurfaceComposerClient|BufferQueueProducer|VRI\\[).*",
                 RegexOption.IGNORE_CASE,
             ),
+            Regex(".*(InsetsController|InsetsSourceConsumer).*"),
+            Regex(".*(ImeTracker).*"),
+            Regex(".*(NativeCustomFrequencyManager|BpCustomFrequencyManager).*"),
+            Regex(".*(WindowOnBackDispatcher).*"),
+            Regex(".*(InputTransport).*"),
+            Regex(".*(DecorView|ViewRootImpl).*"),
+            Regex(".*(BBA2).*"),
+            Regex(".*(LOTTIE|ProfileInstaller).*"),
+            Regex(".*(WM-|WorkManager).*"),
         )
 
     fun shouldLog(line: String): Boolean {

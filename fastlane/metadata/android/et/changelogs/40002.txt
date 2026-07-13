@@ -1,5 +1,0 @@
-Mida on meil uut:
-- Parandasime kokkujooksmise rakenduse lukustamisel
-- Parandasime vea F-Droidis avaldamisel
-- Parandasime logide eksportimise vea
-- Tunneli automaatse sisse/välja lülitamise vea parandus

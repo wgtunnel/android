@@ -1,3 +1,0 @@
-What's new:
-- Auto tunnel network detection bugfix
-- Tunnel notification sometimes don't start bugfix

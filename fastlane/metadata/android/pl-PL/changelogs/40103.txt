@@ -1,5 +1,0 @@
-Co nowego:
-- Naprawiono błąd wykorzystania zasobów.
-- Ulepszono monitorowanie sieci.
-- Naprawiono błąd nawigacji po kartach.
-- Naprawiono błąd domyślnego tunelu taryfowego.

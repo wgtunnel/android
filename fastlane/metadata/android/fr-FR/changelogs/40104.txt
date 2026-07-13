@@ -1,3 +1,0 @@
-Nouveautés :
-- Correction d'un bug lié à la détection automatique du réseau de tunnels
-- Correction d'un bug empêchant parfois l'affichage des notifications de tunnel

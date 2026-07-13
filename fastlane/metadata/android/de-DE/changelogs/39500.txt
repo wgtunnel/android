@@ -1,7 +1,0 @@
-Was gibt es Neues:
-- Fehler beim Tunnelsortieren behoben
-- Verbesserter Standortberechtigungsflow
-- Erkennung und Benachrichtigung von Standortberechtigungen
-- Fix für die Erkennung von AndroidTV-Apps für Split-Tunneling
-- Verbesserte Tunnelüberwachung und Neustartwiederherstellung
-- Langsame Wiederverbindung des Tunnels aus dem Schlaf behoben

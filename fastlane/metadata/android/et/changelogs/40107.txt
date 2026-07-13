@@ -1,6 +1,0 @@
-Mida on meil uut:
-- Parem QR-koodide skaneerimine ja seadmete tugi
-- Tunneli tööaja kuvamine
-- Parandasime kiirpaani kokkujooksmise, kui rakendus kasutab mitut profiili
-- Parandasime üldise sürjutamise regressiooni, mis tekitas tunneli käivitamisel ootamatuid vigu
-- Parandasime võrgutuvastuse veatsükli, kui VPN on aktiivne

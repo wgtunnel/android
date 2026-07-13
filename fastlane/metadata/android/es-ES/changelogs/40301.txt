@@ -1,7 +1,0 @@
-What's new:
-- Doze mode handshake fix
-- Optional I2-5 bugfix
-- Create from scratch crash bugfix
-- Show tunnel statistics in notification
-- Filter tunnel by latency
-- Translations

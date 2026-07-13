@@ -79,7 +79,7 @@ class TunnelControlTile : TileService() {
     override fun onClick() {
         unlockAndRun {
             tileScope.launch {
-                tunnelCoordinator.toggleTunnels()
+                tunnelCoordinator.toggleActiveTunnels()
                 updateTileState()
             }
         }

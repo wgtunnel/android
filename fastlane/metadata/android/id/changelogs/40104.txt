@@ -1,3 +1,0 @@
-Yang baru:
-- Perbaikan bug deteksi jaringan terowongan otomatis
-- Perbaikan bug notifikasi terowongan yang terkadang tidak muncul

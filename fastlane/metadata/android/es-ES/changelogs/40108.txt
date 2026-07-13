@@ -1,2 +1,0 @@
-Novedades:
-- Corrección: cambios rápidos de red que provocaban un estado de red inválido

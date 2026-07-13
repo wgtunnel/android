@@ -1,4 +1,0 @@
-Nieuw:
-- Fixt locatie API bug door toevoegen van Wi-Fi info methode selectie
-- Versimpelde update check dialoog.
-- Verbeterde automatische tunnel betrouwbaarheid door verlate hercontrole

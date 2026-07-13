@@ -1,7 +1,0 @@
-Co nowego:
-- Naprawiono błąd sortowania tuneli.
-- Ulepszono przepływ uprawnień do lokalizacji.
-- Wykrywanie uprawnień do lokalizacji i powiadomienia.
-- Naprawiono wykrywanie aplikacji AndroidTV w przypadku tunelowania dzielonego.
-- Ulepszono monitorowanie tuneli i odzyskiwanie po ponownym uruchomieniu.
-- Naprawiono powolne ponowne łączenie się tuneli z trybu uśpienia.

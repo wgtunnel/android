@@ -1,3 +1,0 @@
-Novedades:
-- Corrección de un fallo que provocaba cierres en versiones antiguas de Android cuando la anulación de túnel medido no está disponible
-- Corrección: el monitor de red de auto-túnel detectaba incorrectamente cambios de VPN

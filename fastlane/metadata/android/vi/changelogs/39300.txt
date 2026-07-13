@@ -1,4 +1,0 @@
-Có gì mới:
-- Khắc phục lỗi liên quan đến API vị trí bị deprecated bằng cách bổ sung tùy chọn chọn phương thức lấy thông tin Wi-Fi
-- Giao diện hộp thoại kiểm tra cập nhật được làm gọn gàng, đơn giản hơn
-- Tăng độ ổn định cho tính năng auto-tunnel nhờ cơ chế kiểm tra lại có độ trễ (delayed recheck)

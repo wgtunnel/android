@@ -1,2 +1,0 @@
-Újdonságok:
-A gyors hálózatváltások okozta érvénytelen hálózati állapot hibájának javítása

@@ -1,2 +1,0 @@
-What's new:
-- Rapid network changes cause invalid network state bugfix

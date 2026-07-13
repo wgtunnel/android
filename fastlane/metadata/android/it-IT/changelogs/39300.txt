@@ -1,4 +1,0 @@
-Novità:
-- Risolto bug dell'API di localizzazione obsoleta aggiungendo la selezione del metodo di informazioni Wi-Fi
-- Semplificata interfaccia utente per la verifica degli aggiornamenti
-- Migliorata l'affidabilità del tunneling automatico con un controllo ritardato

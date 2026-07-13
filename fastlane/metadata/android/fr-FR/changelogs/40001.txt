@@ -1,4 +1,0 @@
-Nouveautés :
-- Correction d'un bug empêchant le démarrage des tunnels de recherche de domaine
-- Correction d'un bug concernant le repli DNS vers IPv4 sur les réseaux exclusivement IPv4
-- Correction d'un bug empêchant la modification de la cible Ping

@@ -71,7 +71,12 @@ func awgStartProxy(interfaceName string, config string, uapiPath string, bypass 
 		return -1
 	}
 
-	bind := conn.NewStdNetBindWithControl(shared.ProtectControlFunc)
+	var bind conn.Bind
+	if bypass == 1 {
+		bind = conn.NewStdNetBindWithControl(shared.ProtectControlFunc)
+	} else {
+		bind = conn.NewStdNetBind()
+	}
 
 	statusCB := func(code device.StatusCode) {
 		key := handle
@@ -218,21 +223,6 @@ func awgGetProxyConfig(tunnelHandle int32) *C.char {
 		return nil
 	}
 	return C.CString(settings)
-}
-
-//export awgTriggerProxyBindUpdate
-func awgTriggerProxyBindUpdate(handle int32) {
-	tunnelMu.RLock()
-	vt, ok := virtualTunnelHandles[handle]
-	tunnelMu.RUnlock()
-	if !ok {
-		shared.LogDebug(tag, "awgTriggerProxyBindUpdate: handle %d not found", handle)
-		return
-	}
-	if vt.Dev != nil {
-		shared.LogDebug(tag, "Calling BindUpdate on Proxy handle %d", handle)
-		vt.Dev.BindUpdate()
-	}
 }
 
 //export awgTurnProxyTunnelOff

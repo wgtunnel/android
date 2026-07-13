@@ -1,4 +1,0 @@
-Mida on meil uut:
-- Veaparandus, kus monitooring ei lõpetanud tööd korrektselt
-- Veaparandus, kus teavitused blokeerisid tegevusi
-- Veaparandus, kus juba aktiivne tegevus käivitus uuesti

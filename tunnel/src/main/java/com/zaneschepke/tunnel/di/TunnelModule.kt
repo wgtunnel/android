@@ -5,7 +5,7 @@ import com.zaneschepke.tunnel.backend.Backend
 import com.zaneschepke.tunnel.backend.TunnelBackend
 import com.zaneschepke.tunnel.backend.TunnelEngine
 import com.zaneschepke.tunnel.backend.WireGuardTunnelEngine
-import com.zaneschepke.tunnel.service.ServiceHolder
+import com.zaneschepke.tunnel.service.ServiceManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -18,7 +18,7 @@ val tunnelModule = module {
 
     single(named(CoroutineScopes.IO_SCOPE)) { CoroutineScope(SupervisorJob() + Dispatchers.IO) }
 
-    single { ServiceHolder(androidContext()) }
+    single { ServiceManager(androidContext()) }
     // expect networkMonitor and NotificationProvider to be available to koin from app
     single<Backend> { TunnelBackend(get(named(CoroutineScopes.IO_SCOPE)), get(), get()) }
     single<TunnelEngine> { WireGuardTunnelEngine(get()) }

@@ -1,5 +1,0 @@
-Novità:
-- Correzione utilizzo risorse
-- Migliorato monitoraggio di rete
-- Correzione tab navigazione
-- Correzione default tunnel a consumo

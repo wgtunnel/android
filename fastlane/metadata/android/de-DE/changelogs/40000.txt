@@ -1,8 +1,0 @@
-Was ist neu:
-- Einführung von App-Modi
-- HTTP/SOCKS5-Proxying von Tunneln
-- Lockdown-Modus für auslaufsicheren Notschalter
-- Dynamische DNS-Endpunkt-Updates ohne Neustart des Tunnels
-- DoH für Peer-Endpunkt-Auflösungen
-- AmneziaWG 1.5 mit Protokoll-Mimik
-- Viele Fehlerbehebungen und Leistungsverbesserungen

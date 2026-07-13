@@ -1,3 +1,0 @@
-Co nowego:
-- Naprawiono błąd powodujący, że ekran autotunelowania nie wczytywał się bez połączenia z Wi-Fi.
-- Naprawiono błąd związany z importowaniem tunelu przez adres URL.

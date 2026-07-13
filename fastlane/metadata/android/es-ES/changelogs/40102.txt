@@ -1,8 +1,0 @@
-Novedades:
-- Ajustes para túneles medidos
-- Soporte dual-stack en modo bloqueo
-- Corrección: múltiples perfiles en modo bloqueo
-- Mejora: consulta de aplicaciones instaladas para split tunneling
-- Reinicio de túneles activos al cambiar la configuración
-- Correcciones de UI en Android TV
-- Varias otras correcciones y mejoras

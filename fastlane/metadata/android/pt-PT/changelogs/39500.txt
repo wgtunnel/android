@@ -1,7 +1,0 @@
-Novidades: 
-- Correção do bug de classificação do túnel 
-- Fluxo de permissões de localização melhorado 
-- Deteção e notificações de permissão de localização 
-- Correção da deteção de apps AndroidTV para túneis divididos 
-- Monitoramento do túnel e recuperação de reinicialização melhorados 
-- Correção da lentidão na reconexão do túnel após o modo de suspensão

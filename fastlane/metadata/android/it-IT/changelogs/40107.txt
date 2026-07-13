@@ -1,6 +1,0 @@
-Novità:
-- Miglioramento della scansione dei codici QR e del supporto dei dispositivi
-- Visualizzazione del tempo di attività del tunnel
-- Risoluzione del bug che causava il crash dei tile rapidi durante l'esecuzione dell'app in più profili
-- Risoluzione della regressione delle sostituzioni globali che causava errori imprevisti all'avvio del tunnel
-- Risoluzione del conflitto di rilevamento della rete mentre la VPN è attiva

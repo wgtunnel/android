@@ -1,4 +1,0 @@
-Yang baru:
-- Memperbaiki bug API lokasi yang sudah usang dengan menambahkan pemilihan metode info Wi-Fi
-- Penyederhanaan UI dialog pemeriksaan pembaruan
-- Meningkatkan keandalan terowongan otomatis dengan pemeriksaan ulang yang tertunda

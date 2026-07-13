@@ -246,6 +246,7 @@
 			<intent-filter>
 				<action android:name="com.zaneschepke.wireguardautotunnel.START_TUNNEL" />
 				<action android:name="com.zaneschepke.wireguardautotunnel.STOP_TUNNEL" />
+                <action android:name="com.zaneschepke.wireguardautotunnel.TOGGLE_TUNNEL" />
 				<action android:name="com.zaneschepke.wireguardautotunnel.START_AUTO_TUNNEL" />
 				<action android:name="com.zaneschepke.wireguardautotunnel.STOP_AUTO_TUNNEL" />
 				<action android:name="com.zaneschepke.wireguardautotunnel.START_KILL_SWITCH" />

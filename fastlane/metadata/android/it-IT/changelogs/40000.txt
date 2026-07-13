@@ -1,8 +1,0 @@
-Novità:
-- Introduzione delle modalità dell'app
-- Proxy HTTP/SOCKS5 dei tunnel
-- Modalità blocco per pulsante interruzione a prova di fuga dati
-- Aggiornamento dinamico DNS endpoint senza riavvio del tunnel
-- DoH per risoluzione endpoint del peer
-- AmneziaWG 1.5 con mimica protocollo
-- Molte correzioni di bug e miglioramenti delle prestazioni

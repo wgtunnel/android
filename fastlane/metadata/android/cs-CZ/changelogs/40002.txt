@@ -1,5 +1,0 @@
-Co je nového:
-- Oprava chyby pádu zámku aplikací
-- Oprava chyby publikování na Fdroid
-- Oprava chyby exportu protokolů
-- Oprava chyby přepínání automatického tunelování ethernetového připojení

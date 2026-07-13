@@ -1,6 +1,0 @@
-Novidades: 
-- Classificação de túneis 
-- Apoio de Shizuku para SSIDs Wi-Fi 
-- Melhorias na visibilidade do cursor no Android TV 
-- Correção de bug no método de deteção padrão do túnel automático 
-- Outras alterações e melhorias na interface do utilizador

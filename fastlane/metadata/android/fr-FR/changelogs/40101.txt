@@ -1,3 +1,0 @@
-Nouveautés :
-- Correction d'un bug dans l'interface utilisateur du démarrage automatique du tunnel
-- Correction d'un bug dans l'interface utilisateur des statistiques des pairs

@@ -33,7 +33,7 @@ data class GeneralSettings(
     @ColumnInfo(name = "global_amnezia_enabled", defaultValue = "0")
     val isGlobalAmneziaEnabled: Boolean = false,
     @ColumnInfo(name = "tunnel_scripting_enabled", defaultValue = "0")
-    val tunnelScriptingEnabled: Boolean = true,
-    @ColumnInfo(name = "seamless_roaming_enabled", defaultValue = "0")
-    val seamlessRoamingEnabled: Boolean = true,
+    val tunnelScriptingEnabled: Boolean = false,
+    @ColumnInfo(name = "seamless_recovery", defaultValue = "1")
+    val seamlessRecoveryEnabled: Boolean = true,
 )

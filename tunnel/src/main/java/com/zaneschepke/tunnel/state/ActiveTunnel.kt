@@ -9,11 +9,8 @@ data class ActiveTunnel(
     val mode: BackendMode? = null,
     val transportState: Tunnel.State = Tunnel.State.Down,
     val bootstrapState: BootstrapState = BootstrapState.None,
-    val lastStateChangeMs: Long = System.currentTimeMillis(),
     val lastHealthChangeMs: Long = 0L,
     val interfaceName: String? = null,
     val activeConfig: ActiveConfig? = null,
     val uptime: Long? = null,
-    val lastPeerUpdateMs: Long = 0L,
-    val isFallenBackToIpv4ForNetwork: Boolean = false,
 )

@@ -1,3 +1,0 @@
-Újdonságok:
-Az automatikus alagút indításakor jelentkező felületi hiba javítása
-A társ-statisztikák (peer stats) megjelenítési hibájának javítása

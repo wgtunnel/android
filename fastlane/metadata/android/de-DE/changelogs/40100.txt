@@ -1,8 +1,0 @@
-Was ist neu:
-- Überarbeitung der Benutzeroberfläche
-- Korrekturen für dynamisches DNS
-- Fehlerbehebung bei der Batterienutzung
-- Verbesserungen der Zuverlässigkeit des automatischen Tunnelns
-- Globales Split-Tunneling und Konfigurationsüberschreibungen
-- Neustart beim Booten und Fehlerbehebungen für AOVPN
-- Verschiedene weitere Verbesserungen und Optimierungen

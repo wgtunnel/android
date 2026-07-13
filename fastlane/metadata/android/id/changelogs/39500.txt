@@ -1,7 +1,0 @@
-Yang baru:
-- Perbaikan bug pengurutan terowongan
-- Peningkatan alur izin lokasi
-- Deteksi izin lokasi dan notifikasi
-- Perbaikan deteksi aplikasi AndroidTV untuk terowongan terpisah
-- Peningkatan pemantauan terowongan dan pemulihan setelah reboot
-- Perbaikan koneksi ulang terowongan yang lambat setelah tidur

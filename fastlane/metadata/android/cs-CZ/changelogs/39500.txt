@@ -1,7 +1,0 @@
-Co je nového:
-- Oprava chyby třídění tunelů
-- Vylepšený tok oprávnění k poloze
-- Detekce oprávnění k poloze a oznámení
-- Oprava detekce AndroidTV aplikací pro rozdělené tunelování
-- Vylepšené monitorování tunelů a obnovení po restartu
-- Oprava pomalého opětovného připojení tunelu z režimu spánku

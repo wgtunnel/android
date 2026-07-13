@@ -151,6 +151,10 @@
     <string name="delete">Cancella</string>
     <string name="camera_permission_required">Permessi telecamera richiesti</string>
     <string name="export_failed">Esportazione fallita</string>
+    <string name="auth_error">Non autorizzato</string>
+    <string name="service_running_error">Il servizio non è in esecuzione</string>
+    <string name="config_error">Configurazione non valida</string>
+    <string name="dns_resolve_error">Risoluzione DNS fallita</string>
     <string name="version_template">Versione: %1$s</string>
     <string name="current_template">Corrente: %1$s</string>
     <string name="flavor_template">Caratteristica: %1$s</string>

@@ -1,4 +1,0 @@
-Co je nového:
-- Opravuje chybu zastaralého rozhraní API pro určování polohy přidáním volby metody zjištování informací o Wi-Fi.
-- Zjednodušené dialogové rozhraní pro kontrolu aktualizací
-- Zlepšena spolehlivost automatického tunelu pomocí zpožděné opakované kontroly

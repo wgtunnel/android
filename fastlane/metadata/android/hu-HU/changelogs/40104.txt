@@ -1,3 +1,0 @@
-Újdonságok:
-Az automatikus alagút hálózatészlelési hibájának javítása
-Az alagút értesítéseinek esetenkénti elmaradásával kapcsolatos hibajavítás

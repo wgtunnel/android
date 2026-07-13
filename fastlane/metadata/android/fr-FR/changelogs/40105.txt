@@ -1,3 +1,0 @@
-Nouveautés :
-- Correction d'un plantage sur les anciennes versions d'Android où la fonction de contournement du tunnel à volume limité n'était pas disponible
-- Correction d'un problème où le moniteur de réseau du tunnel automatique détectait de manière erronée les changements de VPN

@@ -1,4 +1,0 @@
-Co nowego:
-- Naprawiono błąd hazardu nieudanego monitorowania zamknięcia.
-- Naprawiono błąd zatrzymania akcji powiadomień.
-- Naprawiono błąd ponownego uruchomienia aktywności powiadomień, gdy są już aktywne.

@@ -1,4 +1,0 @@
-Novedades:
-- Corrección del error de API de localización obsoleta mediante la inserción de selección de método para obtener la información de las redes Wi-Fi
-- Interfaz simplificada del cuadro de diálogo de verificación de actualizaciones
-- Mejora de la fiabilidad del túnel automático con re-verificación retrasada

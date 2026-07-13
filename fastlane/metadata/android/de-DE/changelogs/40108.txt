@@ -1,2 +1,0 @@
-Was ist neu:
-- Fehlerbehebung bei ungültigem Netzwerkstatus aufgrund schneller Netzwerkänderungen

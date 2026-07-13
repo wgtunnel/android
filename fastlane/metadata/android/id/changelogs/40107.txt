@@ -1,6 +1,0 @@
-Yang baru:
-- Peningkatan pemindaian QR dan dukungan perangkat
-- Tampilkan waktu aktif terowongan
-- Perbaikan bug crash ubin cepat saat menjalankan aplikasi di beberapa profil
-- Perbaikan bug regresi penggantian global yang menyebabkan kesalahan mulai terowongan yang tidak terduga
-- Perbaikan kondisi balapan deteksi jaringan saat VPN aktif

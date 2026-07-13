@@ -1,6 +1,0 @@
-Yang baru:
-- Pengurutan terowongan
-- Dukungan Shizuku untuk SSID Wi-Fi
-- Peningkatan visibilitas hover Android TV
-- Perbaikan bug metode deteksi default terowongan otomatis
-- Perubahan dan peningkatan UI lainnya

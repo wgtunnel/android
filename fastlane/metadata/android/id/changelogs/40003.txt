@@ -1,4 +1,0 @@
-Yang baru:
-- Perbaikan bug kondisi balapan pemantauan gagal dimatikan
-- Perbaikan bug tindakan hentikan notifikasi
-- Perbaikan bug notifikasi meluncurkan ulang aktivitas saat sudah aktif

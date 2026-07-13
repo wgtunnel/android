@@ -1,5 +1,0 @@
-Novedades:
-- Corrección: bloqueo de la app que provocaba cierres inesperados
-- Corrección: publicación en F-Droid
-- Corrección: exportación de registros
-- Corrección: conmutador de auto-túnel por Ethernet

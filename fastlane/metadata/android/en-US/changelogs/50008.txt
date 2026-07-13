@@ -1,0 +1,6 @@
+What's new:
+- Auto tunnel by BSSID feature with wildcard support
+- Auto tunnel specificity support for conflicting rule matches
+- Seamless roaming feature for tunnel recovery on Wi-Fi access point and airplane mode migrations
+- Bugfixes for DNS resolution and tunnel hanshake issues
+- Various other fixes and improvements

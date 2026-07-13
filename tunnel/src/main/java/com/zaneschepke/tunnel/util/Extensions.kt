@@ -4,8 +4,6 @@ import android.os.Build
 import com.zaneschepke.tunnel.model.BackendMode
 import com.zaneschepke.tunnel.model.DnsBootstrapResult
 import com.zaneschepke.tunnel.model.DnsConfig
-import com.zaneschepke.tunnel.model.Host
-import com.zaneschepke.tunnel.model.PublicKey
 import com.zaneschepke.tunnel.state.BackendStatus
 import com.zaneschepke.wireguardautotunnel.parser.Config
 import com.zaneschepke.wireguardautotunnel.parser.PeerSection

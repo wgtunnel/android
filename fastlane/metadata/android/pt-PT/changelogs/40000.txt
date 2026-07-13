@@ -1,8 +1,0 @@
-Novidades: 
-- Introdução dos modos da app 
-- Proxy HTTP/SOCKS5 de túneis 
-- Modo de bloqueio para interruptor de emergência à prova de fugas 
-- Atualizações dinâmicas do ponto final DNS sem reiniciar o túnel 
-- DoH para resoluções de pontos finais pares 
-- AmneziaWG 1.5 com imitação de protocolo 
-- Muitas correções de bugs e melhorias de desempenho

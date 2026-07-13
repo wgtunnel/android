@@ -1,4 +1,0 @@
-Co nowego:
-- Naprawiono błąd: tunele domen wyszukiwania nie uruchamiają się.
-- Naprawiono błąd: DNS przełącza się na IPv4 w sieciach tylko z IPv4.
-- Naprawiono błąd: cel pingu nie podlega edycji.

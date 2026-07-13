@@ -7,7 +7,7 @@ import androidx.core.app.ServiceCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
 import com.zaneschepke.tunnel.backend.Backend
-import com.zaneschepke.tunnel.service.ServiceHolder.Companion.alwaysOnCallback
+import com.zaneschepke.tunnel.service.ServiceManager.Companion.alwaysOnCallback
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.CoroutineScope
@@ -24,7 +24,7 @@ class TunnelService : LifecycleService() {
 
     private val backend: Backend by inject(Backend::class.java)
 
-    private val serviceHolder: ServiceHolder by inject(ServiceHolder::class.java)
+    private val serviceManager: ServiceManager by inject(ServiceManager::class.java)
     private val shutdownScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     private val notificationManager: NotificationManager by lazy {
@@ -34,16 +34,15 @@ class TunnelService : LifecycleService() {
     @Volatile private var userActivatedShutdown = false
 
     override fun onCreate() {
-        serviceHolder.set(this)
+        super.onCreate()
+        serviceManager.set(this)
         launchForegroundNotification()
         observeProxyPersistentNotification()
-        super.onCreate()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
-        serviceHolder.set(this)
-        launchForegroundNotification()
+        serviceManager.set(this)
 
         // Service restarted by system, reuse always-on VPN callback
         if (
@@ -54,6 +53,8 @@ class TunnelService : LifecycleService() {
             Timber.d("TunnelService started by system")
             alwaysOnCallback?.alwaysOnTriggered()
         }
+
+        launchForegroundNotification()
 
         return START_STICKY
     }
@@ -84,7 +85,7 @@ class TunnelService : LifecycleService() {
     @OptIn(ExperimentalAtomicApi::class)
     override fun onDestroy() {
         ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
-        serviceHolder.clearTunnelService()
+        serviceManager.clearTunnelService()
         if (!userActivatedShutdown) {
             Timber.d("Service being killed by system, clean up tunnels")
             shutdownScope.launch {
@@ -106,7 +107,7 @@ class TunnelService : LifecycleService() {
             this,
             backend.applicationProvider.proxyNotificationId,
             backend.applicationProvider.proxyInitNotification,
-            ServiceHolder.SPECIAL_USE_SERVICE_TYPE_ID,
+            ServiceManager.SPECIAL_USE_SERVICE_TYPE_ID,
         )
     }
 }

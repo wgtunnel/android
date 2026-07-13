@@ -22,7 +22,7 @@ fun Entity.toDomain(): Domain =
         screenRecordingSecurityEnabled = screenRecordingSecurityEnabled,
         isGlobalAmneziaEnabled = isGlobalAmneziaEnabled,
         tunnelScriptingEnabled = tunnelScriptingEnabled,
-        seamlessRoamingEnabled = seamlessRoamingEnabled,
+        seamlessRecoveryEnabled = seamlessRecoveryEnabled,
     )
 
 fun Domain.toEntity(): Entity =
@@ -43,5 +43,5 @@ fun Domain.toEntity(): Entity =
         screenRecordingSecurityEnabled = screenRecordingSecurityEnabled,
         isGlobalAmneziaEnabled = isGlobalAmneziaEnabled,
         tunnelScriptingEnabled = tunnelScriptingEnabled,
-        seamlessRoamingEnabled = seamlessRoamingEnabled,
+        seamlessRecoveryEnabled = seamlessRecoveryEnabled,
     )

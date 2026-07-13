@@ -1,4 +1,0 @@
-Novedades:
-- Corrección: fallo que impedía iniciar túneles por dominio de búsqueda
-- Corrección: fallback de DNS a IPv4 en redes sólo IPv4
-- Corrección: objetivo de ping no editable

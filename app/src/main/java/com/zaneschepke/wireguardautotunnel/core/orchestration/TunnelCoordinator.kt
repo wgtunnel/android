@@ -208,6 +208,7 @@ class TunnelCoordinator(
                     tunnelConfig.toBackendTunnel(
                         monitoringSettings,
                         settings.tunnelScriptingEnabled,
+                        settings,
                     ),
                 mode = backendMode,
             )
@@ -223,7 +224,25 @@ class TunnelCoordinator(
         tunnelRepository.getDefaultTunnel()?.let { tunnel -> startTunnel(tunnel) }
     }
 
-    suspend fun toggleTunnels(source: TunnelActionSource = TunnelActionSource.USER) =
+    suspend fun toggleTunnel(
+        tunnelConfig: TunnelConfig,
+        source: TunnelActionSource = TunnelActionSource.USER,
+    ) = tunnelMutex.withLock {
+        if (source == TunnelActionSource.USER) {
+            _userOverrideFlow.tryEmit(Unit)
+        }
+
+        val isActive =
+            tunnelProvider.backendStatus.value.activeTunnels.keys.contains(tunnelConfig.id)
+        if (isActive) {
+            stopTunnelInternal(tunnelConfig.id, source)
+            return@withLock
+        }
+        startTunnelInternal(tunnelConfig, source)
+    }
+
+    // for quick settings tile
+    suspend fun toggleActiveTunnels(source: TunnelActionSource = TunnelActionSource.USER) =
         tunnelMutex.withLock {
             if (source == TunnelActionSource.USER) {
                 _userOverrideFlow.tryEmit(Unit)

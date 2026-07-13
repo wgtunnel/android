@@ -1,6 +1,0 @@
-Újdonságok:
-Alagutak sorbarendezése
-Shizuku támogatás a Wi-Fi SSID-k eléréséhez
-Android TV kurzor (hover) láthatóságának javítása
-Az automatikus alagút alapértelmezett észlelési módjának hibajavítása
-Egyéb felületi módosítások és fejlesztések

@@ -12,10 +12,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 
 @OptIn(FlowPreview::class)
-class StableNetworkEngine(
-    private val scope: CoroutineScope,
-    private val upstream: Flow<ConnectivityState>,
-) {
+class StableNetworkEngine(scope: CoroutineScope, private val upstream: Flow<ConnectivityState>) {
 
     private val _stableState = MutableStateFlow<StableNetworkSnapshot?>(null)
     val stableState: StateFlow<StableNetworkSnapshot?> = _stableState.asStateFlow()

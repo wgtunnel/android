@@ -1,5 +1,0 @@
-Novidades: 
-- Correção de bug que causava falha no bloqueio da app 
-- Correção de bug na publicação no Fdroid 
-- Correção de bug na exportação de logs 
-- Correção de bug no botão para ativar/desativar o túnel automático Ethernet

@@ -1,4 +1,0 @@
-Novidades: 
-- Correção do bug que impedia o encerramento do monitoramento 
-- Correção do bug que interrompia as notificações
-- Correção do bug que reiniciava a atividade de notificação quando já estava ativa

@@ -116,8 +116,8 @@ class SettingsViewModel(
         settingsRepository.upsert(state.settings.copy(tunnelScriptingEnabled = to))
     }
 
-    fun setSeamlessNetworkRoaming(enabled: Boolean) = intent {
-        tunnelBackendCoordinator.changeSeamlessRoaming(enabled)
+    fun setSeamlessRecovery(enabled: Boolean) = intent {
+        settingsRepository.updateSeamlessRecovery(enabled)
     }
 
     fun setAlreadyDonated(to: Boolean) = intent {

@@ -1,3 +1,0 @@
-Was ist neu:
-- Fehlerbehebung bei der Benutzeroberfläche für den automatischen Tunnelstart
-- Fehlerbehebung bei der Benutzeroberfläche für Peer-Statistiken

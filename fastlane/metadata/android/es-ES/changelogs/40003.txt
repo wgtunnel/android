@@ -1,4 +1,0 @@
-Novedades:
-- Corrección: condición que impedía apagar la monitorización
-- Corrección: acción de detener notificaciones
-- Corrección: reactivación desde notificación cuando la actividad ya estaba activa

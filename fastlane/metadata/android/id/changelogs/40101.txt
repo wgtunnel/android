@@ -1,3 +1,0 @@
-Yang baru:
-- Perbaikan bug UI mulai terowongan otomatis
-- Perbaikan bug UI statistik rekan

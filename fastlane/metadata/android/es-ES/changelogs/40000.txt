@@ -1,8 +1,0 @@
-Novedades:
-- Introducción de modos de aplicación
-- Proxy HTTP/SOCKS5 de túneles
-- Modo de bloqueo para un interruptor a prueba de fugas
-- Actualizaciones dinámicas de DNS de endpoints sin reiniciar el túnel
-- DoH para resoluciones de endpoints de pares
-- AmneziaWG 1.5 con imitación de protocolo
-- Numerosas correcciones de errores y mejoras de rendimiento

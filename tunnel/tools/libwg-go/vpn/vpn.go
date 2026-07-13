@@ -232,21 +232,6 @@ func awgGetConfig(tunnelHandle int32) *C.char {
 	return C.CString(settings)
 }
 
-//export awgTriggerBindUpdate
-func awgTriggerBindUpdate(handle int32) {
-	tunnelMu.RLock()
-	h, ok := tunnelHandles[handle]
-	tunnelMu.RUnlock()
-	if !ok {
-		shared.LogDebug(tag, "awgTriggerBindUpdate: handle %d not found", handle)
-		return
-	}
-	if h.device != nil {
-		shared.LogDebug(tag, "Calling BindUpdate on VPN handle %d", handle)
-		h.device.BindUpdate()
-	}
-}
-
 //export awgVersion
 func awgVersion() *C.char {
 	info, ok := debug.ReadBuildInfo()

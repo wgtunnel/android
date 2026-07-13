@@ -1,3 +1,0 @@
-Mida on meil uut:
-- Kokkujooksmise parandus, kus vanemates Androidi versioonides, kus mahupõhise tunneli sürjutamine pole saadaval
-- Parandus, kus automatse tunnelduse võrgumonitor ei tuvastanud korrektselt VPN-i muudatusi

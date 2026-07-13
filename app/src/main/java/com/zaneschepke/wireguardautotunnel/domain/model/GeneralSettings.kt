@@ -21,5 +21,5 @@ data class GeneralSettings(
     val screenRecordingSecurityEnabled: Boolean = true,
     val isGlobalAmneziaEnabled: Boolean = false,
     val tunnelScriptingEnabled: Boolean = false,
-    val seamlessRoamingEnabled: Boolean = false,
+    val seamlessRecoveryEnabled: Boolean = true,
 )

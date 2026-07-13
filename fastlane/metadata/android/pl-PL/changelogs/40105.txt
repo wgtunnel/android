@@ -1,3 +1,0 @@
-Co nowego:
-- Naprawiono błąd powodujący awarię w starszych wersjach Androida, w których funkcja omijania tunelu taryfowego była niedostępna.
-- Naprawiono błąd monitora sieciowego automtunelowania, który nieprawidłowo wykrywał zmiany VPN.

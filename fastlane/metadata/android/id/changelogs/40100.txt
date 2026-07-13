@@ -1,8 +1,0 @@
-Yang baru:
-- Perombakan UI
-- Perbaikan DNS dinamis
-- Perbaikan bug penggunaan baterai
-- Peningkatan keandalan terowongan otomatis
-- Terowongan terpisah global dan penggantian konfigurasi
-- Perbaikan bug mulai saat booting dan AOVPN
-- Berbagai peningkatan dan optimasi lainnya

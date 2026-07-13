@@ -1,3 +1,0 @@
-Yang baru:
-- Memperbaiki crash pada versi Android lama di mana penggantian terowongan terukur tidak tersedia
-- Memperbaiki monitor jaringan terowongan otomatis yang salah mendeteksi perubahan VPN

@@ -1,3 +1,0 @@
-Novedades:
-- Corrección: detección de red para inicio automático de túneles
-- Corrección: notificaciones de túnel que a veces no se iniciaban

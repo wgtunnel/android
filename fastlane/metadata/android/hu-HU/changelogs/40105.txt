@@ -1,3 +1,0 @@
-Újdonságok:
-Az alkalmazásösszeomlás javítása régebbi Android verziókon, ahol a forgalmi korlátos felülbírálás nem érhető el
-Az automatikus alagút hálózatfigyelőjének javítása, amely hibásan érzékelte a VPN-módosításokat

@@ -51,8 +51,6 @@ class TunnelViewModel(
         tunnelRepository.updatePrimaryTunnel(update)
     }
 
-    fun onDynamicDns(to: Boolean) = intent { tunnelRepository.setDynamicDns(tunnelId, to) }
-
     fun onMetered(to: Boolean) = intent { tunnelRepository.setMetered(tunnelId, to) }
 
     fun onIPv6Action(iPv6Intent: IPv6Intent) = intent {
@@ -60,17 +58,9 @@ class TunnelViewModel(
 
         val updated =
             when (iPv6Intent) {
-                is IPv6Intent.ToggleFallback -> {
-                    tunnel.copy(ipv4FallbackEnabled = iPv6Intent.value)
-                }
-
                 is IPv6Intent.ToggleIpv6Preferred -> {
                     if (!iPv6Intent.value) {
-                        tunnel.copy(
-                            isIpv6Preferred = false,
-                            ipv6RestoreEnabled = false,
-                            ipv4FallbackEnabled = false,
-                        )
+                        tunnel.copy(isIpv6Preferred = false, ipv6RestoreEnabled = false)
                     } else {
                         tunnel.copy(isIpv6Preferred = true)
                     }

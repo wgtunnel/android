@@ -93,11 +93,7 @@ cd wgtunnel
 
 ## Translation
 
-This app is using [Weblate](https://weblate.org) to assist with translations.
-
-Help translate WG Tunnel into your language
-at [Hosted Weblate](https://hosted.weblate.org/engage/wg-tunnel/).\
-[![Translation status](https://hosted.weblate.org/widgets/wg-tunnel/-/multi-auto.svg)](https://hosted.weblate.org/engage/wg-tunnel/)
+Help translate WG Tunnel on [Crowdin](https://translate.android.wgtunnel.com/project/wgtunnel/invite?h=11b5b7bf2099293095775d4477320c772818907).
 
 ## Acknowledgements
 

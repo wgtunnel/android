@@ -1,4 +1,0 @@
-Co je nového:
-- Oprava chyby nespouštění vyhledávání doménových tunelů
-- Oprava chyby přepnutí DNS na IPv4 v sítích pouze pro IPv4
-- Oprava chyby neupravovatelnosti cíle příkazu ping

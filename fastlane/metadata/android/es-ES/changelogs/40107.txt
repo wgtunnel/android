@@ -1,6 +1,0 @@
-Novedades:
-- Mejora: escaneo de códigos QR y compatibilidad con dispositivos
-- Mostrar tiempo de actividad del túnel
-- Corrección: fallo del atajo rápido al ejecutar la app en múltiples perfiles
-- Corrección: regresión en sobrescrituras globales que causaba errores inesperados al iniciar túneles
-- Corrección: condición de ejecución en la detección de red mientras la VPN está activa

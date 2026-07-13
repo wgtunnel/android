@@ -1,3 +1,0 @@
-Novità:
-- Correzione bug rilevamento automatico rete tunnel
-- Correzione bug notifiche tunnel che talvolta non si avviano

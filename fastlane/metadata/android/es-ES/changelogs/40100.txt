@@ -1,8 +1,0 @@
-Novedades:
-- Rediseño de la interfaz de usuario
-- Correcciones en DNS dinámico
-- Corrección: uso de batería
-- Mejoras en la fiabilidad del auto-túnel
-- Split tunneling global y sobrescrituras de configuración
-- Correcciones: reinicio al arrancar y AOVPN
-- Varias otras mejoras y optimizaciones

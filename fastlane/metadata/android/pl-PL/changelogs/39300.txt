@@ -1,4 +1,0 @@
-Co nowego:
-- Naprawiono błąd API lokalizacji, dodając opcję wyboru metody informacji o Wi-Fi.
-- Uproszczono interfejs użytkownika okna dialogowego sprawdzania aktualizacji.
-- Zwiększono niezawodność autotunelowania dzięki opóźnionemu sprawdzaniu.

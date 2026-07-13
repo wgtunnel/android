@@ -1,8 +1,0 @@
-Újdonságok:
-Megújult felhasználói felület (UI)
-Dinamikus DNS javítások
-Akkumulátorhasználattal kapcsolatos hibajavítás
-Az automatikus alagút (auto-tunnel) megbízhatóságának fejlesztése
-Globális osztott alagutazás és konfigurációs felülbírálások
-Rendszerindításkor való újraindítás és az „Állandó VPN” (AOVPN) hibajavításai
-Számos egyéb fejlesztés és optimalizálás

@@ -1,5 +1,0 @@
-Co nowego:
-- Obsługa Amnezia 2.0.
-- Kopiowanie aplikacji rozdzielonego tunelu z istniejącej konfiguracji.
-- Naprawiono błąd uruchamiania rejestratora.
-- Naprawiono błąd synchronizacji dodanego szybkiego kafelka.

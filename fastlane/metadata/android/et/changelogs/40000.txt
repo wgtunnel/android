@@ -1,8 +1,0 @@
-Mida on meil uut:
-- Võtsime kasutusele rakenduse eri režiimid
-- Tunnelite kasutamine HTTP/SOCKS5 proksidega
-- Lukustusrežiim lekkevaba avariipuga
-- Dünlipukti nimelahenduse uuendamine ilma tunnelit uuesti käivitamata
-- DoH otspunkti nimelahenduse jaoks
-- AmneziaWG 1.5 ja protokolli matkimine
-- Palju vea- ja jõudlusparandusi

@@ -1,3 +1,0 @@
-Novità:
-- Correzione UI avvio auto tunnel
-- Correzione UI statistiche peer

@@ -16,14 +16,11 @@ data class TunnelConfig(
     val isMobileDataTunnel: Boolean = false,
     val isPrimaryTunnel: Boolean = false,
     val quickConfig: String = "",
-    val dynamicDnsEnabled: Boolean = false,
-    val pingTarget: String? = null,
     val isEthernetTunnel: Boolean = false,
     val isIpv6Preferred: Boolean = false,
     val position: Int = 0,
     val autoTunnelApps: List<String> = listOf(),
     val isMetered: Boolean = false,
-    val ipv4FallbackEnabled: Boolean = false,
     val ipv6RestoreEnabled: Boolean = false,
     val tunnelBSSIDs: List<String> = emptyList(),
 ) {
@@ -37,11 +34,15 @@ data class TunnelConfig(
     val isGlobalConfig: Boolean
         get() = name == GLOBAL_CONFIG_NAME
 
-    fun toBackendTunnel(monitoringSettings: MonitoringSettings, scriptsEnabled: Boolean): Tunnel =
-        BackendTunnel(this, monitoringSettings, scriptsEnabled)
+    fun toBackendTunnel(
+        monitoringSettings: MonitoringSettings,
+        scriptsEnabled: Boolean,
+        generalSettings: GeneralSettings,
+    ): Tunnel = BackendTunnel(this, generalSettings, monitoringSettings, scriptsEnabled)
 
     private class BackendTunnel(
         private val config: TunnelConfig,
+        private val generalSettings: GeneralSettings,
         private val monitoringSettings: MonitoringSettings,
         override val scriptsEnabled: Boolean,
     ) : Tunnel {
@@ -58,10 +59,7 @@ data class TunnelConfig(
         override val ipStrategy: Tunnel.IpStrategy
             get() =
                 if (config.isIpv6Preferred)
-                    Tunnel.IpStrategy.PreferIpv6(
-                        fallbackToIpv4Enabled = config.ipv4FallbackEnabled,
-                        recoveryEnabled = config.ipv6RestoreEnabled,
-                    )
+                    Tunnel.IpStrategy.PreferIpv6(recoveryEnabled = config.ipv6RestoreEnabled)
                 else Tunnel.IpStrategy.Ipv4Only
 
         override val features: Set<Tunnel.Feature>
@@ -73,10 +71,7 @@ data class TunnelConfig(
                         )
                     )
                 }
-
-                if (config.dynamicDnsEnabled) {
-                    add(Tunnel.Feature.DynamicDNS)
-                }
+                if (generalSettings.seamlessRecoveryEnabled) add(Tunnel.Feature.SeamlessRecovery)
             }
 
         override fun updateState(state: Tunnel.State) = Unit

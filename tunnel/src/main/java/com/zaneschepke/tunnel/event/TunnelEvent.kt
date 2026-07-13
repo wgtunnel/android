@@ -1,6 +1,6 @@
 package com.zaneschepke.tunnel.event
 
-import com.zaneschepke.tunnel.model.PublicKey
+import com.zaneschepke.tunnel.util.PublicKey
 
 sealed interface TunnelEvent {
 

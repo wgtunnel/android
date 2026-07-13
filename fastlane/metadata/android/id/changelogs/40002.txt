@@ -1,5 +1,0 @@
-Yang baru:
-- Perbaikan bug crash kunci aplikasi
-- Perbaikan bug penerbitan Fdroid
-- Perbaikan bug ekspor log
-- Perbaikan bug pengalih ethernet terowongan otomatis

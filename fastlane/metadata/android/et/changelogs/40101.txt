@@ -1,3 +1,0 @@
-Mida on meil uut:
-- Tunneli automaatse käivitamise kasutajaliidese veaparandus
-- Otspunktide statistika kasutajaliidese veaparandus

@@ -1,8 +1,0 @@
-Yang baru:
-- Pengenalan mode aplikasi
-- Proksi HTTP/SOCKS5 untuk terowongan
-- Mode lockdown untuk kill switch tanpa kebocoran
-- Pembaruan titik akhir DNS dinamis tanpa memulai ulang terowongan
-- DoH untuk resolusi titik akhir rekan
-- AmneziaWG 1.5 dengan peniruan protokol
-- Banyak perbaikan bug dan peningkatan kinerja

@@ -3,6 +3,9 @@ package dns
 /*
 #cgo LDFLAGS: -landroid
 #include "vpn_jni.h"
+#include <stdint.h>
+#include <stdlib.h>
+extern void NotifyDnsResult(int64_t id, const char* result);
 */
 import "C"
 import (
@@ -19,6 +22,7 @@ import (
 	"strings"
 	"syscall"
 	"time"
+	"unsafe"
 
 	"github.com/miekg/dns"
 	"github.com/wgtunnel/android/shared"
@@ -39,40 +43,47 @@ type Transport interface {
 	Query(ctx context.Context, msg *dns.Msg) (*dns.Msg, error)
 }
 
-//export ResolveBootstrap
-func ResolveBootstrap(
+//export StartResolveBootstrap
+func StartResolveBootstrap(
+	id C.int64_t,
 	host *C.char,
 	protocol *C.char,
 	resolvedUpstream *C.char,
 	originalUpstream *C.char,
 	bypass C.int,
-) *C.char {
-
+) {
 	h := C.GoString(host)
 	p := C.GoString(protocol)
 	resolved := C.GoString(resolvedUpstream)
 	original := C.GoString(originalUpstream)
 	bp := bypass == 1
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
+	shared.LogDebug("DNS", "StartResolveBootstrap called: id=%d host=%s protocol=%s resolved=%s bypass=%t",
+		id, h, p, resolved, bp)
 
-	shared.LogDebug("DNS", "ResolveBootstrap called host=%s protocol=%s resolved=%s original=%s bypass=%t",
-		h, p, resolved, original, bp)
+	go func() {
+		ctx, cancel := context.WithTimeout(context.Background(), 8*time.Second)
+		defer cancel()
 
-	v4, v6, err := Resolve(ctx, h, p, resolved, original, bp)
-	if err != nil {
-		shared.LogError("DNS", "ResolveBootstrap failed for %s: %v", h, err)
-		return C.CString("ERR|" + err.Error())
-	}
+		shared.LogDebug("DNS", "Goroutine started for DNS bootstrap id=%d host=%s", id, h)
 
-	result := fmt.Sprintf("v4=%s;v6=%s",
-		strings.Join(toStringSlice(v4), ","),
-		strings.Join(toStringSlice(v6), ","),
-	)
+		v4, v6, err := Resolve(ctx, h, p, resolved, original, bp)
+		var resultStr string
+		if err != nil {
+			shared.LogError("DNS", "ResolveBootstrap failed id=%d host=%s: %v", id, h, err)
+			resultStr = "ERR|" + err.Error()
+		} else {
+			resultStr = fmt.Sprintf("v4=%s;v6=%s",
+				strings.Join(toStringSlice(v4), ","),
+				strings.Join(toStringSlice(v6), ","),
+			)
+			shared.LogDebug("DNS", "ResolveBootstrap success id=%d host=%s -> %s", id, h, resultStr)
+		}
 
-	shared.LogDebug("DNS", "ResolveBootstrap success for %s: %s", h, result)
-	return C.CString(result)
+		cResult := C.CString(resultStr)
+		C.NotifyDnsResult(id, cResult)
+		C.free(unsafe.Pointer(cResult))
+	}()
 }
 
 func toStringSlice(addrs []netip.Addr) []string {
@@ -366,6 +377,7 @@ func buildTransport(
 
 	switch protocol {
 	case "doh":
+		shared.LogDebug("DNS", "Building DoH transport: original=%s resolved=%s bypass=%t", originalUpstream, resolvedUpstream, bypass)
 		// Parse original for SNI
 		origURL, err := url.Parse(originalUpstream)
 		if err != nil {
@@ -409,6 +421,7 @@ func buildTransport(
 		}, nil
 
 	case "dot":
+		shared.LogDebug("DNS", "Building DoT transport: original=%s resolved=%s bypass=%t", originalUpstream, resolvedUpstream, bypass)
 		// Get SNI from original
 		origHost, origPort, err := net.SplitHostPort(originalUpstream)
 		if err != nil {
@@ -439,6 +452,7 @@ func buildTransport(
 		}, nil
 
 	default: // plain
+		shared.LogDebug("DNS", "Building plain DNS transport: resolved=%s bypass=%t", resolvedUpstream, bypass)
 		host, port, _ := net.SplitHostPort(resolvedUpstream)
 		if host == "" {
 			host = resolvedUpstream
@@ -490,6 +504,7 @@ func GetDialer(bypass bool) *net.Dialer {
 	if !bypass {
 		return &net.Dialer{LocalAddr: nil}
 	}
+	shared.LogDebug("DNS", "Creating bypass dialer")
 	return &net.Dialer{
 		Control: func(network, address string, c syscall.RawConn) error {
 			var opErr error

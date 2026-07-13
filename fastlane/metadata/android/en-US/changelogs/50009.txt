@@ -1,0 +1,3 @@
+What's new:
+- Bugfix for proxy mode failing to start tunnel
+- Improved foreground service start reliability

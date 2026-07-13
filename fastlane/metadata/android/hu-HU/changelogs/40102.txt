@@ -1,8 +1,0 @@
-Újdonságok:
-Forgalmi korlátos (metered) alagutak beállításai
-Zárolási mód (lockdown) dual-stack támogatása
-Zárolási mód többprofilos hibájának javítása
-Telepített csomagok lekérdezésének javítása az osztott alagutazáshoz
-Aktív alagutak újraindítása a konfiguráció módosításakor
-Android TV felületi hibajavítások
-Számos egyéb hibajavítás és fejlesztés

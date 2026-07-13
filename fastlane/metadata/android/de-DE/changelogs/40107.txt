@@ -1,6 +1,0 @@
-Was neu ist:
-- Verbesserte QR-Scan- und -Geräteunterstützung
-- Anzeige der Tunnel-Uptime
-- Behebung eines Fehlers, der beim Ausführen der App in mehreren Profilen zum Absturz der Schnellzugriffskachel führte
-- Behebung einer globalen Überschreibungsregression, die zu unerwarteten Tunnelstartfehlern führte
-- Behebung eines Netzwerkerkennungskonflikts bei aktivem VPN

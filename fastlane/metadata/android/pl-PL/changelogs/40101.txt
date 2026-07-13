@@ -1,3 +1,0 @@
-Co nowego:
-- Naprawiono błąd interfejsu użytkownika uruchamiania autotunelu.
-- Naprawiono błąd interfejsu użytkownika statystyk peerów.

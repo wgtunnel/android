@@ -1,4 +1,0 @@
-Novidades:
-- Corrige o bug da API de localização obsoleta por adicionar a seleção do método de informações Wi-Fi 
-- Simplifica a interface do diálogo de verificação de atualizações 
-- Melhora a confiabilidade do túnel automático com a verificação tardia

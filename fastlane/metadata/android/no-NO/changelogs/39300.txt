@@ -1,4 +1,0 @@
-What's new:
-- Fixes deprecate location API bug by adding Wi-Fi info method selection
-- Simplified update check dialog UI
-- Improve auto-tunnel reliability with delayed recheck

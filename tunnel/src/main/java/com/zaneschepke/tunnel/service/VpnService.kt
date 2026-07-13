@@ -13,8 +13,8 @@ import com.zaneschepke.tunnel.backend.Backend
 import com.zaneschepke.tunnel.backend.KillSwitch
 import com.zaneschepke.tunnel.backend.SocketProtector
 import com.zaneschepke.tunnel.model.KillSwitchConfig
-import com.zaneschepke.tunnel.service.ServiceHolder.Companion.DEFAULT_MTU
-import com.zaneschepke.tunnel.service.ServiceHolder.Companion.alwaysOnCallback
+import com.zaneschepke.tunnel.service.ServiceManager.Companion.DEFAULT_MTU
+import com.zaneschepke.tunnel.service.ServiceManager.Companion.alwaysOnCallback
 import com.zaneschepke.tunnel.util.parseDns
 import com.zaneschepke.tunnel.util.parseInetNetwork
 import com.zaneschepke.wireguardautotunnel.parser.Config
@@ -36,7 +36,7 @@ import timber.log.Timber
 class VpnService : android.net.VpnService(), KillSwitch, SocketProtector {
 
     private val backend: Backend by inject(Backend::class.java)
-    private val serviceHolder: ServiceHolder by inject(ServiceHolder::class.java)
+    private val serviceManager: ServiceManager by inject(ServiceManager::class.java)
 
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val shutdownScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
@@ -47,7 +47,7 @@ class VpnService : android.net.VpnService(), KillSwitch, SocketProtector {
     @Volatile private var currentKillSwitchConfig: KillSwitchConfig? = null
 
     override fun onCreate() {
-        serviceHolder.set(this)
+        serviceManager.set(this)
         super.onCreate()
     }
 
@@ -55,11 +55,7 @@ class VpnService : android.net.VpnService(), KillSwitch, SocketProtector {
     override fun onDestroy() {
         Timber.d("VpnService destroyed")
         try {
-            serviceHolder.clearVpnService()
-
-            // Stop the companion foreground service alongside the VPN teardown
-            stopService(Intent(this, VpnCompanionService::class.java))
-
+            serviceManager.clearVpnService()
             closeVpnTunnelFd()
             disableKillSwitch()
             hevBridgeJob?.cancel()
@@ -75,14 +71,17 @@ class VpnService : android.net.VpnService(), KillSwitch, SocketProtector {
         disableKillSwitch()
         stopHevSocks5Bridge()
         shutdownScope.launch { backend.stopAllActiveTunnels() }
+        // Stop the companion foreground service alongside the VPN teardown from revoke
+        stopService(Intent(this, VpnCompanionService::class.java))
+        closeVpnTunnelFd()
         stopSelf()
         super.onRevoke()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        serviceHolder.set(this)
+        serviceManager.set(this)
 
-        bootKeepaliveService()
+        serviceScope.launch { serviceManager.getCompanionService() }
 
         // system recovery restart
         if (intent == null) {
@@ -114,16 +113,6 @@ class VpnService : android.net.VpnService(), KillSwitch, SocketProtector {
         closeVpnTunnelFd()
         disableKillSwitch()
         stopSelf()
-    }
-
-    private fun bootKeepaliveService() {
-        try {
-            val intent = Intent(this, VpnCompanionService::class.java)
-            // Works for starts and within the temporary AOVPN boot window
-            startForegroundService(intent)
-        } catch (e: Exception) {
-            Timber.e(e, "Failed to start companion keepalive service")
-        }
     }
 
     private fun startHevBridge(port: Int, pass: String): Job {
@@ -307,15 +296,15 @@ class VpnService : android.net.VpnService(), KillSwitch, SocketProtector {
     }
 
     fun detachVpnTunnelFd(): Int? {
-        val tunFd = vpnTunFd
-        vpnTunFd = null
-        return tunFd?.detachFd()
+        return vpnTunFd?.dup()?.detachFd()
     }
 
     fun closeVpnTunnelFd() {
         try {
             vpnTunFd?.close()
-        } catch (_: Exception) {}
+        } catch (e: Exception) {
+            Timber.e(e)
+        }
         vpnTunFd = null
     }
 

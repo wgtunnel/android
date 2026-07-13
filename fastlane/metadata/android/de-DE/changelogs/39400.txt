@@ -1,6 +1,0 @@
-Was neu ist::
-- Tunnelsortierung
-- Shizuku-Unterstützung für Wi-Fi SSIDs
-- Verbesserung der Hover-Sichtbarkeit von Android-TV
-- Auto-Tunnel Standard-Erkennung Methode Fehler behoben
-- Sonstige Änderungen und Verbesserungen der UI

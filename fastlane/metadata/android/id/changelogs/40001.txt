@@ -1,4 +1,0 @@
-Yang baru:
-- Perbaikan bug terowongan domain pencarian gagal dimulai
-- Perbaikan bug fallback DNS ke IPv4 pada jaringan khusus IPv4
-- Perbaikan bug target ping tidak dapat diedit

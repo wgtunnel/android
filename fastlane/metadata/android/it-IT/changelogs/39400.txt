@@ -1,6 +1,0 @@
-Notivà:
-- Ordinamento tunnel
-- Supporto Shizuku per SSID Wi-Fi
-- Miglioramenti nell'hover su Android TV
-- Risolto bug nel metodo rilevazione auto-tunnel di default
-- Altre modifiche UI e migliorie

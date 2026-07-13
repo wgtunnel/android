@@ -16,8 +16,6 @@ data class TunnelConfig(
     @ColumnInfo(name = "is_primary_tunnel", defaultValue = "false")
     val isPrimaryTunnel: Boolean = false,
     @ColumnInfo(name = "quick_config", defaultValue = "") val quickConfig: String = "",
-    @ColumnInfo(name = "dynamic_dns", defaultValue = "false")
-    val dynamicDnsEnabled: Boolean = false,
     @ColumnInfo(name = "is_ethernet_tunnel", defaultValue = "false")
     val isEthernetTunnel: Boolean = false,
     @ColumnInfo(name = "prefer_ipv6", defaultValue = "false") val isIpv6Preferred: Boolean = false,
@@ -25,8 +23,6 @@ data class TunnelConfig(
     @ColumnInfo(name = "auto_tunnel_apps", defaultValue = "[]")
     val autoTunnelApps: List<String> = emptyList(),
     @ColumnInfo(name = "is_metered", defaultValue = "false") val isMetered: Boolean = false,
-    @ColumnInfo(name = "ipv4_fallback", defaultValue = "false")
-    val ipv4FallbackEnabled: Boolean = false,
     @ColumnInfo(name = "ipv6_restore", defaultValue = "false")
     val ipv6RestoreEnabled: Boolean = false,
     @ColumnInfo(name = "tunnel_bssids", defaultValue = "[]")

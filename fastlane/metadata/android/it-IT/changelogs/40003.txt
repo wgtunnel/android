@@ -1,4 +1,0 @@
-Novità:
-- Correzione problema per cui il monitoraggio falliva a fermarsi
-- Correzione azione stop notifiche
-- Correzione notifica riavvio attività quando già attiva

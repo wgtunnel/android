@@ -28,6 +28,7 @@ class RemoteControlReceiver : BroadcastReceiver(), KoinComponent {
     enum class Action(private val suffix: String) {
         START_TUNNEL("START_TUNNEL"),
         STOP_TUNNEL("STOP_TUNNEL"),
+        TOGGLE_TUNNEL("TOGGLE_TUNNEL"),
         START_AUTO_TUNNEL("START_AUTO_TUNNEL"),
         STOP_AUTO_TUNNEL("STOP_AUTO_TUNNEL");
 
@@ -89,6 +90,14 @@ class RemoteControlReceiver : BroadcastReceiver(), KoinComponent {
 
                     Action.STOP_AUTO_TUNNEL -> {
                         autoTunnelCoordinator.disable()
+                    }
+
+                    Action.TOGGLE_TUNNEL -> {
+                        val tunnel =
+                            resolveTunnel(intent)
+                                ?: tunnelsRepository.getDefaultTunnel()
+                                ?: return@launch
+                        tunnelCoordinator.toggleTunnel(tunnel)
                     }
                 }
             } finally {

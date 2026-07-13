@@ -1,7 +1,0 @@
-Újdonságok:
-Az alagutak sorbarendezésénél fellépő hiba javítása
-Továbbfejlesztett helymeghatározási engedélykérési folyamat
-Helymeghatározási engedély észlelése és értesítések
-Android TV alkalmazásészlelési hiba javítása az osztott alagutazásnál
-Megbízhatóbb alagútfigyelés és helyreállítás rendszerindítás után
-Alvó állapotból való lassú újracsatlakozás javítása

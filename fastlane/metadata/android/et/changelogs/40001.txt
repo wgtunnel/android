@@ -1,4 +1,0 @@
-Mida on meil uut:
-- Veaparandus, kus domeeninimega tunnelite otsing ei toiminud
-- Veaparandis, kus IPv4 võrkudes nimelahendus ei toiminud korrektselt
-- Veaparandus, kus pingitav aadress polnud muudetav
