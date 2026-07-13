@@ -200,14 +200,22 @@ class TunnelBackend(
             }
             is BackendMode.Vpn -> {
                 val service = serviceManager.ensureVpnReady()
-                service.createTunInterface(tunnel, mode.config)
+                service.createTunInterface(
+                    tunnel,
+                    mode.config,
+                    excludeSelfFromTunnel = mode.wsTunnelConfig != null,
+                )
             }
         }
     }
 
     private fun onEngineStartResult(tunnelId: Int, result: EngineStartResult) {
         updateActiveTunnel(tunnelId) {
-            it.copy(interfaceName = result.interfaceName, uptime = System.currentTimeMillis())
+            it.copy(
+                interfaceName = result.interfaceName,
+                uptime = System.currentTimeMillis(),
+                mode = result.mode,
+            )
         }
         byHandle[result.handle] = tunnelId
         byTunnelId[tunnelId] = result.handle
@@ -331,6 +339,16 @@ class TunnelBackend(
         return mode.config.peers.any { !it.isStaticallyConfigured && it.endpoint != null }
     }
 
+    /**
+     * Long-running per-tunnel jobs (active config polling, IPv6 recovery) close over the
+     * [BackendMode] that was current at job-launch time. For a WSTunnel-bridged tunnel, that
+     * captured value may still carry a placeholder localPort/remoteHost/remotePort - the concrete
+     * values only exist on the [ActiveTunnel.mode] stored after [onEngineStartResult] runs. Always
+     * prefer the live stored mode over a captured [fallback].
+     */
+    private fun liveMode(tunnelId: Int, fallback: BackendMode): BackendMode =
+        _status.value.activeTunnels[tunnelId]?.mode ?: fallback
+
     private fun updateStatus(transform: (BackendStatus) -> BackendStatus) {
         _status.update(transform)
     }
@@ -410,7 +428,7 @@ class TunnelBackend(
                         Timber.w("Failed to find tunnel handle, skipping stats")
                         continue
                     }
-            val activeConfig = engine.getActiveConfig(handle, mode)
+            val activeConfig = engine.getActiveConfig(handle, liveMode(tunnelId, mode))
             updateActiveTunnel(tunnelId) { it.copy(activeConfig = activeConfig) }
             delay(interval.seconds)
         }
@@ -510,6 +528,8 @@ class TunnelBackend(
                 continue
             }
 
+            val currentMode = liveMode(tunnelId, mode)
+
             // 5. Safe to proceed with procedural recovery logic
             val activeConfig =
                 try {
@@ -521,7 +541,7 @@ class TunnelBackend(
                                 )
                                 continue
                             }
-                    engine.getActiveConfig(handle, mode)
+                    engine.getActiveConfig(handle, currentMode)
                 } catch (t: Throwable) {
                     Timber.w(t, "UAPI query failed during peer reconciliation")
                     continue
@@ -535,7 +555,7 @@ class TunnelBackend(
                 continue
             }
 
-            val results = endpointResolver.resolvePeers(mode)
+            val results = endpointResolver.resolvePeers(currentMode)
             if (results.isEmpty()) continue
 
             val mismatches = activeConfig.findEndpointMismatches(results, true)
@@ -544,7 +564,7 @@ class TunnelBackend(
                 Timber.i(
                     "Ipv6 Recovery: found endpoint mismatches, updating tunnel with Ipv6 endpoints"
                 )
-                val resolvedPeers = mode.config.buildResolvedPeers(mismatches)
+                val resolvedPeers = currentMode.config.buildResolvedPeers(mismatches)
                 val handle =
                     byTunnelId[tunnelId]
                         ?: run {
@@ -553,7 +573,7 @@ class TunnelBackend(
                             )
                             continue
                         }
-                engine.updatePeers(handle, mode, resolvedPeers)
+                engine.updatePeers(handle, currentMode, resolvedPeers)
                 _events.emit(TunnelEvent.RecoveredToIpv6(tunnelId))
             } else {
                 Timber.i(

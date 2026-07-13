@@ -32,6 +32,19 @@ object PortUtils {
         }
     }
 
+    @Throws(IOException::class)
+    fun getAvailableUdpPort(tag: Int): Int {
+        TrafficStats.setThreadStatsTag(tag)
+
+        try {
+            DatagramSocket(0).use {
+                return it.localPort
+            }
+        } finally {
+            TrafficStats.clearThreadStatsTag()
+        }
+    }
+
     @Throws(BackendException::class)
     suspend fun waitForUdpPortAvailable(port: Int, timeoutMs: Long = 3000L) {
         val deadline = System.currentTimeMillis() + timeoutMs

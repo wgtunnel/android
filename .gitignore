@@ -72,3 +72,4 @@ app/release/output.json
 # where we keep our signing secrets locally
 /.kotlin/
 /app/keystore/
+*.patch

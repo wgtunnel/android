@@ -57,6 +57,7 @@ android {
 
 dependencies {
     implementation(project(":hevtunnel"))
+    api(project(":wstunnel"))
     api(project(":pinger"))
     implementation(project(":networkmonitor"))
 

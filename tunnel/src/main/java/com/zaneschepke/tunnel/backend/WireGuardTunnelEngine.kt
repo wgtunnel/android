@@ -7,9 +7,12 @@ import com.zaneschepke.tunnel.service.VpnService
 import com.zaneschepke.tunnel.state.EngineStartResult
 import com.zaneschepke.tunnel.util.BackendException
 import com.zaneschepke.tunnel.util.PortUtils
+import com.zaneschepke.tunnel.util.withRealEndpoint
+import com.zaneschepke.tunnel.util.withWsTunnelLocalEndpoint
 import com.zaneschepke.wireguardautotunnel.parser.ActiveConfig
 import com.zaneschepke.wireguardautotunnel.parser.Config
 import com.zaneschepke.wireguardautotunnel.parser.PeerSection
+import com.zaneschepke.wstunnel.WsTunnelConfig
 import java.util.UUID
 
 internal class WireGuardTunnelEngine(private val serviceManager: ServiceManager) : TunnelEngine {
@@ -23,6 +26,8 @@ internal class WireGuardTunnelEngine(private val serviceManager: ServiceManager)
         if (listenPort != null) {
             PortUtils.waitForUdpPortAvailable(listenPort)
         }
+
+        var resolvedMode = mode
 
         val handle =
             when (mode) {
@@ -54,7 +59,20 @@ internal class WireGuardTunnelEngine(private val serviceManager: ServiceManager)
                 }
                 is BackendMode.Vpn -> {
                     val service = serviceManager.getVpnService()
-                    startVpnTunnel(ifName, mode.config, service.detachVpnTunnelFd())
+                    val config =
+                        mode.wsTunnelConfig?.let { partial ->
+                            val (rewrittenConfig, effectiveWsTunnelConfig) =
+                                startWsTunnelBridge(service, mode.config, partial)
+                            // Preserve mode.config as-is (it may already be DNS-resolved by the
+                            // caller) - only the wsTunnelConfig's placeholder localPort/
+                            // remoteHost/remotePort get filled in with their concrete values, so
+                            // that later updatePeers()/getActiveConfig() calls (which read the
+                            // mode stored on the ActiveTunnel record) see the real bridge port
+                            // instead of the placeholder 0.
+                            resolvedMode = mode.copy(wsTunnelConfig = effectiveWsTunnelConfig)
+                            rewrittenConfig
+                        } ?: mode.config
+                    startVpnTunnel(ifName, config, service.detachVpnTunnelFd())
                 }
             }
 
@@ -66,7 +84,7 @@ internal class WireGuardTunnelEngine(private val serviceManager: ServiceManager)
             tunnelId = tunnelId,
             handle = handle,
             interfaceName = ifName,
-            mode = mode,
+            mode = resolvedMode,
         )
     }
 
@@ -82,7 +100,19 @@ internal class WireGuardTunnelEngine(private val serviceManager: ServiceManager)
     }
 
     override suspend fun updatePeers(handle: Int, mode: BackendMode, peers: List<PeerSection>) {
-        val config = mode.config.copy(peers = peers)
+        // When a WSTunnel bridge is active, wireguard-go's peer endpoint must always stay pinned
+        // to the local bridge - DNS re-resolution (from DDNS/seamless recovery) is computed
+        // against the *real* hostname for the bridge's benefit, but must never be written back
+        // into wireguard-go itself, or it'd bypass the bridge it's meant to go through.
+        val effectivePeers =
+            if (mode is BackendMode.Vpn && mode.wsTunnelConfig != null) {
+                val localEndpoint = "127.0.0.1:${mode.wsTunnelConfig.localPort}"
+                peers.map { it.copy(endpoint = localEndpoint) }
+            } else {
+                peers
+            }
+
+        val config = mode.config.copy(peers = effectivePeers)
 
         when (mode) {
             is BackendMode.Proxy -> {
@@ -100,13 +130,21 @@ internal class WireGuardTunnelEngine(private val serviceManager: ServiceManager)
                 is BackendMode.Proxy -> ProxyBackend.awgGetProxyConfig(handle)
                 is BackendMode.Vpn -> VpnBackend.awgGetConfig(handle)
             }
-        return rawConfig?.let { ActiveConfig.parseFromIpc(it) }
+        val activeConfig = rawConfig?.let { ActiveConfig.parseFromIpc(it) } ?: return null
+
+        // wireguard-go only ever sees 127.0.0.1:<localPort> in this mode - show the user the real
+        // server endpoint instead, since that's what they actually configured and care about.
+        return if (mode is BackendMode.Vpn && mode.wsTunnelConfig != null) {
+            activeConfig.withRealEndpoint(mode.wsTunnelConfig)
+        } else {
+            activeConfig
+        }
     }
 
     override suspend fun stop(handle: Int, mode: BackendMode) {
         when (mode) {
             is BackendMode.Proxy.Standard -> stopProxyTunnel(handle)
-            is BackendMode.Vpn -> stopVpnTunnel(handle)
+            is BackendMode.Vpn -> stopVpnTunnel(handle, mode)
             is BackendMode.Proxy.KillSwitchPrimary -> stopKillSwitchPrimaryTunnel(handle)
         }
     }
@@ -121,8 +159,48 @@ internal class WireGuardTunnelEngine(private val serviceManager: ServiceManager)
         ProxyBackend.awgTurnProxyTunnelOff(handle)
     }
 
-    private fun stopVpnTunnel(handle: Int) {
+    private suspend fun stopVpnTunnel(handle: Int, mode: BackendMode.Vpn) {
         VpnBackend.awgTurnOff(handle)
+        if (mode.wsTunnelConfig != null) {
+            serviceManager.getVpnService().stopWsTunnelBridge()
+        }
+    }
+
+    /**
+     * Starts the local WSTunnel bridge for a Vpn-mode tunnel and returns the config with its peer
+     * endpoint(s) rewritten to point at the local bridge, paired with the *effective*
+     * WsTunnelConfig (concrete localPort/remoteHost/remotePort filled in). The caller must persist
+     * the effective config back onto the mode it stores for this tunnel (via EngineStartResult) -
+     * otherwise later updatePeers()/getActiveConfig() calls would only see [partial]'s placeholder
+     * localPort of 0.
+     */
+    private suspend fun startWsTunnelBridge(
+        service: VpnService,
+        config: Config,
+        partial: WsTunnelConfig,
+    ): Pair<Config, WsTunnelConfig> {
+        val realEndpoint =
+            config.peers.firstOrNull()?.endpoint
+                ?: throw BackendException.InternalError(
+                    "WSTunnel enabled but tunnel config has no peer endpoint to bridge"
+                )
+
+        val remoteHost =
+            realEndpoint.substringBeforeLast(":").removePrefix("[").removeSuffix("]")
+        val remotePort =
+            realEndpoint.substringAfterLast(":").toIntOrNull()
+                ?: throw BackendException.InternalError(
+                    "Could not parse port from peer endpoint: $realEndpoint"
+                )
+
+        val localPort = PortUtils.getAvailableUdpPort(VpnService.WSTUNNEL_TRAFFIC_TAG)
+
+        val effectiveConfig =
+            partial.copy(localPort = localPort, remoteHost = remoteHost, remotePort = remotePort)
+
+        service.startWsTunnelBridge(effectiveConfig)
+
+        return config.withWsTunnelLocalEndpoint(localPort) to effectiveConfig
     }
 
     private fun startVpnTunnel(ifName: String, config: Config, fd: Int?): Int {

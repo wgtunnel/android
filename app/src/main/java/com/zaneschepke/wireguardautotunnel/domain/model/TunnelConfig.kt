@@ -23,6 +23,10 @@ data class TunnelConfig(
     val isMetered: Boolean = false,
     val ipv6RestoreEnabled: Boolean = false,
     val tunnelBSSIDs: List<String> = emptyList(),
+    val wsTunnelEnabled: Boolean = false,
+    val wsTunnelServerUrl: String? = null,
+    val wsTunnelPathPrefix: String? = null,
+    val wsTunnelSniOverride: String? = null,
 ) {
 
     fun toSummary() = TunnelSummary(id = id, name = name)

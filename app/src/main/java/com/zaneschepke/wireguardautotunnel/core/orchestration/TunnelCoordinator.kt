@@ -1,6 +1,7 @@
 package com.zaneschepke.wireguardautotunnel.core.orchestration
 
 import com.zaneschepke.tunnel.model.BackendMode
+import com.zaneschepke.wstunnel.WsTunnelConfig
 import com.zaneschepke.wireguardautotunnel.core.event.TunnelErrorEvent
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelProvider
 import com.zaneschepke.wireguardautotunnel.data.repository.RoomDnsSettingsRepository
@@ -184,7 +185,22 @@ class TunnelCoordinator(
                         return
                     }
 
-                    BackendMode.Vpn(runConfig)
+                    val wsTunnelConfig =
+                        if (tunnelConfig.wsTunnelEnabled && !tunnelConfig.wsTunnelServerUrl.isNullOrBlank()) {
+                            // localPort/remoteHost/remotePort are placeholders here -
+                            // WireGuardTunnelEngine derives the real values from the tunnel's
+                            // own peer endpoint and overwrites them before starting the bridge.
+                            WsTunnelConfig(
+                                localPort = 0,
+                                remoteHost = "",
+                                remotePort = 0,
+                                serverUrl = tunnelConfig.wsTunnelServerUrl,
+                                httpUpgradePathPrefix = tunnelConfig.wsTunnelPathPrefix,
+                                tlsSni = tunnelConfig.wsTunnelSniOverride,
+                            )
+                        } else null
+
+                    BackendMode.Vpn(runConfig, wsTunnelConfig)
                 }
 
                 TunnelMode.PROXY -> {

@@ -1,6 +1,7 @@
 package com.zaneschepke.tunnel.model
 
 import com.zaneschepke.wireguardautotunnel.parser.Config
+import com.zaneschepke.wstunnel.WsTunnelConfig
 
 sealed class BackendMode {
     abstract val config: Config
@@ -21,7 +22,8 @@ sealed class BackendMode {
         }
     }
 
-    data class Vpn(override val config: Config) : BackendMode() {
+    data class Vpn(override val config: Config, val wsTunnelConfig: WsTunnelConfig? = null) :
+        BackendMode() {
         override fun withConfig(config: Config) = copy(config = config)
     }
 }

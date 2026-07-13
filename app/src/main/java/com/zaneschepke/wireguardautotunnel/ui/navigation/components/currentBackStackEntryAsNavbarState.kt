@@ -559,6 +559,13 @@ fun currentRouteAsNavbarState(
                         showBottomItems = true,
                     )
                 }
+                is Route.WsTunnel -> {
+                    NavbarState(
+                        topLeading = { TvBackButton { navController.pop() } },
+                        topTitle = context.getString(R.string.wstunnel_title),
+                        showBottomItems = true,
+                    )
+                }
                 is TunnelGlobals -> {
                     NavbarState(
                         topLeading = { TvBackButton { navController.pop() } },
