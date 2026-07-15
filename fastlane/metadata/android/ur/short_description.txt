@@ -1,1 +1,1 @@
-وائرس گارڈ اور یمنیزیا وی پی این کلائنٹ۔ آٹو ٹنلنگ، لاک ڈاؤن، پراکسی۔
+A WireGuard & AmneziaWG VPN client with auto-tunneling, lockdown & proxying.
