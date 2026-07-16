@@ -13,7 +13,7 @@
     <string name="prominent_background_location_title">Фоновое отслеживание местоположения</string>
     <string name="thank_you">Благодарим вас за использование WG Tunnel!</string>
     <string name="trusted_ssid_value_description">Отправить SSID</string>
-    <string name="add_tunnels_text">Добавить из файла</string>
+    <string name="add_tunnels_text">Добавить из файла или архива</string>
     <string name="add_from_qr">Добавить из QR-кода</string>
     <string name="tunnel_name">Имя туннеля</string>
     <string name="exclude">Исключить</string>
@@ -357,7 +357,7 @@
     <string name="status_template">статус: %1$s</string>
     <string name="uptime_template">работает: %1$s</string>
     <string name="peer_template">узел: %1$s</string>
-    <string name="handshake_template">рукопожатие: %1$s</string>
+    <string name="handshake_template">подключение: %1$s</string>
     <!-- Notification formatting -->
     <string name="notification_tunnel_status_format">%1$s • %2$s</string>
     <!-- Informational notifications -->
