@@ -249,7 +249,7 @@
     <string name="ddns_auto_update">Динамический DNS</string>
     <string name="ddns_auto_update_description">Автоматически обновлять IP-адрес сервера при его изменении</string>
     <string name="mode_disabled_template">Функция недоступна в режиме %1$s.</string>
-    <string name="lockdown">Блокированный</string>
+    <string name="lockdown">Блокировка</string>
     <string name="donate_title">Сделать пожертвование</string>
     <string name="crypto">Криптовалютные адреса</string>
     <string name="github_sponsors">Спонсоры GitHub</string>
@@ -291,7 +291,7 @@
     <string name="all_services_disabled">Для выполнения этого действия необходимо отключить автотуннелирование и туннели.</string>
     <string name="ddns_success_message">Точка подключения динамического DNS успешно обновлена.</string>
     <string name="aovpn_description">Разрешить Android запускать туннели</string>
-    <string name="tunnel_boot_description">Запускать основной при загрузке</string>
+    <string name="tunnel_boot_description">Запускать основной туннель при загрузке</string>
     <string name="remote_key">Ключ доступа</string>
     <string name="tunnel_mapping_description">Сопоставлять туннели по имени сети Wi-Fi</string>
     <string name="monitoring">Отслеживание</string>
@@ -394,11 +394,11 @@
     <string name="app">Приложение</string>
     <string name="app_channel_description">Канал общих уведомлений приложения, таких как обновления версии</string>
     <string name="stop_all">Остановить все</string>
-    <string name="tunnel_state_establishing_connection">установление соединения</string>
+    <string name="tunnel_state_establishing_connection">установка соединения</string>
     <string name="peer_endpoints">Точки подключения узлов</string>
     <string name="prefer_ipv6">Предпочитать IPv6</string>
     <string name="prefer_ipv6_desc">Использовать IPv6 точек подключения, если поддерживает сеть.</string>
-    <string name="fallback_to_ipv4">Возврат на IPv4</string>
+    <string name="fallback_to_ipv4">Возвращаться на IPv4</string>
     <string name="fallback_to_ipv4_desc">Переключаться на IPv4, если обнаружено, что сеть не поддерживает IPv6, без перезапуска туннеля.</string>
     <string name="restore_ipv6">Восстановить IPv6</string>
     <string name="restore_ipv6_desc">Переключаться обратно на IPv6, если обнаружено, что сеть его поддерживает.</string>
@@ -461,5 +461,8 @@
     <string name="stored_logs_deleted">Сохранённые журналы успешно удалены</string>
     <string name="seamless_recovery">Восстанавливать туннель</string>
     <string name="seamless_recovery_desc">Обеспечивает защиту при восстановлении после изменений DDNS, сетевых переключений и проблем с NAT</string>
-    <string name="now_in_template">Сейчас в %1$s</string>
+    <string name="now_in_template">Сейчас в «%1$s»</string>
+    <string name="snackbar_seamless_recovery_attempt">Обнаружена проблема соединения. Восстановление %s…</string>
+    <string name="seamless_recovery_attempt_title">Восстановление туннеля</string>
+    <string name="seamless_recovery_attempt_message">Обнаружена проблема подключения. Попытка автоматического восстановления.</string>
 </resources>
