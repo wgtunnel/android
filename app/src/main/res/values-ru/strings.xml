@@ -13,7 +13,7 @@
     <string name="prominent_background_location_title">Фоновое отслеживание местоположения</string>
     <string name="thank_you">Благодарим вас за использование WG Tunnel!</string>
     <string name="trusted_ssid_value_description">Отправить SSID</string>
-    <string name="add_tunnels_text">Добавить из файла или zip-архива</string>
+    <string name="add_tunnels_text">Добавить из файла</string>
     <string name="add_from_qr">Добавить из QR-кода</string>
     <string name="tunnel_name">Имя туннеля</string>
     <string name="exclude">Исключить</string>
@@ -357,7 +357,7 @@
     <string name="status_template">статус: %1$s</string>
     <string name="uptime_template">работает: %1$s</string>
     <string name="peer_template">узел: %1$s</string>
-    <string name="handshake_template">подключение: %1$s</string>
+    <string name="handshake_template">рукопожатие: %1$s</string>
     <!-- Notification formatting -->
     <string name="notification_tunnel_status_format">%1$s • %2$s</string>
     <!-- Informational notifications -->
@@ -399,7 +399,7 @@
     <string name="prefer_ipv6">Предпочитать IPv6</string>
     <string name="prefer_ipv6_desc">Использовать протокол IPv6, если поддерживает сеть.</string>
     <string name="fallback_to_ipv4">Возвращаться на IPv4</string>
-    <string name="fallback_to_ipv4_desc">Переключаться на IPv4, если обнаружено, что сеть не поддерживает IPv6, без перезапуска туннеля.</string>
+    <string name="fallback_to_ipv4_desc">Переключаться обратно на IPv4, если обнаружено, что сеть не поддерживает IPv6</string>
     <string name="restore_ipv6">Восстановить IPv6</string>
     <string name="restore_ipv6_desc">Переключаться обратно на IPv6, если обнаружено, что сеть его поддерживает.</string>
     <string name="no_tunnels_yet">Здесь пока ничего нет…</string>
@@ -416,14 +416,14 @@
     <string name="tunnel_globals_desc">Глобальные изменения конфигурации для всех туннелей</string>
     <string name="tunnel_configuration">Конфигурация туннеля</string>
     <string name="amnezia_configuration">Настройки Amnezia</string>
-    <string name="screen_recording_protection_desc">Блокировать запись экрана, содержащего конфиденциальные данные</string>
+    <string name="screen_recording_protection_desc">Блокировать запись экрана, содержащего приватные данные</string>
     <string name="app_lock">Защита приложения</string>
     <string name="app_lock_desc">Использовать PIN-код для доступа к приложению</string>
     <string name="app_shortcuts">Ярлыки приложения</string>
     <string name="app_shortcuts_desc">Добавить быстрые действия к значку приложения</string>
     <string name="remote_control">Управление приложением</string>
     <string name="remote_control_desc">Разрешать другим приложениям (например, Tasker) управлять туннелями</string>
-    <string name="endpoint_template">точка подключения: %1$s</string>
+    <string name="endpoint_template">IP подключения: %1$s</string>
     <string name="encrypted">Шифрование</string>
     <string name="confirm_password">Подтвердите пароль</string>
     <string name="passwords_do_not_match">Пароли не совпадают</string>
@@ -460,8 +460,8 @@
     <string name="log_export_success">Журналы успешно экспортированы</string>
     <string name="stored_logs_deleted">Сохранённые журналы успешно удалены</string>
     <string name="seamless_recovery">Восстанавливать туннель</string>
-    <string name="seamless_recovery_desc">Обеспечивает защиту при восстановлении после изменений DDNS, сетевых переключений и проблем с NAT</string>
-    <string name="now_in_template">Сейчас в «%1$s»</string>
+    <string name="seamless_recovery_desc">Восстанавливает подключение при недоступности, например после изменения записей DNS или проблем с NAT</string>
+    <string name="now_in_template">Теперь в разделе «%1$s»</string>
     <string name="snackbar_seamless_recovery_attempt">Обнаружена проблема соединения. Восстановление %s…</string>
     <string name="seamless_recovery_attempt_title">Восстановление туннеля</string>
     <string name="seamless_recovery_attempt_message">Обнаружена проблема подключения. Попытка автоматического восстановления.</string>
