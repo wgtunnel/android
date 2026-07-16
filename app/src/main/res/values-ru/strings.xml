@@ -17,7 +17,7 @@
     <string name="add_from_qr">Добавить из QR-кода</string>
     <string name="tunnel_name">Имя туннеля</string>
     <string name="exclude">Исключить</string>
-    <string name="include">Добавить</string>
+    <string name="include">Включить</string>
     <string name="config_changes_saved">Изменения конфигурации сохранены.</string>
     <string name="public_key">Открытый ключ</string>
     <string name="addresses">Адреса</string>
@@ -397,7 +397,7 @@
     <string name="tunnel_state_establishing_connection">установка соединения</string>
     <string name="peer_endpoints">Точки подключения узлов</string>
     <string name="prefer_ipv6">Предпочитать IPv6</string>
-    <string name="prefer_ipv6_desc">Использовать IPv6 точек подключения, если поддерживает сеть.</string>
+    <string name="prefer_ipv6_desc">Использовать протокол IPv6, если поддерживает сеть.</string>
     <string name="fallback_to_ipv4">Возвращаться на IPv4</string>
     <string name="fallback_to_ipv4_desc">Переключаться на IPv4, если обнаружено, что сеть не поддерживает IPv6, без перезапуска туннеля.</string>
     <string name="restore_ipv6">Восстановить IPv6</string>
