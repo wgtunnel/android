@@ -20,13 +20,44 @@ import (
 	"github.com/amnezia-vpn/amneziawg-go/ipc"
 	"github.com/amnezia-vpn/amneziawg-go/tun"
 	wireproxyawg "github.com/artem-russkikh/wireproxy-awg"
+	"github.com/wgtunnel/android/dns"
 	"github.com/wgtunnel/android/shared"
+	"github.com/wgtunnel/android/splitdns"
 	"golang.org/x/sys/unix"
 )
 
+func init() {
+	// Route splitdns logging through the shared platform logger.
+	splitdns.SetLoggers(
+		func(format string, args ...any) { shared.LogDebug("SplitDNS", format, args...) },
+		func(format string, args ...any) { shared.LogError("SplitDNS", format, args...) },
+	)
+}
+
+// splitCSV splits a comma-separated list, trimming whitespace and dropping
+// empty entries.
+//
+// Each entry is cloned. The caller passes strings that originate from a cgo
+// //export parameter, which aliases the JNI GetStringUTFChars buffer rather than
+// copying it. That buffer is released as soon as awgTurnOn returns, but the split
+// DNS matcher retains these entries for the tunnel's lifetime, so they must own
+// their backing memory. strings.Split/TrimSpace alone return sub-slices of the
+// borrowed buffer, hence the explicit Clone.
+func splitCSV(s string) []string {
+	out := make([]string, 0)
+	for _, part := range strings.Split(s, ",") {
+		part = strings.TrimSpace(part)
+		if part != "" {
+			out = append(out, strings.Clone(part))
+		}
+	}
+	return out
+}
+
 type TunnelHandle struct {
-	device *device.Device
-	uapi   net.Listener
+	device   *device.Device
+	uapi     net.Listener
+	splitDns *splitdns.Device
 }
 
 var (
@@ -41,12 +72,28 @@ func init() {
 }
 
 //export awgTurnOn
-func awgTurnOn(interfaceName string, tunFd int32, settings string, uapiPath string) int32 {
-	tunnel, name, err := tun.CreateUnmonitoredTUNFromFD(int(tunFd))
+func awgTurnOn(interfaceName string, tunFd int32, settings string, uapiPath string, splitDnsDomains string, splitDnsSystemServers string) int32 {
+	tunDev, name, err := tun.CreateUnmonitoredTUNFromFD(int(tunFd))
+
 	if err != nil {
 		unix.Close(int(tunFd))
 		shared.LogError(tag, "CreateUnmonitoredTUNFromFD: %v", err)
 		return -1
+	}
+
+	var tunnel tun.Device = tunDev
+	var splitDnsDev *splitdns.Device
+
+	if domains := splitCSV(splitDnsDomains); len(domains) > 0 {
+		servers := splitCSV(splitDnsSystemServers)
+		shared.LogDebug(tag, "Enabling split DNS for %d domain(s), system servers=%v", len(domains), servers)
+		splitDnsDev = splitdns.NewDevice(
+			tunDev,
+			splitdns.NewMatcher(domains),
+			servers,
+			dns.GetDialer(true),
+		)
+		tunnel = splitDnsDev
 	}
 
 	conf, err := wireproxyawg.ParseConfigString(settings)
@@ -140,11 +187,29 @@ func awgTurnOn(interfaceName string, tunFd int32, settings string, uapiPath stri
 
 	tunnelMu.Lock()
 	tunnelHandles[handle] = TunnelHandle{
-		device: tunDevice,
-		uapi:   uapi,
+		device:   tunDevice,
+		uapi:     uapi,
+		splitDns: splitDnsDev,
 	}
 	tunnelMu.Unlock()
 	return handle
+}
+
+//export awgSetSplitDnsServers
+func awgSetSplitDnsServers(tunnelHandle int32, servers string) int32 {
+	tunnelMu.RLock()
+	handle, ok := tunnelHandles[tunnelHandle]
+	tunnelMu.RUnlock()
+	if !ok {
+		shared.LogError(tag, "awgSetSplitDnsServers: tunnel is not up")
+		return -1
+	}
+	if handle.splitDns == nil {
+		return -1
+	}
+	// splitCSV clones each entry out of the borrowed JNI string buffer.
+	handle.splitDns.SetServers(splitCSV(servers))
+	return 0
 }
 
 //export awgUpdateTunnelPeers

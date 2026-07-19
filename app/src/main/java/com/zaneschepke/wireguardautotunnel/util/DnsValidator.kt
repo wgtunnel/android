@@ -26,6 +26,26 @@ object DnsValidator {
         }
     }
 
+    /**
+     * Validates a split-tunnel DNS domain entry. A valid entry is a hostname with at least two
+     * labels (e.g. "example.com"); an optional leading "*." wildcard is accepted and stripped. IP
+     * addresses are rejected since matching is by name.
+     */
+    fun validateDomain(input: String?): Result {
+        val value = input?.trim()?.lowercase()?.removePrefix("*.")?.removeSuffix(".").orEmpty()
+
+        if (value.isEmpty()) return Result.Invalid(DnsError.Empty)
+        if (isValidIpv4(value)) return Result.Invalid(DnsError.InvalidIpOrHost)
+        if (!value.contains(".")) return Result.Invalid(DnsError.InvalidHost)
+        if (!isValidHostname(value)) return Result.Invalid(DnsError.InvalidIpOrHost)
+
+        return Result.Valid
+    }
+
+    /** Normalizes a domain entry for storage and matching. */
+    fun normalizeDomain(input: String): String =
+        input.trim().lowercase().removePrefix("*.").removeSuffix(".")
+
     fun validate(protocol: DnsProtocol, endpoint: String?): Result {
         if (protocol == DnsProtocol.SYSTEM) return Result.Valid
 

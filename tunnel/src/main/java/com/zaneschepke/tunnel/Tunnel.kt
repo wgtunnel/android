@@ -9,6 +9,13 @@ interface Tunnel {
     val ipStrategy: IpStrategy
     val features: Set<Feature>
 
+    /**
+     * Domains whose DNS queries should be resolved through the tunnel's DNS server. When non-empty,
+     * all other DNS queries are resolved via the underlying system resolver outside the tunnel. When
+     * empty, DNS routing falls back to the default behavior (all DNS to the tunnel DNS server).
+     */
+    val splitDnsDomains: Set<String>
+
     fun updateState(state: State)
 
     sealed interface State {

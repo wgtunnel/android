@@ -23,6 +23,10 @@ class DatabaseConverters {
         }
     }
 
+    @TypeConverter fun setToString(value: Set<String>): String = listToString(value.toList())
+
+    @TypeConverter fun stringToSet(value: String): Set<String> = stringToList(value).toSet()
+
     @TypeConverter
     fun mapToString(map: Map<String, String>): String {
         return Json.encodeToString(map)

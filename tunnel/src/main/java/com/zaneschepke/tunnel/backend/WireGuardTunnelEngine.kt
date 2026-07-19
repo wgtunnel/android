@@ -1,5 +1,6 @@
 package com.zaneschepke.tunnel.backend
 
+import com.zaneschepke.networkmonitor.StableNetworkEngine
 import com.zaneschepke.tunnel.model.BackendMode
 import com.zaneschepke.tunnel.model.ProxyConfig
 import com.zaneschepke.tunnel.service.ServiceManager
@@ -7,14 +8,23 @@ import com.zaneschepke.tunnel.service.VpnService
 import com.zaneschepke.tunnel.state.EngineStartResult
 import com.zaneschepke.tunnel.util.BackendException
 import com.zaneschepke.tunnel.util.PortUtils
+import com.zaneschepke.tunnel.util.parseDns
 import com.zaneschepke.wireguardautotunnel.parser.ActiveConfig
 import com.zaneschepke.wireguardautotunnel.parser.Config
 import com.zaneschepke.wireguardautotunnel.parser.PeerSection
 import java.util.UUID
+import timber.log.Timber
 
-internal class WireGuardTunnelEngine(private val serviceManager: ServiceManager) : TunnelEngine {
+internal class WireGuardTunnelEngine(
+    private val serviceManager: ServiceManager,
+    private val stableNetworkEngine: StableNetworkEngine,
+) : TunnelEngine {
 
-    override suspend fun start(tunnelId: Int, mode: BackendMode): EngineStartResult {
+    override suspend fun start(
+        tunnelId: Int,
+        mode: BackendMode,
+        splitDnsDomains: Set<String>,
+    ): EngineStartResult {
 
         val ifName = WGT_INTERFACE_PREFIX + tunnelId
 
@@ -54,7 +64,12 @@ internal class WireGuardTunnelEngine(private val serviceManager: ServiceManager)
                 }
                 is BackendMode.Vpn -> {
                     val service = serviceManager.getVpnService()
-                    startVpnTunnel(ifName, mode.config, service.detachVpnTunnelFd())
+                    startVpnTunnel(
+                        splitDnsDomains,
+                        ifName,
+                        mode.config,
+                        service.detachVpnTunnelFd(),
+                    )
                 }
             }
 
@@ -125,16 +140,73 @@ internal class WireGuardTunnelEngine(private val serviceManager: ServiceManager)
         VpnBackend.awgTurnOff(handle)
     }
 
-    private fun startVpnTunnel(ifName: String, config: Config, fd: Int?): Int {
+    private fun startVpnTunnel(
+        splitDnsDomains: Set<String>,
+        ifName: String,
+        config: Config,
+        fd: Int?,
+    ): Int {
         val tunFd = fd ?: throw BackendException.Unauthorized("Failed to create tun interface")
 
+        val (splitDnsDomainsCsv, splitDnsSystemServers) = resolveSplitDns(splitDnsDomains, config)
+
         val handle =
-            VpnBackend.awgTurnOn(ifName, tunFd, config.asQuickString(), serviceManager.uapiPath)
+            VpnBackend.awgTurnOn(
+                ifName,
+                tunFd,
+                config.asQuickString(),
+                serviceManager.uapiPath,
+                splitDnsDomainsCsv,
+                splitDnsSystemServers,
+            )
         if (handle < 0) {
             throw BackendException.InternalError("Internal native error with code: $handle")
         }
         return handle
     }
+
+    /**
+     * Computes the split-tunnel DNS parameters passed to the native layer.
+     *
+     * Split DNS is only enabled when the tunnel has both a configured DNS server (an IP in the
+     * interface DNS) and a non-empty list of domains. In that case matching domains are resolved
+     * through the tunnel DNS server while all other queries are resolved against the underlying
+     * system DNS servers. Returns empty strings to disable interception (native then routes all DNS
+     * to the tunnel DNS server, the default behavior).
+     */
+    private fun resolveSplitDns(
+        splitDnsDomains: Set<String>,
+        config: Config,
+    ): Pair<String, String> {
+        if (splitDnsDomains.isEmpty()) return EMPTY_SPLIT_DNS
+
+        val hasTunnelDnsServer =
+            config.`interface`.dns?.parseDns()?.dnsServers?.isNotEmpty() == true
+        if (!hasTunnelDnsServer) {
+            Timber.w("Split DNS domains set but tunnel has no DNS server configured; ignoring")
+            return EMPTY_SPLIT_DNS
+        }
+
+        val systemServers = withDefaultServers(currentSystemDnsServers())
+
+        return splitDnsDomains.joinToString(",") to systemServers.joinToString(",")
+    }
+
+    override fun updateSplitDnsServers(handle: Int, servers: List<String>) {
+        val merged = withDefaultServers(servers)
+        val result = VpnBackend.awgSetSplitDnsServers(handle, merged.joinToString(","))
+        if (result == 0) {
+            Timber.d("Split DNS system servers updated for handle %d: %s", handle, merged)
+        }
+    }
+
+    // Public resolvers are appended as a last resort for non-matching (public) queries
+    // only; queries matching the split DNS domain list always go through the tunnel.
+    private fun withDefaultServers(servers: List<String>): List<String> =
+        (servers + DEFAULT_SYSTEM_DNS_SERVERS).distinct()
+
+    private fun currentSystemDnsServers(): List<String> =
+        stableNetworkEngine.stableState.value?.state?.underlyingDnsInfo?.servers.orEmpty()
 
     private suspend fun startProxyTunnel(
         ifName: String,
@@ -184,5 +256,9 @@ internal class WireGuardTunnelEngine(private val serviceManager: ServiceManager)
 
     companion object {
         const val WGT_INTERFACE_PREFIX = "wgtun"
+
+        private val EMPTY_SPLIT_DNS = "" to ""
+        // Public resolvers used as a last-resort fallback for non-matching (public) queries.
+        private val DEFAULT_SYSTEM_DNS_SERVERS = listOf("1.1.1.1", "8.8.8.8")
     }
 }

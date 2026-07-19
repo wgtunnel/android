@@ -43,6 +43,7 @@ import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
@@ -121,7 +122,7 @@ class TunnelBackend(
                     if (hasDynamicEndpoints(mode)) {
                         pendingResolutionJobs[tunnel.id] = startTunnelBootstrapJob(tunnel, mode)
                     } else {
-                        val result = engine.start(tunnel.id, mode)
+                        val result = engine.start(tunnel.id, mode, tunnel.splitDnsDomains)
                         onEngineStartResult(tunnel.id, result)
                         if (scriptsEnabled) {
                             mode.config.`interface`.postUp?.let { runScripts(it, tunnel.id) }
@@ -173,7 +174,7 @@ class TunnelBackend(
                 is BackendMode.Proxy.KillSwitchPrimary -> mode.copy(config = resolvedConfig)
             }
 
-        val result = engine.start(tunnel.id, updatedMode)
+        val result = engine.start(tunnel.id, updatedMode, tunnel.splitDnsDomains)
         onEngineStartResult(tunnel.id, result)
         if (previousActiveConfig != null) {
             emitRecoveryEventType(tunnel.id, previousActiveConfig, resolvedConfig)
@@ -453,9 +454,30 @@ class TunnelBackend(
                     }
                 }
 
+                if (mode is BackendMode.Vpn && tunnel.splitDnsDomains.isNotEmpty()) {
+                    startSplitDnsServersJob(tunnel.id)
+                }
+
                 awaitCancellation()
             }
         }
+    }
+
+    /**
+     * Keeps the split DNS resolver's system server list in sync with the underlying network so
+     * non-matching queries keep resolving after roaming between cell and wifi. The list passed to
+     * the native layer at tunnel start is otherwise a one-time snapshot of the start-time network.
+     */
+    private fun CoroutineScope.startSplitDnsServersJob(tunnelId: Int) = launch {
+        stableNetworkEngine.stableState
+            .filterNotNull()
+            .map { it.state.underlyingDnsInfo.servers }
+            .filter { it.isNotEmpty() }
+            .distinctUntilChanged()
+            .collect { servers ->
+                val handle = byTunnelId[tunnelId] ?: return@collect
+                engine.updateSplitDnsServers(handle, servers)
+            }
     }
 
     private fun CoroutineScope.startActiveConfigJob(

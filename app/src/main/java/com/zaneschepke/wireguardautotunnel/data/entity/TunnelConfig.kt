@@ -27,6 +27,8 @@ data class TunnelConfig(
     val ipv6RestoreEnabled: Boolean = false,
     @ColumnInfo(name = "tunnel_bssids", defaultValue = "[]")
     val tunnelBSSIDs: List<String> = emptyList(),
+    @ColumnInfo(name = "split_dns_domains", defaultValue = "[]")
+    val splitDnsDomains: Set<String> = emptySet(),
 ) {
     companion object {
         const val GLOBAL_CONFIG_NAME = "4675ab06-903a-438b-8485-6ea4187a9512"

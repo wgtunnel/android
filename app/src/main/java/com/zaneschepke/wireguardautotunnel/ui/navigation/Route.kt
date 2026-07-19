@@ -76,6 +76,13 @@ sealed class Route : NavKey {
 
     @Keep
     @Serializable
+    data class SplitDns(val id: Int) : Route(), SecureRoute {
+        override val requiresProtection: Boolean
+            get() = true
+    }
+
+    @Keep
+    @Serializable
     data class ConfigGlobal(val id: Int?) : Route(), SecureRoute {
         override val requiresProtection: Boolean
             get() = true
@@ -191,6 +198,7 @@ enum class Tab(
                 is Route.Lock,
                 is Route.Config,
                 is Route.IPv6,
+                is Route.SplitDns,
                 is Route.SplitTunnel -> TUNNELS
                 is Route.AutoTunnel,
                 Route.WifiDetectionMethod,

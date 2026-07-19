@@ -142,6 +142,35 @@ fun TunnelSettingsScreen(
                 onClick = { navController.push(Route.SplitTunnel(id = tunnel.id)) },
             )
             SurfaceRow(
+                leading = {
+                    Icon(
+                        Icons.Outlined.Dns,
+                        contentDescription = null,
+                        tint =
+                            if (sharedUiState.tunnelMode == TunnelMode.PROXY) Disabled
+                            else MaterialTheme.colorScheme.onSurface,
+                    )
+                },
+                enabled = sharedUiState.tunnelMode != TunnelMode.PROXY,
+                title = stringResource(R.string.split_dns),
+                description = {
+                    if (sharedUiState.tunnelMode == TunnelMode.PROXY) {
+                        DescriptionText(stringResource(R.string.unavailable_in_mode), disabled = true)
+                    } else {
+                        DescriptionText(stringResource(R.string.split_dns_setting_description))
+                        if (tunnel.splitDnsDomains.isNotEmpty()) {
+                            DescriptionText(
+                                stringResource(
+                                    R.string.split_dns_domains_count,
+                                    tunnel.splitDnsDomains.size,
+                                )
+                            )
+                        }
+                    }
+                },
+                onClick = { navController.push(Route.SplitDns(id = tunnel.id)) },
+            )
+            SurfaceRow(
                 leading = { Icon(Icons.Outlined.Public, contentDescription = null) },
                 title = stringResource(R.string.ipv6_settings),
                 onClick = { navController.push(Route.IPv6(tunnel.id)) },

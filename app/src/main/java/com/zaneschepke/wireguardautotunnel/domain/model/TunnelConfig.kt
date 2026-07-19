@@ -23,6 +23,7 @@ data class TunnelConfig(
     val isMetered: Boolean = false,
     val ipv6RestoreEnabled: Boolean = false,
     val tunnelBSSIDs: List<String> = emptyList(),
+    val splitDnsDomains: Set<String> = setOf(),
 ) {
 
     fun toSummary() = TunnelSummary(id = id, name = name)
@@ -55,6 +56,9 @@ data class TunnelConfig(
 
         override val isMetered: Boolean
             get() = config.isMetered
+
+        override val splitDnsDomains: Set<String>
+            get() = config.splitDnsDomains
 
         override val ipStrategy: Tunnel.IpStrategy
             get() =

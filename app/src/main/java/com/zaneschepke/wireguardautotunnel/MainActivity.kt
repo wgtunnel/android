@@ -125,6 +125,7 @@ import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.settings.config.Co
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.settings.config.edit.ConfigEditScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.settings.ipv6.IPv6Screen
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.sort.SortScreen
+import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.splitdns.SplitDnsScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.splittunnel.SplitTunnelScreen
 import com.zaneschepke.wireguardautotunnel.ui.theme.AlertRed
 import com.zaneschepke.wireguardautotunnel.ui.theme.Heart
@@ -142,6 +143,7 @@ import com.zaneschepke.wireguardautotunnel.util.extensions.restartApp
 import com.zaneschepke.wireguardautotunnel.util.permission.LocalNetworkPermissionHelper
 import com.zaneschepke.wireguardautotunnel.viewmodel.ConfigEditViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.SharedAppViewModel
+import com.zaneschepke.wireguardautotunnel.viewmodel.SplitDnsViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.SplitTunnelViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.TunnelViewModel
 import de.raphaelebner.roomdatabasebackup.core.OnCompleteListener.Companion.EXIT_CODE_ERROR
@@ -558,6 +560,13 @@ class MainActivity : AppCompatActivity() {
                                                             parameters = { parametersOf(key.id) }
                                                         )
                                                     SplitTunnelScreen(viewModel)
+                                                }
+                                                entry<Route.SplitDns> { key ->
+                                                    val viewModel: SplitDnsViewModel =
+                                                        koinViewModel(
+                                                            parameters = { parametersOf(key.id) }
+                                                        )
+                                                    SplitDnsScreen(viewModel)
                                                 }
                                                 entry<Route.ConfigEdit> { key ->
                                                     val viewModel: ConfigEditViewModel =

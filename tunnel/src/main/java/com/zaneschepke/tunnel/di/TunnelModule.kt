@@ -24,7 +24,7 @@ val tunnelModule = module {
     // expect networkMonitor and NotificationProvider to be available to koin from app
     single { TunnelBackend(get(named(CoroutineScopes.IO_SCOPE)), get(), get()) } binds
         arrayOf(Backend::class, NativeTunnelCallback::class)
-    single<TunnelEngine> { WireGuardTunnelEngine(get()) }
+    single<TunnelEngine> { WireGuardTunnelEngine(get(), get()) }
 }
 
 enum class CoroutineScopes {

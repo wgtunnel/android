@@ -575,4 +575,15 @@
     <string name="snackbar_seamless_recovery_attempt">Connection issue detected. Recovering %s…</string>
     <string name="seamless_recovery_attempt_title">Seamless Recovery</string>
     <string name="seamless_recovery_attempt_message">Connection issue detected. Attempting automatic recovery.</string>
+
+    <string name="remove">Remove</string>
+    <string name="split_dns">Split DNS</string>
+    <string name="split_dns_setting_description">Resolve specific domains through the tunnel DNS server</string>
+    <string name="split_dns_description">DNS queries for the domains below are resolved through the tunnel\'s DNS server. All other queries use the device\'s default resolver. When no domains are added, all DNS traffic goes to the tunnel\'s DNS server.</string>
+    <string name="split_dns_no_server_warning">This tunnel has no DNS server configured, so split DNS has no effect until one is set in the tunnel configuration.</string>
+    <string name="split_dns_add_domain">Add domain</string>
+    <string name="split_dns_domain_hint">example.com</string>
+    <string name="split_dns_domains">Domains</string>
+    <string name="split_dns_empty">No domains added yet.</string>
+    <string name="split_dns_domains_count">%1$d domain(s)</string>
 </resources>

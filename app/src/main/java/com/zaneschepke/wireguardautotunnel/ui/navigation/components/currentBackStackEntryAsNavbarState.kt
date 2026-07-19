@@ -62,6 +62,7 @@ import com.zaneschepke.wireguardautotunnel.ui.navigation.Route.ProxySettings
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route.Security
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route.Settings
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route.Sort
+import com.zaneschepke.wireguardautotunnel.ui.navigation.Route.SplitDns
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route.SplitTunnel
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route.SplitTunnelGlobal
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route.Support
@@ -291,6 +292,25 @@ fun currentRouteAsNavbarState(
                                     )
                                 }
                         },
+                    )
+                }
+                is SplitDns -> {
+                    NavbarState(
+                        topLeading = { TvBackButton { navController.pop() } },
+                        topTitle =
+                            globalState.tunnelNames[route.id]
+                                ?: context.getString(R.string.split_dns),
+                        topTrailing = {
+                            IconButton(
+                                onClick = {
+                                    keyboardController?.hide()
+                                    sharedViewModel.postSideEffect(LocalSideEffect.SaveChanges)
+                                }
+                            ) {
+                                Icon(Icons.Rounded.Save, stringResource(R.string.save))
+                            }
+                        },
+                        showBottomItems = true,
                     )
                 }
                 is SplitTunnel,
