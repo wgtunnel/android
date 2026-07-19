@@ -17,7 +17,7 @@
     <string name="add_from_qr">Добавить из QR-кода</string>
     <string name="tunnel_name">Имя туннеля</string>
     <string name="exclude">Исключить</string>
-    <string name="include">Включить</string>
+    <string name="include">Добавить</string>
     <string name="config_changes_saved">Изменения конфигурации сохранены.</string>
     <string name="public_key">Открытый ключ</string>
     <string name="addresses">Адреса</string>
