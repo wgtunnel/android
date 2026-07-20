@@ -575,4 +575,17 @@
     <string name="snackbar_seamless_recovery_attempt">Connection issue detected. Recovering %s…</string>
     <string name="seamless_recovery_attempt_title">Seamless Recovery</string>
     <string name="seamless_recovery_attempt_message">Connection issue detected. Attempting automatic recovery.</string>
+    <string name="local_domain_suffixes">Local domain suffixes</string>
+    <string name="encrypted_dns">Encrypted DNS</string>
+    <string name="split_dns">Split DNS</string>
+    <string name="system_dns_only">System DNS only</string>
+    <string name="default_dns_desc">Standard plain DNS through the tunnel using the tunnel DNS servers</string>
+    <string name="encrypted_dns_desc">Encrypted DNS through the tunnel using a custom server</string>
+    <string name="split_dns_desc">Local prefix domains are split to system DNS while everything else is tunneled via customizable options</string>
+    <string name="system_dns_only_desc">All DNS queries are send to the system\'s DNS servers and bypass the tunnel</string>
+    <string name="protocol">Protocol</string>
+    <string name="tunnel_dns_mode">Tunnel DNS mode</string>
+    <string name="tunnel_dns">Tunnel DNS</string>
+    <string name="use_tunnel_dns_servers">Use tunnel DNS servers</string>
+    <string name="error_config_missing_dns">Tunnel %1$s is missing DNS servers that are required for your current app settings</string>
 </resources>
