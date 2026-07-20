@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">WG Tunnel</string>
     <string name="app_permission_title">Ovládání tunelů a funkcí automatického tunelování</string>
-    <string name="app_permission_description">Control tunnels and auto-tunnel features.</string>
+    <string name="app_permission_description">Ovládat tunely a auto-tunel možnosti. </string>
     <string name="error_file_extension">Soubor není ve formátu .conf nebo .zip</string>
     <string name="tunnels">Tunely</string>
     <string name="tunnel_mobile_data">Tunelovat na mobilních datech</string>
@@ -71,20 +71,20 @@
     <string name="edit_tunnel">Upravit tunel</string>
     <string name="settings">Nastavení</string>
     <string name="support">Podpora</string>
-    <string name="junk_packet_count">Junk packet počet</string>
-    <string name="junk_packet_minimum_size">Junk packet minimální velikost</string>
-    <string name="junk_packet_maximum_size">Junk packet maximální velikost</string>
-    <string name="init_packet_junk_size">Init packet junk velikost</string>
-    <string name="response_packet_junk_size">Response packet junk velikost</string>
-    <string name="init_packet_magic_header">Init packet magic header</string>
-    <string name="response_packet_magic_header">Response packet magic header</string>
-    <string name="transport_packet_magic_header">Transport packet magic header</string>
-    <string name="underload_packet_magic_header">Underload packet magic header</string>
+    <string name="junk_packet_count">Počet falešných paketů</string>
+    <string name="junk_packet_minimum_size">Minimální velikost falešných paketů </string>
+    <string name="junk_packet_maximum_size">Maximální velikost falešných paketů</string>
+    <string name="init_packet_junk_size">Velikost falešného iniciačního paketu </string>
+    <string name="response_packet_junk_size">Velikost falešného paketu odpovědi</string>
+    <string name="init_packet_magic_header">Magická hlavička iniciačního paketu</string>
+    <string name="response_packet_magic_header">Magická hlavička paketu odpovědi</string>
+    <string name="transport_packet_magic_header">Magická hlavička transportního paketu</string>
+    <string name="underload_packet_magic_header">Magická hlavička paketu při nízké zátěži </string>
     <string name="restart_at_boot">Spustit při startu systému</string>
     <string name="vpn_denied_dialog_title">Oprávnění zamítnuto</string>
     <string name="vpn_settings">Systémové nastavení VPN</string>
     <string name="always_on_message">Autorizace připojení VPN byla zamítnuta. Zkontrolujte prosím</string>
-    <string name="always_on_message2">ujistěte se, že je pro všechny ostatní aplikace vypnutá funkce trvalé připojení VPN, a zkuste to znovu</string>
+    <string name="always_on_message2">Ujistit se, že je pro všechny ostatní aplikace vypnutá funkce trvalé připojení VPN, a zkuste to znovu</string>
     <string name="root_accepted">Root shell přijata</string>
     <string name="show_amnezia_properties">Zobrazit Amnezia možnosti</string>
     <string name="never">Nikdy</string>
@@ -104,7 +104,7 @@
     <string name="launch_app_settings">Spustit nastavení aplikace</string>
     <string name="use_wildcards">Použít zástupné znaky(wildcards) pro názvy</string>
     <string name="learn_more">Zjistit více</string>
-    <string name="wildcards_active">Wildcards aktivní</string>
+    <string name="wildcards_active">Zástupné znaky (wildcards) aktivní</string>
     <string name="use_root_shell_for_wifi">Použít root shell pro získání Wi-Fi informací, zabrání potřebě oprávnění k poloze</string>
     <string name="start_auto">Spustit auto-tunel</string>
     <string name="stop_auto">Zastavit auto-tunel</string>
@@ -137,7 +137,7 @@
     <string name="add_from_url">Přidat z adresy URL</string>
     <string name="enter_config_url">Zadejte adresu URL konfigurace</string>
     <string name="error_download_failed">Nepodařilo se stáhnout konfiguraci</string>
-    <string name="wg_url_confirm_message">Are you sure you want to add tunnels from %1$s? Never connect to an untrusted VPN!</string>
+    <string name="wg_url_confirm_message">Opravdu chcete přidat tunely z %1$s? Nikdy se nepřipojujte k nedůvěryhodné VPN!</string>
     <string name="save">Uložit</string>
     <string name="search">Hledat</string>
     <string name="select">Vybrat</string>
@@ -191,8 +191,8 @@
     <string name="release_notes">Poznámky k vydání</string>
     <string name="shizuku_not_detected">Shizuku nebyl detekován</string>
     <string name="sort">Třídit</string>
-    <string name="sort_by_latency">Sort by latency</string>
-    <string name="pinging_servers">Pinging servers…</string>
+    <string name="sort_by_latency">Seřadit podle latence </string>
+    <string name="pinging_servers">Ověřování dostupnosti serverů…</string>
     <string name="drag_handle">Přetáhnout úchyt</string>
     <string name="move_up">Posunout nahoru</string>
     <string name="move_down">Přesunout dolů</string>
@@ -263,7 +263,7 @@
     <string name="delete_active_message">Aktivní tunel nelze odstranit.</string>
     <string name="back">Zpět</string>
     <string name="configuration">Konfigurace</string>
-    <string name="kernel_wireguard_unsupported">Kernel does not include WireGuard support (module missing or not built-in into kernel)!</string>
+    <string name="kernel_wireguard_unsupported">Jádro neobsahuje podporu pro WireGuard (modul chybí nebo není vestavěn do jádra)!</string>
     <string name="about">O aplikaci</string>
     <string name="resources">Odkazy</string>
     <string name="website">Webová stránka aplikace</string>
@@ -313,79 +313,67 @@
     <string name="donation_prompt_prefix">Děkujeme, že používáte WG Tunnel! Pokud je to možné, zvažte prosím</string>
     <string name="donation_prompt_link">podporu projektu,</string>
     <string name="donation_prompt_suffix">aby zůstal bezplatný a mohl se dále zlepšovat.</string>
-    <string name="cookie_packet_junk_size">Cookie packet junk velikost</string>
-    <string name="transport_packet_junk_size">Transport packet junk velikost</string>
+    <string name="cookie_packet_junk_size">Velikost falešného cookie paketu </string>
+    <string name="transport_packet_junk_size">Velikost falešného transportního paketu</string>
     <string name="special_junk_packet">Special junk packet</string>
-    <string name="copy_from">Copy from</string>
+    <string name="copy_from">Zkopírovat z</string>
     <string name="mode">Mode</string>
-    <string name="app_selection">App selection</string>
-    <string name="import_url_description">The URL must be secure and serve a .conf file.</string>
-    <string name="export_unsupported">Export is not supported on this device</string>
-    <string name="export_canceled">Export canceled</string>
-    <string name="proxy_channel_description">Notifications for proxy tunnels.</string>
-    <string name="initializing">Initializing…</string>
-    <string name="network">Network</string>
-    <string name="view_configuration">View configuration</string>
-    <string name="view_live_tunnel">View live tunnel</string>
-    <string name="toggle_sensitive_data_visibility">Toggle sensitive data visibility</string>
-    <string name="ipv6_settings">IPv6 settings</string>
-    <string name="automation">Automation</string>
-    <string name="peer_resolution">Peer Resolution</string>
-    <string name="resolution_method">Resolution method</string>
-    <string name="dot">DNS over TLS (DoT)</string>
-    <string name="plain_dns">Plain DNS (port 53)</string>
-    <string name="current_system_dns">Current system DNS</string>
-    <string name="dns_error_empty">Endpoint cannot be empty</string>
-    <string name="dns_error_invalid_url">Invalid URL format</string>
-    <string name="dns_error_invalid_scheme">DoH must use HTTPS</string>
-    <string name="dns_error_invalid_host">Host cannot be empty</string>
-    <string name="dns_error_invalid_port">Port must be between 1 and 65535</string>
-    <string name="dns_error_invalid_ip_or_host">Invalid IP address or hostname</string>
-    <string name="dns_endpoint_label">DNS server endpoint</string>
-    <string name="dns_endpoint_hint">IP, hostname, or DoH URL</string>
-    <string name="no_system_dns_information">No system DNS information</string>
-    <string name="private_dns_automatic">Private DNS: automatic</string>
-    <string name="private_dns_hostname">Private DNS: hostname (%1$s)</string>
-    <string name="system_dns_servers">Servers: %1$s</string>
-    <string name="no_system_dns_detected">No system DNS detected</string>
+    <string name="app_selection">Výběr aplikací</string>
+    <string name="import_url_description">URL musí být zabezpečené a poskytovat .conf soubor. </string>
+    <string name="export_unsupported">Export není na tomto zařízení podporován </string>
+    <string name="export_canceled">Export zrušen </string>
+    <string name="proxy_channel_description">Upozornění pro proxy tunely.</string>
+    <string name="initializing">Inicializace…</string>
+    <string name="network">Síť </string>
+    <string name="view_configuration">Zobrazit konfiguraci</string>
+    <string name="view_live_tunnel">Zobrazit živý tunel</string>
+    <string name="toggle_sensitive_data_visibility">Přepnout viditelnost citlivých dat</string>
+    <string name="ipv6_settings">IPv6 nastavení </string>
+    <string name="automation">Automatizace</string>
+    <string name="peer_resolution">Rozpoznávání peerů</string>
+    <string name="resolution_method">Metoda rozpoznávání </string>
+    <string name="dot">DNS přes TLS (DoT)</string>
+    <string name="plain_dns">Klasické DNS (port 53)</string>
+    <string name="current_system_dns">Aktuální systémové DNS</string>
+    <string name="dns_error_empty">Koncový bod (endpoint) nemůže být prázdný </string>
+    <string name="dns_error_invalid_url">Neplatný URL formát </string>
+    <string name="dns_error_invalid_scheme">DoH musí používat HTTPS</string>
+    <string name="dns_error_invalid_host">Host nesmí být prázdný </string>
+    <string name="dns_error_invalid_port">Port musí být mezi 1 a 65535</string>
+    <string name="dns_error_invalid_ip_or_host">Neplatná IP addresa nebo název hostitele</string>
+    <string name="dns_endpoint_label">Koncový bod (endpoint) DNS serveru </string>
+    <string name="dns_endpoint_hint">IP, název hostitele nebo DoH URL </string>
+    <string name="no_system_dns_information">Žádné informace o systémovém DNS </string>
+    <string name="private_dns_automatic">Soukromé DNS: automaticky </string>
+    <string name="private_dns_hostname">Soukromé DNS: název hostitele (%1$s) </string>
+    <string name="system_dns_servers">Servery: %1$s</string>
+    <string name="no_system_dns_detected">Žádná systémová DNS</string>
     <!-- Tunnel states -->
-    <string name="tunnel_state_connected">Connected</string>
-    <string name="tunnel_state_resolving_dns">Resolving DNS</string>
-    <string name="tunnel_state_handshake_failure">Handshake failure</string>
-    <string name="tunnel_state_disconnected">Disconnected</string>
-    <string name="tunnel_state_starting">Starting</string>
-    <string name="status_template">status: %1$s</string>
-    <string name="uptime_template">uptime: %1$s</string>
+    <string name="tunnel_state_connected">Pripojeno</string>
+    <string name="tunnel_state_resolving_dns">Rozpoznávání DNS</string>
+    <string name="tunnel_state_handshake_failure">Selhání handshake </string>
+    <string name="tunnel_state_disconnected">Odpojeno</string>
+    <string name="tunnel_state_starting">Spouštění </string>
+    <string name="status_template">Stav: %1$s</string>
+    <string name="uptime_template">Doba provozu:</string>
     <string name="peer_template">peer: %1$s</string>
     <string name="handshake_template">handshake: %1$s</string>
     <!-- Notification formatting -->
     <string name="notification_tunnel_status_format">%1$s • %2$s</string>
     <!-- Informational notifications -->
     <string name="ipv4_fallback">IPv4 fallback</string>
-    <string name="ipv6_recovery">IPv6 recovery</string>
-    <string name="dynamic_dns_update">Dynamic DNS update</string>
-    <string name="notification_ipv4_fallback_message">
-        %1$s switched to IPv4 connectivity
-    </string>
-    <string name="notification_ipv6_recovery_message">
-        %1$s recovered IPv6 connectivity
-    </string>
-    <string name="notification_dynamic_dns_message">
-        %1$s updated after Dynamic DNS change
-    </string>
+    <string name="ipv6_recovery">Obnovení IPv6 </string>
+    <string name="dynamic_dns_update">Dynamická aktualizace DNS </string>
+    <string name="notification_ipv4_fallback_message">Tunel %1$s se přepnul na IPv4 připojení</string>
+    <string name="notification_ipv6_recovery_message">Tunel %1$s obnovil IPv6 připojení</string>
+    <string name="notification_dynamic_dns_message">Tunel %1$s byl aktualizován po změně dynamického DNS </string>
     <!-- Errors -->
-    <string name="vpn_permission_required">
-        VPN permission required
-    </string>
-    <string name="included_apps">
-        %1$s apps included
-    </string>
-    <string name="excluded_apps">
-        %1$s apps excluded
-    </string>
-    <string name="error">Error</string>
-    <string name="tunnel_globals">Tunnel globals</string>
-    <string name="screen_recording_protection">Screen recording protection</string>
+    <string name="vpn_permission_required">Vyžadováno oprávnění k VPN </string>
+    <string name="included_apps">%1$s aplikací zahrnuto</string>
+    <string name="excluded_apps">%1$s aplikací vyloučeno </string>
+    <string name="error">Chyba</string>
+    <string name="tunnel_globals">Globální nastavení tunelu </string>
+    <string name="screen_recording_protection">Ochrana proti nahrávání obrazovky</string>
     <string name="security">Security</string>
     <string name="ready">Ready</string>
     <string name="statistics">Statistics</string>
@@ -482,7 +470,12 @@
     <string name="split_dns">Rozdělené DNS</string>
     <string name="system_dns_only">Pouze systémové DNS</string>
     <string name="default_dns_desc"></string>
+    <string name="encrypted_dns_desc"></string>
+    <string name="split_dns_desc">Domény s místní předponou jsou směřovány do systémového DNS, zatímco vše ostatní je tunelováno přes přizpůsobitelné volby</string>
+    <string name="system_dns_only_desc">Všechny DNS dotazy jsou odesílány na systémové DNS servery a obcházejí tunel</string>
     <string name="protocol">Protokol</string>
+    <string name="tunnel_dns_mode">Režim DNS tunelu</string>
     <string name="tunnel_dns">Tunelová DNS</string>
     <string name="use_tunnel_dns_servers">Použít tunelové DNS servery</string>
+    <string name="error_config_missing_dns">V tunelu %1$s chybí DNS servery které jsou vyžadovány pro vaše aktuální nastavení aplikace </string>
 </resources>
