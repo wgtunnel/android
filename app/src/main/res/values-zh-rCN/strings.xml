@@ -33,7 +33,7 @@
     <string name="vpn_off">VPN 已关闭</string>
     <string name="create_import">手动创建</string>
     <string name="add_peer">添加节点</string>
-    <string name="interface_">接口</string>
+    <string name="interface_">Interface</string>
     <string name="rotate_keys">轮换秘钥</string>
     <string name="private_key">私钥</string>
     <string name="copy_public_key">复制公钥</string>
