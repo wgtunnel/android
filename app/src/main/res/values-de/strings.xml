@@ -477,4 +477,17 @@
     <string name="snackbar_seamless_recovery_attempt">Es wurde ein Verbindungsproblem festgestellt. Wiederherstellung läuft </string>
     <string name="seamless_recovery_attempt_title">Nahtlose Wiederherstellung</string>
     <string name="seamless_recovery_attempt_message">Es wurde ein Verbindungsproblem festgestellt. Es wird versucht, das Problem automatisch zu beheben.</string>
+    <string name="local_domain_suffixes">Lokale Domain-Suffixe</string>
+    <string name="encrypted_dns">Verschlüsseltes DNS</string>
+    <string name="split_dns">Split-DNS</string>
+    <string name="system_dns_only">Nur System-DNS</string>
+    <string name="default_dns_desc">Standard DNS durch den Tunnel mithilfe der Tunnel DNS-Server</string>
+    <string name="encrypted_dns_desc">Verschlüsseltes DNS durch den Tunnel mit einem benutzerdefinierten Server</string>
+    <string name="split_dns_desc">Lokale Domains werden an die System-DNS-Server gesendet, während alles andere über anpassbare Optionen getunnelt wird</string>
+    <string name="system_dns_only_desc">Alle DNS-Anfragen werden an die System-DNS-Server gesendet und umgehen den Tunnel</string>
+    <string name="protocol">Protokoll</string>
+    <string name="tunnel_dns_mode">Tunnel DNS-Modus</string>
+    <string name="tunnel_dns">Tunnel DNS</string>
+    <string name="use_tunnel_dns_servers">Tunnel DNS-Server verwenden</string>
+    <string name="error_config_missing_dns">Für Tunnel %1$s fehlen DNS-Server, die für Ihre aktuelle Konfiguration erforderlich sind</string>
 </resources>
