@@ -341,7 +341,7 @@
     <string name="dns_error_invalid_host">Хост не может быть пустым</string>
     <string name="dns_error_invalid_port">Номер порта должен быть в диапазоне от 1 до 65535</string>
     <string name="dns_error_invalid_ip_or_host">Неправильный IP-адрес или имя хоста</string>
-    <string name="dns_endpoint_label">Точка подключения DNS-сервера</string>
+    <string name="dns_endpoint_label">DNS-сервер туннеля</string>
     <string name="dns_endpoint_hint">IP, имя хоста или URL DoH</string>
     <string name="no_system_dns_information">Нет информации о системном DNS</string>
     <string name="private_dns_automatic">Частный DNS: автовыбор</string>
@@ -421,7 +421,7 @@
     <string name="app_lock_desc">Использовать PIN-код для доступа к приложению</string>
     <string name="app_shortcuts">Ярлыки приложения</string>
     <string name="app_shortcuts_desc">Добавить быстрые действия к значку приложения</string>
-    <string name="remote_control">Управление приложением</string>
+    <string name="remote_control">Внешнее управление</string>
     <string name="remote_control_desc">Разрешать другим приложениям (например, Tasker) управлять туннелями</string>
     <string name="endpoint_template">IP подключения: %1$s</string>
     <string name="encrypted">Шифрование</string>
@@ -467,15 +467,15 @@
     <string name="seamless_recovery_attempt_message">Обнаружена проблема подключения. Попытка автоматического восстановления.</string>
     <string name="local_domain_suffixes">Суффиксы локального домена</string>
     <string name="encrypted_dns">Безопасный DNS</string>
-    <string name="split_dns">Разделенный DNS</string>
-    <string name="system_dns_only">Только системный DNS</string>
+    <string name="split_dns">Разделяемый DNS</string>
+    <string name="system_dns_only">Системный DNS</string>
     <string name="default_dns_desc">Стандартный DNS через туннель с использованием туннельных DNS-серверов</string>
     <string name="encrypted_dns_desc">Безопасный DNS через туннель с использованием пользовательского сервера</string>
-    <string name="split_dns_desc">Локальные префиксные домены разделяются на системные DNS, в то время как все остальное туннелируется с помощью настраиваемых параметров</string>
-    <string name="system_dns_only_desc">Все DNS-запросы отправляются на DNS-серверы системы в обход туннеля</string>
+    <string name="split_dns_desc">Домены с локальным префиксом направляются в системный DNS, тогда как весь остальной трафик туннелируется с помощью настраиваемых параметров</string>
+    <string name="system_dns_only_desc">Все DNS-запросы отправляются на DNS-серверы провайдера или локальной сети, в обход туннеля</string>
     <string name="protocol">Протокол</string>
-    <string name="tunnel_dns_mode">Туннельный режим DNS</string>
+    <string name="tunnel_dns_mode">Режим DNS</string>
     <string name="tunnel_dns">Туннельный DNS</string>
-    <string name="use_tunnel_dns_servers">Использовать туннельные DNS-серверы</string>
+    <string name="use_tunnel_dns_servers">DNS серверы туннеля</string>
     <string name="error_config_missing_dns">В туннеле %$s отсутствуют DNS-серверы, необходимые для вашего приложения</string>
 </resources>
