@@ -467,7 +467,7 @@
     <string name="seamless_recovery_attempt_message">Обнаружена проблема подключения. Попытка автоматического восстановления.</string>
     <string name="local_domain_suffixes">Суффиксы локального домена</string>
     <string name="encrypted_dns">Безопасный DNS</string>
-    <string name="split_dns">Разделяемый DNS</string>
+    <string name="split_dns">Разделённый DNS</string>
     <string name="system_dns_only">Системный DNS</string>
     <string name="default_dns_desc">Стандартный DNS через туннель с использованием туннельных DNS-серверов</string>
     <string name="encrypted_dns_desc">Безопасный DNS через туннель с использованием пользовательского сервера</string>
