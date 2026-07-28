@@ -477,4 +477,17 @@
     <string name="snackbar_seamless_recovery_attempt">연결 문제 감지됨. %s 복구 중…</string>
     <string name="seamless_recovery_attempt_title">끊김 없는 복구</string>
     <string name="seamless_recovery_attempt_message">연결 문제 감지됨. 자동 복구 시도 중.</string>
+    <string name="local_domain_suffixes">로컬 도메인 접미사</string>
+    <string name="encrypted_dns">암호화된 DNS</string>
+    <string name="split_dns">분할 DNS</string>
+    <string name="system_dns_only">시스템 DNS만</string>
+    <string name="default_dns_desc">터널 DNS 서버를 사용해 터널을 거치는 표준 평문 DNS</string>
+    <string name="encrypted_dns_desc">사용자 지정 서버를 사용해 터널을 거치는 암호화된 DNS</string>
+    <string name="split_dns_desc">로컬 접두사 ​​도메인은 시스템 DNS로 분할되고 나머지는 모두 사용자 지정 옵션을 통해 터널링</string>
+    <string name="system_dns_only_desc">모든 DNS 쿼리를 시스템 DNS 서버로 전송하며 터널을 우회</string>
+    <string name="protocol">프로토콜</string>
+    <string name="tunnel_dns_mode">터널 DNS 모드</string>
+    <string name="tunnel_dns">터널 DNS</string>
+    <string name="use_tunnel_dns_servers">터널 DNS 서버 사용</string>
+    <string name="error_config_missing_dns">%1$s 터널에 현재 앱 설정에서 필요한 DNS 서버가 누락됨</string>
 </resources>
