@@ -130,7 +130,7 @@
     <string name="hide_scripts">پنهان کردن اسکریپت‌ها</string>
     <string name="enable_amnezia_compatibility">سازگاری Amnezia را فعال کنید </string>
     <string name="remove_amnezia_compatibility">حذف سازگاری Amnezia </string>
-    <string name="exclude_lan">Exclude LAN</string>
+    <string name="exclude_lan">حذف LAN </string>
     <string name="include_lan">Include LAN</string>
     <string name="tunnel_control">Tunnel control</string>
     <string name="auto_tunnel">Auto-tunnel</string>
