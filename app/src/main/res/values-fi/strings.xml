@@ -5,10 +5,10 @@
     <string name="app_permission_description">Control tunnels and auto-tunnel features.</string>
     <string name="error_file_extension">Tiedosto ei ole .conf tai .zip-tiedosto</string>
     <string name="tunnels">Tunnelit</string>
-    <string name="tunnel_mobile_data">Tunneloi mobiilidatalla</string>
+    <string name="tunnel_mobile_data">Tunnel on mobile data</string>
     <string name="privacy_policy">Näytä tietosuojakäytäntö</string>
     <string name="okay">Okei</string>
-    <string name="tunnel_on_ethernet">Tunneloi ethernetissä</string>
+    <string name="tunnel_on_ethernet">Tunnel on ethernet</string>
     <string name="prominent_background_location_message">Tämä toiminto vaatii taustapaikannusoikeuden, jotta Wi-Fi SSID:n seuranta on mahdollista myös sovelluksen ollessa suljettuna. Lisätietoja löydät Tuki-näkymään linkatusta tietosuojakäytännöstä.</string>
     <string name="prominent_background_location_title">Background Location Disclosure</string>
     <string name="thank_you">Kiitos WG Tunnelin käyttämisestä!</string>
@@ -487,4 +487,5 @@
     <string name="seamless_recovery">Seamless tunnel recovery</string>
     <string name="seamless_recovery_desc">Maintains protection while recovering from DDNS changes, network switches, and NAT issues</string>
     <string name="now_in_template">Now in %1$s</string>
+    <string name="use_tunnel_dns_servers"></string>
 </resources>
