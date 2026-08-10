@@ -3,7 +3,7 @@
     <string name="app_name">WG Tunnel</string>
     <string name="app_permission_title">Ovládání tunelů a funkcí automatického tunelování</string>
     <string name="app_permission_description">Ovládat tunely a auto-tunel možnosti. </string>
-    <string name="error_file_extension">Soubor není ve formátu .conf nebo .zip</string>
+    <string name="error_file_extension">or .zip</string>
     <string name="tunnels">Tunely</string>
     <string name="tunnel_mobile_data">Tunelovat na mobilních datech</string>
     <string name="privacy_policy">Zásady soukromí</string>
