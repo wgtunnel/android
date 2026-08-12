@@ -316,6 +316,7 @@
     <string name="cookie_packet_junk_size">Cookie 包垃圾大小</string>
     <string name="transport_packet_junk_size">传输包垃圾大小</string>
     <string name="special_junk_packet">特殊垃圾数据包</string>
+    <!-- AmneziaWG 3.0 -->
     <string name="copy_from">复制从</string>
     <string name="mode">模式</string>
     <string name="app_selection">选择应用</string>
