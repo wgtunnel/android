@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">WG Tunnel</string>
     <string name="app_permission_title">터널 및 자동 터널 기능을 제어합니다.</string>
     <string name="app_permission_description">터널 및 자동 터널 기능을 제어합니다.</string>
     <string name="error_file_extension">파일이 .conf 혹은 .zip 형식이 아님</string>
@@ -22,7 +21,6 @@
     <string name="public_key">공개 키</string>
     <string name="addresses">주소</string>
     <string name="dns_servers">DNS 서버</string>
-    <string name="mtu">MTU</string>
     <string name="peer">피어</string>
     <string name="allowed_ips">허용된 IP</string>
     <string name="endpoint">엔드포인트</string>
@@ -156,7 +154,6 @@
     <string name="flavor_template">배포 채널: %1$s</string>
     <string name="root_required_template">%1$s (루트 권한 필요)</string>
     <string name="recommended_template">%1$s (권장)</string>
-    <string name="hint_template">(%1$s)</string>
     <string name="config_error">잘못된 구성</string>
     <string name="dns_resolve_error">DNS 리졸브 실패</string>
     <string name="auth_error">미인증</string>
@@ -177,14 +174,12 @@
     <string name="licenses">라이선스</string>
     <string name="update_check_unsupported">이 빌드 유형에서는 업데이트 확인이 지원되지 않습니다.</string>
     <string name="darker">더 어둡게</string>
-    <string name="amoled">AMOLED</string>
     <string name="show_qr">QR 표시</string>
     <string name="done">완료</string>
     <string name="wifi_detection_method">Wi-Fi 탐지 방식</string>
     <string name="_default">기본</string>
     <string name="legacy">구형</string>
     <string name="root">루트</string>
-    <string name="shizuku">Shizuku</string>
     <string name="legacy_api_description">Android 12의 비권장 방식을 통해 위치 쿼리 없이 Wi-Fi 정보를 얻지만, 최신 기기에서는 잘 동작하지 않을 수 있습니다</string>
     <string name="use_shell_via_shizuku">Shizuku 셸을 이용하여, 루팅하지 않은 기기에서 위치 권한을 요구하지 않고 Wi-Fi 정보를 얻습니다</string>
     <string name="use_android_recommended">Android 버전을 기반으로, Wi-Fi 정보를 얻을 때 권장 방식을 사용합니다</string>
@@ -223,7 +218,6 @@
     <string name="password">비밀번호</string>
     <string name="proxy_credentials">프록시 자격증명</string>
     <string name="proxy_settings">프록시 설정</string>
-    <string name="vpn">VPN</string>
     <string name="android_integrations">Android 연동</string>
     <string name="show_password">비밀번호 표시</string>
     <string name="socks_5_bind_address">SOCKS5 할당 주소</string>
@@ -232,7 +226,6 @@
     <string name="dns_settings">DNS 설정</string>
     <string name="locked_down">락다운됨</string>
     <string name="system">시스템</string>
-    <string name="doh">DNS over HTTPS (DoH)</string>
     <string name="comma_separated">쉼표로 구분됨</string>
     <string name="server_port">서버:포트</string>
     <string name="new_tunnel">새 터널</string>
@@ -241,7 +234,6 @@
     <string name="ports_must_differ">실패. 프록시는 다른 포트를 이용해야 합니다.</string>
     <string name="password_no_spaces">비밀번호에는 공백이 들어갈 수 없습니다.</string>
     <string name="tunnel_name_taken">터널 이름을 이미 쓰고 있습니다.</string>
-    <string name="range_hint">(%1$d–%2$d)</string>
     <string name="mimic_quic">QUIC 모방</string>
     <string name="mimic_dns">DNS 모방</string>
     <string name="mimic_sip">SIP 모방</string>
@@ -253,8 +245,6 @@
     <string name="donate_title">후원</string>
     <string name="crypto">암호화폐 주소</string>
     <string name="github_sponsors">GitHub 스폰서</string>
-    <string name="liberapay">Liberapay</string>
-    <string name="kofi">Ko-fi</string>
     <string name="donation_thanks_intro">이 프로젝트에 후원을 고려해주셔서 감사드립니다!</string>
     <string name="donation_dev_message">1인 개발자로서 WG Tunnel을 최고의 Android 무료 오픈 소스 WireGuard 클라이언트로 만들기 위해 끊임 없이 노력하고 있지만, 여러분의 지원이 있어야 가능한 일입니다.</string>
     <string name="donation_closing">프로젝트에 모든 시간을 할애하는 것이 제 꿈입니다.</string>
@@ -286,7 +276,6 @@
     <string name="active_network">활성 네트워크:</string>
     <string name="security_type">보안:</string>
     <string name="network_name">네트워크:</string>
-    <string name="wifi">Wi-Fi</string>
     <string name="text_too_large_for_qr">QR로 표시하기에 텍스트가 너무 큽니다.</string>
     <string name="all_services_disabled">이 동작을 수행하려면 자동 터널 및 터널을 비활성화해야 합니다.</string>
     <string name="ddns_success_message">동적 DNS 엔드포인트가 성공적으로 갱신되었습니다.</string>
@@ -333,7 +322,6 @@
     <string name="automation">자동화</string>
     <string name="peer_resolution">피어 리졸브</string>
     <string name="resolution_method">리졸브 방식</string>
-    <string name="dot">DNS over TLS (DoT)</string>
     <string name="plain_dns">평문 DNS (포트 53)</string>
     <string name="current_system_dns">현재 시스템 DNS</string>
     <string name="dns_error_empty">엔드포인트는 비워둘 수 없음</string>
@@ -360,7 +348,6 @@
     <string name="peer_template">피어: %1$s</string>
     <string name="handshake_template">핸드셰이크: %1$s</string>
     <!-- Notification formatting -->
-    <string name="notification_tunnel_status_format">%1$s • %2$s</string>
     <!-- Informational notifications -->
     <string name="ipv4_fallback">IPv4 폴백</string>
     <string name="ipv6_recovery">IPv6 복원</string>
@@ -458,7 +445,6 @@
     <string name="stop_while_captive_portal">캡티브 포털에서 터널 중지</string>
     <string name="wifi_rules">Wi-Fi 규칙</string>
     <string name="add">추가</string>
-    <string name="bssid">BSSID</string>
     <string name="wifi_detection_desc">네트워크 세부 정보를 감지할 방식 선택</string>
     <string name="wildcard_desc">패턴을 활용한 고급 네트워크 매칭 활성화</string>
     <string name="wildcard_wifi_desc">블랙리스트 작성 시 *, ?, ! 지원</string>

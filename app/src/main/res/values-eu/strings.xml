@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">WG Tunnel</string>
     <string name="app_permission_title">Kontrolatu tunelak eta tunel-automatikoaren eginbideak.</string>
     <string name="app_permission_description">Kontrolatu tunelak eta tunel-automatikoaren eginbideak.</string>
     <string name="error_file_extension">Fitxategia ez da .conf edo .zip</string>
@@ -22,7 +21,6 @@
     <string name="public_key">Gako publikoa</string>
     <string name="addresses">Helbideak</string>
     <string name="dns_servers">DNS zerbitzariak</string>
-    <string name="mtu">MTU</string>
     <string name="peer">Parekidea</string>
     <string name="allowed_ips">Baimendutako IPak</string>
     <string name="endpoint">Amaiera-puntua</string>
@@ -62,7 +60,6 @@
     <string name="no_email_detected">Ez da mezularitza-aplikaziorik detektatu</string>
     <string name="no_browser_detected">Ez da arakatzailerik detektatu</string>
     <string name="open_issue">Ireki arazo bat</string>
-    <string name="auto">(Auto)</string>
     <string name="incorrect_pin">PINa okerra da</string>
     <string name="pin_created">PINa ongi sortu da</string>
     <string name="enter_pin">Sartu PINa</string>
@@ -156,7 +153,6 @@
     <string name="flavor_template">Aldaera: %1$s</string>
     <string name="root_required_template">%1$s (root beharrezkoa)</string>
     <string name="recommended_template">%1$s  (gomendatua)</string>
-    <string name="hint_template">(%1$s)</string>
     <string name="config_error">Konfigurazio baliogabea</string>
     <string name="dns_resolve_error">DNS ebazpenak huts egin du</string>
     <string name="auth_error">Baimenik gabe</string>
@@ -177,14 +173,11 @@
     <string name="licenses">Lizentziak</string>
     <string name="update_check_unsupported">Eguneraketen bilaketa ez da onartzen eraikitze mota honetarako.</string>
     <string name="darker">Ilunagoa</string>
-    <string name="amoled">AMOLED</string>
     <string name="show_qr">Erakutsi QR</string>
     <string name="done">Eginda</string>
     <string name="wifi_detection_method">Wi-Fi detekzio-metodoa</string>
     <string name="_default">Lehenetsia</string>
     <string name="legacy">Zaharra</string>
-    <string name="root">Root</string>
-    <string name="shizuku">Shizuku</string>
     <string name="legacy_api_description">Erabili Android 12n zaharkitutako metodoa Wi-Fi informazioa lortzeko, kokapen-kontsultak mugatzen dituena, baina agian ez du modu fidagarrian funtzionatuko gailu berrienetan
     </string>
     <string name="use_shell_via_shizuku">Erabili shell-a Shizuku bidez Wi-Fi informazioa lortzeko, kokapen-baimenaren beharra saihestuz root gabeko gailuetan
@@ -227,7 +220,6 @@
     <string name="password">Pasahitza</string>
     <string name="proxy_credentials">Proxy-aren kredentzialak</string>
     <string name="proxy_settings">Proxy ezarpenak</string>
-    <string name="vpn">VPN</string>
     <string name="android_integrations">Android integrazioak</string>
     <string name="show_password">Erakutsi pasahitza</string>
     <string name="socks_5_bind_address">SOCKS5 lotura-helbidea</string>
@@ -245,7 +237,6 @@
     <string name="ports_must_differ">Huts egin du. Proxy-ek ataka desberdinak izan behar dituzte.</string>
     <string name="password_no_spaces">Pasahitzak ezin du zuriunerik izan</string>
     <string name="tunnel_name_taken">Tunelaren izena jadanik erabilita dago</string>
-    <string name="range_hint">(%1$d–%2$d)</string>
     <string name="mimic_quic">Imitatu QUIC</string>
     <string name="mimic_dns">Imitatu DNS</string>
     <string name="mimic_sip">Imitatu SIP</string>
@@ -258,9 +249,6 @@
     <string name="lockdown">Blokeo osoa</string>
     <string name="donate_title">Dohaintza egin</string>
     <string name="crypto">Kriptomoneta helbideak</string>
-    <string name="github_sponsors">GitHub Sponsors</string>
-    <string name="liberapay">Liberapay</string>
-    <string name="kofi">Ko-fi</string>
     <string name="donation_thanks_intro">Eskerrik asko proiektu honi dohaintza egitea pentsatzeagatik!</string>
     <string name="donation_dev_message">Garatzaile bakarra naizen aldetik, nekaezinik lan egiten dut WG Tunnel Androiderako WireGuard bezero libre eta kode irekiko onena izan dadin, baina hori zure laguntzarekin bakarrik da posible.</string>
     <string name="donation_closing">Nire ametsa da proiektu honetan zuretzat lanaldi osoz aritzea.</string>
@@ -287,13 +275,11 @@
     <string name="wifi_settings">Wi-Fi ezarpenak</string>
     <string name="backup_and_restore">Babeskopia eta berrezarpena</string>
     <string name="mobile_data">Datu mugikorrak</string>
-    <string name="ethernet">Ethernet</string>
     <string name="unknown">Ezezaguna</string>
     <string name="no_network">Ez dago sarerik konektatuta</string>
     <string name="active_network">Sare aktiboa: </string>
     <string name="security_type">Segurtasuna: </string>
     <string name="network_name">Sarea: </string>
-    <string name="wifi">Wi-Fi</string>
     <string name="text_too_large_for_qr">Testua handiegia da QR gisa bistaratzeko.</string>
     <string name="all_services_disabled">Tunel automatikoa eta tunelak desgaituta egon behar dute ekintza hau gauzatzeko.</string>
     <string name="ddns_success_message">DNS dinamikoaren amaiera-puntua ongi eguneratu da.</string>
@@ -368,7 +354,6 @@
     <string name="handshake_template">eskuematea: %1$s</string>
 
     <!-- Notification formatting -->
-    <string name="notification_tunnel_status_format">%1$s • %2$s</string>
 
     <!-- Informational notifications -->
     <string name="ipv4_fallback">IPv4 ordezkoa</string>
@@ -485,7 +470,6 @@
     <string name="stop_while_captive_portal">Gelditu tunela atari kautiboan</string>
     <string name="wifi_rules">Wi-Fi arauak</string>
     <string name="add">Gehitu</string>
-    <string name="bssid">BSSID</string>
     <string name="wifi_detection_desc">Hautatu zure sarearen xehetasunak nola detektatzen diren</string>
     <string name="wildcard_desc">Gaitu bat-etortze aurreratua sareetarako ereduak erabiliz</string>
     <string name="wildcard_wifi_desc">*, ? eta ! onartzen ditu zerrenda beltzerako</string>

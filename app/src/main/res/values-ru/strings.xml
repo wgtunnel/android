@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">WG Tunnel</string>
     <string name="app_permission_title">Управление туннелями и автотуннелированием</string>
     <string name="app_permission_description">Управление туннелями и функцией автоматического туннелирования.</string>
     <string name="error_file_extension">Файл не имеет расширение .conf или .zip</string>
@@ -22,7 +21,6 @@
     <string name="public_key">Открытый ключ</string>
     <string name="addresses">Адреса</string>
     <string name="dns_servers">DNS-серверы</string>
-    <string name="mtu">MTU</string>
     <string name="peer">Узел</string>
     <string name="allowed_ips">Разрешённые IP</string>
     <string name="endpoint">Точка подключения</string>
@@ -156,7 +154,6 @@
     <string name="flavor_template">Сборка: %1$s</string>
     <string name="root_required_template">%1$s (требуется root)</string>
     <string name="recommended_template">%1$s (рекомендуется)</string>
-    <string name="hint_template">(%1$s)</string>
     <string name="config_error">Неправильная конфигурация</string>
     <string name="dns_resolve_error">Ошибка получения DNS</string>
     <string name="auth_error">Не выполнена авторизация</string>
@@ -177,14 +174,11 @@
     <string name="licenses">Лицензии</string>
     <string name="update_check_unsupported">Проверка обновлений не поддерживается для этого типа сборок.</string>
     <string name="darker">Ночная</string>
-    <string name="amoled">AMOLED</string>
     <string name="show_qr">Показать QR-код</string>
     <string name="done">Готово</string>
     <string name="wifi_detection_method">Метод обнаружения Wi-Fi</string>
     <string name="_default">По умолчанию</string>
     <string name="legacy">Устаревший</string>
-    <string name="root">Root</string>
-    <string name="shizuku">Shizuku</string>
     <string name="legacy_api_description">Получать информацию о Wi-Fi устаревшим методом Android 12, который ограничивает запросы определения местоположения, но может работать нестабильно на новых устройствах</string>
     <string name="use_shell_via_shizuku">Получать информацию о Wi-Fi через Shizuku без необходимости разрешения определения местоположения на устройствах без root-доступа</string>
     <string name="use_android_recommended">Получать информацию о Wi-Fi рекомендуемым методом на основе версии Android</string>
@@ -223,7 +217,6 @@
     <string name="password">Пароль</string>
     <string name="proxy_credentials">Учётные данные прокси</string>
     <string name="proxy_settings">Настройки прокси</string>
-    <string name="vpn">VPN</string>
     <string name="android_integrations">Интеграция с Android</string>
     <string name="show_password">Показать пароль</string>
     <string name="socks_5_bind_address">Адрес привязки SOCKS5</string>
@@ -241,7 +234,6 @@
     <string name="ports_must_differ">Ошибка: прокси должны иметь разные порты.</string>
     <string name="password_no_spaces">Пароль не может содержать пробелы</string>
     <string name="tunnel_name_taken">Имя туннеля уже используется</string>
-    <string name="range_hint">(%1$d–%2$d)</string>
     <string name="mimic_quic">Имитировать QUIC</string>
     <string name="mimic_dns">Имитировать DNS</string>
     <string name="mimic_sip">Имитировать SIP</string>
@@ -253,8 +245,6 @@
     <string name="donate_title">Сделать пожертвование</string>
     <string name="crypto">Криптовалютные адреса</string>
     <string name="github_sponsors">Спонсоры GitHub</string>
-    <string name="liberapay">Liberapay</string>
-    <string name="kofi">Ko-fi</string>
     <string name="donation_thanks_intro">Благодарим вас за желание сделать пожертвование!</string>
     <string name="donation_dev_message">Будучи единственным разработчиком, я неустанно работаю, чтобы сделать WG Tunnel лучшим бесплатным и открытым клиентом WireGuard для Android, но это возможно только с вашей поддержкой.</string>
     <string name="donation_closing">Моя мечта — работать для вас над этим проектом полный рабочий день.</string>
@@ -280,13 +270,11 @@
     <string name="wifi_settings">Настройки Wi-Fi</string>
     <string name="backup_and_restore">Резервное копирование</string>
     <string name="mobile_data">Сотовая сеть</string>
-    <string name="ethernet">Ethernet</string>
     <string name="unknown">Неизвестно</string>
     <string name="no_network">Нет подключения к сети</string>
     <string name="active_network">Активная сеть: </string>
     <string name="security_type">Безопасность: </string>
     <string name="network_name">Сеть: </string>
-    <string name="wifi">Wi-Fi</string>
     <string name="text_too_large_for_qr">Текст слишком большой для отображения QR-кода.</string>
     <string name="all_services_disabled">Для выполнения этого действия необходимо отключить автотуннелирование и туннели.</string>
     <string name="ddns_success_message">Точка подключения динамического DNS успешно обновлена.</string>
@@ -360,7 +348,6 @@
     <string name="peer_template">узел: %1$s</string>
     <string name="handshake_template">подключение: %1$s</string>
     <!-- Notification formatting -->
-    <string name="notification_tunnel_status_format">%1$s • %2$s</string>
     <!-- Informational notifications -->
     <string name="ipv4_fallback">Возврат на IPv4</string>
     <string name="ipv6_recovery">Восстановление IPv6</string>
@@ -446,7 +433,6 @@
     <string name="stop_while_captive_portal">Останавливать туннель на портале авторизации</string>
     <string name="wifi_rules">Правила Wi-Fi</string>
     <string name="add">Добавить</string>
-    <string name="bssid">BSSID</string>
     <string name="wifi_detection_desc">Выбор способа получения данных о вашей сети</string>
     <string name="wildcard_desc">Использовать расширенный метод сопоставления сетей с использованием шаблонов</string>
     <string name="wildcard_wifi_desc">Поддержка *, ? и ! для чёрного списка</string>

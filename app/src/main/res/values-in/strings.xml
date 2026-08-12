@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">WG Tunnel</string>
     <string name="app_permission_title">Kontrol terowongan dan fitur terowongan otomatis.</string>
-    <string name="app_permission_description">https://hosted.weblate.org/translate/wg-tunnel/strings/en/?checksum=e52d7eb2e28a9a12Control tunnels and auto-tunnel features.</string>
     <string name="error_file_extension">File bukan berformat .conf atau .zip</string>
     <string name="tunnels">Terowongan</string>
     <string name="tunnel_mobile_data">Terowongan pada data seluler</string>
@@ -22,7 +20,6 @@
     <string name="public_key">Kunci publik</string>
     <string name="addresses">Alamat</string>
     <string name="dns_servers">Server DNS</string>
-    <string name="mtu">MTU</string>
     <string name="peer">Rekan</string>
     <string name="allowed_ips">IP yang Diizinkan</string>
     <string name="endpoint">Titik akhir</string>
@@ -121,10 +118,6 @@
     <string name="stop">Hentikan</string>
     <string name="splt_tunneling">Terowongan terpisah</string>
     <string name="show_scripts">Tampilkan skrip</string>
-    <string name="pre_up">Pre up</string>
-    <string name="post_up">Post up</string>
-    <string name="pre_down">Pre down</string>
-    <string name="post_down">Post down</string>
     <string name="quick_actions">Tindakan cepat</string>
     <string name="hide_amnezia_properties">Sembunyikan properti Amnezia</string>
     <string name="hide_scripts">Sembunyikan skrip</string>
@@ -137,13 +130,11 @@
     <string name="add_from_url">Tambah dari URL</string>
     <string name="enter_config_url">Masukkan URL konfigurasi</string>
     <string name="error_download_failed">Gagal mengunduh konfigurasi</string>
-    <string name="wg_url_confirm_message">Are you sure you want to add tunnels from %1$s? Never connect to an untrusted VPN!</string>
     <string name="save">Simpan</string>
     <string name="search">Cari</string>
     <string name="select">Pilih</string>
     <string name="join_telegram">Bergabung dengan komunitas Telegram</string>
     <string name="join_matrix">Bergabung dengan komunitas Matrix</string>
-    <string name="dropdown">Dropdown</string>
     <string name="add_tunnel">Tambah terowongan</string>
     <string name="export_logs">Ekspor log tersimpan</string>
     <string name="delete_logs">Hapus dan bersihkan log</string>
@@ -156,7 +147,6 @@
     <string name="flavor_template">Varian: %1$s</string>
     <string name="root_required_template">%1$s (memerlukan root)</string>
     <string name="recommended_template">%1$s (direkomendasikan)</string>
-    <string name="hint_template">(%1$s)</string>
     <string name="config_error">Konfigurasi tidak valid</string>
     <string name="dns_resolve_error">Resolusi DNS gagal</string>
     <string name="auth_error">Tidak sah</string>
@@ -177,22 +167,17 @@
     <string name="licenses">Lisensi</string>
     <string name="update_check_unsupported">Pemeriksaan pembaruan tidak didukung untuk jenis build ini.</string>
     <string name="darker">Lebih gelap</string>
-    <string name="amoled">AMOLED</string>
     <string name="show_qr">Tampilkan QR</string>
     <string name="done">Selesai</string>
     <string name="wifi_detection_method">Metode deteksi Wi-Fi</string>
     <string name="_default">Bawaan</string>
     <string name="legacy">Lama</string>
-    <string name="root">Root</string>
-    <string name="shizuku">Shizuku</string>
     <string name="legacy_api_description">Gunakan metode yang tidak lagi didukung sejak Android 12 untuk mendapatkan informasi Wi-Fi yang membatasi kueri lokasi, tetapi mungkin tidak bekerja secara andal pada perangkat yang lebih baru</string>
     <string name="use_shell_via_shizuku">Gunakan shell melalui Shizuku untuk mendapatkan informasi Wi-Fi, sehingga tidak memerlukan izin lokasi pada perangkat yang tidak di-root</string>
     <string name="use_android_recommended">Gunakan metode yang direkomendasikan Android untuk mendapatkan informasi Wi-Fi, berdasarkan versi Android</string>
     <string name="release_notes">Catatan rilis</string>
     <string name="shizuku_not_detected">Shizuku tidak terdeteksi</string>
     <string name="sort">Urutkan</string>
-    <string name="sort_by_latency">Sort by latency</string>
-    <string name="pinging_servers">Pinging servers…</string>
     <string name="drag_handle">Pegangan Seret</string>
     <string name="move_up">Pindah ke Atas</string>
     <string name="move_down">Pindah ke Bawah</string>
@@ -223,7 +208,6 @@
     <string name="password">Kata sandi</string>
     <string name="proxy_credentials">Kredensial proksi</string>
     <string name="proxy_settings">Pengaturan proksi</string>
-    <string name="vpn">VPN</string>
     <string name="android_integrations">Integrasi Android</string>
     <string name="show_password">Tampilkan kata sandi</string>
     <string name="socks_5_bind_address">Alamat bind SOCKS5</string>
@@ -232,16 +216,13 @@
     <string name="dns_settings">Pengaturan DNS</string>
     <string name="locked_down">Terkunci</string>
     <string name="system">Sistem</string>
-    <string name="doh">DNS over HTTPS (DoH)</string>
     <string name="comma_separated">Dipisahkan dengan koma</string>
-    <string name="server_port">Server:Port</string>
     <string name="new_tunnel">Terowongan baru</string>
     <string name="read_failed">Gagal membaca data.</string>
     <string name="config_error_template">Konfigurasi buruk. %1$s pada lokasi: %2$s.</string>
     <string name="ports_must_differ">Gagal. Proksi harus memiliki port yang berbeda.</string>
     <string name="password_no_spaces">Kata sandi tidak boleh mengandung spasi.</string>
     <string name="tunnel_name_taken">Nama terowongan sudah digunakan.</string>
-    <string name="range_hint">(%1$d–%2$d)</string>
     <string name="mimic_quic">Tiru QUIC</string>
     <string name="mimic_dns">Tiru DNS</string>
     <string name="mimic_sip">Tiru SIP</string>
@@ -249,12 +230,8 @@
     <string name="ddns_auto_update">Pembaruan otomatis DNS dinamis</string>
     <string name="ddns_auto_update_description">Memperbarui IP secara otomatis saat DDNS berubah</string>
     <string name="mode_disabled_template">Fitur tidak tersedia dalam mode %1$s.</string>
-    <string name="lockdown">Lockdown</string>
     <string name="donate_title">Donasi</string>
     <string name="crypto">Alamat mata uang kripto</string>
-    <string name="github_sponsors">GitHub Sponsors</string>
-    <string name="liberapay">Liberapay</string>
-    <string name="kofi">Ko-fi</string>
     <string name="donation_thanks_intro">Terima kasih telah mempertimbangkan untuk berdonasi ke proyek ini!</string>
     <string name="donation_dev_message">Sebagai satu-satunya pengembang, saya bekerja tanpa henti untuk menjadikan WG Tunnel klien WireGuard gratis dan sumber terbuka terbaik untuk Android, tetapi ini hanya mungkin dengan dukungan Anda.</string>
     <string name="donation_closing">Impian saya adalah bekerja penuh waktu untuk Anda pada proyek ini.</string>
@@ -263,7 +240,6 @@
     <string name="delete_active_message">Tidak dapat menghapus terowongan yang sedang aktif.</string>
     <string name="back">Kembali</string>
     <string name="configuration">Konfigurasi</string>
-    <string name="kernel_wireguard_unsupported">Kernel does not include WireGuard support (module missing or not built-in into kernel)!</string>
     <string name="about">Tentang</string>
     <string name="resources">Sumber daya</string>
     <string name="website">Situs web aplikasi</string>
@@ -280,13 +256,11 @@
     <string name="wifi_settings">Pengaturan Wi-Fi</string>
     <string name="backup_and_restore">Cadangkan dan pulihkan</string>
     <string name="mobile_data">Data seluler</string>
-    <string name="ethernet">Ethernet</string>
     <string name="unknown">Tidak dikenal</string>
     <string name="no_network">Tidak ada jaringan yang terhubung</string>
     <string name="active_network">Jaringan Aktif:</string>
     <string name="security_type">Keamanan:</string>
     <string name="network_name">Jaringan:</string>
-    <string name="wifi">Wi-Fi</string>
     <string name="text_too_large_for_qr">Teks terlalu besar untuk ditampilkan sebagai QR.</string>
     <string name="all_services_disabled">Terowongan otomatis dan terowongan harus dinonaktifkan untuk melakukan tindakan ini.</string>
     <string name="ddns_success_message">Titik akhir DNS dinamis berhasil diperbarui.</string>
@@ -299,15 +273,12 @@
     <string name="metered_tunnel">Terowongan terukur</string>
     <string name="lockdown_settings">Pengaturan lockdown</string>
     <string name="unavailable_in_mode">Tidak tersedia dalam mode saat ini</string>
-    <string name="dual_stack">Dual-stack</string>
     <string name="dual_stack_description">Terowongan harus mendukung IPv4 dan IPv6</string>
     <string name="save_changes">Simpan perubahan</string>
     <string name="restart_message_template">Menyimpan perubahan akan menyebabkan %1$s dimulai ulang, apakah Anda ingin melanjutkan?</string>
     <string name="_continue">Lanjutkan</string>
-    <string name="kill_switch">kill switch</string>
     <string name="translation">Terjemahan</string>
     <string name="help_translate">Bantu terjemahkan aplikasi</string>
-    <string name="info">Info</string>
     <string name="already_donated">Sudah berdonasi</string>
     <string name="already_donated_description">Menonaktifkan permintaan donasi di masa mendatang</string>
     <string name="donation_prompt_prefix">Terima kasih telah menggunakan WG Tunnel! Jika memungkinkan, harap pertimbangkan untuk</string>
@@ -315,164 +286,4 @@
     <string name="donation_prompt_suffix">agar tetap gratis dan terus berkembang.</string>
     <string name="cookie_packet_junk_size">Ukuran sampah paket cookie</string>
     <string name="transport_packet_junk_size">Ukuran sampah paket transport</string>
-    <string name="special_junk_packet">Special junk packet</string>
-    <!-- AmneziaWG 3.0 -->
-    <string name="copy_from">Copy from</string>
-    <string name="mode">Mode</string>
-    <string name="app_selection">App selection</string>
-    <string name="import_url_description">The URL must be secure and serve a .conf file.</string>
-    <string name="export_unsupported">Export is not supported on this device</string>
-    <string name="export_canceled">Export canceled</string>
-    <string name="proxy_channel_description">Notifications for proxy tunnels.</string>
-    <string name="initializing">Initializing…</string>
-    <string name="network">Network</string>
-    <string name="view_configuration">View configuration</string>
-    <string name="view_live_tunnel">View live tunnel</string>
-    <string name="toggle_sensitive_data_visibility">Toggle sensitive data visibility</string>
-    <string name="ipv6_settings">IPv6 settings</string>
-    <string name="automation">Automation</string>
-    <string name="peer_resolution">Peer Resolution</string>
-    <string name="resolution_method">Resolution method</string>
-    <string name="dot">DNS over TLS (DoT)</string>
-    <string name="plain_dns">Plain DNS (port 53)</string>
-    <string name="current_system_dns">Current system DNS</string>
-    <string name="dns_error_empty">Endpoint cannot be empty</string>
-    <string name="dns_error_invalid_url">Invalid URL format</string>
-    <string name="dns_error_invalid_scheme">DoH must use HTTPS</string>
-    <string name="dns_error_invalid_host">Host cannot be empty</string>
-    <string name="dns_error_invalid_port">Port must be between 1 and 65535</string>
-    <string name="dns_error_invalid_ip_or_host">Invalid IP address or hostname</string>
-    <string name="dns_endpoint_label">DNS server endpoint</string>
-    <string name="dns_endpoint_hint">IP, hostname, or DoH URL</string>
-    <string name="no_system_dns_information">No system DNS information</string>
-    <string name="private_dns_automatic">Private DNS: automatic</string>
-    <string name="private_dns_hostname">Private DNS: hostname (%1$s)</string>
-    <string name="system_dns_servers">Servers: %1$s</string>
-    <string name="no_system_dns_detected">No system DNS detected</string>
-    <!-- Tunnel states -->
-    <string name="tunnel_state_connected">Connected</string>
-    <string name="tunnel_state_resolving_dns">Resolving DNS</string>
-    <string name="tunnel_state_handshake_failure">Handshake failure</string>
-    <string name="tunnel_state_disconnected">Disconnected</string>
-    <string name="tunnel_state_starting">Starting</string>
-    <string name="status_template">status: %1$s</string>
-    <string name="uptime_template">uptime: %1$s</string>
-    <string name="peer_template">peer: %1$s</string>
-    <string name="handshake_template">handshake: %1$s</string>
-    <!-- Notification formatting -->
-    <string name="notification_tunnel_status_format">%1$s • %2$s</string>
-    <!-- Informational notifications -->
-    <string name="ipv4_fallback">IPv4 fallback</string>
-    <string name="ipv6_recovery">IPv6 recovery</string>
-    <string name="dynamic_dns_update">Dynamic DNS update</string>
-    <string name="notification_ipv4_fallback_message">
-        %1$s switched to IPv4 connectivity
-    </string>
-    <string name="notification_ipv6_recovery_message">
-        %1$s recovered IPv6 connectivity
-    </string>
-    <string name="notification_dynamic_dns_message">
-        %1$s updated after Dynamic DNS change
-    </string>
-    <!-- Errors -->
-    <string name="vpn_permission_required">
-        VPN permission required
-    </string>
-    <string name="included_apps">
-        %1$s apps included
-    </string>
-    <string name="excluded_apps">
-        %1$s apps excluded
-    </string>
-    <string name="error">Error</string>
-    <string name="tunnel_globals">Tunnel globals</string>
-    <string name="screen_recording_protection">Screen recording protection</string>
-    <string name="security">Security</string>
-    <string name="ready">Ready</string>
-    <string name="statistics">Statistics</string>
-    <string name="tunnel_statistics">Live tunnel statistics</string>
-    <string name="refresh_rate">Statistics refresh rate</string>
-    <string name="balanced">Balanced (3s)</string>
-    <string name="live">Real-time (1s)</string>
-    <string name="balance_saver">Battery Saver (10s)</string>
-    <string name="tunnel_scripting">Pre/Post script support</string>
-    <string name="name_error_empty">Tunnel name cannot be empty</string>
-    <string name="more_options">More options</string>
-    <string name="error_socks5_port_unavailable">SOCKS5 port %1$d is already in use.\nPlease choose a different port.</string>
-    <string name="error_http_port_unavailable">HTTP listener port %1$d is already in use.\nPlease choose a different port.</string>
-    <string name="errors">Errors</string>
-    <string name="events">Events</string>
-    <string name="errors_channel_description">A channel for application and tunnel errors</string>
-    <string name="events_channel_description">A channel for app events, like automation event</string>
-    <string name="app">App</string>
-    <string name="app_channel_description">A channel for general application notifications, like version updates</string>
-    <string name="stop_all">Stop all</string>
-    <string name="tunnel_state_establishing_connection">Establishing connection</string>
-    <string name="peer_endpoints">Peer endpoints</string>
-    <string name="prefer_ipv6">Prefer IPv6</string>
-    <string name="prefer_ipv6_desc">Use IPv6 endpoints when the network supports it</string>
-    <string name="fallback_to_ipv4">Fallback to IPv4</string>
-    <string name="fallback_to_ipv4_desc">Switch to IPv4 if IPv6 fails, without restarting the tunnel</string>
-    <string name="restore_ipv6">Restore IPv6</string>
-    <string name="restore_ipv6_desc">Switch back to IPv6 when an IPv6 network is detected.</string>
-    <string name="no_tunnels_yet">Nothing here… yet.</string>
-    <string name="getting_started_guidance">Use the + button to import a tunnel, or view the getting started guide.</string>
-    <string name="getting_started_guide_link">view the getting started guide</string>
-    <string name="metered_tunnel_desc">Mark this tunnel as metered so apps treat it like mobile data</string>
-    <string name="local_proxy">Local proxy</string>
-    <string name="local_proxy_desc">Expose the tunnel as a local SOCKS5/HTTP proxy</string>
-    <string name="lockdown_desc">Permanent kill switch that blocks all non-tunnel traffic</string>
-    <string name="vpn_desc">Standard system-wide VPN mode</string>
-    <string name="stop_on_no_internet_desc">Stop the tunnel when the device has no network connection</string>
-    <string name="start_on_boot_desc">Start auto-tunnel automatically on boot</string>
-    <string name="local_logging_desc">Local log storage with live viewer</string>
-    <string name="tunnel_globals_desc">Global configuration overrides for all tunnels</string>
-    <string name="tunnel_configuration">Tunnel configuration</string>
-    <string name="amnezia_configuration">Amnezia configuration</string>
-    <string name="screen_recording_protection_desc">Block screen recording on screens with sensitive data</string>
-    <string name="app_lock">App lock</string>
-    <string name="app_lock_desc">Require a PIN to access the app</string>
-    <string name="app_shortcuts">App shortcuts</string>
-    <string name="app_shortcuts_desc">Add quick actions to the app icon</string>
-    <string name="remote_control">Remote control</string>
-    <string name="remote_control_desc">Allow other apps (like Tasker) to control tunnels</string>
-    <string name="endpoint_template">endpoint: %1$s</string>
-    <string name="encrypted">Encrypted</string>
-    <string name="confirm_password">Confirm password</string>
-    <string name="passwords_do_not_match">Passwords do not match</string>
-    <string name="backup">Backup</string>
-    <string name="restore">Restore</string>
-    <string name="hide_password">Hide password</string>
-    <string name="restore_failed_wrong_password">Restore failed. Wrong password</string>
-    <string name="restore_failed_invalid_file">Restore failed. Select a valid backup file (.sqlite3 or .sqlite3.aes)</string>
-    <string name="error_invalid_config_url">This link returned an invalid config file. Make sure you are using a direct download link</string>
-    <string name="local_network_permission_title">Local Network Access Needed</string>
-    <string name="local_network_permission_intro">WG Tunnel needs access to your local network for several features to work properly.</string>
-    <string name="local_network_permission_issues_intro">Without this permission, you may experience issues with:</string>
-    <string name="local_network_permission_feature_tunnels">- Connection issues with split tunneling, LAN bypass, or servers hosted on your local network</string>
-    <string name="local_network_permission_feature_autotunnel">- Auto-tunneling and split tunneling features</string>
-    <string name="local_network_permission_feature_proxy">- Local proxy and bypass functionality</string>
-    <string name="local_network_permission_recommendation">Granting this permission is strongly recommended.</string>
-    <string name="local_network_permission_nearby_devices">Note: Android labels this permission as “nearby devices”.</string>
-    <string name="local_network_permission_denied">Local network access denied. Some features may not work properly</string>
-    <string name="stop_while_captive_portal">Stop tunnel on captive portal</string>
-    <string name="wifi_rules">Wi-Fi Rules</string>
-    <string name="add">Add</string>
-    <string name="bssid">BSSID</string>
-    <string name="wifi_detection_desc">Select how your network details are detected</string>
-    <string name="wildcard_desc">Enable advanced matching for networks using patterns</string>
-    <string name="wildcard_wifi_desc">Supports *, ?, and ! for blacklisting</string>
-    <string name="invalid_bssid_format">Invalid BSSID format</string>
-    <string name="trusted_bssid">Trusted BSSID</string>
-    <string name="wildcard_bssid_desc">Supports * and ! for blacklisting</string>
-    <string name="captive_portal_desc">Keeps tunnels disabled until captive portal is completed</string>
-    <string name="add_bssid">Add BSSID</string>
-    <string name="mapped_rules_count">Mapped rules: %d</string>
-    <string name="bssid_in_use">This BSSID or pattern is already in use</string>
-    <string name="network_name_in_use">This network name or pattern is already in use</string>
-    <string name="log_export_success">Logs exported successfully</string>
-    <string name="stored_logs_deleted">Stored logs deleted successfully</string>
-    <string name="seamless_recovery">Seamless tunnel recovery</string>
-    <string name="seamless_recovery_desc">Maintains protection while recovering from DDNS changes, network switches, and NAT issues</string>
-    <string name="now_in_template">Now in %1$s</string>
 </resources>

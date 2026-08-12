@@ -1,19 +1,30 @@
 #
 # Crowdin configuration
 #
+# Policy:
+# - English source lives only in values/strings.xml and fastlane/.../en-US/.
+# - Locale files must contain REAL translations only. Android falls back to
+#   values/strings.xml for missing keys — do not export English placeholders.
+# - In Crowdin project settings, disable any "export untranslated as source"
+#   / fill-with-English options so the dashboard shows true untranslated work.
+# - Fastlane: omit untranslated store listing files; Play falls back to en-US.
+#
 preserve_hierarchy: true
 
 files:
   - source: "/app/src/main/res/values/strings.xml"
     translation: "/app/src/main/res/values-%android_code%/%original_file_name%"
+    # Omit keys with no translation (do not write English into values-xx)
     skip_untranslated_strings: true
+    # Do not create locale files that would be empty / fully untranslated
+    skip_untranslated_files: true
     languages_mapping:
       android_code:
-        # Spanish
+        # Spanish → base values-es (not values-es-rES)
         es: es
         es-ES: es
 
-        # Indonesian
+        # Indonesian → values-in
         in: in
         id: in
 
@@ -29,6 +40,10 @@ files:
         # Portuguese
         pt-BR: pt-rBR
         pt-PT: pt-rPT
+
+        # Basque
+        eu: eu
+        eu-ES: eu
 
         cs: cs
         de: de
@@ -55,6 +70,7 @@ files:
 
   - source: "/fastlane/metadata/android/en-US/title.txt"
     translation: "/fastlane/metadata/android/%locale%/%original_file_name%"
+    skip_untranslated_files: true
     languages_mapping:
       locale:
         et-EE: et
@@ -66,10 +82,10 @@ files:
     excluded_target_languages:
       - en
       - en-US
-
 
   - source: "/fastlane/metadata/android/en-US/short_description.txt"
     translation: "/fastlane/metadata/android/%locale%/%original_file_name%"
+    skip_untranslated_files: true
     languages_mapping:
       locale:
         et-EE: et
@@ -81,10 +97,10 @@ files:
     excluded_target_languages:
       - en
       - en-US
-
 
   - source: "/fastlane/metadata/android/en-US/full_description.txt"
     translation: "/fastlane/metadata/android/%locale%/%original_file_name%"
+    skip_untranslated_files: true
     languages_mapping:
       locale:
         et-EE: et
@@ -96,7 +112,6 @@ files:
     excluded_target_languages:
       - en
       - en-US
-
 
 commit_message: "chore: update translations from Crowdin"
 append_commit_message: false

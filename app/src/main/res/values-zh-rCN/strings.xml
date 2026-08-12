@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">WG Tunnel</string>
     <string name="app_permission_title">隧道控制和自动隧道功能。</string>
     <string name="app_permission_description">隧道控制和自动隧道功能。</string>
     <string name="error_file_extension">文件类型不是 .conf 或 .zip</string>
@@ -22,7 +21,6 @@
     <string name="public_key">公钥</string>
     <string name="addresses">地址</string>
     <string name="dns_servers">DNS 服务器</string>
-    <string name="mtu">MTU</string>
     <string name="peer">节点</string>
     <string name="allowed_ips">允许的 IP</string>
     <string name="endpoint">端点</string>
@@ -33,7 +31,6 @@
     <string name="vpn_off">VPN 已关闭</string>
     <string name="create_import">手动创建</string>
     <string name="add_peer">添加节点</string>
-    <string name="interface_">Interface</string>
     <string name="rotate_keys">轮换秘钥</string>
     <string name="private_key">私钥</string>
     <string name="copy_public_key">复制公钥</string>
@@ -177,14 +174,11 @@
     <string name="licenses">许可证</string>
     <string name="update_check_unsupported">更新检查不支持此构建类型。</string>
     <string name="darker">颜色更深</string>
-    <string name="amoled">AMOLED</string>
     <string name="show_qr">显示二维码</string>
     <string name="done">完成</string>
     <string name="wifi_detection_method">Wi-Fi 检测方式</string>
     <string name="_default">默认</string>
     <string name="legacy">旧式</string>
-    <string name="root">Root</string>
-    <string name="shizuku">Shizuku</string>
     <string name="legacy_api_description">用 Android 12 废弃的 Wi-Fi 信息获取方法，此方法限制位置查询，但可能不会在新设备上可靠工作</string>
     <string name="use_shell_via_shizuku">通过 Shizuku 使用 Shell 来获得 Wi-Fi 信息，防止在非 root 设备上需要获得位置权限</string>
     <string name="use_android_recommended">基于 Android 版本，使用系统推荐的获取 Wi-Fi 信息的方法</string>
@@ -223,7 +217,6 @@
     <string name="password">密码</string>
     <string name="proxy_credentials">代理凭证</string>
     <string name="proxy_settings">代理设置</string>
-    <string name="vpn">VPN</string>
     <string name="android_integrations">Android 集成</string>
     <string name="show_password">显示密码</string>
     <string name="socks_5_bind_address">SOCKS5 绑定地址</string>
@@ -232,7 +225,6 @@
     <string name="dns_settings">DNS 设置</string>
     <string name="locked_down">锁定</string>
     <string name="system">系统</string>
-    <string name="doh">DNS over HTTPS (DoH)</string>
     <string name="comma_separated">英文逗号分隔</string>
     <string name="server_port">服务器：端口</string>
     <string name="new_tunnel">新隧道</string>
@@ -252,9 +244,6 @@
     <string name="lockdown">锁定</string>
     <string name="donate_title">捐赠</string>
     <string name="crypto">加密货币地址</string>
-    <string name="github_sponsors">GitHub Sponsors</string>
-    <string name="liberapay">Liberapay</string>
-    <string name="kofi">Ko-fi</string>
     <string name="donation_thanks_intro">感谢您考虑向本项目捐款！</string>
     <string name="donation_dev_message">作为唯一的开发者，我孜孜不倦地致力于将 WG Tunnel 打造成为 Android 平台上最优秀的免费开源 WireGuard 客户端，但这离不开您的支持。</string>
     <string name="donation_closing">能全职为您从事这个项目，是我的梦想。</string>
@@ -286,7 +275,6 @@
     <string name="active_network">活跃网络：</string>
     <string name="security_type">安全性：</string>
     <string name="network_name">网络：</string>
-    <string name="wifi">Wi-Fi</string>
     <string name="text_too_large_for_qr">文本过大无法显示二维码。</string>
     <string name="all_services_disabled">要执行此操作必须禁用自动隧道和隧道。</string>
     <string name="ddns_success_message">成功更新了动态 DNS 端点。</string>
@@ -333,7 +321,6 @@
     <string name="automation">自动化</string>
     <string name="peer_resolution">节点解析</string>
     <string name="resolution_method">解析方法</string>
-    <string name="dot">DNS over TLS (DoT)</string>
     <string name="plain_dns">明文 DNS（53 端口）</string>
     <string name="current_system_dns">当前系统 DNS</string>
     <string name="dns_error_empty">端点不能为空</string>
@@ -360,15 +347,11 @@
     <string name="peer_template">节点：%1$s</string>
     <string name="handshake_template">握手：%1$s</string>
     <!-- Notification formatting -->
-    <string name="notification_tunnel_status_format">%1$s • %2$s</string>
     <!-- Informational notifications -->
     <string name="ipv4_fallback">IPv4 回退</string>
     <string name="ipv6_recovery">恢复 IPv6</string>
     <string name="dynamic_dns_update">动态 DNS 更新</string>
     <string name="notification_ipv4_fallback_message">        %1$s 切换到了 IPv4 连接
-    </string>
-    <string name="notification_ipv6_recovery_message">
-        %1$s recovered IPv6 connectivity
     </string>
     <string name="notification_dynamic_dns_message">
         在动态 DNS 更改后更新了 %1$s
@@ -454,7 +437,6 @@
     <string name="stop_while_captive_portal">在强制门户页面停止隧道连接</string>
     <string name="wifi_rules">Wi-Fi 规则</string>
     <string name="add">添加</string>
-    <string name="bssid">BSSID</string>
     <string name="wifi_detection_desc">选择如何检测到您的网络详细信息</string>
     <string name="wildcard_desc">为使用正则的网络启用高级匹配功能</string>
     <string name="wildcard_wifi_desc">支持使用 *、? 和 ! 进行黑名单设置</string>

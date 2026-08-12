@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">WG Tunnel</string>
     <string name="app_permission_title">Ovládání tunelů a funkcí automatického tunelování</string>
     <string name="app_permission_description">Ovládat tunely a auto-tunel možnosti. </string>
     <string name="error_file_extension">or .zip</string>
@@ -22,8 +21,6 @@
     <string name="public_key">Veřejný klíč</string>
     <string name="addresses">Adresy</string>
     <string name="dns_servers">DNS servery</string>
-    <string name="mtu">MTU</string>
-    <string name="peer">Peer</string>
     <string name="allowed_ips">Povolené IP adresy</string>
     <string name="endpoint">Koncový bod</string>
     <string name="name">Název</string>
@@ -118,7 +115,6 @@
     <string name="bypass_lan_for_kill_switch">Obejít LAN pro kill switch</string>
     <string name="vpn_channel_description">Kanál pro oznámení o stavu VPN</string>
     <string name="auto_tunnel_channel_description">Kanál pro oznámení o stavu auto-tunelu</string>
-    <string name="stop">Stop</string>
     <string name="splt_tunneling">Dělené tunelování</string>
     <string name="show_scripts">Zobrazit skripty</string>
     <string name="pre_up">Před aktivací</string>
@@ -156,7 +152,6 @@
     <string name="flavor_template">Varianta: %1$s</string>
     <string name="root_required_template">%1$s (vyžaduje root)</string>
     <string name="recommended_template">%1$s (doporučeno)</string>
-    <string name="hint_template">(%1$s)</string>
     <string name="config_error">Neplatná konfigurace</string>
     <string name="dns_resolve_error">Překlad DNS selhal</string>
     <string name="auth_error">Neautorizováno</string>
@@ -177,14 +172,10 @@
     <string name="licenses">Licence</string>
     <string name="update_check_unsupported">Kontrola aktualizací není u tohoto typu sestavení podporována.</string>
     <string name="darker">Tmavší</string>
-    <string name="amoled">AMOLED</string>
     <string name="show_qr">Zobrazit QR kód</string>
     <string name="done">Hotovo</string>
     <string name="wifi_detection_method">Metoda detekce Wi-Fi</string>
     <string name="_default">Výchozí</string>
-    <string name="legacy">Legacy</string>
-    <string name="root">Root</string>
-    <string name="shizuku">Shizuku</string>
     <string name="legacy_api_description">Použije zastarou metodu systému Android 12 pro získání informací o síti Wi-Fi, která omezuje dotazy na polohu, ale na novějších zařízeních nemusí spolehlivě fungovat</string>
     <string name="use_shell_via_shizuku">Použít shell přes Shizuku k získání informací o Wi-Fi, čímž se zabrání potřebě oprávnění k poloze na zařízeních, která nejsou rootnutá</string>
     <string name="use_android_recommended">Použije metodu doporučenou systémem Android pro získání informací o síti Wi-Fi v závislosti na verzi systému Android</string>
@@ -203,7 +194,6 @@
     <string name="open_settings">Otevřít nastavení</string>
     <string name="location_permissions_missing">Chybí oprávnění k přístupu k poloze</string>
     <string name="fix">Opravit</string>
-    <string name="start">Start</string>
     <string name="auto_tunnel_running">Automatický tunel je spuštěn</string>
     <string name="auto_tunnel_not_running">Automatický tunel není spuštěn</string>
     <string name="tunnel_monitoring">Monitorování tunelu</string>
@@ -214,16 +204,12 @@
     <string name="backup_failed">Nepodařilo se vytvořit zálohu.</string>
     <string name="backup_application">Zálohovat data aplikace</string>
     <string name="restore_application">Obnovit ze zálohy</string>
-    <string name="proxy">Proxy</string>
     <string name="backend_mode">Režim aplikace</string>
     <string name="selected">Vybrané</string>
-    <string name="socks_5_proxy">SOCKS5 proxy</string>
-    <string name="http_proxy">HTTP proxy</string>
     <string name="username">Uživatelské jméno</string>
     <string name="password">Heslo</string>
     <string name="proxy_credentials">Přihlašovací údaje pro proxy</string>
     <string name="proxy_settings">Nastavení proxy</string>
-    <string name="vpn">VPN</string>
     <string name="android_integrations">Integrace s Androidem</string>
     <string name="show_password">Zobrazit heslo</string>
     <string name="socks_5_bind_address">SOCKS5 bind adresa</string>
@@ -234,14 +220,12 @@
     <string name="system">Systém</string>
     <string name="doh">DNS přes HTTPS (DoH)</string>
     <string name="comma_separated">Oddělené čárkami</string>
-    <string name="server_port">Server:Port</string>
     <string name="new_tunnel">Nový tunel</string>
     <string name="read_failed">Nepodařilo se přečíst data.</string>
     <string name="config_error_template">Špatná konfigurace. %1$s v umístění: %2$s.</string>
     <string name="ports_must_differ">Selhalo. Proxy servery musí mít různé porty.</string>
     <string name="password_no_spaces">Heslo nesmí obsahovat mezery.</string>
     <string name="tunnel_name_taken">Název tunelu je již použit.</string>
-    <string name="range_hint">(%1$d–%2$d)</string>
     <string name="mimic_quic">Napodobit QUIC</string>
     <string name="mimic_dns">Napodobit DNS</string>
     <string name="mimic_sip">Napodobit SIP</string>
@@ -253,8 +237,6 @@
     <string name="donate_title">Darovat</string>
     <string name="crypto">Adresy kryptoměn</string>
     <string name="github_sponsors">GitHub Sponzoři</string>
-    <string name="liberapay">Liberapay</string>
-    <string name="kofi">Ko-fi</string>
     <string name="donation_thanks_intro">Děkujeme, že uvažujete o podpoře tohoto projektu!</string>
     <string name="donation_dev_message">Jako jediný vývojář neúnavně pracuji na tom, aby se WG Tunnel stal nejlepším bezplatným a open-source WireGuard klientem pro Android, ale to je možné pouze s vaší podporou.</string>
     <string name="donation_closing">Mým snem je pracovat pro vás na tomto projektu na plný úvazek.</string>
@@ -280,13 +262,11 @@
     <string name="wifi_settings">Nastavení Wi-Fi</string>
     <string name="backup_and_restore">Zálohování a obnovení</string>
     <string name="mobile_data">Mobilní data</string>
-    <string name="ethernet">Ethernet</string>
     <string name="unknown">Neznámé</string>
     <string name="no_network">Žádné připojení k síti</string>
     <string name="active_network">Aktivní síť:</string>
     <string name="security_type">Zabezpečení:</string>
     <string name="network_name">Síť:</string>
-    <string name="wifi">Wi-Fi</string>
     <string name="text_too_large_for_qr">Text je příliš velký na zobrazení QR kódu.</string>
     <string name="all_services_disabled">K provedení této akce je nutné deaktivovat automatické tunelování a tunely.</string>
     <string name="ddns_success_message">Dynamický koncový bod DNS byl úspěšně aktualizován.</string>
@@ -299,12 +279,10 @@
     <string name="metered_tunnel">Měřený tunel</string>
     <string name="lockdown_settings">Nastavení uzamčení</string>
     <string name="unavailable_in_mode">V aktuálním režimu nedostupné</string>
-    <string name="dual_stack">Dual-stack</string>
     <string name="dual_stack_description">Tunely musí podporovat IPv4 a IPv6</string>
     <string name="save_changes">Uložit změny</string>
     <string name="restart_message_template">Uložení změn způsobí restart %1$s, chcete pokračovat?</string>
     <string name="_continue">Pokračovat</string>
-    <string name="kill_switch">kill switch</string>
     <string name="translation">Překlad</string>
     <string name="help_translate">Pomozte s překladem aplikace</string>
     <string name="info">Informace</string>
@@ -315,10 +293,8 @@
     <string name="donation_prompt_suffix">aby zůstal bezplatný a mohl se dále zlepšovat.</string>
     <string name="cookie_packet_junk_size">Velikost falešného cookie paketu </string>
     <string name="transport_packet_junk_size">Velikost falešného transportního paketu</string>
-    <string name="special_junk_packet">Special junk packet</string>
     <!-- AmneziaWG 3.0 -->
     <string name="copy_from">Zkopírovat z</string>
-    <string name="mode">Mode</string>
     <string name="app_selection">Výběr aplikací</string>
     <string name="import_url_description">URL musí být zabezpečené a poskytovat .conf soubor. </string>
     <string name="export_unsupported">Export není na tomto zařízení podporován </string>
@@ -357,12 +333,8 @@
     <string name="tunnel_state_starting">Spouštění </string>
     <string name="status_template">Stav: %1$s</string>
     <string name="uptime_template">Doba provozu:</string>
-    <string name="peer_template">peer: %1$s</string>
-    <string name="handshake_template">handshake: %1$s</string>
     <!-- Notification formatting -->
-    <string name="notification_tunnel_status_format">%1$s • %2$s</string>
     <!-- Informational notifications -->
-    <string name="ipv4_fallback">IPv4 fallback</string>
     <string name="ipv6_recovery">Obnovení IPv6 </string>
     <string name="dynamic_dns_update">Dynamická aktualizace DNS </string>
     <string name="notification_ipv4_fallback_message">Tunel %1$s se přepnul na IPv4 připojení</string>
@@ -399,7 +371,6 @@
     <string name="peer_endpoints"></string>
     <string name="prefer_ipv6"></string>
     <string name="prefer_ipv6_desc">Použít IPv6 endpoints pokud to síť podporuje</string>
-    <string name="fallback_to_ipv4">Fallback to IPv4</string>
     <string name="fallback_to_ipv4_desc"></string>
     <string name="restore_ipv6">Obnovit IPv6</string>
     <string name="restore_ipv6_desc"></string>
@@ -424,7 +395,6 @@
     <string name="app_shortcuts_desc"></string>
     <string name="remote_control"></string>
     <string name="remote_control_desc">Povolit ostatním aplikacím (jako Tasker) ovládat tunely</string>
-    <string name="endpoint_template">endpoint: %1$s</string>
     <string name="encrypted">Zašifrováno</string>
     <string name="confirm_password">Potvrď heslo</string>
     <string name="passwords_do_not_match">Hesla se neshodují</string>
@@ -446,7 +416,6 @@
     <string name="stop_while_captive_portal"></string>
     <string name="wifi_rules">Pravidla Wi-Fi </string>
     <string name="add">Přidat </string>
-    <string name="bssid">BSSID</string>
     <string name="wifi_detection_desc"></string>
     <string name="wildcard_desc"></string>
     <string name="wildcard_wifi_desc"></string>

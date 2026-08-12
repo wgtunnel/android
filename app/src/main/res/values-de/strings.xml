@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">WG Tunnel</string>
     <string name="app_permission_title">Steuere Tunnel und Auto-Tunnel Funktionen.</string>
     <string name="app_permission_description">Steuere Tunnel und Auto-Tunnel Funktionen.</string>
     <string name="error_file_extension">Datei ist keine .conf oder .zip</string>
@@ -22,11 +21,9 @@
     <string name="public_key">Öffentlicher Schlüssel</string>
     <string name="addresses">Adressen</string>
     <string name="dns_servers">DNS-Server</string>
-    <string name="mtu">MTU</string>
     <string name="peer">Gegenstelle</string>
     <string name="allowed_ips">Erlaubte IPs</string>
     <string name="endpoint">Endpunkt</string>
-    <string name="name">Name</string>
     <string name="always_on_vpn_support">Always-On VPN erlauben</string>
     <string name="location_services_not_detected">Standortdienste nicht erkannt</string>
     <string name="vpn_on">VPN an</string>
@@ -40,7 +37,6 @@
     <string name="base64_key">base64-Schlüssel</string>
     <string name="listen_port">Eingehender Port</string>
     <string name="random">(zufällig)</string>
-    <string name="optional">(optional)</string>
     <string name="preshared_key">Geteilter Schlüssel</string>
     <string name="seconds">Sekunden</string>
     <string name="persistent_keepalive">Dauerhaftes Keepalive</string>
@@ -118,7 +114,6 @@
     <string name="bypass_lan_for_kill_switch">LAN umgehen für Notschalter</string>
     <string name="vpn_channel_description">Ein Kanal für VPN-Statusbenachrichtigungen</string>
     <string name="auto_tunnel_channel_description">Ein Kanal für Auto-Tunnel Statusbenachrichtigungen</string>
-    <string name="stop">Stop</string>
     <string name="splt_tunneling">Tunneling aufteilen</string>
     <string name="show_scripts">Skripte anzeigen</string>
     <string name="pre_up">Vor Aktivierung</string>
@@ -151,19 +146,16 @@
     <string name="delete">Löschen</string>
     <string name="camera_permission_required">Kameraberechtigung erforderlich</string>
     <string name="export_failed">Export fehlgeschlagen</string>
-    <string name="version_template">Version: %1$s</string>
     <string name="current_template">Aktuell: %1$s</string>
     <string name="flavor_template">Variante: %1$s</string>
     <string name="root_required_template">%1$s (root benötigt)</string>
     <string name="recommended_template">%1$s (empfohlen)</string>
-    <string name="hint_template">(%1$s)</string>
     <string name="config_error">Ungültige Konfiguration</string>
     <string name="dns_resolve_error">DNS-Auflösung fehlgeschlagen</string>
     <string name="auth_error">Nicht autorisiert</string>
     <string name="service_running_error">Dienst läuft nicht</string>
     <string name="select_all">Alles auswählen</string>
     <string name="export_success">Export erfolgreich</string>
-    <string name="download">Download</string>
     <string name="check_for_update">Auf Update prüfen</string>
     <string name="update_check_failed">Updateprüfung fehlgeschlagen.</string>
     <string name="checking_for_update">Überpüfe auf Updates</string>
@@ -177,14 +169,11 @@
     <string name="licenses">Lizenzen</string>
     <string name="update_check_unsupported">Updateprüfung wird bei diesem Build-Typ nicht unterstützt.</string>
     <string name="darker">Dunkler</string>
-    <string name="amoled">AMOLED</string>
     <string name="show_qr">QR anzeigen</string>
     <string name="done">Erledigt</string>
     <string name="wifi_detection_method">Wi-Fi-Erkennungsmethode</string>
     <string name="_default">Standard</string>
     <string name="legacy">Veraltet</string>
-    <string name="root">Root</string>
-    <string name="shizuku">Shizuku</string>
     <string name="legacy_api_description">Eine veraltete Android 12 Methode zum Abrufen von Wi-Fi-Informationen verwenden, die Standortabfragen einschränkt, aber auf neueren Geräten möglicherweise nicht zuverlässig funktioniert</string>
     <string name="use_shell_via_shizuku">Shell über Shizuku zum Abrufen von Wi-Fi-Informationen verwenden, wodurch die Notwendigkeit einer Standortgenehmigung auf nichtgerooteten Geräten vermieden wird</string>
     <string name="use_android_recommended">Von Android empfohlene Methode zum Abrufen von Wi-Fi-Informationen verwenden, je nach Android-Version</string>
@@ -203,7 +192,6 @@
     <string name="open_settings">Einstellungen öffnen</string>
     <string name="location_permissions_missing">Standortberechtigungen fehlen</string>
     <string name="fix">Beheben</string>
-    <string name="start">Start</string>
     <string name="auto_tunnel_running">Auto-Tunnel läuft</string>
     <string name="auto_tunnel_not_running">Auto-Tunnel läuft nicht</string>
     <string name="tunnel_monitoring">Tunnelüberwachung</string>
@@ -214,16 +202,12 @@
     <string name="backup_failed">Backup konnte nicht erstellt werden.</string>
     <string name="backup_application">Appdaten sichern</string>
     <string name="restore_application">Aus Backup wiederherstellen</string>
-    <string name="proxy">Proxy</string>
     <string name="backend_mode">App-Modus</string>
     <string name="selected">Ausgewählt</string>
-    <string name="socks_5_proxy">SOCKS5 proxy</string>
-    <string name="http_proxy">HTTP proxy</string>
     <string name="username">Benutzername</string>
     <string name="password">Passwort</string>
     <string name="proxy_credentials">Proxy-Anmeldeinformationen</string>
     <string name="proxy_settings">Proxy-Einstellungen</string>
-    <string name="vpn">VPN</string>
     <string name="android_integrations">Android-Integrationen</string>
     <string name="show_password">Passwort anzeigen</string>
     <string name="socks_5_bind_address">SOCKS5-Bindadresse</string>
@@ -231,20 +215,14 @@
     <string name="defaults_to_template">(Standardmäßig %1$s)</string>
     <string name="dns_settings">DNS-Einstellungen</string>
     <string name="locked_down">Abgesperrt</string>
-    <string name="system">System</string>
     <string name="doh">DNS über HTTPS (DoH)</string>
     <string name="comma_separated">Komma getrennt</string>
-    <string name="server_port">Server:Port</string>
     <string name="new_tunnel">Neuer Tunnel</string>
     <string name="read_failed">Daten konnten nicht gelesen werden.</string>
     <string name="config_error_template">Schlechte Konfiguration. %1$s am Standort: %2$s.</string>
     <string name="ports_must_differ">Fehlgeschlagen. Proxys müssen unterschiedliche Ports haben.</string>
     <string name="password_no_spaces">Passwort kann keine Leerzeichen beinhalten.</string>
     <string name="tunnel_name_taken">Tunnelname bereits in Gebrauch.</string>
-    <string name="range_hint">(%1$d–%2$d)</string>
-    <string name="mimic_quic">Mimic QUIC</string>
-    <string name="mimic_dns">Mimic DNS</string>
-    <string name="mimic_sip">Mimic SIP</string>
     <string name="active_tunnel_update_failed">Update des laufenden Tunnels fehlgeschlagen</string>
     <string name="ddns_auto_update">Dynamisches DNS Auto-Update</string>
     <string name="ddns_auto_update_description">Aktualisiert IP bei DDNS Änderungen</string>
@@ -253,8 +231,6 @@
     <string name="donate_title">Spenden</string>
     <string name="crypto">Kryptowährungsadressen</string>
     <string name="github_sponsors">GitHub-Sponsoren</string>
-    <string name="liberapay">Liberapay</string>
-    <string name="kofi">Ko-fi</string>
     <string name="donation_thanks_intro">Vielen Dank, dass du eine Spende für dieses Projekt in Erwägung ziehst!</string>
     <string name="donation_dev_message">Als alleiniger Entwickler arbeite ich unermüdlich daran, WG Tunnel zum besten kostenlosen Open-Source-WireGuard-Client für Android zu machen, aber das ist nur mit deiner Unterstützung möglich.</string>
     <string name="donation_closing">Es ist mein Traum, Vollzeit für dich an diesem Projekt zu arbeiten.</string>
@@ -280,7 +256,6 @@
     <string name="wifi_settings">WLAN Einstellungen</string>
     <string name="backup_and_restore">Sichern und Wiederherstellen</string>
     <string name="mobile_data">Mobile Daten</string>
-    <string name="ethernet">Ethernet</string>
     <string name="unknown">Unbekannt</string>
     <string name="no_network">Keine Netzwerkverbindung</string>
     <string name="active_network">Aktives Netzwerk:</string>
@@ -299,7 +274,6 @@
     <string name="metered_tunnel">Getakteter Tunnel</string>
     <string name="lockdown_settings">Sperreinstellungen</string>
     <string name="unavailable_in_mode">Im aktuellen Modus nicht verfügbar</string>
-    <string name="dual_stack">Dual-stack</string>
     <string name="dual_stack_description">Tunnel müssen IPv4 und IPv6 unterstützen</string>
     <string name="save_changes">Änderungen speichern</string>
     <string name="restart_message_template">Durch das Speichern der Änderungen wird %1$s neu gestartet. Möchtest du fortfahren?</string>
@@ -307,7 +281,6 @@
     <string name="kill_switch">Notschalter</string>
     <string name="translation">Übersetzung</string>
     <string name="help_translate">Hilf mit, die App zu übersetzen</string>
-    <string name="info">Info</string>
     <string name="already_donated">Bereits gespendet</string>
     <string name="already_donated_description">Deaktiviert zukünftige Spendenaufforderungen</string>
     <string name="donation_prompt_prefix">Vielen Dank für die Nutzung von WG Tunnel! Wenn möglich, ziehe bitte</string>
@@ -360,7 +333,6 @@
     <string name="peer_template">Peer: %1$s</string>
     <string name="handshake_template">Handshake: %1$s</string>
     <!-- Notification formatting -->
-    <string name="notification_tunnel_status_format">%1$s • %2$s</string>
     <!-- Informational notifications -->
     <string name="ipv4_fallback">IPv4 Fallback</string>
     <string name="ipv6_recovery">IPv6 Wiederherstellung</string>
@@ -440,7 +412,6 @@
     <string name="encrypted">Verschlüsselt</string>
     <string name="confirm_password">Passwort bestätigen</string>
     <string name="passwords_do_not_match">Passwörter stimmen nicht überein</string>
-    <string name="backup">Backup</string>
     <string name="restore">Wiederherstellung</string>
     <string name="hide_password">Passwort ausblenden</string>
     <string name="restore_failed_wrong_password">Wiederherstellung fehlgeschlagen. Falsches Passwort</string>
@@ -458,7 +429,6 @@
     <string name="stop_while_captive_portal">Tunnel bei Captive Portal stoppen</string>
     <string name="wifi_rules">WLAN-Regeln</string>
     <string name="add">Hinzufügen</string>
-    <string name="bssid">BSSID</string>
     <string name="wifi_detection_desc">Wähle, wie die Netzwerkdaten erkannt werden</string>
     <string name="wildcard_desc">Aktiviere erweiterte Suche nach Netzwerken mittels Suchmustern</string>
     <string name="wildcard_wifi_desc">Unterstützt *, ?, und ! zum Ausschließen</string>
@@ -472,9 +442,6 @@
     <string name="network_name_in_use">Dieser Netzwerkname oder dieses Muster wird bereits verwendet</string>
     <string name="log_export_success">Logs erfolgreich exportiert</string>
     <string name="stored_logs_deleted">Gespeicherte Logs erfolgreich gelöscht</string>
-    <string name="seamless_recovery">Seamless tunnel recovery</string>
-    <string name="seamless_recovery_desc">Maintains protection while recovering from DDNS changes, network switches, and NAT issues</string>
-    <string name="now_in_template">Now in %1$s</string>
     <string name="snackbar_seamless_recovery_attempt">Es wurde ein Verbindungsproblem festgestellt. Wiederherstellung läuft </string>
     <string name="seamless_recovery_attempt_title">Nahtlose Wiederherstellung</string>
     <string name="seamless_recovery_attempt_message">Es wurde ein Verbindungsproblem festgestellt. Es wird versucht, das Problem automatisch zu beheben.</string>
@@ -488,7 +455,6 @@
     <string name="system_dns_only_desc">Alle DNS-Anfragen werden an die System-DNS-Server gesendet und umgehen den Tunnel</string>
     <string name="protocol">Protokoll</string>
     <string name="tunnel_dns_mode">Tunnel DNS-Modus</string>
-    <string name="tunnel_dns">Tunnel DNS</string>
     <string name="use_tunnel_dns_servers">Tunnel DNS-Server verwenden</string>
     <string name="error_config_missing_dns">Für Tunnel %1$s fehlen DNS-Server, die für Ihre aktuelle Konfiguration erforderlich sind</string>
 </resources>
