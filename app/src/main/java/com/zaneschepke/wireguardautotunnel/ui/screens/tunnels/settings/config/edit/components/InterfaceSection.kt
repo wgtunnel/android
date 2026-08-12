@@ -19,9 +19,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
+import com.wgtunnel.parser.crypto.Key
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.domain.enums.MimicMode
-import com.zaneschepke.wireguardautotunnel.parser.crypto.Key
 import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
 import com.zaneschepke.wireguardautotunnel.ui.common.label.GroupLabel
 import com.zaneschepke.wireguardautotunnel.ui.common.text.DescriptionText

@@ -8,7 +8,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.zaneschepke.tunnel.state.ActiveTunnel
+import com.wgtunnel.backend.state.ActiveTunnel
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.delay
 

@@ -17,19 +17,19 @@ import java.time.Instant
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
-import org.orbitmvi.orbit.ContainerHost
-import org.orbitmvi.orbit.viewmodel.container
+import org.orbitmvi.orbit.OrbitContainerHost
+import org.orbitmvi.orbit.viewmodel.orbitContainer
 import timber.log.Timber
 
 class LoggerViewModel(
     private val logReader: LogReader,
     private val fileUtils: FileUtils,
     private val globalEffectRepository: GlobalEffectRepository,
-) : ContainerHost<LoggerUiState, Nothing>, ViewModel() {
+) : OrbitContainerHost<LoggerUiState, LoggerUiState, Nothing>, ViewModel() {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override val container =
-        container<LoggerUiState, Nothing>(
+        orbitContainer<LoggerUiState, Nothing>(
             LoggerUiState(),
             buildSettings = { repeatOnSubscribedStopTimeout = 5000L },
         ) {

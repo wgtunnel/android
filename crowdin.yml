@@ -55,6 +55,14 @@ files:
 
   - source: "/fastlane/metadata/android/en-US/title.txt"
     translation: "/fastlane/metadata/android/%locale%/%original_file_name%"
+    languages_mapping:
+      locale:
+        et-EE: et
+        id-ID: id
+        sk-SK: sk
+        uk-UA: uk
+        ur-PK: ur
+        vi-VN: vi
     excluded_target_languages:
       - en
       - en-US
@@ -62,6 +70,14 @@ files:
 
   - source: "/fastlane/metadata/android/en-US/short_description.txt"
     translation: "/fastlane/metadata/android/%locale%/%original_file_name%"
+    languages_mapping:
+      locale:
+        et-EE: et
+        id-ID: id
+        sk-SK: sk
+        uk-UA: uk
+        ur-PK: ur
+        vi-VN: vi
     excluded_target_languages:
       - en
       - en-US
@@ -69,6 +85,14 @@ files:
 
   - source: "/fastlane/metadata/android/en-US/full_description.txt"
     translation: "/fastlane/metadata/android/%locale%/%original_file_name%"
+    languages_mapping:
+      locale:
+        et-EE: et
+        id-ID: id
+        sk-SK: sk
+        uk-UA: uk
+        ur-PK: ur
+        vi-VN: vi
     excluded_target_languages:
       - en
       - en-US

@@ -1,11 +1,11 @@
 package com.zaneschepke.wireguardautotunnel.domain.model
 
-import com.zaneschepke.tunnel.Tunnel
+import com.wgtunnel.backend.Tunnel
+import com.wgtunnel.parser.Config
+import com.wgtunnel.parser.InterfaceSection
+import com.wgtunnel.parser.PeerSection
+import com.wgtunnel.parser.crypto.Key
 import com.zaneschepke.wireguardautotunnel.data.entity.TunnelConfig.Companion.GLOBAL_CONFIG_NAME
-import com.zaneschepke.wireguardautotunnel.parser.Config
-import com.zaneschepke.wireguardautotunnel.parser.InterfaceSection
-import com.zaneschepke.wireguardautotunnel.parser.PeerSection
-import com.zaneschepke.wireguardautotunnel.parser.crypto.Key
 import com.zaneschepke.wireguardautotunnel.ui.state.TunnelSummary
 import com.zaneschepke.wireguardautotunnel.util.extensions.defaultName
 
@@ -23,6 +23,7 @@ data class TunnelConfig(
     val isMetered: Boolean = false,
     val ipv6RestoreEnabled: Boolean = false,
     val tunnelBSSIDs: List<String> = emptyList(),
+    val isDDNSTunnel: Boolean = false,
 ) {
 
     fun toSummary() = TunnelSummary(id = id, name = name)
@@ -71,7 +72,14 @@ data class TunnelConfig(
                         )
                     )
                 }
-                if (generalSettings.seamlessRecoveryEnabled) add(Tunnel.Feature.SeamlessRecovery)
+                add(
+                    Tunnel.Feature.Recovery(
+                        seamlessRecovery = generalSettings.seamlessRecoveryEnabled,
+                        dynamicDnsRecovery = config.isDDNSTunnel,
+                        ipv4Fallback = config.isIpv6Preferred,
+                        ipv6Recovery = config.ipv6RestoreEnabled,
+                    )
+                )
             }
 
         override fun updateState(state: Tunnel.State) = Unit
@@ -79,11 +87,10 @@ data class TunnelConfig(
 
     companion object {
 
-        fun tunnelConfFromQuick(amQuick: String, name: String? = null): TunnelConfig {
-            val config = Config.parseQuickString(amQuick)
+        fun fromConfig(config: Config, nameIfMissing: String? = null): TunnelConfig {
             return TunnelConfig(
-                name = config.name ?: name ?: config.defaultName(),
-                quickConfig = amQuick,
+                name = config.name ?: nameIfMissing ?: config.defaultName(),
+                quickConfig = config.asQuickString(),
             )
         }
 
@@ -105,43 +112,5 @@ data class TunnelConfig(
                 )
             return TunnelConfig(name = GLOBAL_CONFIG_NAME, quickConfig = config.asQuickString())
         }
-
-        private const val IPV6_ALL_NETWORKS = "::/0"
-        private const val IPV4_ALL_NETWORKS = "0.0.0.0/0"
-        val ALL_IPS = listOf(IPV4_ALL_NETWORKS, IPV6_ALL_NETWORKS)
-        val IPV4_PUBLIC_NETWORKS =
-            setOf(
-                "0.0.0.0/5",
-                "8.0.0.0/7",
-                "11.0.0.0/8",
-                "12.0.0.0/6",
-                "16.0.0.0/4",
-                "32.0.0.0/3",
-                "64.0.0.0/2",
-                "128.0.0.0/3",
-                "160.0.0.0/5",
-                "168.0.0.0/6",
-                "172.0.0.0/12",
-                "172.32.0.0/11",
-                "172.64.0.0/10",
-                "172.128.0.0/9",
-                "173.0.0.0/8",
-                "174.0.0.0/7",
-                "176.0.0.0/4",
-                "192.0.0.0/9",
-                "192.128.0.0/11",
-                "192.160.0.0/13",
-                "192.169.0.0/16",
-                "192.170.0.0/15",
-                "192.172.0.0/14",
-                "192.176.0.0/12",
-                "192.192.0.0/10",
-                "193.0.0.0/8",
-                "194.0.0.0/7",
-                "196.0.0.0/6",
-                "200.0.0.0/5",
-                "208.0.0.0/4",
-            )
-        val LAN_BYPASS_ALLOWED_IPS = setOf(IPV6_ALL_NETWORKS) + IPV4_PUBLIC_NETWORKS
     }
 }

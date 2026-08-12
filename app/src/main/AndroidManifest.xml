@@ -5,6 +5,11 @@
 	<uses-permission android:name="android.permission.INTERNET" />
 	<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
+    <!-- Legacy storage only needed on API ≤ 28, especially for Android TV -->
+    <uses-permission
+            android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+            android:maxSdkVersion="28" />
+
     <!--for split tunneling-->
     <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
         tools:ignore="QueryAllPackagesPermission" />
@@ -38,10 +43,7 @@
     <uses-feature
         android:name="android.hardware.screen.portrait"
         android:required="false" />
-	<uses-feature
-		android:name="android.hardware.gamepad"
-		android:required="false"/>
-
+    
 	<uses-feature android:name="android.hardware.wifi"
 		android:required="false"/>
     <application

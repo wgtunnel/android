@@ -30,6 +30,8 @@ interface TunnelNotificationService {
 
     fun showHttpPortUnavailable(port: Int, tunnelName: String)
 
+    fun showConfigMissingDns(tunnelName: String)
+
     fun showRootShellAccess()
 
     fun showError(message: String)

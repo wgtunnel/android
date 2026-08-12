@@ -158,7 +158,7 @@ fun buildLibsWithAdditionalLibraries(context: Context): Libs {
         listOf(
             Library(
                 uniqueId = "com.github.T8RIN.QuickieExtended:quickie-foss",
-                artifactVersion = "1.18.1",
+                artifactVersion = "1.19.0",
                 name = "QuickieFoss",
                 description = "Camera QR code scanner",
                 website = "https://github.com/T8RIN/QuickieExtended",

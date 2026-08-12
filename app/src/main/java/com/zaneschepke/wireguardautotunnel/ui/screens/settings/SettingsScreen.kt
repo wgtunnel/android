@@ -1,6 +1,8 @@
 package com.zaneschepke.wireguardautotunnel.ui.screens.settings
 
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -23,7 +25,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -45,7 +47,7 @@ import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelMode
 import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
-import com.zaneschepke.wireguardautotunnel.ui.common.button.SheetButtonWithDivider
+import com.zaneschepke.wireguardautotunnel.ui.common.button.PreferenceTrailing
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SwitchWithDivider
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ThemedSwitch
@@ -97,11 +99,6 @@ fun SettingsScreen(
 
     val appMode = uiState.settings.tunnelMode
     val dnsEnabled by rememberSaveable(appMode) { mutableStateOf(true) }
-
-    val showModeDivider by
-        remember(appMode) {
-            derivedStateOf { appMode == TunnelMode.PROXY || appMode == TunnelMode.LOCK_DOWN }
-        }
 
     fun performBackupRestore(action: () -> Unit) {
         showBackupSheet = false
@@ -171,7 +168,24 @@ fun SettingsScreen(
                     Icon(ImageVector.vectorResource(R.drawable.sdk), contentDescription = null)
                 },
                 trailing = { modifier ->
-                    SheetButtonWithDivider(showModeDivider, modifier) { showAppModeSheet = true }
+                    val expand =
+                        @Composable {
+                            Box(modifier = Modifier.pointerInput(Unit) { detectTapGestures {} }) {
+                                IconButton(onClick = { showAppModeSheet = true }, modifier) {
+                                    Icon(
+                                        Icons.Outlined.ExpandMore,
+                                        contentDescription = stringResource(R.string.select),
+                                    )
+                                }
+                            }
+                        }
+                    when (uiState.settings.tunnelMode) {
+                        TunnelMode.VPN -> expand()
+                        TunnelMode.PROXY,
+                        TunnelMode.LOCK_DOWN -> {
+                            PreferenceTrailing { expand() }
+                        }
+                    }
                 },
                 title = stringResource(R.string.backend_mode),
                 description = {

@@ -1,7 +1,7 @@
 package com.zaneschepke.wireguardautotunnel.ui.state
 
-import com.zaneschepke.wireguardautotunnel.parser.Config
-import com.zaneschepke.wireguardautotunnel.parser.InterfaceSection
+import com.wgtunnel.parser.Config
+import com.wgtunnel.parser.InterfaceSection
 import com.zaneschepke.wireguardautotunnel.util.extensions.toTrimmedList
 
 data class EditableConfig(
@@ -29,8 +29,9 @@ data class EditableConfig(
                 jMax = `interface`.junkPacketMaxSize.toIntOrNull(),
                 s1 = `interface`.initPacketJunkSize.toIntOrNull(),
                 s2 = `interface`.responsePacketJunkSize.toIntOrNull(),
-                s3 = `interface`.transportPacketJunkSize.toIntOrNull(),
-                s4 = `interface`.cookiePacketJunkSize.toIntOrNull(),
+                // S3 = cookie reply padding, S4 = transport padding
+                s3 = `interface`.cookiePacketJunkSize.toIntOrNull(),
+                s4 = `interface`.transportPacketJunkSize.toIntOrNull(),
                 h1 = `interface`.initPacketMagicHeader.ifBlank { null },
                 h2 = `interface`.responsePacketMagicHeader.ifBlank { null },
                 h3 = `interface`.underloadPacketMagicHeader.ifBlank { null },
@@ -40,6 +41,13 @@ data class EditableConfig(
                 i3 = `interface`.i3.ifBlank { null },
                 i4 = `interface`.i4.ifBlank { null },
                 i5 = `interface`.i5.ifBlank { null },
+                headerProtectionKey = `interface`.headerProtectionKey.ifBlank { null },
+                contentPaddingAddition = `interface`.contentPaddingAddition.ifBlank { null },
+                rekeyAfterTime = `interface`.rekeyAfterTime.ifBlank { null },
+                rekeyTimeout = `interface`.rekeyTimeout.ifBlank { null },
+                rejectAfterTime = `interface`.rejectAfterTime.ifBlank { null },
+                keepaliveTimeout = `interface`.keepaliveTimeout.ifBlank { null },
+                maxHandshakeAttempts = `interface`.maxHandshakeAttempts.ifBlank { null },
             )
 
         val peerSections = peers.map { it.toPeerSection() }

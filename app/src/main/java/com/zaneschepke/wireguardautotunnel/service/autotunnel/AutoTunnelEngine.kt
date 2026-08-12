@@ -103,7 +103,7 @@ class AutoTunnelEngine {
             // One support for now
             val firstMatch = exactBssidMatches.first()
             Timber.i("Starting tunnel ${firstMatch.name} for exact BSSID match")
-            return listOf()
+            return listOf(firstMatch)
         }
 
         // Next priority is SSID match
@@ -114,7 +114,7 @@ class AutoTunnelEngine {
             // One supported for now
             val firstMatch = exactSsidMatches.first()
             Timber.i("Starting tunnel ${firstMatch.name} for exact SSID match")
-            return listOf(exactSsidMatches.first())
+            return listOf(firstMatch)
         }
 
         // Next priority is Wildcard BSSID match

@@ -8,8 +8,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.wgtunnel.parser.ActivePeer
 import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.parser.ActivePeer
 import com.zaneschepke.wireguardautotunnel.util.extensions.abbreviateKey
 import com.zaneschepke.wireguardautotunnel.util.extensions.toAgoDisplay
 

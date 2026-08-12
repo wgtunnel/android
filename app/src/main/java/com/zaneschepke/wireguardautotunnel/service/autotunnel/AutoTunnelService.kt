@@ -328,7 +328,8 @@ class AutoTunnelService : LifecycleService() {
                                 notificationService.createNotification(
                                     AndroidNotificationService.NotificationChannels.AutoTunnel,
                                     title = getString(R.string.warning),
-                                    description = getString(R.string.location_services_not_detected),
+                                    description =
+                                        getString(R.string.location_services_not_detected),
                                 )
 
                             notificationService.show(

@@ -8,7 +8,7 @@ import androidx.compose.runtime.setValue
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
 
 @Composable
-fun <T> LabelledDropdown(
+fun <T> LabeledDropdown(
     title: String,
     description: (@Composable () -> Unit)? = null,
     leading: @Composable () -> Unit,

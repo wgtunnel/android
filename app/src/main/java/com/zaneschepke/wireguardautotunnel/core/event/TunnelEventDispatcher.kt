@@ -2,16 +2,14 @@ package com.zaneschepke.wireguardautotunnel.core.event
 
 import android.content.Context
 import com.dokar.sonner.ToastType
-import com.zaneschepke.tunnel.event.TunnelEvent
+import com.wgtunnel.backend.event.TunnelEvent
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.domain.repository.GlobalEffectRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
-import com.zaneschepke.wireguardautotunnel.domain.sideeffect.GlobalSideEffect
-import com.zaneschepke.wireguardautotunnel.domain.sideeffect.GlobalSideEffect.*
+import com.zaneschepke.wireguardautotunnel.domain.sideeffect.GlobalSideEffect.Snackbar
 import com.zaneschepke.wireguardautotunnel.lifecyle.AppVisibilityObserver
 import com.zaneschepke.wireguardautotunnel.notification.TunnelNotificationService
-import com.zaneschepke.wireguardautotunnel.util.StringValue
-import com.zaneschepke.wireguardautotunnel.util.StringValue.*
+import com.zaneschepke.wireguardautotunnel.util.StringValue.DynamicString
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
@@ -158,9 +156,9 @@ class TunnelEventDispatcher(
                             scope = scope,
                             foregroundAction = {
                                 globalEffectRepository.post(
-                                    GlobalSideEffect.Snackbar(
+                                    Snackbar(
                                         message =
-                                            StringValue.DynamicString(
+                                            DynamicString(
                                                 context.getString(R.string.vpn_permission_required)
                                             ),
                                         type = ToastType.Error,
@@ -225,6 +223,23 @@ class TunnelEventDispatcher(
                             backgroundAction = {
                                 notificationManager.showHttpPortUnavailable(error.port, name)
                             },
+                        )
+                    }
+
+                    is TunnelErrorEvent.ConfigMissingDns -> {
+                        val name = getTunnelName(error.tunnelId)
+                        val message = context.getString(R.string.error_config_missing_dns, name)
+                        showOrNotify(
+                            scope = scope,
+                            foregroundAction = {
+                                globalEffectRepository.post(
+                                    Snackbar(
+                                        message = DynamicString(message),
+                                        type = ToastType.Error,
+                                    )
+                                )
+                            },
+                            backgroundAction = { notificationManager.showConfigMissingDns(name) },
                         )
                     }
                 }

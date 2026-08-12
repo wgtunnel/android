@@ -388,6 +388,14 @@
     <string name="i3" translatable="false">I3</string>
     <string name="i4" translatable="false">I4</string>
     <string name="i5" translatable="false">I5</string>
+    <!-- AmneziaWG 3.0 -->
+    <string name="header_protection_key" translatable="false">HeaderProtectionKey</string>
+    <string name="content_padding_addition" translatable="false">ContentPaddingAddition</string>
+    <string name="rekey_after_time" translatable="false">RekeyAfterTime</string>
+    <string name="rekey_timeout" translatable="false">RekeyTimeout</string>
+    <string name="reject_after_time" translatable="false">RejectAfterTime</string>
+    <string name="keepalive_timeout" translatable="false">KeepaliveTimeout</string>
+    <string name="max_handshake_attempts" translatable="false">MaxHandshakeAttempts</string>
     <string name="copy_from">Copy from</string>
     <string name="mode">Mode</string>
     <string name="app_selection">App selection</string>

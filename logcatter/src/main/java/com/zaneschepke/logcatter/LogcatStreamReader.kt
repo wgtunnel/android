@@ -85,32 +85,31 @@ class LogcatStreamReader(pid: Int, private val fileManager: LogFileManager) {
         return true
     }
 
-    fun readLogs(): Flow<LogMessage> =
-        flow {
-                try {
-                    process = Runtime.getRuntime().exec(command)
-                    reader = BufferedReader(InputStreamReader(process!!.inputStream), bufferSize)
+    fun readLogs(): Flow<LogMessage> = flow {
+        try {
+            process = Runtime.getRuntime().exec(command)
+            reader = BufferedReader(InputStreamReader(process!!.inputStream), bufferSize)
 
-                    reader!!.lineSequence().forEach { line ->
-                        if (line.isNotEmpty() && shouldLog(line)) {
-                            fileManager.writeLog(line)
-                            emit(LogMessage.from(line))
-                        }
-                    }
-                } catch (_: InterruptedIOException) {
-                    Timber.d("Logcat reader has been shut down")
-                } catch (e: IOException) {
-                    Timber.w(
-                        e,
-                        "Logcat read failed (process may have been killed or permission issue)",
-                    )
-                } catch (e: Exception) {
-                    Timber.e(e, "Unexpected error in logcat reader")
-                } finally {
-                    stop()
+            reader!!.lineSequence().forEach { line ->
+                if (line.isNotEmpty() && shouldLog(line)) {
+                    fileManager.writeLog(line)
+                    emit(LogMessage.from(line))
                 }
             }
-            .flowOn(ioDispatcher)
+        } catch (_: InterruptedIOException) {
+            Timber.d("Logcat reader has been shut down")
+        } catch (e: IOException) {
+            Timber.w(
+                e,
+                "Logcat read failed (process may have been killed or permission issue)",
+            )
+        } catch (e: Exception) {
+            Timber.e(e, "Unexpected error in logcat reader")
+        } finally {
+            stop()
+        }
+    }
+        .flowOn(ioDispatcher)
 
     fun start() {
         if (process == null) {

@@ -15,6 +15,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dokar.sonner.ToastType
 import com.zaneschepke.wireguardautotunnel.R
+import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.common.dialog.InfoDialog
 import com.zaneschepke.wireguardautotunnel.ui.common.functions.rememberClipboardHelper
@@ -27,12 +28,11 @@ import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.components.UrlImpo
 import com.zaneschepke.wireguardautotunnel.ui.sideeffect.LocalSideEffect
 import com.zaneschepke.wireguardautotunnel.util.FileUtils
 import com.zaneschepke.wireguardautotunnel.util.StringValue
+import com.zaneschepke.wireguardautotunnel.util.extensions.asFileExportName
 import com.zaneschepke.wireguardautotunnel.util.extensions.hasSAFSupport
-import com.zaneschepke.wireguardautotunnel.util.extensions.toUserFriendlyTimestamp
 import com.zaneschepke.wireguardautotunnel.viewmodel.SharedAppViewModel
 import io.github.g00fy2.quickie.QRResult
 import io.github.g00fy2.quickie.ScanQRCode
-import java.time.Instant
 import org.koin.compose.viewmodel.koinActivityViewModel
 import org.orbitmvi.orbit.compose.collectSideEffect
 import timber.log.Timber
@@ -42,6 +42,7 @@ fun TunnelsScreen(sharedViewModel: SharedAppViewModel = koinActivityViewModel())
     val navController = LocalNavController.current
     val clipboard = rememberClipboardHelper()
     val context = LocalContext.current
+    val isTv = LocalIsAndroidTV.current
 
     val uiState by sharedViewModel.tunnelsUiState.collectAsStateWithLifecycle()
 
@@ -49,7 +50,7 @@ fun TunnelsScreen(sharedViewModel: SharedAppViewModel = koinActivityViewModel())
 
     val selectedTunnelsExportLauncher =
         rememberFileExportLauncherForResult(
-            onSuccess = { uri -> sharedViewModel.exportSelectedTunnels(uri) },
+            onSuccess = { uri -> sharedViewModel.exportSelectedTunnels(uri, context) },
             onCanceled = {
                 sharedViewModel.showSnackMessage(
                     StringValue.StringResource(R.string.export_canceled),
@@ -72,15 +73,13 @@ fun TunnelsScreen(sharedViewModel: SharedAppViewModel = koinActivityViewModel())
         when (sideEffect) {
             LocalSideEffect.Sheet.ImportTunnels -> showImportSheet = true
             LocalSideEffect.Modal.DeleteTunnels -> showDeleteModal = true
-            LocalSideEffect.Sheet.ExportTunnels -> {
-                if (context.hasSAFSupport(FileUtils.ZIP_FILE_MIME_TYPE)) {
-                    val fileName = "wgtunnel_export_${Instant.now().toUserFriendlyTimestamp()}.zip"
-                    selectedTunnelsExportLauncher.launch(fileName)
+            LocalSideEffect.LaunchExportPicker -> {
+                val (fileName, mimeType) = uiState.selectedTunnels.asFileExportName()
+                // Fallback, especially for TV, for downloads export
+                if (isTv && !context.hasSAFSupport(mimeType)) {
+                    sharedViewModel.exportSelectedTunnels(uri = null, context)
                 } else {
-                    sharedViewModel.showSnackMessage(
-                        StringValue.StringResource(R.string.error_no_file_explorer),
-                        ToastType.Error,
-                    )
+                    selectedTunnelsExportLauncher.launch(fileName)
                 }
             }
             LocalSideEffect.SelectedTunnels.Copy -> sharedViewModel.copySelectedTunnel()

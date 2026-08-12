@@ -1,7 +1,7 @@
 package com.zaneschepke.wireguardautotunnel.ui.state
 
-import com.zaneschepke.wireguardautotunnel.parser.Config
-import com.zaneschepke.wireguardautotunnel.parser.InterfaceSection
+import com.wgtunnel.parser.Config
+import com.wgtunnel.parser.InterfaceSection
 import com.zaneschepke.wireguardautotunnel.util.extensions.joinAndTrim
 
 data class EditableInterface(
@@ -33,6 +33,14 @@ data class EditableInterface(
     val i3: String = "",
     val i4: String = "",
     val i5: String = "",
+    // AmneziaWG 3.0+
+    val headerProtectionKey: String = "",
+    val contentPaddingAddition: String = "",
+    val rekeyAfterTime: String = "",
+    val rekeyTimeout: String = "",
+    val rejectAfterTime: String = "",
+    val keepaliveTimeout: String = "",
+    val maxHandshakeAttempts: String = "",
 ) {
 
     fun hasScripts(): Boolean = listOf(preUp, postUp, preDown, postDown).any { it.isNotBlank() }
@@ -55,6 +63,13 @@ data class EditableInterface(
                 i3,
                 i4,
                 i5,
+                headerProtectionKey,
+                contentPaddingAddition,
+                rekeyAfterTime,
+                rekeyTimeout,
+                rejectAfterTime,
+                keepaliveTimeout,
+                maxHandshakeAttempts,
             )
             .any { it.isNotBlank() }
     }
@@ -93,6 +108,13 @@ data class EditableInterface(
             i3 = "",
             i4 = "",
             i5 = "",
+            headerProtectionKey = "",
+            contentPaddingAddition = "",
+            rekeyAfterTime = "",
+            rekeyTimeout = "",
+            rejectAfterTime = "",
+            keepaliveTimeout = "",
+            maxHandshakeAttempts = "",
         )
     }
 
@@ -186,8 +208,9 @@ data class EditableInterface(
                 junkPacketMaxSize = i.jMax?.toString() ?: "",
                 initPacketJunkSize = i.s1?.toString() ?: "",
                 responsePacketJunkSize = i.s2?.toString() ?: "",
-                transportPacketJunkSize = i.s3?.toString() ?: "",
-                cookiePacketJunkSize = i.s4?.toString() ?: "",
+                // S3 = cookie reply padding, S4 = transport padding
+                cookiePacketJunkSize = i.s3?.toString() ?: "",
+                transportPacketJunkSize = i.s4?.toString() ?: "",
                 initPacketMagicHeader = i.h1 ?: "",
                 responsePacketMagicHeader = i.h2 ?: "",
                 underloadPacketMagicHeader = i.h3 ?: "",
@@ -197,6 +220,13 @@ data class EditableInterface(
                 i3 = i.i3 ?: "",
                 i4 = i.i4 ?: "",
                 i5 = i.i5 ?: "",
+                headerProtectionKey = i.headerProtectionKey ?: "",
+                contentPaddingAddition = i.contentPaddingAddition ?: "",
+                rekeyAfterTime = i.rekeyAfterTime ?: "",
+                rekeyTimeout = i.rekeyTimeout ?: "",
+                rejectAfterTime = i.rejectAfterTime ?: "",
+                keepaliveTimeout = i.keepaliveTimeout ?: "",
+                maxHandshakeAttempts = i.maxHandshakeAttempts ?: "",
             )
         }
     }

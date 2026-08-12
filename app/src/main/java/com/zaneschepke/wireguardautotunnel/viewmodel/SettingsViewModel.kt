@@ -2,9 +2,8 @@ package com.zaneschepke.wireguardautotunnel.viewmodel
 
 import androidx.lifecycle.ViewModel
 import com.dokar.sonner.ToastType
-import com.zaneschepke.tunnel.util.RootShell
+import com.wgtunnel.backend.shell.ShellExecutor
 import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.core.orchestration.TunnelBackendCoordinator
 import com.zaneschepke.wireguardautotunnel.core.orchestration.TunnelCoordinator
 import com.zaneschepke.wireguardautotunnel.core.shortcut.ShortcutManager
 import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
@@ -18,8 +17,8 @@ import java.util.UUID
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
-import org.orbitmvi.orbit.ContainerHost
-import org.orbitmvi.orbit.viewmodel.container
+import org.orbitmvi.orbit.OrbitContainerHost
+import org.orbitmvi.orbit.viewmodel.orbitContainer
 
 class SettingsViewModel(
     private val settingsRepository: GeneralSettingRepository,
@@ -28,11 +27,10 @@ class SettingsViewModel(
     private val monitoringRepository: MonitoringSettingsRepository,
     private val globalEffectRepository: GlobalEffectRepository,
     private val tunnelCoordinator: TunnelCoordinator,
-    private val tunnelBackendCoordinator: TunnelBackendCoordinator,
-) : ContainerHost<SettingUiState, Nothing>, ViewModel() {
+) : OrbitContainerHost<SettingUiState, SettingUiState, Nothing>, ViewModel() {
 
     override val container =
-        container<SettingUiState, Nothing>(
+        orbitContainer<SettingUiState, Nothing>(
             SettingUiState(),
             buildSettings = { repeatOnSubscribedStopTimeout = 5000L },
         ) {
@@ -98,7 +96,7 @@ class SettingsViewModel(
 
     fun setTunnelScriptedEnabled(to: Boolean) = intent {
         if (to) {
-            val accepted = RootShell.requestRootPermission()
+            val accepted = ShellExecutor.requestPrivilegedAccess()
             if (!accepted)
                 return@intent postSideEffect(
                     GlobalSideEffect.Snackbar(

@@ -1,0 +1,6 @@
+What's new:
+- Advanced tunnel DNS options like split and encrypted tunnel DNS
+- IP4P support for servers behind CGNAT
+- Bugfix for auto tunnel that sometimes caused rapid toggle of tunnels
+- Bugfix for the tunnel stats job high CPU and battery usage on some devices
+- Various other bugfixes and improvements

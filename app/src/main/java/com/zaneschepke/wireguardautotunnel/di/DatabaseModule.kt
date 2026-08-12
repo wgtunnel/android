@@ -29,11 +29,15 @@ import com.zaneschepke.wireguardautotunnel.domain.repository.MonitoringSettingsR
 import com.zaneschepke.wireguardautotunnel.domain.repository.ProxySettingsRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import org.koin.android.ext.koin.androidContext
+import org.koin.core.annotation.KoinExperimentalAPI
+import org.koin.core.annotation.KoinViewModelScopeApi
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import org.koin.viewmodel.scope.viewModelScope
 
+@OptIn(KoinExperimentalAPI::class, KoinViewModelScopeApi::class)
 val databaseModule = module {
     single<RoomDatabase.Callback> { DatabaseCallback(lazy { get() }) }
 
@@ -73,7 +77,13 @@ val databaseModule = module {
     singleOf(::RoomProxySettingsRepository) bind ProxySettingsRepository::class
     singleOf(::RoomSettingsRepository) bind GeneralSettingRepository::class
     singleOf(::RoomTunnelRepository) bind TunnelRepository::class
-    single<InstalledPackageRepository> {
-        InstalledAndroidPackageRepository(androidContext(), get(named(Dispatcher.IO)))
+    viewModelScope {
+        scoped<InstalledPackageRepository> {
+            InstalledAndroidPackageRepository(
+                androidContext(),
+                get(named(Dispatcher.IO)),
+                get(named(Scope.APPLICATION)),
+            )
+        }
     }
 }

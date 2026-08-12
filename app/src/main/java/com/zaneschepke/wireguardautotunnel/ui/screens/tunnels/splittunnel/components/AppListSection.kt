@@ -16,7 +16,6 @@ import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,8 +42,8 @@ fun AppListSection(
     var query by remember { mutableStateOf("") }
     val locale = Locale.current.platformLocale
 
-    val filteredAndSortedPackages by remember {
-        derivedStateOf {
+    val filteredAndSortedPackages =
+        remember(installedPackages, query, splitConfig.second) {
             installedPackages
                 .filter { pkg ->
                     query.isBlank() ||
@@ -58,7 +57,6 @@ fun AppListSection(
                         .thenBy { it.name.lowercase(locale) }
                 )
         }
-    }
 
     val inputHeight = 45.dp
 

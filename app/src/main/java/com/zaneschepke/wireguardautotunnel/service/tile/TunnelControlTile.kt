@@ -3,17 +3,17 @@ package com.zaneschepke.wireguardautotunnel.service.tile
 import android.os.Build
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
+import com.wgtunnel.backend.state.ActiveTunnel
+import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.core.orchestration.TunnelCoordinator
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
+import com.zaneschepke.wireguardautotunnel.ui.state.DisplayTunnelState
+import java.util.Locale
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.distinctUntilChangedBy
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
@@ -23,13 +23,9 @@ class TunnelControlTile : TileService() {
     private val tunnelsRepository: TunnelRepository by inject()
     private val tunnelCoordinator: TunnelCoordinator by inject()
 
-    private var collectionJob: Job? = null
-
     private val tileScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
     override fun onDestroy() {
-        collectionJob?.cancel()
-        collectionJob = null
         tileScope.cancel()
         super.onDestroy()
     }
@@ -37,43 +33,11 @@ class TunnelControlTile : TileService() {
     override fun onTileAdded() {
         super.onTileAdded()
         updateTileState()
-        startObserving()
     }
 
     override fun onStartListening() {
         super.onStartListening()
         updateTileState()
-        startObserving()
-    }
-
-    private fun startObserving() {
-        collectionJob?.cancel()
-        collectionJob = tileScope.launch {
-            combine(
-                    tunnelsRepository.userTunnelsFlow.distinctUntilChanged(),
-                    tunnelCoordinator.backendStatus.distinctUntilChangedBy { it.activeTunnels.keys },
-                ) { tunnels, status ->
-                    if (tunnels.isEmpty()) {
-                        setUnavailable()
-                        return@combine
-                    }
-
-                    val active = status.activeTunnels
-                    if (active.isNotEmpty()) {
-                        val names = tunnels.filter { active.containsKey(it.id) }.map { it.name }
-                        setActive(names)
-                    } else {
-                        setInactive()
-                    }
-                }
-                .collect()
-        }
-    }
-
-    override fun onStopListening() {
-        super.onStopListening()
-        collectionJob?.cancel()
-        collectionJob = null
     }
 
     override fun onClick() {
@@ -87,9 +51,10 @@ class TunnelControlTile : TileService() {
 
     private fun updateTileState() {
         tileScope.launch {
-            val tunnels = withContext(Dispatchers.IO) { tunnelsRepository.getAll() }
+            val tunnels =
+                withContext(Dispatchers.IO) { tunnelsRepository.userTunnelsFlow.firstOrNull() }
 
-            if (tunnels.isEmpty()) {
+            if (tunnels.isNullOrEmpty()) {
                 setUnavailable()
                 return@launch
             }
@@ -97,35 +62,43 @@ class TunnelControlTile : TileService() {
             val active = tunnelCoordinator.backendStatus.value.activeTunnels
 
             if (active.isNotEmpty()) {
-                val names = tunnels.filter { active.containsKey(it.id) }.map { it.name }
-
-                setActive(names)
+                val activeMap =
+                    tunnels
+                        .filter { active.containsKey(it.id) }
+                        .associate { tunnel -> tunnel.name to active.getValue(tunnel.id) }
+                setActive(activeMap)
             } else {
                 setInactive()
             }
         }
     }
 
-    private fun setActive(names: List<String>) {
-        val label =
-            when {
-                names.isEmpty() -> ""
-                names.size == 1 -> names.first()
-                names.size <= 3 -> names.joinToString(", ")
-                else -> {
-                    val visible = names.take(2).joinToString(", ")
-                    "$visible +${names.size - 2}"
-                }
-            }
-
+    private fun setActive(activeByName: Map<String, ActiveTunnel>) {
+        val context = this
         qsTile?.apply {
             state = Tile.STATE_ACTIVE
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                subtitle = label
-            }
-            contentDescription = label
+            when (activeByName.size) {
+                1 -> {
+                    val (fullName, activeTunnel) = activeByName.entries.first()
+                    val state = DisplayTunnelState.from(activeTunnel).asLocalizedString(context)
 
+                    label = fullName
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        subtitle = state
+                    }
+                    contentDescription = "$fullName • $state}"
+                }
+
+                else -> {
+                    val tunnels = getString(R.string.tunnels).lowercase(Locale.getDefault())
+                    label = "${activeByName.size} $tunnels"
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        subtitle = ""
+                    }
+                    contentDescription = "${activeByName.size} $tunnels"
+                }
+            }
             updateTile()
         }
     }
@@ -145,6 +118,7 @@ class TunnelControlTile : TileService() {
 
     private fun setUnavailable() {
         qsTile?.apply {
+            label = getString(R.string.tunnel_control)
             state = Tile.STATE_UNAVAILABLE
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {

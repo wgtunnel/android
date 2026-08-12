@@ -6,18 +6,26 @@ import android.icu.util.Measure
 import android.icu.util.MeasureUnit
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.CallSplit
+import androidx.compose.material.icons.outlined.EnhancedEncryption
 import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material.icons.outlined.NoEncryption
 import androidx.compose.material.icons.outlined.VpnKey
+import androidx.compose.material.icons.outlined.Wifi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
+import com.wgtunnel.backend.state.ActiveTunnel
 import com.zaneschepke.networkmonitor.AndroidNetworkMonitor
-import com.zaneschepke.tunnel.state.ActiveTunnel
 import com.zaneschepke.wireguardautotunnel.R
+import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelDnsMode
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelMode
 import com.zaneschepke.wireguardautotunnel.domain.enums.WifiDetectionMethod
+import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.ui.state.DisplayTunnelState
 import com.zaneschepke.wireguardautotunnel.util.DnsError
+import com.zaneschepke.wireguardautotunnel.util.FileUtils
+import java.time.Instant
 import java.util.Locale
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
@@ -72,6 +80,16 @@ fun TunnelMode.asIcon(): ImageVector {
         TunnelMode.VPN -> Icons.Outlined.VpnKey
         TunnelMode.PROXY -> ImageVector.vectorResource(R.drawable.proxy)
         TunnelMode.LOCK_DOWN -> Icons.Outlined.Lock
+    }
+}
+
+@Composable
+fun TunnelDnsMode.asIcon(): ImageVector {
+    return when (this) {
+        TunnelDnsMode.Off -> Icons.Outlined.NoEncryption
+        TunnelDnsMode.Encrypted -> Icons.Outlined.EnhancedEncryption
+        TunnelDnsMode.Split -> Icons.AutoMirrored.Outlined.CallSplit
+        TunnelDnsMode.AllLocal -> Icons.Outlined.Wifi
     }
 }
 
@@ -135,4 +153,14 @@ fun ActiveTunnel.uptimeText(context: Context, now: Long): String? {
     val uptimeDisplay = startedAt.toUptimeDisplay(now)
 
     return context.getString(R.string.uptime_template, uptimeDisplay)
+}
+
+fun List<TunnelConfig>.asFileExportName(): Pair<String, String> {
+    return if (size == 1) {
+        val tunnel = first()
+        "${tunnel.name}.conf" to FileUtils.TEXT_MIME_TYPE
+    } else {
+        "wgtunnel_export_${Instant.now().toUserFriendlyTimestamp()}.zip" to
+            FileUtils.ZIP_FILE_MIME_TYPE
+    }
 }

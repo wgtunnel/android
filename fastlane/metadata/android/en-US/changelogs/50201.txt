@@ -1,0 +1,4 @@
+What's new:
+- Bugfix for Wi-Fi changes failing to be detected while a VPN is active on certain OEMs
+- Back press/swipe now properly clears selected tunnels instead of exiting the app
+- Chevrons added to settings rows with subscreens

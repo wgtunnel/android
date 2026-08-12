@@ -1,0 +1,6 @@
+What's new:
+- Seamless tunnel recovery feature for tunnel connectivity recovery without dropping VPN protection
+- Improved tile integration with tunnel statuses
+- Toggle tunnel action added for remote control feature
+- Auto-tunnel Wi-Fi detection bugfix on VPN starts
+- Translations

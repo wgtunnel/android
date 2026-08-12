@@ -3,8 +3,10 @@ package com.zaneschepke.wireguardautotunnel.util
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
+import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Build
+import android.os.Environment
 import android.provider.MediaStore
 import android.provider.OpenableColumns
 import androidx.annotation.RequiresApi
@@ -57,36 +59,34 @@ class FileUtils(private val context: Context, private val ioDispatcher: Coroutin
     suspend fun zipAll(zipFile: File, files: List<File>): Result<Unit> =
         withContext(ioDispatcher) {
             runCatching {
-                    if (zipFile.exists() && !zipFile.delete()) {
-                        throw IOException("Failed to delete existing ZIP file: ${zipFile.path}")
-                    }
-                    if (!zipFile.createNewFile()) {
-                        throw IOException("Failed to create ZIP file: ${zipFile.path}")
-                    }
-
-                    ZipOutputStream(BufferedOutputStream(FileOutputStream(zipFile))).use { zos ->
-                        files.forEach { file ->
-                            if (!file.exists() || file.length() == 0L) {
-                                Timber.w("Skipping file ${file.path}: does not exist or empty")
-                                return@forEach
-                            }
-                            val entryName = file.name
-                            val entry = ZipEntry(entryName)
-                            zos.putNextEntry(entry)
-                            FileInputStream(file).use { fis ->
-                                fis.copyTo(zos)
-                                Timber.d(
-                                    "Added ${file.path} to zip as $entryName, size: ${file.length()} bytes"
-                                )
-                            }
-                            zos.closeEntry()
-                        }
-                        zos.flush()
-                        Timber.d(
-                            "Finished zipping: ${zipFile.path}, size: ${zipFile.length()} bytes"
-                        )
-                    }
+                if (zipFile.exists() && !zipFile.delete()) {
+                    throw IOException("Failed to delete existing ZIP file: ${zipFile.path}")
                 }
+                if (!zipFile.createNewFile()) {
+                    throw IOException("Failed to create ZIP file: ${zipFile.path}")
+                }
+
+                ZipOutputStream(BufferedOutputStream(FileOutputStream(zipFile))).use { zos ->
+                    files.forEach { file ->
+                        if (!file.exists() || file.length() == 0L) {
+                            Timber.w("Skipping file ${file.path}: does not exist or empty")
+                            return@forEach
+                        }
+                        val entryName = file.name
+                        val entry = ZipEntry(entryName)
+                        zos.putNextEntry(entry)
+                        FileInputStream(file).use { fis ->
+                            fis.copyTo(zos)
+                            Timber.d(
+                                "Added ${file.path} to zip as $entryName, size: ${file.length()} bytes"
+                            )
+                        }
+                        zos.closeEntry()
+                    }
+                    zos.flush()
+                    Timber.d("Finished zipping: ${zipFile.path}, size: ${zipFile.length()} bytes")
+                }
+            }
                 .onFailure { error ->
                     Timber.e(error, "Error zipping files into ${zipFile.path}")
                     if (zipFile.exists()) zipFile.delete()
@@ -96,22 +96,21 @@ class FileUtils(private val context: Context, private val ioDispatcher: Coroutin
     suspend fun createNewShareFile(name: String): Result<File> =
         withContext(ioDispatcher) {
             runCatching {
-                    val cacheDir =
-                        context.cacheDir ?: throw IOException("Cache directory unavailable")
-                    val sharePath = File(cacheDir, "external_files")
-                    if (!sharePath.exists() && !sharePath.mkdirs()) {
-                        throw IOException("Failed to create share directory: ${sharePath.path}")
-                    }
-                    val file = File(sharePath, name)
-                    if (file.exists() && !file.delete()) {
-                        throw IOException("Failed to delete existing file: ${file.path}")
-                    }
-                    if (!file.createNewFile()) {
-                        throw IOException("Failed to create new file: ${file.path}")
-                    }
-                    Timber.d("Created share file: ${file.path}")
-                    file
+                val cacheDir = context.cacheDir ?: throw IOException("Cache directory unavailable")
+                val sharePath = File(cacheDir, "external_files")
+                if (!sharePath.exists() && !sharePath.mkdirs()) {
+                    throw IOException("Failed to create share directory: ${sharePath.path}")
                 }
+                val file = File(sharePath, name)
+                if (file.exists() && !file.delete()) {
+                    throw IOException("Failed to delete existing file: ${file.path}")
+                }
+                if (!file.createNewFile()) {
+                    throw IOException("Failed to create new file: ${file.path}")
+                }
+                Timber.d("Created share file: ${file.path}")
+                file
+            }
                 .onFailure { error -> Timber.e(error, "Error creating share file") }
         }
 
@@ -125,14 +124,37 @@ class FileUtils(private val context: Context, private val ioDispatcher: Coroutin
                         ?: throw IOException("Failed to insert into MediaStore")
                 }
             } else {
-                Result.failure(
-                    IOException(
-                        "Auto-export to Downloads not supported on this device (pre-Android 10). Use a file picker (SAF) to provide a URI."
-                    )
-                )
+                // Android 8, 9 and Android TV
+                saveToDownloadsLegacy(file, mimeType)
             }
         }
     }
+
+    private suspend fun saveToDownloadsLegacy(file: File, mimeType: String): Result<Uri> =
+        withContext(ioDispatcher) {
+            runCatching {
+                val downloadsDir =
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                if (!downloadsDir.exists() && !downloadsDir.mkdirs()) {
+                    throw IOException("Cannot access Downloads directory")
+                }
+
+                val dest = File(downloadsDir, file.name)
+                file.inputStream().use { input ->
+                    FileOutputStream(dest).use { output -> input.copyTo(output) }
+                }
+
+                // Make it visible to file managers
+                MediaScannerConnection.scanFile(
+                    context,
+                    arrayOf(dest.absolutePath),
+                    arrayOf(mimeType),
+                    null,
+                )
+
+                Uri.fromFile(dest)
+            }
+        }
 
     suspend fun copyFileToUri(sourceFile: File, destinationUri: Uri): Result<Unit> =
         withContext(ioDispatcher) {
@@ -225,44 +247,43 @@ class FileUtils(private val context: Context, private val ioDispatcher: Coroutin
     suspend fun readConfigsFromUri(uri: Uri): Result<Map<QuickConfig, TunnelName>> =
         withContext(ioDispatcher) {
             runCatching {
-                    val fileName = getFileName(uri).lowercase()
-                    val extension = getFileExtensionFromFileName(fileName)
-                    val inputStream =
-                        context.getInputStreamFromUri(uri)
-                            ?: throw IOException("Failed to open input stream for URI: $uri")
+                val fileName = getFileName(uri).lowercase()
+                val extension = getFileExtensionFromFileName(fileName)
+                val inputStream =
+                    context.getInputStreamFromUri(uri)
+                        ?: throw IOException("Failed to open input stream for URI: $uri")
 
-                    when (extension?.lowercase()) {
-                        CONF_FILE_EXTENSION.lowercase() -> {
-                            inputStream.use { stream ->
-                                val content = stream.bufferedReader().readText()
-                                val name = getNameFromFileName(fileName)
-                                mapOf(content to name)
-                            }
+                when (extension?.lowercase()) {
+                    CONF_FILE_EXTENSION.lowercase() -> {
+                        inputStream.use { stream ->
+                            val content = stream.bufferedReader().readText()
+                            val name = getNameFromFileName(fileName)
+                            mapOf(content to name)
                         }
-                        ZIP_FILE_EXTENSION.lowercase() -> {
-                            ZipInputStream(inputStream).use { zip ->
-                                val configs = mutableMapOf<String, String>()
-                                var entry: ZipEntry? = zip.nextEntry
-                                while (entry != null) {
-                                    if (
-                                        !entry.isDirectory &&
-                                            getFileExtensionFromFileName(entry.name.lowercase()) ==
-                                                CONF_FILE_EXTENSION.lowercase()
-                                    ) {
-                                        val content = zip.bufferedReader().readText()
-                                        val name = getNameFromFileName(entry.name)
-                                        configs[content] = name
-                                    }
-                                    zip.closeEntry()
-                                    entry = zip.nextEntry
-                                }
-                                configs
-                            }
-                        }
-                        else ->
-                            throw FileNotFoundException("Unsupported file extension: $extension")
                     }
+                    ZIP_FILE_EXTENSION.lowercase() -> {
+                        ZipInputStream(inputStream).use { zip ->
+                            val configs = mutableMapOf<String, String>()
+                            var entry: ZipEntry? = zip.nextEntry
+                            while (entry != null) {
+                                if (
+                                    !entry.isDirectory &&
+                                        getFileExtensionFromFileName(entry.name.lowercase()) ==
+                                            CONF_FILE_EXTENSION.lowercase()
+                                ) {
+                                    val content = zip.bufferedReader().readText()
+                                    val name = getNameFromFileName(entry.name)
+                                    configs[content] = name
+                                }
+                                zip.closeEntry()
+                                entry = zip.nextEntry
+                            }
+                            configs
+                        }
+                    }
+                    else -> throw FileNotFoundException("Unsupported file extension: $extension")
                 }
+            }
                 .onFailure { error -> Timber.e(error, "Error reading configs from URI: $uri") }
         }
 
@@ -294,13 +315,11 @@ class FileUtils(private val context: Context, private val ioDispatcher: Coroutin
     companion object {
         const val CONF_FILE_EXTENSION = ".conf"
         const val ZIP_FILE_EXTENSION = ".zip"
-        private const val TEXT_MIME_TYPE = "text/plain"
+        const val TEXT_MIME_TYPE = "text/plain"
         const val ZIP_FILE_MIME_TYPE = "application/zip"
         const val ALL_FILE_TYPES = "*/*"
 
         const val ALLOWED_TV_FILE_TYPES = "${TEXT_MIME_TYPE}|${ZIP_FILE_MIME_TYPE}"
-
-        const val URI_CONTENT_SCHEME = "content"
         const val GOOGLE_TV_EXPLORER_STUB = "com.google.android.tv.frameworkpackagestubs"
         const val ANDROID_TV_EXPLORER_STUB = "com.android.tv.frameworkpackagestubs"
     }

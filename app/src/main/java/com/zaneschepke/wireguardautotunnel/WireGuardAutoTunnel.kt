@@ -2,9 +2,9 @@ package com.zaneschepke.wireguardautotunnel
 
 import android.app.Application
 import android.os.StrictMode
-import com.zaneschepke.tunnel.backend.Backend
-import com.zaneschepke.tunnel.di.tunnelModule
-import com.zaneschepke.tunnel.service.VpnService
+import com.wgtunnel.backend.Backend
+import com.wgtunnel.backend.service.AlwaysOnCallback
+import com.wgtunnel.backend.service.RuntimeManager
 import com.zaneschepke.wireguardautotunnel.core.event.TunnelEventDispatcher
 import com.zaneschepke.wireguardautotunnel.core.orchestration.AppBoostrapCoordinator
 import com.zaneschepke.wireguardautotunnel.core.orchestration.TunnelCoordinator
@@ -19,8 +19,6 @@ import com.zaneschepke.wireguardautotunnel.di.networkModule
 import com.zaneschepke.wireguardautotunnel.di.tunnelBackendProviderModule
 import com.zaneschepke.wireguardautotunnel.di.workerModule
 import com.zaneschepke.wireguardautotunnel.notification.NotificationService
-import com.zaneschepke.wireguardautotunnel.service.tile.AutoTunnelTileRefresher
-import com.zaneschepke.wireguardautotunnel.service.tile.TunnelTileRefresher
 import com.zaneschepke.wireguardautotunnel.util.ReleaseTree
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -52,7 +50,7 @@ class WireGuardAutoTunnel : Application(), KoinComponent {
     private val backend: Backend by inject()
 
     private val alwaysOnCallback =
-        object : VpnService.AlwaysOnCallback {
+        object : AlwaysOnCallback {
             override fun alwaysOnTriggered() {
                 applicationScope.launch { tunnelCoordinator.startDefault() }
             }
@@ -70,7 +68,6 @@ class WireGuardAutoTunnel : Application(), KoinComponent {
                 appModule,
                 databaseModule,
                 tunnelBackendProviderModule,
-                tunnelModule,
                 workerModule,
                 coordinatorModule,
             )
@@ -80,8 +77,6 @@ class WireGuardAutoTunnel : Application(), KoinComponent {
         instance = this
 
         notificationService.createAllChannels()
-
-        syncTiles()
 
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
@@ -93,7 +88,7 @@ class WireGuardAutoTunnel : Application(), KoinComponent {
             Timber.plant(ReleaseTree())
         }
 
-        backend.setAlwaysOnCallback(alwaysOnCallback)
+        RuntimeManager.alwaysOnCallback = alwaysOnCallback
 
         val dispatcher = get<TunnelEventDispatcher>()
         val provider = get<TunnelProvider>()
@@ -101,12 +96,9 @@ class WireGuardAutoTunnel : Application(), KoinComponent {
         // for notifications
         dispatcher.bind(applicationScope, provider.events, tunnelCoordinator.errors)
 
-        applicationScope.launch(ioDispatcher) { boostrapCoordinator.bootstrap() }
-    }
-
-    private fun syncTiles() {
-        AutoTunnelTileRefresher.refresh(this)
-        TunnelTileRefresher.refresh(this)
+        applicationScope.launch(ioDispatcher) {
+            boostrapCoordinator.bootstrap(this@WireGuardAutoTunnel)
+        }
     }
 
     companion object {

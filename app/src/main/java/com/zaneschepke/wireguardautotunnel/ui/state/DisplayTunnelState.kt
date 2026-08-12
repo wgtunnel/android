@@ -3,10 +3,10 @@ package com.zaneschepke.wireguardautotunnel.ui.state
 import android.content.Context
 import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.Color
-import com.zaneschepke.tunnel.Tunnel
-import com.zaneschepke.tunnel.model.BackendMode
-import com.zaneschepke.tunnel.state.ActiveTunnel
-import com.zaneschepke.tunnel.state.BootstrapState
+import com.wgtunnel.backend.Tunnel
+import com.wgtunnel.backend.model.BackendMode
+import com.wgtunnel.backend.state.ActiveTunnel
+import com.wgtunnel.backend.state.BootstrapState
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.theme.AlertRed
 import com.zaneschepke.wireguardautotunnel.ui.theme.CoolGray

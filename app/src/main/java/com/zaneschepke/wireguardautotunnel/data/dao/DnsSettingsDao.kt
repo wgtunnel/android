@@ -14,6 +14,6 @@ interface DnsSettingsDao {
 
     @Query("SELECT * FROM dns_settings LIMIT 1") fun getDnsSettingsFlow(): Flow<DnsSettings?>
 
-    @Query("UPDATE dns_settings SET global_tunnel_dns_enabled = :enabled")
+    @Query("UPDATE dns_settings SET global_tunnel_config_dns_enabled = :enabled")
     suspend fun updateGlobalDnsEnabled(enabled: Boolean)
 }

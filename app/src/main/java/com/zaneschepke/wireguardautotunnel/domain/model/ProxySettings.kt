@@ -1,12 +1,12 @@
 package com.zaneschepke.wireguardautotunnel.domain.model
 
-import com.zaneschepke.tunnel.model.ProxyConfig
+import com.wgtunnel.backend.model.ProxyConfig
 
 data class ProxySettings(
     val id: Long = 0,
-    val socks5ProxyEnabled: Boolean = false,
+    val socks5ProxyEnabled: Boolean = true,
     val socks5ProxyBindAddress: String? = null,
-    val httpProxyEnabled: Boolean = false,
+    val httpProxyEnabled: Boolean = true,
     val httpProxyBindAddress: String? = null,
     val proxyUsername: String? = null,
     val proxyPassword: String? = null,

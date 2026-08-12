@@ -11,17 +11,17 @@ import com.zaneschepke.wireguardautotunnel.ui.state.ProxySettingsUiState
 import com.zaneschepke.wireguardautotunnel.util.StringValue
 import com.zaneschepke.wireguardautotunnel.util.extensions.isValidAndroidProxyBindAddress
 import kotlinx.coroutines.flow.combine
-import org.orbitmvi.orbit.ContainerHost
-import org.orbitmvi.orbit.viewmodel.container
+import org.orbitmvi.orbit.OrbitContainerHost
+import org.orbitmvi.orbit.viewmodel.orbitContainer
 
 class ProxySettingsViewModel(
     private val proxySettingsRepository: ProxySettingsRepository,
     private val globalEffectRepository: GlobalEffectRepository,
     private val tunnelCoordinator: TunnelCoordinator,
-) : ContainerHost<ProxySettingsUiState, Nothing>, ViewModel() {
+) : OrbitContainerHost<ProxySettingsUiState, ProxySettingsUiState, Nothing>, ViewModel() {
 
     override val container =
-        container<ProxySettingsUiState, Nothing>(
+        orbitContainer<ProxySettingsUiState, Nothing>(
             ProxySettingsUiState(),
             buildSettings = { repeatOnSubscribedStopTimeout = 5000L },
         ) {

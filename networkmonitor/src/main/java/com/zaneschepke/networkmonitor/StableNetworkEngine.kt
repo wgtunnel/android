@@ -4,7 +4,6 @@ import com.zaneschepke.networkmonitor.model.StableNetworkSnapshot
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -12,7 +11,10 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 
 @OptIn(FlowPreview::class)
-class StableNetworkEngine(scope: CoroutineScope, private val upstream: Flow<ConnectivityState>) {
+class StableNetworkEngine(
+    scope: CoroutineScope,
+    private val upstream: StateFlow<ConnectivityState?>,
+) {
 
     private val _stableState = MutableStateFlow<StableNetworkSnapshot?>(null)
     val stableState: StateFlow<StableNetworkSnapshot?> = _stableState.asStateFlow()
@@ -23,18 +25,24 @@ class StableNetworkEngine(scope: CoroutineScope, private val upstream: Flow<Conn
     init {
         scope.launch {
             upstream.debounce(150.milliseconds).collect { state ->
-                val key = state.activeNetwork.key()
-                val now = System.currentTimeMillis()
+                if (state != null) {
+                    val key = state.activeNetwork.key()
+                    val now = System.currentTimeMillis()
 
-                if (key != lastKey) {
-                    lastKey = key
-                    stableSinceMs = now
+                    if (key != lastKey) {
+                        lastKey = key
+                        stableSinceMs = now
+                    }
+
+                    val snapshot =
+                        StableNetworkSnapshot(
+                            key = key,
+                            state = state,
+                            stableSinceMs = stableSinceMs,
+                        )
+
+                    _stableState.value = snapshot
                 }
-
-                val snapshot =
-                    StableNetworkSnapshot(key = key, state = state, stableSinceMs = stableSinceMs)
-
-                _stableState.value = snapshot
             }
         }
     }

@@ -8,7 +8,7 @@ koinBom = "4.2.2"
 kotlinxCoroutinesAndroid = "1.11.0"
 leakcanaryAndroid = "3.0-alpha-9"
 lottieCompose = "6.7.1"
-orbitCompose = "11.0.0"
+orbitCompose = "12.0.0"
 roomdatabasebackup = "1.1.0"
 shizuku = "13.1.5"
 appcompat = "1.7.1"
@@ -16,10 +16,10 @@ coreKtx = "1.19.0"
 datastorePreferences = "1.2.1"
 desugar_jdk_libs = "2.1.5"
 espressoCore = "3.7.0"
-navigation3 = "1.1.4"
+navigation3 = "1.1.5"
 junit = "4.13.2"
 kotlinx-serialization-json = "1.11.0"
-ktorClientCore = "3.5.1"
+ktorClientCore = "3.5.2"
 lifecycle-runtime-compose = "2.11.0"
 material3 = "1.5.0-alpha23"
 pinLockCompose = "1.0.5"
@@ -28,32 +28,31 @@ roomVersion = "2.8.4"
 semver4j = "3.1.0"
 slf4jAndroid = "1.7.36"
 timber = "5.0.1"
-androidGradlePlugin = "9.2.1"
-kotlin = "2.4.0"
-ksp = "2.3.10"
+androidGradlePlugin = "9.3.1"
+kotlin = "2.4.10"
+ksp = "2.3.11"
 composeBom = "2026.06.01"
 compose = "1.11.4"
 icons = "1.7.8"
 workRuntimeKtxVersion = "2.11.2"
-quickieFoss = "1.18.1"
+quickieFoss = "1.19.0"
 coreSplashscreen = "1.2.0"
 gradlePlugins-grgit = "5.3.3"
 reorderable = "3.1.0"
 material = "1.14.0"
 storage = "1.6.0"
-ktfmt = "0.26.0"
+ktfmt = "0.27.0"
 licensee = "1.14.1"
 lifecycleViewmodelNavigation3 = "2.11.0"
-parser = "1.1.1"
-relinker = "1.4.5"
-libsu = "6.0.0"
-jetbrainsKotlinJvm = "2.4.0"
-sonner = "0.3.9"
-aboutlibraries = "15.0.3"
+sonner = "0.4.0"
+aboutlibraries = "15.0.4"
+core = "1.1.0"
 
 [bundles]
 # Core AndroidX foundations
 androidx-core-full = ["androidx-core", "androidx-core-ktx"]
+
+wgtunnel-core = ["wgtunnel-backend", "wgtunnel-backend-android", "wgtunnel-parser", "wgtunnel-hevtunnel", "wgtunnel-backend-android-jni"]
 
 # Lifecycle components (merged non-compose ones for common usage)
 androidx-lifecycle-core = ["androidx-lifecycle-runtime-ktx", "androidx-lifecycle-service", "androidx-lifecycle-process"]
@@ -192,17 +191,18 @@ quickie-foss = { module = "com.github.T8RIN.QuickieExtended:quickie-foss", versi
 desugar_jdk_libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar_jdk_libs" }
 reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reorderable" }
 
-# tunnel
-amneziawg-parser = { module = "com.zaneschepke.wireguardautotunnel:amneziawg-parser", version.ref = "parser" }
-
 # shizuku
 shizuku-api = { module = "dev.rikka.shizuku:api", version.ref = "shizuku" }
 shizuku-provider = { module = "dev.rikka.shizuku:provider", version.ref = "shizuku" }
 
-relinker = { module = "com.getkeepsafe.relinker:relinker", version.ref = "relinker" }
-libsu = { module = "com.github.topjohnwu.libsu:core", version.ref = "libsu" }
-
 aboutlibraries-compose = { module = "com.mikepenz:aboutlibraries-compose-m3", version.ref = "aboutlibraries" }
+
+# Backend
+wgtunnel-backend = { module = "com.wgtunnel:backend", version.ref = "core" }
+wgtunnel-backend-android = { module = "com.wgtunnel:backend-android", version.ref = "core" }
+wgtunnel-backend-android-jni = { module = "com.wgtunnel:backend-android-jni", version.ref = "core" }
+wgtunnel-hevtunnel = { module = "com.wgtunnel:hevtunnel", version.ref = "core" }
+wgtunnel-parser = { module = "com.wgtunnel:parser", version.ref = "core" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
@@ -213,5 +213,5 @@ compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "
 grgit = { id = "org.ajoberstar.grgit.service", version.ref = "gradlePlugins-grgit" }
 ktfmt = { id = "com.ncorti.ktfmt.gradle", version.ref = "ktfmt" }
 licensee = { id = "app.cash.licensee", version.ref = "licensee" }
-jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrainsKotlinJvm" }
+jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 aboutlibraries = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "aboutlibraries" }

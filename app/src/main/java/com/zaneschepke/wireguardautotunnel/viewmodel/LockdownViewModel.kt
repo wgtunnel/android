@@ -9,17 +9,17 @@ import com.zaneschepke.wireguardautotunnel.domain.repository.LockdownSettingsRep
 import com.zaneschepke.wireguardautotunnel.domain.sideeffect.GlobalSideEffect
 import com.zaneschepke.wireguardautotunnel.ui.state.LockdownSettingsUiState
 import com.zaneschepke.wireguardautotunnel.util.StringValue
-import org.orbitmvi.orbit.ContainerHost
-import org.orbitmvi.orbit.viewmodel.container
+import org.orbitmvi.orbit.OrbitContainerHost
+import org.orbitmvi.orbit.viewmodel.orbitContainer
 
 class LockdownViewModel(
     private val lockdownSettingsRepository: LockdownSettingsRepository,
     private val tunnelProvider: TunnelProvider,
     private val globalEffectRepository: GlobalEffectRepository,
-) : ContainerHost<LockdownSettingsUiState, Nothing>, ViewModel() {
+) : OrbitContainerHost<LockdownSettingsUiState, LockdownSettingsUiState, Nothing>, ViewModel() {
 
     override val container =
-        container<LockdownSettingsUiState, Nothing>(
+        orbitContainer<LockdownSettingsUiState, Nothing>(
             LockdownSettingsUiState(),
             buildSettings = { repeatOnSubscribedStopTimeout = 5000L },
         ) {

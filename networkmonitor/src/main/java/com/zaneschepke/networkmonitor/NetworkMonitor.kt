@@ -1,9 +1,9 @@
 package com.zaneschepke.networkmonitor
 
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 
 interface NetworkMonitor {
-    val connectivityStateFlow: Flow<ConnectivityState>
+    val connectivityStateFlow: StateFlow<ConnectivityState?>
 
     fun checkPermissionsAndUpdateState()
 }

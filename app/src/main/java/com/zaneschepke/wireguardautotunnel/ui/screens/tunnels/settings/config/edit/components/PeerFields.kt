@@ -66,7 +66,7 @@ fun PeerFields(peer: EditablePeer, onPeerChange: (EditablePeer) -> Unit, showKey
             value = peer.persistentKeepalive,
             onValueChange = { onPeerChange(peer.copy(persistentKeepalive = it)) },
             label = stringResource(R.string.persistent_keepalive),
-            hint = stringResource(R.string.optional),
+            hint = stringResource(R.string.hint_template, "25 or 22-30"),
             trailing = {
                 Text(
                     stringResource(R.string.seconds).lowercase(locale),

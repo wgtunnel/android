@@ -22,6 +22,8 @@ sealed class GlobalSideEffect {
 
     data object ConfigChanged : GlobalSideEffect()
 
+    data object RequestWriteStoragePermission : GlobalSideEffect()
+
     data class RequestVpnPermission(val requestingMode: TunnelMode, val config: TunnelConfig?) :
         GlobalSideEffect()
 

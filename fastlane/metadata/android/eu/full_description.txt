@@ -1,0 +1,17 @@
+WG Tunnel WireGuard VPN bezero bat da, sinpletasunaren eta sendotasunaren arteko oreka lortzen duena, erabiltzaile arruntentzat zein erabiltzaile aurreratuentzat bezero ezin hobea bihurtuz.
+Zure VPNera noiz konektatu automatizatu nahi duzun edo pribatutasun-erabilera aurreratuak dituzun erabiltzaile aditua zaren, WG Tunnel-ek estaltzen zaitu.
+
+Ezaugarriak:
+
+- **Tunel Automatikoa:** Aktibatu tunelak automatikoki, zure gailuaren sare-xehetasun aktiboetan oinarrituta.
+- **Amaiera-puntuen Abiarazte Atzeratua:** Amaiera-puntuak modu seguruan ebazten ditu eta parekideak eguneratzen ditu tunela martxan jarri ondoren, abioan fidagarritasun eta ihes-babes hobea izateko.
+- **Eskuemate Monitorizazioa:** Eskuemateen denbora errealeko monitorizazioa, tunelaren osasunari buruzko berehalako informazioa emateko.
+- **AmneziaWG Euskarria:** AmneziaWG 2.0-rako euskarri osoa, zentsuraren aurkako babes sendoa emanez.
+- **Tunel Zatiketa:** Aplikazio edo trafiko jakinak VPNaren bidez bideratzeko euskarri malgua.
+- **Proxy Lokal Modua:** WireGuard tunelak SOCKS5 edo HTTP proxy lokal baten bidez erakusten ditu, arakatzaileei edo suebaki-aplikazioei (AdGuard bezalakoei) erabilgarri jartzeko.
+- **Blokeo Modua:** Aplikazio barneko "kill switch" aurreratua, tunela erorita dagoenean trafiko guztia blokeatzen duena.
+- **Kontrol Bizkorrak:** Ezarpen Azkarren fitxa eta hasierako pantailako lasterbideak, erraz aktibatzeko/desaktibatzeko.
+- **Urruneko Kontrol Euskarria:** "Intent" bidezko automatizazioa, tunelak eta tunel-automatikoa automatizazio-aplikazioetatik (Tasker bezalakoetatik) kontrolatzeko.
+- **DNS Dinamikoaren Kudeaketa:** Zerbitzariaren IP helbidea aldatzen denean amaiera-puntuak automatikoki detektatu eta eguneratzen ditu, berrabiarazi beharrik gabe.
+- **IPv6 Amaiera-puntuak:** IPv6 amaiera-puntuetara automatikoki igotzen da edo IPv4ra itzultzen da sare-baldintzen arabera, berrabiarazi beharrik gabe.
+- **Android TV Euskarria:** Android TVn ezaugarri ia guztientzako euskarri osoa.

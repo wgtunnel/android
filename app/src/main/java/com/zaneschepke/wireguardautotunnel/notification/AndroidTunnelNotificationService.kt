@@ -195,6 +195,12 @@ class AndroidTunnelNotificationService(private val notificationService: Notifica
         showError(message)
     }
 
+    override fun showConfigMissingDns(tunnelName: String) {
+        val context = notificationService.context
+        val message = context.getString(R.string.error_config_missing_dns, tunnelName)
+        showError(message)
+    }
+
     override fun showError(message: String) {
         val notification =
             notificationService.createNotification(

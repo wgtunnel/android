@@ -13,24 +13,23 @@ import com.zaneschepke.wireguardautotunnel.ui.state.EditableInterface
 import com.zaneschepke.wireguardautotunnel.ui.state.SplitTunnelUiState
 import com.zaneschepke.wireguardautotunnel.util.StringValue
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import org.orbitmvi.orbit.ContainerHost
-import org.orbitmvi.orbit.viewmodel.container
+import org.orbitmvi.orbit.OrbitContainerHost
+import org.orbitmvi.orbit.viewmodel.orbitContainer
 
 class SplitTunnelViewModel(
     private val tunnelRepository: TunnelRepository,
     private val packageRepository: InstalledPackageRepository,
     private val globalEffectRepository: GlobalEffectRepository,
     val tunnelId: Int,
-) : ContainerHost<SplitTunnelUiState, Nothing>, ViewModel() {
+) : OrbitContainerHost<SplitTunnelUiState, SplitTunnelUiState, Nothing>, ViewModel() {
 
     override val container =
-        container<SplitTunnelUiState, Nothing>(
+        orbitContainer<SplitTunnelUiState, Nothing>(
             SplitTunnelUiState(),
             buildSettings = { repeatOnSubscribedStopTimeout = 5000L },
         ) {
-            val packagesFlow = flow { emit(packageRepository.getInstalledPackages()) }
+            val packagesFlow = packageRepository.installedPackages
 
             val tunnelsFlow = tunnelRepository.userTunnelsFlow
 
@@ -59,7 +58,7 @@ class SplitTunnelViewModel(
                         installedPackages = packages,
                         tunnels = tunnels.map { it.toSummary() },
                         tunnel = tunnel,
-                        isLoading = false,
+                        isLoading = packages.isEmpty(),
                         splitOption =
                             if (isInitialized) currentState.splitOption else initialOption,
                         selectedPackages =

@@ -1,6 +1,6 @@
 package com.zaneschepke.wireguardautotunnel.ui.state
 
-import com.zaneschepke.tunnel.state.BackendStatus
+import com.wgtunnel.backend.state.BackendStatus
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 
 data class TunnelsUiState(

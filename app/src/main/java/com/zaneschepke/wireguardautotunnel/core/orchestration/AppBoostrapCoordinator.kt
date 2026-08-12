@@ -1,5 +1,6 @@
 package com.zaneschepke.wireguardautotunnel.core.orchestration
 
+import android.content.Context
 import com.zaneschepke.logcatter.LogReader
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelProvider
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelMode
@@ -8,6 +9,8 @@ import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepos
 import com.zaneschepke.wireguardautotunnel.domain.repository.LockdownSettingsRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.MonitoringSettingsRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
+import com.zaneschepke.wireguardautotunnel.service.tile.AutoTunnelTileRefresher
+import com.zaneschepke.wireguardautotunnel.service.tile.TunnelTileRefresher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -32,7 +35,7 @@ class AppBoostrapCoordinator(
     private val _isReady = MutableStateFlow(false)
     val isReady: StateFlow<Boolean> = _isReady.asStateFlow()
 
-    suspend fun bootstrap() = coroutineScope {
+    suspend fun bootstrap(context: Context) = coroutineScope {
         launch { bootstrapLogging() }
 
         val criticalTasks =
@@ -49,6 +52,9 @@ class AppBoostrapCoordinator(
         } catch (e: Exception) {
             Timber.e(e, "One or more critical bootstrap tasks failed")
             _isReady.value = true
+        } finally {
+            TunnelTileRefresher.refresh(context)
+            AutoTunnelTileRefresher.refresh(context)
         }
     }
 

@@ -1,7 +1,7 @@
 package com.zaneschepke.wireguardautotunnel.core.orchestration
 
-import com.zaneschepke.wireguardautotunnel.parser.Config
-import com.zaneschepke.wireguardautotunnel.parser.InterfaceSection
+import com.wgtunnel.parser.Config
+import com.wgtunnel.parser.InterfaceSection
 
 object ConfigReconciler {
     private fun mergeInterface(
@@ -31,6 +31,17 @@ object ConfigReconciler {
             i3 = if (policy.amnezia) global.i3 else base.i3,
             i4 = if (policy.amnezia) global.i4 else base.i4,
             i5 = if (policy.amnezia) global.i5 else base.i5,
+            headerProtectionKey =
+                if (policy.amnezia) global.headerProtectionKey else base.headerProtectionKey,
+            contentPaddingAddition =
+                if (policy.amnezia) global.contentPaddingAddition else base.contentPaddingAddition,
+            rekeyAfterTime = if (policy.amnezia) global.rekeyAfterTime else base.rekeyAfterTime,
+            rekeyTimeout = if (policy.amnezia) global.rekeyTimeout else base.rekeyTimeout,
+            rejectAfterTime = if (policy.amnezia) global.rejectAfterTime else base.rejectAfterTime,
+            keepaliveTimeout =
+                if (policy.amnezia) global.keepaliveTimeout else base.keepaliveTimeout,
+            maxHandshakeAttempts =
+                if (policy.amnezia) global.maxHandshakeAttempts else base.maxHandshakeAttempts,
         )
     }
 

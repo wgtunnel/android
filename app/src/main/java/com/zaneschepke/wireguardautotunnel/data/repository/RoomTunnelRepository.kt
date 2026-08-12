@@ -30,6 +30,10 @@ class RoomTunnelRepository(private val tunnelConfigDao: TunnelConfigDao) : Tunne
         tunnelConfigDao.setMetered(tunnelId, value)
     }
 
+    override suspend fun setDDNSTunnel(tunnelId: Int, value: Boolean) {
+        tunnelConfigDao.setDDNSTunnel(tunnelId, value)
+    }
+
     override suspend fun save(tunnelConfig: Domain) {
         tunnelConfigDao.upsert(tunnelConfig.toEntity())
     }

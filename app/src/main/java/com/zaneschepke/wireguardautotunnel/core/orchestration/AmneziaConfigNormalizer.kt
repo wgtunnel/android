@@ -1,6 +1,6 @@
 package com.zaneschepke.wireguardautotunnel.core.orchestration
 
-import com.zaneschepke.wireguardautotunnel.parser.Config
+import com.wgtunnel.parser.Config
 
 object AmneziaConfigNormalizer {
 

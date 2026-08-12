@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.provider.Settings
 import android.view.WindowManager
 import androidx.activity.SystemBarStyle
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -84,6 +85,7 @@ import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppStateRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.domain.sideeffect.GlobalSideEffect
+import com.zaneschepke.wireguardautotunnel.service.tile.TunnelTileRefresher
 import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.common.banner.AppAlertBanner
@@ -215,6 +217,15 @@ class MainActivity : AppCompatActivity() {
             var showLocalNetworkRationale by remember { mutableStateOf(false) }
             var hasPromptedLocalNetwork by rememberSaveable { mutableStateOf(false) }
 
+            val requestPermissionLauncher =
+                rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {
+                    isGranted ->
+                    if (isGranted) {
+                        // Export the files on granted
+                        viewModel.exportSelectedTunnels(uri = null, context)
+                    }
+                }
+
             val localNetworkPermissionLauncher =
                 rememberLauncherForActivityResult(
                     contract = ActivityResultContracts.RequestPermission()
@@ -306,11 +317,19 @@ class MainActivity : AppCompatActivity() {
                         is GlobalSideEffect.Snackbar -> snackbarChannel.send(sideEffect)
                         is GlobalSideEffect.LaunchUrl -> context.openWebUrl(sideEffect.url)
                         is GlobalSideEffect.InstallApk -> context.installApk(sideEffect.apk)
+                        GlobalSideEffect.RequestWriteStoragePermission -> {
+                            requestPermissionLauncher.launch(
+                                Manifest.permission.WRITE_EXTERNAL_STORAGE
+                            )
+                        }
                     }
                 }
             }
 
             if (!uiState.isAppLoaded) return@setContent
+
+            // Refresh tiles on tunnel size changes to catch deletes and adds
+            LaunchedEffect(uiState.tunnelNames.size) { TunnelTileRefresher.refresh(context) }
 
             LaunchedEffect(Unit) {
                 var currentToast: Toast? = null
@@ -492,6 +511,9 @@ class MainActivity : AppCompatActivity() {
                                             )
                                             .consumeWindowInsets(padding)
                                 ) {
+                                    BackHandler(enabled = uiState.selectedTunnelCount > 0) {
+                                        viewModel.clearSelectedTunnels()
+                                    }
                                     NavDisplay(
                                         backStack = backStack,
                                         modifier = Modifier.fillMaxSize(),

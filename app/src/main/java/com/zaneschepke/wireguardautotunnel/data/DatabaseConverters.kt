@@ -1,7 +1,9 @@
 package com.zaneschepke.wireguardautotunnel.data
 
 import androidx.room.TypeConverter
-import com.zaneschepke.wireguardautotunnel.domain.enums.DnsProtocol
+import com.zaneschepke.wireguardautotunnel.domain.enums.BootstrapDnsProtocol
+import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelDnsMode
+import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelDnsProtocol
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelMode
 import com.zaneschepke.wireguardautotunnel.domain.enums.WifiDetectionMethod
 import kotlinx.serialization.json.Json
@@ -50,7 +52,17 @@ class DatabaseConverters {
 
     @TypeConverter fun fromMode(mode: TunnelMode): Int = mode.value
 
-    @TypeConverter fun toDnsProtocol(value: Int): DnsProtocol = DnsProtocol.fromValue(value)
+    @TypeConverter
+    fun toDnsProtocol(value: Int): BootstrapDnsProtocol = BootstrapDnsProtocol.fromValue(value)
 
-    @TypeConverter fun fromDnsProtocol(mode: DnsProtocol): Int = mode.value
+    @TypeConverter fun fromDnsProtocol(mode: BootstrapDnsProtocol): Int = mode.value
+
+    @TypeConverter fun toTunnelDnsMode(value: Int): TunnelDnsMode = TunnelDnsMode.fromValue(value)
+
+    @TypeConverter fun fromTunnelDnsMode(mode: TunnelDnsMode): Int = mode.value
+
+    @TypeConverter
+    fun toTunnelDnsProtocol(value: Int): TunnelDnsProtocol = TunnelDnsProtocol.fromValue(value)
+
+    @TypeConverter fun fromTunnelDnsProtocol(protocol: TunnelDnsProtocol): Int = protocol.value
 }

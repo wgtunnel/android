@@ -22,10 +22,10 @@ sealed class LocalSideEffect {
 
         data object ImportTunnels : Sheet()
 
-        data object ExportTunnels : Sheet()
-
         data object LoggerActions : Sheet()
     }
+
+    data object LaunchExportPicker : LocalSideEffect()
 
     sealed class Modal : LocalSideEffect() {
         data object QR : Modal()

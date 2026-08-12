@@ -24,7 +24,9 @@ fun VpnDeniedDialog(show: Boolean, onDismiss: () -> Unit) {
                 LinkAnnotation.Clickable(
                     tag = "vpnSettings",
                     styles =
-                        TextLinkStyles(style = SpanStyle(color = MaterialTheme.colorScheme.primary)),
+                        TextLinkStyles(
+                            style = SpanStyle(color = MaterialTheme.colorScheme.primary)
+                        ),
                 ) {
                     context.launchVpnSettings()
                 }

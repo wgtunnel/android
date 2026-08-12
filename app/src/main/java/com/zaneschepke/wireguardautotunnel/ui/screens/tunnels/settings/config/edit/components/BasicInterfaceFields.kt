@@ -20,8 +20,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
+import com.wgtunnel.parser.crypto.Key
 import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.parser.crypto.Key
 import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
 import com.zaneschepke.wireguardautotunnel.ui.common.functions.rememberClipboardHelper
 import com.zaneschepke.wireguardautotunnel.ui.common.textbox.ConfigurationTextBox

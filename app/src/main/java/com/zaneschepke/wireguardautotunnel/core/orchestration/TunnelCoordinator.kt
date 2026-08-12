@@ -1,6 +1,6 @@
 package com.zaneschepke.wireguardautotunnel.core.orchestration
 
-import com.zaneschepke.tunnel.model.BackendMode
+import com.wgtunnel.backend.model.BackendMode
 import com.zaneschepke.wireguardautotunnel.core.event.TunnelErrorEvent
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelProvider
 import com.zaneschepke.wireguardautotunnel.data.repository.RoomDnsSettingsRepository
@@ -19,23 +19,19 @@ import com.zaneschepke.wireguardautotunnel.domain.repository.MonitoringSettingsR
 import com.zaneschepke.wireguardautotunnel.domain.repository.ProxySettingsRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.service.ServiceManager
-import com.zaneschepke.wireguardautotunnel.ui.state.DisplayTunnelState
-import kotlin.time.Duration.Companion.milliseconds
+import com.zaneschepke.wireguardautotunnel.util.extensions.toTunnelDnsConfigOrNull
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import timber.log.Timber
 
 class TunnelCoordinator(
     private val tunnelProvider: TunnelProvider,
@@ -52,17 +48,6 @@ class TunnelCoordinator(
 
     private val _userOverrideFlow = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
     val userOverrideFlow = _userOverrideFlow.asSharedFlow()
-
-    @OptIn(FlowPreview::class)
-    val tunnelDisplayStates: StateFlow<Map<Int, DisplayTunnelState>> =
-        tunnelProvider.backendStatus
-            .map { status ->
-                status.activeTunnels.mapValues { (_, activeTunnel) ->
-                    DisplayTunnelState.from(activeTunnel)
-                }
-            }
-            .debounce(400L.milliseconds)
-            .stateIn(scope = scope, started = SharingStarted.Eagerly, initialValue = emptyMap())
 
     data class RuntimeSettingsSnapshot(
         val general: GeneralSettings,
@@ -164,7 +149,7 @@ class TunnelCoordinator(
 
         val policy =
             ConfigReconciler.ConfigReconcilePolicy(
-                dnsSettings.isGlobalTunnelDnsEnabled,
+                dnsSettings.isGlobalTunnelConfigDnsEnabled,
                 settings.isGlobalSplitTunnelEnabled,
                 settings.isGlobalAmneziaEnabled,
             )
@@ -174,6 +159,8 @@ class TunnelCoordinator(
                 val globalConfig = tunnelRepository.globalTunnelFlow.firstOrNull()?.getConfig()
                 ConfigReconciler.reconcileConfig(config, globalConfig, policy)
             } else config
+
+        val tunnelDnsConfig = dnsSettings.toTunnelDnsConfigOrNull(runConfig)
 
         val backendMode =
             when (settings.tunnelMode) {
@@ -211,13 +198,17 @@ class TunnelCoordinator(
                         settings,
                     ),
                 mode = backendMode,
+                tunnelDnsConfig,
             )
             .onSuccess {
                 _actions.emit(
                     TunnelActionEvent.Started(tunnelId = tunnelConfig.id, source = source)
                 )
             }
-            .onFailure { _errors.emit(TunnelErrorEvent.from(it, tunnelConfig.id)) }
+            .onFailure {
+                Timber.e(it)
+                _errors.emit(TunnelErrorEvent.from(it, tunnelConfig.id))
+            }
     }
 
     suspend fun startDefault() {

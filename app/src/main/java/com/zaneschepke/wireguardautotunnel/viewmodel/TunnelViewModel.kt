@@ -7,17 +7,17 @@ import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.settings.ipv6.IPv6
 import com.zaneschepke.wireguardautotunnel.ui.state.TunnelUiState
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
-import org.orbitmvi.orbit.ContainerHost
-import org.orbitmvi.orbit.viewmodel.container
+import org.orbitmvi.orbit.OrbitContainerHost
+import org.orbitmvi.orbit.viewmodel.orbitContainer
 
 class TunnelViewModel(
     private val tunnelRepository: TunnelRepository,
     private val tunnelCoordinator: TunnelCoordinator,
     val tunnelId: Int,
-) : ContainerHost<TunnelUiState, Nothing>, ViewModel() {
+) : OrbitContainerHost<TunnelUiState, TunnelUiState, Nothing>, ViewModel() {
 
     override val container =
-        container<TunnelUiState, Nothing>(
+        orbitContainer<TunnelUiState, Nothing>(
             TunnelUiState(),
             buildSettings = { repeatOnSubscribedStopTimeout = 5000L },
         ) {
@@ -52,6 +52,8 @@ class TunnelViewModel(
     }
 
     fun onMetered(to: Boolean) = intent { tunnelRepository.setMetered(tunnelId, to) }
+
+    fun onDDNSTunnel(to: Boolean) = intent { tunnelRepository.setDDNSTunnel(tunnelId, to) }
 
     fun onIPv6Action(iPv6Intent: IPv6Intent) = intent {
         val tunnel = state.tunnel ?: return@intent

@@ -13,16 +13,16 @@ import com.zaneschepke.wireguardautotunnel.util.Constants
 import com.zaneschepke.wireguardautotunnel.util.StringValue
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
-import org.orbitmvi.orbit.ContainerHost
-import org.orbitmvi.orbit.viewmodel.container
+import org.orbitmvi.orbit.OrbitContainerHost
+import org.orbitmvi.orbit.viewmodel.orbitContainer
 
 class SupportViewModel(
     private val updateRepository: UpdateRepository,
     private val mainDispatcher: CoroutineDispatcher,
     private val globalEffectRepository: GlobalEffectRepository,
-) : ContainerHost<SupportUiState, Nothing>, ViewModel() {
+) : OrbitContainerHost<SupportUiState, SupportUiState, Nothing>, ViewModel() {
 
-    override val container = container<SupportUiState, Nothing>(SupportUiState())
+    override val container = orbitContainer<SupportUiState, Nothing>(SupportUiState())
 
     fun checkForStandaloneUpdate() = intent {
         postSideEffect(

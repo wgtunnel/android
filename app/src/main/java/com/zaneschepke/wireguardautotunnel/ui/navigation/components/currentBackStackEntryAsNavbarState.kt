@@ -1,6 +1,5 @@
 package com.zaneschepke.wireguardautotunnel.ui.navigation.components
 
-import android.os.Build
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Sort
@@ -390,22 +389,17 @@ fun currentRouteAsNavbarState(
                                                 stringResource(R.string.select_all),
                                             )
                                         }
-                                        // due to permissions, and SAF issues on TV, not support
-                                        // less than Android
-                                        // 10
-                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                                            IconButton(
-                                                onClick = {
-                                                    sharedViewModel.postSideEffect(
-                                                        LocalSideEffect.Sheet.ExportTunnels
-                                                    )
-                                                }
-                                            ) {
-                                                Icon(
-                                                    Icons.Rounded.Download,
-                                                    stringResource(R.string.download),
+                                        IconButton(
+                                            onClick = {
+                                                sharedViewModel.postSideEffect(
+                                                    LocalSideEffect.LaunchExportPicker
                                                 )
                                             }
+                                        ) {
+                                            Icon(
+                                                Icons.Rounded.Download,
+                                                stringResource(R.string.download),
+                                            )
                                         }
 
                                         if (globalState.selectedTunnelCount == 1) {

@@ -45,13 +45,13 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.zaneschepke.networkmonitor.ActiveNetwork
+import com.zaneschepke.networkmonitor.AndroidNetworkMonitor
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SwitchWithDivider
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ThemedSwitch
-import com.zaneschepke.wireguardautotunnel.ui.common.functions.rememberClipboardHelper
 import com.zaneschepke.wireguardautotunnel.ui.common.label.GroupLabel
 import com.zaneschepke.wireguardautotunnel.ui.common.text.DescriptionText
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
@@ -71,7 +71,6 @@ fun AutoTunnelScreen(
     val context = LocalContext.current
     val navController = LocalNavController.current
     val isTv = LocalIsAndroidTV.current
-    val clipboard = rememberClipboardHelper()
 
     val globalUiState by sharedViewModel.collectAsState()
     val uiState by viewModel.collectAsState()
@@ -191,6 +190,7 @@ fun AutoTunnelScreen(
                     },
                 description =
                     (uiState.connectivityState?.activeNetwork as? ActiveNetwork.Wifi)?.let {
+                        activeNetworkWifi ->
                         {
                             SelectionContainer {
                                 Column {
@@ -201,33 +201,43 @@ fun AutoTunnelScreen(
                                                 style = SpanStyle(fontWeight = FontWeight.Bold)
                                             ) {
                                                 append(
-                                                    it.securityType?.name
+                                                    activeNetworkWifi.securityType?.name
                                                         ?: stringResource(R.string.unknown)
                                                 )
                                             }
                                         }
                                     )
-                                    DescriptionText(
-                                        buildAnnotatedString {
-                                            append(stringResource(R.string.network_name))
-                                            withStyle(
-                                                style = SpanStyle(fontWeight = FontWeight.Bold)
-                                            ) {
-                                                append(it.ssid)
+                                    if (
+                                        activeNetworkWifi.ssid !=
+                                            AndroidNetworkMonitor.ANDROID_UNKNOWN_SSID
+                                    ) {
+                                        DescriptionText(
+                                            buildAnnotatedString {
+                                                append(stringResource(R.string.network_name))
+                                                withStyle(
+                                                    style = SpanStyle(fontWeight = FontWeight.Bold)
+                                                ) {
+                                                    append(activeNetworkWifi.ssid)
+                                                }
                                             }
-                                        }
-                                    )
-                                    DescriptionText(
-                                        buildAnnotatedString {
-                                            append(stringResource(R.string.bssid))
-                                            append(": ")
-                                            withStyle(
-                                                style = SpanStyle(fontWeight = FontWeight.Bold)
-                                            ) {
-                                                append(it.bssid)
+                                        )
+                                    }
+                                    if (
+                                        activeNetworkWifi.bssid !=
+                                            AndroidNetworkMonitor.ANDROID_UNKNOWN_BSSID
+                                    ) {
+                                        DescriptionText(
+                                            buildAnnotatedString {
+                                                append(stringResource(R.string.bssid))
+                                                append(": ")
+                                                withStyle(
+                                                    style = SpanStyle(fontWeight = FontWeight.Bold)
+                                                ) {
+                                                    append(activeNetworkWifi.bssid)
+                                                }
                                             }
-                                        }
-                                    )
+                                        )
+                                    }
                                 }
                             }
                         }

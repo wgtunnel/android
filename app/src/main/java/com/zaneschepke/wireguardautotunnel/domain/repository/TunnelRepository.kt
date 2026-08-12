@@ -14,6 +14,8 @@ interface TunnelRepository {
 
     suspend fun setMetered(tunnelId: Int, value: Boolean)
 
+    suspend fun setDDNSTunnel(tunnelId: Int, value: Boolean)
+
     suspend fun save(tunnelConfig: TunnelConfig)
 
     suspend fun saveAll(tunnelConfigList: List<TunnelConfig>)

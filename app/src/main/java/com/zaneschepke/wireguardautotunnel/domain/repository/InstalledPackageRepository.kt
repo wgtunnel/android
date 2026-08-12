@@ -1,12 +1,12 @@
 package com.zaneschepke.wireguardautotunnel.domain.repository
 
 import com.zaneschepke.wireguardautotunnel.domain.model.InstalledPackage
+import kotlinx.coroutines.flow.StateFlow
 
 interface InstalledPackageRepository {
+    val installedPackages: StateFlow<List<InstalledPackage>>
 
-    // gets packages from cache or queries and updates cache if empty
     suspend fun getInstalledPackages(): List<InstalledPackage>
 
-    // updates the cache and returns the results
     suspend fun refreshInstalledPackages(): List<InstalledPackage>
 }

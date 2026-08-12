@@ -1,6 +1,6 @@
 package com.zaneschepke.wireguardautotunnel.core.event
 
-import com.zaneschepke.tunnel.util.BackendException
+import com.wgtunnel.backend.exception.BackendException
 
 sealed interface TunnelErrorEvent {
     data class VpnPermissionDenied(val tunnelId: Int) : TunnelErrorEvent
@@ -10,6 +10,8 @@ sealed interface TunnelErrorEvent {
     data class Socks5PortUnavailable(val tunnelId: Int, val port: Int) : TunnelErrorEvent
 
     data class HttpPortUnavailable(val tunnelId: Int, val port: Int) : TunnelErrorEvent
+
+    data class ConfigMissingDns(val tunnelId: Int) : TunnelErrorEvent
 
     companion object {
         fun from(throwable: Throwable, id: Int): TunnelErrorEvent {
@@ -25,6 +27,9 @@ sealed interface TunnelErrorEvent {
                 }
                 is BackendException.HttpPortUnavailable -> {
                     HttpPortUnavailable(id, throwable.port)
+                }
+                is BackendException.ConfigMissingDNS -> {
+                    ConfigMissingDns(id)
                 }
                 else -> InternalFailure(id, throwable.message ?: "Unknown")
             }

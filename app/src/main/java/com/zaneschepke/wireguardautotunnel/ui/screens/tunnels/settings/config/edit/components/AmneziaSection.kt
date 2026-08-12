@@ -3,7 +3,10 @@ package com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.settings.config.e
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -254,6 +257,85 @@ fun AmneziaSection(
                         stringResource(R.string.special_junk_packet).lowercase(locale),
                     ),
             hint = stringResource(R.string.hint_template, "<b 0x1A2B3C>"),
+            modifier = Modifier.fillMaxWidth(),
+        )
+
+        // AmneziaWG 3.0+
+        ConfigurationTextBox(
+            value = interfaceState.headerProtectionKey,
+            onValueChange = { onInterfaceChange(interfaceState.copy(headerProtectionKey = it)) },
+            label = stringResource(R.string.header_protection_key),
+            hint = stringResource(R.string.hint_template, "base64 key"),
+            modifier = Modifier.fillMaxWidth(),
+        )
+        ConfigurationTextBox(
+            value = interfaceState.contentPaddingAddition,
+            onValueChange = { onInterfaceChange(interfaceState.copy(contentPaddingAddition = it)) },
+            label = stringResource(R.string.content_padding_addition),
+            hint = stringResource(R.string.hint_template, "0-16"),
+            modifier = Modifier.fillMaxWidth(),
+        )
+        ConfigurationTextBox(
+            value = interfaceState.rekeyAfterTime,
+            onValueChange = { onInterfaceChange(interfaceState.copy(rekeyAfterTime = it)) },
+            label = stringResource(R.string.rekey_after_time),
+            hint = stringResource(R.string.hint_template, "120"),
+            trailing = {
+                Text(
+                    stringResource(R.string.seconds).lowercase(locale),
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(end = 10.dp),
+                )
+            },
+            modifier = Modifier.fillMaxWidth(),
+        )
+        ConfigurationTextBox(
+            value = interfaceState.rekeyTimeout,
+            onValueChange = { onInterfaceChange(interfaceState.copy(rekeyTimeout = it)) },
+            label = stringResource(R.string.rekey_timeout),
+            trailing = {
+                Text(
+                    stringResource(R.string.seconds).lowercase(locale),
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(end = 10.dp),
+                )
+            },
+            hint = stringResource(R.string.hint_template, "5"),
+            modifier = Modifier.fillMaxWidth(),
+        )
+        ConfigurationTextBox(
+            value = interfaceState.rejectAfterTime,
+            onValueChange = { onInterfaceChange(interfaceState.copy(rejectAfterTime = it)) },
+            label = stringResource(R.string.reject_after_time),
+            trailing = {
+                Text(
+                    stringResource(R.string.seconds).lowercase(locale),
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(end = 10.dp),
+                )
+            },
+            hint = stringResource(R.string.hint_template, "180"),
+            modifier = Modifier.fillMaxWidth(),
+        )
+        ConfigurationTextBox(
+            value = interfaceState.keepaliveTimeout,
+            onValueChange = { onInterfaceChange(interfaceState.copy(keepaliveTimeout = it)) },
+            label = stringResource(R.string.keepalive_timeout),
+            trailing = {
+                Text(
+                    stringResource(R.string.seconds).lowercase(locale),
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(end = 10.dp),
+                )
+            },
+            hint = stringResource(R.string.hint_template, "10"),
+            modifier = Modifier.fillMaxWidth(),
+        )
+        ConfigurationTextBox(
+            value = interfaceState.maxHandshakeAttempts,
+            onValueChange = { onInterfaceChange(interfaceState.copy(maxHandshakeAttempts = it)) },
+            label = stringResource(R.string.max_handshake_attempts),
+            hint = stringResource(R.string.hint_template, "18"),
             modifier = Modifier.fillMaxWidth(),
         )
     }

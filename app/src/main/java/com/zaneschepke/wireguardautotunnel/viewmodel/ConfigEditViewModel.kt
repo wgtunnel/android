@@ -2,6 +2,7 @@ package com.zaneschepke.wireguardautotunnel.viewmodel
 
 import androidx.lifecycle.ViewModel
 import com.dokar.sonner.ToastType
+import com.wgtunnel.parser.ConfigParseException
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.core.orchestration.TunnelCoordinator
 import com.zaneschepke.wireguardautotunnel.domain.enums.MimicMode
@@ -11,7 +12,6 @@ import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepos
 import com.zaneschepke.wireguardautotunnel.domain.repository.GlobalEffectRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.domain.sideeffect.GlobalSideEffect
-import com.zaneschepke.wireguardautotunnel.parser.ConfigParseException
 import com.zaneschepke.wireguardautotunnel.ui.state.ConfigDraft
 import com.zaneschepke.wireguardautotunnel.ui.state.ConfigEditUiState
 import com.zaneschepke.wireguardautotunnel.ui.state.ConfigUiState
@@ -23,8 +23,8 @@ import com.zaneschepke.wireguardautotunnel.util.StringValue
 import com.zaneschepke.wireguardautotunnel.util.extensions.asStringValue
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
-import org.orbitmvi.orbit.ContainerHost
-import org.orbitmvi.orbit.viewmodel.container
+import org.orbitmvi.orbit.OrbitContainerHost
+import org.orbitmvi.orbit.viewmodel.orbitContainer
 import timber.log.Timber
 
 class ConfigEditViewModel(
@@ -34,17 +34,17 @@ class ConfigEditViewModel(
     private val globalEffectRepository: GlobalEffectRepository,
     private val tunnelCoordinator: TunnelCoordinator,
     val tunnelId: Int?,
-) : ContainerHost<ConfigUiState, Nothing>, ViewModel() {
+) : OrbitContainerHost<ConfigUiState, ConfigUiState, Nothing>, ViewModel() {
 
     override val container =
-        container<ConfigUiState, Nothing>(
+        orbitContainer<ConfigUiState, Nothing>(
             ConfigUiState(),
             buildSettings = { repeatOnSubscribedStopTimeout = 5000L },
         ) {
             combine(
                     tunnelCoordinator.backendStatus,
                     tunnelRepository.flow,
-                    dnsSettingsRepository.flow.map { it.isGlobalTunnelDnsEnabled },
+                    dnsSettingsRepository.flow.map { it.isGlobalTunnelConfigDnsEnabled },
                     settingsRepository.flow.map { it.isGlobalAmneziaEnabled },
                 ) { backendStatus, tunnels, globalDnsEnabled, globalAmneziaEnabled ->
                     val tunnel = tunnels.firstOrNull { it.id == tunnelId }
@@ -126,43 +126,42 @@ class ConfigEditViewModel(
         }
 
         runCatching {
-                val config = state.draft.config.buildConfig(state.draft.tunnelName)
+            val config = state.draft.config.buildConfig(state.draft.tunnelName)
 
-                config.validate()
+            config.validate()
 
-                val quickConfig = config.asQuickString()
-
-                val tunnelConfig =
-                    if (tunnelId == null) {
-                        TunnelConfig.tunnelConfFromQuick(quickConfig, state.draft.tunnelName)
-                    } else {
-                        state.tunnel?.copy(name = state.draft.tunnelName, quickConfig = quickConfig)
-                    }
-
-                tunnelConfig?.let {
-                    tunnelRepository.save(it)
-
-                    dnsSettingsRepository.updateGlobalDnsEnabled(state.globalSettings.dnsEnabled)
-
-                    settingsRepository.updateGlobalAmneziaEnabled(
-                        state.globalSettings.amneziaEnabled
+            val tunnelConfig =
+                if (tunnelId == null) {
+                    TunnelConfig.fromConfig(config, state.draft.tunnelName)
+                } else {
+                    state.tunnel?.copy(
+                        name = state.draft.tunnelName,
+                        quickConfig = config.asQuickString(),
                     )
-
-                    if (state.isRunning) {
-                        tunnelCoordinator.stopTunnel(it.id)
-                        tunnelCoordinator.startTunnel(it)
-                    }
-
-                    postSideEffect(
-                        GlobalSideEffect.Snackbar(
-                            StringValue.StringResource(R.string.config_changes_saved),
-                            ToastType.Success,
-                        )
-                    )
-
-                    postSideEffect(GlobalSideEffect.PopBackStack)
                 }
+
+            tunnelConfig?.let {
+                tunnelRepository.save(it)
+
+                dnsSettingsRepository.updateGlobalDnsEnabled(state.globalSettings.dnsEnabled)
+
+                settingsRepository.updateGlobalAmneziaEnabled(state.globalSettings.amneziaEnabled)
+
+                if (state.isRunning) {
+                    tunnelCoordinator.stopTunnel(it.id)
+                    tunnelCoordinator.startTunnel(it)
+                }
+
+                postSideEffect(
+                    GlobalSideEffect.Snackbar(
+                        StringValue.StringResource(R.string.config_changes_saved),
+                        ToastType.Success,
+                    )
+                )
+
+                postSideEffect(GlobalSideEffect.PopBackStack)
             }
+        }
             .onFailure {
                 Timber.e(it)
 
@@ -207,7 +206,10 @@ class ConfigEditViewModel(
                     if (peer.isLanExcluded()) {
                         peer.includeLan()
                     } else {
-                        peer.excludeLan()
+                        val dnsServers =
+                            state.draft.config.`interface`.dnsServers.split(",").map { it.trim() }
+                                ?: emptyList()
+                        peer.excludeLan(dnsServers)
                     }
 
                 set(index, updated)

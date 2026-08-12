@@ -7,7 +7,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.zaneschepke.tunnel.state.ActiveTunnel
+import com.wgtunnel.backend.state.ActiveTunnel
 import com.zaneschepke.wireguardautotunnel.util.extensions.statusText
 import com.zaneschepke.wireguardautotunnel.util.extensions.uptimeText
 

@@ -21,7 +21,7 @@ import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.domain.enums.StatisticRefresh
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ThemedSwitch
-import com.zaneschepke.wireguardautotunnel.ui.common.dropdown.LabelledDropdown
+import com.zaneschepke.wireguardautotunnel.ui.common.dropdown.LabeledDropdown
 import com.zaneschepke.wireguardautotunnel.ui.common.label.GroupLabel
 import com.zaneschepke.wireguardautotunnel.viewmodel.MonitoringViewModel
 import org.koin.androidx.compose.koinViewModel
@@ -57,7 +57,7 @@ fun MonitoringScreen(viewModel: MonitoringViewModel = koinViewModel()) {
                     viewModel.onLiveTunnelStatisticsChanged(!uiState.tunnelStatisticsEnabled)
                 },
             )
-            LabelledDropdown(
+            LabeledDropdown(
                 title = stringResource(R.string.refresh_rate),
                 leading = { Icon(Icons.Outlined.Timer, contentDescription = null) },
                 currentValue = uiState.statisticRefresh,

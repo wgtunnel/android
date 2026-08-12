@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowForward
 import androidx.compose.material.icons.automirrored.outlined.CallSplit
 import androidx.compose.material.icons.outlined.Bolt
 import androidx.compose.material.icons.outlined.DataUsage
@@ -17,7 +16,6 @@ import androidx.compose.material.icons.outlined.Dns
 import androidx.compose.material.icons.outlined.Public
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,10 +23,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelMode
@@ -186,28 +180,12 @@ fun TunnelSettingsScreen(
                 leading = { Icon(Icons.Outlined.Dns, contentDescription = null) },
                 title = stringResource(R.string.ddns_auto_update),
                 description = {
-                    val normalDesc = stringResource(R.string.ddns_auto_update_description)
-                    val nowInText =
-                        stringResource(
-                            R.string.now_in_template,
-                            stringResource(R.string.seamless_recovery),
-                        )
-
-                    val text = buildAnnotatedString {
-                        append(normalDesc)
-                        append("\n")
-
-                        withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { append(nowInText) }
-                    }
-
-                    DescriptionText(text = text)
+                    DescriptionText(text = stringResource(R.string.ddns_auto_update_description))
                 },
                 trailing = {
-                    IconButton({ navController.push(Route.Settings) }) {
-                        Icon(Icons.AutoMirrored.Outlined.ArrowForward, null)
-                    }
+                    ThemedSwitch(tunnel.isDDNSTunnel, onClick = { viewModel.onDDNSTunnel(it) })
                 },
-                onClick = { navController.push(Route.Settings) },
+                onClick = { viewModel.onDDNSTunnel(!tunnel.isDDNSTunnel) },
             )
         }
     }

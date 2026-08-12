@@ -1,6 +1,8 @@
 package com.zaneschepke.wireguardautotunnel.util
 
-import com.zaneschepke.wireguardautotunnel.domain.enums.DnsProtocol
+import com.zaneschepke.wireguardautotunnel.domain.enums.BootstrapDnsProtocol
+import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelDnsMode
+import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelDnsProtocol
 
 object DnsValidator {
 
@@ -13,21 +15,21 @@ object DnsValidator {
         data class Invalid(val error: DnsError) : Result()
     }
 
-    fun normalize(protocol: DnsProtocol, input: String?): String {
+    fun normalize(protocol: BootstrapDnsProtocol, input: String?): String {
         val value = input?.trim().orEmpty()
 
         if (value.isEmpty()) return value
 
         return when (protocol) {
-            DnsProtocol.SYSTEM -> value
-            DnsProtocol.DOH -> normalizeDoH(value)
-            DnsProtocol.DOT -> normalizeDoT(value)
-            DnsProtocol.UDP -> normalizeUdp(value)
+            BootstrapDnsProtocol.SYSTEM -> value
+            BootstrapDnsProtocol.DOH -> normalizeDoH(value)
+            BootstrapDnsProtocol.DOT -> normalizeDoT(value)
+            BootstrapDnsProtocol.UDP -> normalizeUdp(value)
         }
     }
 
-    fun validate(protocol: DnsProtocol, endpoint: String?): Result {
-        if (protocol == DnsProtocol.SYSTEM) return Result.Valid
+    fun validate(protocol: BootstrapDnsProtocol, endpoint: String?): Result {
+        if (protocol == BootstrapDnsProtocol.SYSTEM) return Result.Valid
 
         val value = endpoint?.trim().orEmpty()
         if (value.isEmpty()) {
@@ -35,10 +37,10 @@ object DnsValidator {
         }
 
         return when (protocol) {
-            DnsProtocol.SYSTEM -> Result.Valid
-            DnsProtocol.DOH -> validateDoH(value)
-            DnsProtocol.DOT -> validateDoT(value)
-            DnsProtocol.UDP -> validateUdp(value)
+            BootstrapDnsProtocol.SYSTEM -> Result.Valid
+            BootstrapDnsProtocol.DOH -> validateDoH(value)
+            BootstrapDnsProtocol.DOT -> validateDoT(value)
+            BootstrapDnsProtocol.UDP -> validateUdp(value)
         }
     }
 
@@ -158,6 +160,65 @@ object DnsValidator {
         } else {
             value
         }
+    }
+
+    fun validateTunnelEndpoint(protocol: TunnelDnsProtocol, endpoint: String?): Result {
+        val asBootstrap =
+            when (protocol) {
+                TunnelDnsProtocol.Doh -> BootstrapDnsProtocol.DOH
+                TunnelDnsProtocol.Dot -> BootstrapDnsProtocol.DOT
+                TunnelDnsProtocol.Plain -> BootstrapDnsProtocol.UDP
+            }
+        return validate(asBootstrap, endpoint)
+    }
+
+    fun normalizeTunnelEndpoint(protocol: TunnelDnsProtocol, endpoint: String?): String {
+        val asBootstrap =
+            when (protocol) {
+                TunnelDnsProtocol.Doh -> BootstrapDnsProtocol.DOH
+                TunnelDnsProtocol.Dot -> BootstrapDnsProtocol.DOT
+                TunnelDnsProtocol.Plain -> BootstrapDnsProtocol.UDP
+            }
+        return normalize(asBootstrap, endpoint)
+    }
+
+    fun normalizeLocalSuffixes(input: String?): String {
+        if (input.isNullOrBlank()) return ""
+        return input
+            .split(',', '\n', ' ')
+            .asSequence()
+            .map { it.trim().lowercase().trim('.') }
+            .filter { it.isNotEmpty() }
+            .map { ".$it" }
+            .distinct()
+            .joinToString(",")
+    }
+
+    fun validateLocalSuffixes(mode: TunnelDnsMode, input: String?): Result {
+        if (mode != TunnelDnsMode.Split) return Result.Valid
+
+        val normalized = normalizeLocalSuffixes(input)
+        if (normalized.isEmpty()) {
+            return Result.Invalid(DnsError.Empty)
+        }
+
+        for (suffix in normalized.split(",")) {
+            val label = suffix.removePrefix(".")
+            if (label.isEmpty() || label.contains("..") || label.contains(" ")) {
+                return Result.Invalid(DnsError.InvalidHost)
+            }
+            // single-label special-use (.local) and normal multi-label suffixes
+            if (!isValidSuffix(label)) {
+                return Result.Invalid(DnsError.InvalidHost)
+            }
+        }
+        return Result.Valid
+    }
+
+    // Allows "local" and dotted domain suffixes
+    private fun isValidSuffix(label: String): Boolean {
+        if (label.equals("local", ignoreCase = true)) return true
+        return isValidHostname(label)
     }
 }
 
