@@ -202,8 +202,8 @@
     <string name="auto_tunnel_running">Автоматичний тунель запущений</string>
     <string name="auto_tunnel_not_running">Автоматичний тунель не запущено</string>
     <string name="tunnel_monitoring">Моніторинг тунелю</string>
-    <string name="backup_success">Рез. копіювання успішне. %1$s</string>
-    <string name="restore_success">Відновлення успішне. %1$s</string>
+    <string name="backup_success">Рез. копіювання успішне. [%1$s]</string>
+    <string name="restore_success">Відновлення успішне. [%1$s]</string>
     <string name="restarting_app">Перезапуск застосунку для застосування змін…</string>
     <string name="restore_failed">Не вдалося відновити дані з рез. копії.</string>
     <string name="backup_failed">Не вдалося створити резервну копію.</string>
@@ -317,4 +317,8 @@
     <string name="toggle_sensitive_data_visibility">Показати/приховати конфіденційні дані</string>
     <string name="ipv6_settings">Параметри IPv6</string>
     <string name="automation">Автоматизація</string>
+    <!-- Tunnel states -->
+    <!-- Notification formatting -->
+    <!-- Informational notifications -->
+    <!-- Errors -->
 </resources>
