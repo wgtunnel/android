@@ -1,11 +1,11 @@
 WG Tunnel est un client VPN WireGuard qui offre un équilibre parfait entre simplicité et robustesse, ce qui en fait le client idéal pour les utilisateurs occasionnels comme pour les utilisateurs expérimentés.
 Que vous souhaitiez simplement automatiser votre connexion VPN ou que vous soyez un utilisateur expérimenté avec des besoins avancés en matière de confidentialité, WG Tunnel est la solution qu'il vous faut.
 
-Features:
+Fonctionnalités :
 
 - **Tunneling automatique :** activez automatiquement des tunnels en fonction du SSID Wi-Fi, des connexions Ethernet ou des réseaux de données mobiles.
-- **Deferred Endpoint Bootstrapping:** Safely resolves endpoints and updates peers after the tunnel is up for better reliability and leak protection on startup.
-- **Handshake Monitoring:** Real-time handshake monitoring for instant tunnel health feedback.
+- **Initialisation différée des points de terminaison :** résout les points de terminaison et met à jour les pairs en toute sécurité une fois le tunnel actif, pour une meilleure fiabilité et une protection contre les fuites au démarrage.
+- **Suivi de la négociation :** surveillance en temps réel de la négociation (handshake) pour un retour instantané sur l’état du tunnel.
 - **Intégration AmneziaWG :** prise en charge complète d'AmneziaWG, offrant une contournement efficace de la censure.
 - **Split Tunneling :** prise en charge flexible du routage d'applications ou de trafic spécifiques via le VPN.
 - **Options de proxy :** prise en charge intégrée des proxys HTTP et SOCKS5 permettant aux applications tierces de tunneler leur trafic.
@@ -13,5 +13,5 @@ Features:
 - **Commandes rapides :** vignette Paramètres rapides et raccourcis sur l'écran d'accueil pour des actions faciles à activer.
 - **Prise en charge de l'automatisation :** automatisation basée sur l'intention pour contrôler les tunnels et le tunneling automatique.
 - **Gestion dynamique du DNS :** détecte et met à jour les changements de DNS sans redémarrer le tunnel.
-- **IPv6 Endpoints:** Automatically upgrade to IPv6 endpoints or fall back to IPv4 based on network conditions without requiring a restart.
+- **Points de terminaison IPv6 :** passe automatiquement à des points de terminaison IPv6 ou revient à IPv4 selon les conditions du réseau, sans redémarrage.
 - **Prise en charge d'Android TV :** prise en charge d'Android TV pour presque toutes les fonctionnalités de l'application.
