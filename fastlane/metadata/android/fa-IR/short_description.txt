@@ -1,1 +1,1 @@
-یک کلاینت وی‌پی‌ان WireGuard و AmneziaWG با تونل‌زنی خودکار، قفل‌گذاری و پروکسی.
+A WireGuard & AmneziaWG VPN client with auto-tunneling, lockdown & proxying.
