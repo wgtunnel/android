@@ -316,6 +316,7 @@
     <string name="cookie_packet_junk_size">Rozmiar śmieciowego pakietu ciasteczka</string>
     <string name="transport_packet_junk_size">Rozmiar śmieciowego pakietu transportu</string>
     <string name="special_junk_packet">Specjalny pakiet śmieciowy</string>
+    <!-- AmneziaWG 3.0 -->
     <string name="copy_from">Skopiuj z</string>
     <string name="mode">Tryb</string>
     <string name="app_selection">Wybór aplikacji</string>
