@@ -96,5 +96,4 @@
     <!-- Notification formatting -->
     <!-- Informational notifications -->
     <!-- Errors -->
-    <string name="use_tunnel_dns_servers"></string>
 </resources>
