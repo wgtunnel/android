@@ -316,6 +316,7 @@
     <string name="cookie_packet_junk_size">Розмір «сміття» в cookie-пакетах</string>
     <string name="transport_packet_junk_size">Розмір «сміття» в транспортних пакетах</string>
     <string name="special_junk_packet">Спеціальний пакет мотлоху</string>
+    <!-- AmneziaWG 3.0 -->
     <string name="copy_from">Копіювати з</string>
     <string name="mode">Режим</string>
     <string name="app_selection">Вибір застосунку</string>
