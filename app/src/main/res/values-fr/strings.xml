@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_permission_title">Pont de contrôle du tunnel WG.</string>
+    <string name="app_permission_description">Pont de contrôle du tunnel WG.</string>
     <string name="error_file_extension">Le fichier n\'est pas un .conf ou .zip</string>
     <string name="tunnel_mobile_data">Tunnel sur données mobiles</string>
     <string name="privacy_policy">Politique de Confidentialité</string>
@@ -187,8 +188,8 @@
     <string name="auto_tunnel_running">Auto-tunnel est en cours d\'exécution</string>
     <string name="auto_tunnel_not_running">Auto-tunnel ne fonctionne pas</string>
     <string name="tunnel_monitoring">Surveillance des tunnels</string>
-    <string name="backup_success">Sauvegarde réussie. %1$s</string>
-    <string name="restore_success">Restauration réussi. %1$s</string>
+    <string name="backup_success">Sauvegarde réussie. [%1$s]</string>
+    <string name="restore_success">Restauration réussi. [%1$s]</string>
     <string name="restarting_app">Redémarrage de l\'application pour appliquer les modifications…</string>
     <string name="restore_failed">La restauration à partir de la sauvegarde a échoué.</string>
     <string name="backup_failed">Échec de la création de la sauvegarde.</string>
@@ -276,4 +277,9 @@
     <string name="donation_prompt_suffix">pour qu\'il reste gratuit et continue de s\'améliorer.</string>
     <string name="cookie_packet_junk_size">Taille des paquets indésirables de cookie</string>
     <string name="transport_packet_junk_size">Taille des paquets indésirables de transport</string>
+    <!-- AmneziaWG 3.0 -->
+    <!-- Tunnel states -->
+    <!-- Notification formatting -->
+    <!-- Informational notifications -->
+    <!-- Errors -->
 </resources>
