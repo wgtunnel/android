@@ -316,6 +316,7 @@
     <string name="cookie_packet_junk_size">Tamaño de los datos «ruido» del paquete de cookies</string>
     <string name="transport_packet_junk_size">Tamaño de los datos «ruido» del paquete de transporte</string>
     <string name="special_junk_packet">Special junk packet</string>
+    <!-- AmneziaWG 3.0 -->
     <string name="copy_from">Copiar de</string>
     <string name="mode">Modo</string>
     <string name="app_selection">Selección de aplicación </string>
