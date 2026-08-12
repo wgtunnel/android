@@ -226,6 +226,7 @@
     <string name="dns_settings">Налаштування DNS</string>
     <string name="locked_down">Заблоковано</string>
     <string name="system">Система</string>
+    <string name="doh">DNS over HTTPS (DoH)</string>
     <string name="comma_separated">Розділені комами</string>
     <string name="server_port">Сервер:Порт</string>
     <string name="new_tunnel">Новий тунель</string>
@@ -245,6 +246,8 @@
     <string name="donate_title">Подяка</string>
     <string name="crypto">Адреси криптовалют</string>
     <string name="github_sponsors">Спонсори GitHub</string>
+    <string name="liberapay">Liberapay</string>
+    <string name="kofi">Ko-fi</string>
     <string name="donation_thanks_intro">Дякуємо за вашу підтримку проєкту!</string>
     <string name="donation_dev_message">Як єдиний розробник, я невтомно працюю над тим, щоб зробити WG Tunnel найкращим безкоштовним клієнтом WireGuard для Android із відкритим кодом, проте це можливо лише за вашої підтримки.</string>
     <string name="donation_closing">Присвятити весь свій робочий час цьому проєкту — моя мрія.</string>
@@ -270,11 +273,13 @@
     <string name="wifi_settings">Параметри Wi-Fi</string>
     <string name="backup_and_restore">Рез. коп. та відновлення</string>
     <string name="mobile_data">Мобільні дані</string>
+    <string name="ethernet">Ethernet</string>
     <string name="unknown">Невідомо</string>
     <string name="no_network">Відсутнє з’єднання</string>
     <string name="active_network">Активна мережа:</string>
     <string name="security_type">Безпека:</string>
     <string name="network_name">Мережа:</string>
+    <string name="wifi">Wi-Fi</string>
     <string name="text_too_large_for_qr">Текст завеликий для відображення QR-коду.</string>
     <string name="all_services_disabled">Вимкніть автотунель та тунелі, щоб виконати цю дію.</string>
     <string name="ddns_success_message">Кінцева точка динамічного DNS успішно оновлена.</string>
@@ -292,6 +297,7 @@
     <string name="save_changes">Зберегти зміни</string>
     <string name="restart_message_template">Збереження змін призведе до перезапуску %1$s. Бажаєте продовжити?</string>
     <string name="_continue">Продовжити</string>
+    <string name="kill_switch">kill switch</string>
     <string name="translation">Переклад</string>
     <string name="help_translate">Допоможіть перекласти застосунок</string>
     <string name="info">Інформація</string>
@@ -310,6 +316,7 @@
     <string name="import_url_description">URL-адреса має бути захищена та вести на .conf файл.</string>
     <string name="export_unsupported">Експорт не підтримується на цьому пристрої</string>
     <string name="export_canceled">Експорт скасовано</string>
+    <string name="proxy_channel_description">Notifications for proxy tunnels.</string>
     <string name="initializing">Ініціалізація…</string>
     <string name="network">Мережа</string>
     <string name="view_configuration">Перегляд конфігурації</string>
@@ -317,4 +324,146 @@
     <string name="toggle_sensitive_data_visibility">Показати/приховати конфіденційні дані</string>
     <string name="ipv6_settings">Параметри IPv6</string>
     <string name="automation">Автоматизація</string>
+    <string name="peer_resolution">Peer Resolution</string>
+    <string name="resolution_method">Resolution method</string>
+    <string name="dot">DNS over TLS (DoT)</string>
+    <string name="plain_dns">Plain DNS (port 53)</string>
+    <string name="current_system_dns">Current system DNS</string>
+    <string name="dns_error_empty">Endpoint cannot be empty</string>
+    <string name="dns_error_invalid_url">Invalid URL format</string>
+    <string name="dns_error_invalid_scheme">DoH must use HTTPS</string>
+    <string name="dns_error_invalid_host">Host cannot be empty</string>
+    <string name="dns_error_invalid_port">Port must be between 1 and 65535</string>
+    <string name="dns_error_invalid_ip_or_host">Invalid IP address or hostname</string>
+    <string name="dns_endpoint_label">DNS server endpoint</string>
+    <string name="dns_endpoint_hint">IP, hostname, or DoH URL</string>
+    <string name="no_system_dns_information">No system DNS information</string>
+    <string name="private_dns_automatic">Private DNS: automatic</string>
+    <string name="private_dns_hostname">Private DNS: hostname (%1$s)</string>
+    <string name="system_dns_servers">Servers: %1$s</string>
+    <string name="no_system_dns_detected">No system DNS detected</string>
+    <!-- Tunnel states -->
+    <string name="tunnel_state_connected">Connected</string>
+    <string name="tunnel_state_resolving_dns">Resolving DNS</string>
+    <string name="tunnel_state_handshake_failure">Handshake failure</string>
+    <string name="tunnel_state_disconnected">Disconnected</string>
+    <string name="tunnel_state_starting">Starting</string>
+    <string name="status_template">status: %1$s</string>
+    <string name="uptime_template">uptime: %1$s</string>
+    <string name="peer_template">peer: %1$s</string>
+    <string name="handshake_template">handshake: %1$s</string>
+    <!-- Notification formatting -->
+    <!-- Informational notifications -->
+    <string name="ipv4_fallback">IPv4 fallback</string>
+    <string name="ipv6_recovery">IPv6 recovery</string>
+    <string name="dynamic_dns_update">Dynamic DNS update</string>
+    <string name="notification_ipv4_fallback_message">
+        %1$s switched to IPv4 connectivity
+    </string>
+    <string name="notification_ipv6_recovery_message">
+        %1$s recovered IPv6 connectivity
+    </string>
+    <string name="notification_dynamic_dns_message">
+        %1$s updated after Dynamic DNS change
+    </string>
+    <!-- Errors -->
+    <string name="vpn_permission_required">
+        VPN permission required
+    </string>
+    <string name="included_apps">
+        %1$s apps included
+    </string>
+    <string name="excluded_apps">
+        %1$s apps excluded
+    </string>
+    <string name="error">Error</string>
+    <string name="tunnel_globals">Tunnel globals</string>
+    <string name="screen_recording_protection">Screen recording protection</string>
+    <string name="security">Security</string>
+    <string name="ready">Ready</string>
+    <string name="statistics">Statistics</string>
+    <string name="tunnel_statistics">Live tunnel statistics</string>
+    <string name="refresh_rate">Statistics refresh rate</string>
+    <string name="balanced">Balanced (3s)</string>
+    <string name="live">Real-time (1s)</string>
+    <string name="balance_saver">Battery Saver (10s)</string>
+    <string name="tunnel_scripting">Pre/Post script support</string>
+    <string name="name_error_empty">Tunnel name cannot be empty</string>
+    <string name="more_options">More options</string>
+    <string name="error_socks5_port_unavailable">SOCKS5 port %1$d is already in use.\nPlease choose a different port.</string>
+    <string name="error_http_port_unavailable">HTTP listener port %1$d is already in use.\nPlease choose a different port.</string>
+    <string name="errors">Errors</string>
+    <string name="events">Events</string>
+    <string name="errors_channel_description">A channel for application and tunnel errors</string>
+    <string name="events_channel_description">A channel for app events, like automation event</string>
+    <string name="app">App</string>
+    <string name="app_channel_description">A channel for general application notifications, like version updates</string>
+    <string name="stop_all">Stop all</string>
+    <string name="tunnel_state_establishing_connection">Establishing connection</string>
+    <string name="peer_endpoints">Peer endpoints</string>
+    <string name="prefer_ipv6">Prefer IPv6</string>
+    <string name="prefer_ipv6_desc">Use IPv6 endpoints when the network supports it</string>
+    <string name="fallback_to_ipv4">Fallback to IPv4</string>
+    <string name="fallback_to_ipv4_desc">Switch to IPv4 if IPv6 fails, without restarting the tunnel</string>
+    <string name="restore_ipv6">Restore IPv6</string>
+    <string name="restore_ipv6_desc">Switch back to IPv6 when an IPv6 network is detected.</string>
+    <string name="no_tunnels_yet">Nothing here… yet.</string>
+    <string name="getting_started_guidance">Use the + button to import a tunnel, or view the getting started guide.</string>
+    <string name="getting_started_guide_link">view the getting started guide</string>
+    <string name="metered_tunnel_desc">Mark this tunnel as metered so apps treat it like mobile data</string>
+    <string name="local_proxy">Local proxy</string>
+    <string name="local_proxy_desc">Expose the tunnel as a local SOCKS5/HTTP proxy</string>
+    <string name="lockdown_desc">Permanent kill switch that blocks all non-tunnel traffic</string>
+    <string name="vpn_desc">Standard system-wide VPN mode</string>
+    <string name="stop_on_no_internet_desc">Stop the tunnel when the device has no network connection</string>
+    <string name="start_on_boot_desc">Start auto-tunnel automatically on boot</string>
+    <string name="local_logging_desc">Local log storage with live viewer</string>
+    <string name="tunnel_globals_desc">Global configuration overrides for all tunnels</string>
+    <string name="tunnel_configuration">Tunnel configuration</string>
+    <string name="amnezia_configuration">Amnezia configuration</string>
+    <string name="screen_recording_protection_desc">Block screen recording on screens with sensitive data</string>
+    <string name="app_lock">App lock</string>
+    <string name="app_lock_desc">Require a PIN to access the app</string>
+    <string name="app_shortcuts">App shortcuts</string>
+    <string name="app_shortcuts_desc">Add quick actions to the app icon</string>
+    <string name="remote_control">Remote control</string>
+    <string name="remote_control_desc">Allow other apps (like Tasker) to control tunnels</string>
+    <string name="endpoint_template">endpoint: %1$s</string>
+    <string name="encrypted">Encrypted</string>
+    <string name="confirm_password">Confirm password</string>
+    <string name="passwords_do_not_match">Passwords do not match</string>
+    <string name="backup">Backup</string>
+    <string name="restore">Restore</string>
+    <string name="hide_password">Hide password</string>
+    <string name="restore_failed_wrong_password">Restore failed. Wrong password</string>
+    <string name="restore_failed_invalid_file">Restore failed. Select a valid backup file (.sqlite3 or .sqlite3.aes)</string>
+    <string name="error_invalid_config_url">This link returned an invalid config file. Make sure you are using a direct download link</string>
+    <string name="local_network_permission_title">Local Network Access Needed</string>
+    <string name="local_network_permission_intro">WG Tunnel needs access to your local network for several features to work properly.</string>
+    <string name="local_network_permission_issues_intro">Without this permission, you may experience issues with:</string>
+    <string name="local_network_permission_feature_tunnels">- Connection issues with split tunneling, LAN bypass, or servers hosted on your local network</string>
+    <string name="local_network_permission_feature_autotunnel">- Auto-tunneling and split tunneling features</string>
+    <string name="local_network_permission_feature_proxy">- Local proxy and bypass functionality</string>
+    <string name="local_network_permission_recommendation">Granting this permission is strongly recommended.</string>
+    <string name="local_network_permission_nearby_devices">Note: Android labels this permission as “nearby devices”.</string>
+    <string name="local_network_permission_denied">Local network access denied. Some features may not work properly</string>
+    <string name="stop_while_captive_portal">Stop tunnel on captive portal</string>
+    <string name="wifi_rules">Wi-Fi Rules</string>
+    <string name="add">Add</string>
+    <string name="wifi_detection_desc">Select how your network details are detected</string>
+    <string name="wildcard_desc">Enable advanced matching for networks using patterns</string>
+    <string name="wildcard_wifi_desc">Supports *, ?, and ! for blacklisting</string>
+    <string name="invalid_bssid_format">Invalid BSSID format</string>
+    <string name="trusted_bssid">Trusted BSSID</string>
+    <string name="wildcard_bssid_desc">Supports * and ! for blacklisting</string>
+    <string name="captive_portal_desc">Keeps tunnels disabled until captive portal is completed</string>
+    <string name="add_bssid">Add BSSID</string>
+    <string name="mapped_rules_count">Mapped rules: %d</string>
+    <string name="bssid_in_use">This BSSID or pattern is already in use</string>
+    <string name="network_name_in_use">This network name or pattern is already in use</string>
+    <string name="log_export_success">Logs exported successfully</string>
+    <string name="stored_logs_deleted">Stored logs deleted successfully</string>
+    <string name="seamless_recovery">Seamless tunnel recovery</string>
+    <string name="seamless_recovery_desc">Maintains protection while recovering from DDNS changes, network switches, and NAT issues</string>
+    <string name="now_in_template">Now in %1$s</string>
 </resources>
