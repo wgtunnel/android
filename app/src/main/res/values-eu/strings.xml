@@ -309,6 +309,7 @@
     <string name="cookie_packet_junk_size">Cookie-paketearen zabor-tamaina</string>
     <string name="transport_packet_junk_size">Garraio-paketearen zabor-tamaina</string>
     <string name="special_junk_packet">Zabor-pakete berezia</string>
+    <!-- AmneziaWG 3.0 -->
     <string name="copy_from">Kopiatu hemendik</string>
     <string name="mode">Modua</string>
     <string name="app_selection">Aplikazioen hautaketa</string>
@@ -347,44 +348,34 @@
     <string name="tunnel_state_handshake_failure">Eskuemate-hutsegitea</string>
     <string name="tunnel_state_disconnected">Deskonektatuta</string>
     <string name="tunnel_state_starting">Hasten</string>
-
     <string name="status_template">egoera: %1$s</string>
     <string name="uptime_template">funtzionamendu-denbora: %1$s</string>
     <string name="peer_template">parekidea: %1$s</string>
     <string name="handshake_template">eskuematea: %1$s</string>
-
     <!-- Notification formatting -->
-
     <!-- Informational notifications -->
     <string name="ipv4_fallback">IPv4 ordezkoa</string>
     <string name="ipv6_recovery">IPv6 berreskuratzea</string>
     <string name="dynamic_dns_update">DNS dinamikoaren eguneraketa</string>
-
     <string name="notification_ipv4_fallback_message">
         %1$s IPv4 konektibitatera aldatu da
     </string>
-
     <string name="notification_ipv6_recovery_message">
         %1$s(e)k IPv6 konektibitatea berreskuratu du
     </string>
-
     <string name="notification_dynamic_dns_message">
         %1$s eguneratu da DNS dinamikoaren aldaketaren ondoren
     </string>
-
     <!-- Errors -->
     <string name="vpn_permission_required">
         VPN baimena beharrezkoa
     </string>
-
     <string name="included_apps">
         %1$s aplikazio sartuta
     </string>
-
     <string name="excluded_apps">
         %1$s aplikazio baztertuta
     </string>
-
     <string name="error">Errorea</string>
     <string name="tunnel_globals">Tunelaren ezarpen globalak</string>
     <string name="screen_recording_protection">Pantaila-grabazioaren babesa</string>
@@ -399,7 +390,6 @@
     <string name="tunnel_scripting">Pre/Post script euskarria</string>
     <string name="name_error_empty">Tunelaren izena ezin da hutsik egon</string>
     <string name="more_options">Aukera gehiago</string>
-
     <string name="error_socks5_port_unavailable">SOCKS5 %1$d ataka jadanik erabilita dago.\nAukeratu beste ataka bat.</string>
     <string name="error_http_port_unavailable">HTTP entzute-ataka %1$d jadanik erabilita dago.\nAukeratu beste ataka bat.</string>
     <string name="errors">Erroreak</string>
@@ -413,10 +403,8 @@
     <string name="peer_endpoints">Parekideen amaiera-puntuak</string>
     <string name="prefer_ipv6">Hobetsi IPv6</string>
     <string name="prefer_ipv6_desc">Erabili IPv6 amaiera-puntuak sareak onartzen duenean</string>
-
     <string name="fallback_to_ipv4">IPv4ra itzuli</string>
     <string name="fallback_to_ipv4_desc">Aldatu IPv4ra IPv6k huts egiten badu, tunela berrabiarazi gabe</string>
-
     <string name="restore_ipv6">Berrezarri IPv6</string>
     <string name="restore_ipv6_desc">Itzuli IPv6ra IPv6 sare bat detektatzen denean.</string>
     <string name="no_tunnels_yet">Ezer ez hemen… oraindik.</string>
@@ -441,31 +429,23 @@
     <string name="remote_control">Urruneko kontrola</string>
     <string name="remote_control_desc">Baimendu beste aplikazio batzuei (Tasker esaterako) tunelak kontrolatzea</string>
     <string name="endpoint_template">amaiera-puntua: %1$s</string>
-
     <string name="encrypted">Enkriptatuta</string>
     <string name="confirm_password">Berretsi pasahitza</string>
     <string name="passwords_do_not_match">Pasahitzak ez datoz bat</string>
-
     <string name="backup">Babeskopia</string>
     <string name="restore">Berrezarri</string>
     <string name="hide_password">Ezkutatu pasahitza</string>
     <string name="restore_failed_wrong_password">Berrezarpenak huts egin du. Pasahitz okerra</string>
     <string name="restore_failed_invalid_file">Berrezarpenak huts egin du. Hautatu baliozko babeskopia-fitxategi bat (.sqlite3 edo .sqlite3.aes)</string>
     <string name="error_invalid_config_url">Esteka honek konfigurazio-fitxategi baliogabea itzuli du. Ziurtatu deskarga zuzeneko esteka bat erabiltzen ari zarela</string>
-
     <string name="local_network_permission_title">Sare lokalerako sarbidea beharrezkoa</string>
-
     <string name="local_network_permission_intro">WG Tunnel-ek zure sare lokalerako sarbidea behar du eginbide batzuek behar bezala funtziona dezaten.</string>
-
     <string name="local_network_permission_issues_intro">Baimen hau gabe, honako hauetan arazoak izan ditzakezu:</string>
-
     <string name="local_network_permission_feature_tunnels">- Konexio-arazoak tunel zatiketarekin, LAN saihespenarekin, edo zure sare lokalean ostatatutako zerbitzariekin</string>
     <string name="local_network_permission_feature_autotunnel">- Tunel automatikoa eta tunel zatiketaren eginbideak</string>
     <string name="local_network_permission_feature_proxy">- Proxy lokala eta saihespen-funtzionalitatea</string>
-
     <string name="local_network_permission_recommendation">Gomendio sendoa da baimen hau ematea.</string>
     <string name="local_network_permission_nearby_devices">Oharra: Androidek baimen hau “gertuko gailuak” gisa izendatzen du.</string>
-
     <string name="local_network_permission_denied">Sare lokalerako sarbidea ukatuta. Zenbait eginbidek agian ez dute behar bezala funtzionatuko</string>
     <string name="stop_while_captive_portal">Gelditu tunela atari kautiboan</string>
     <string name="wifi_rules">Wi-Fi arauak</string>
