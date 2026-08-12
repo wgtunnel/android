@@ -316,6 +316,7 @@
     <string name="cookie_packet_junk_size">Cookie packet junk size</string>
     <string name="transport_packet_junk_size">Transport packet junk size</string>
     <string name="special_junk_packet">Special junk packet</string>
+    <!-- AmneziaWG 3.0 -->
     <string name="copy_from">Copy from</string>
     <string name="mode">Mode</string>
     <string name="app_selection">App selection</string>
