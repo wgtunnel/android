@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_permission_title">Kiểm soát tunnel và các tính năng auto-tunnel.</string>
+    <string name="app_permission_description">Kiểm soát tunnel và các tính năng auto-tunnel.</string>
     <string name="error_file_extension">Tệp không phải .conf hay .zip</string>
     <string name="tunnels">Các đường nối</string>
     <string name="tunnel_mobile_data">Tunnel trên dữ liệu di động</string>
@@ -22,4 +23,9 @@
     <string name="always_on_vpn_support">Cho phép VPN luôn bật</string>
     <string name="location_services_not_detected">Dịch vụ định vị không khả dụng</string>
     <string name="vpn_on">VPN bật</string>
+    <!-- AmneziaWG 3.0 -->
+    <!-- Tunnel states -->
+    <!-- Notification formatting -->
+    <!-- Informational notifications -->
+    <!-- Errors -->
 </resources>
