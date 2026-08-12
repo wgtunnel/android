@@ -464,5 +464,4 @@
     <string name="tunnel_dns_mode">Режим DNS</string>
     <string name="tunnel_dns">Туннельный DNS</string>
     <string name="use_tunnel_dns_servers">DNS-серверы туннеля</string>
-    <string name="error_config_missing_dns">В туннеле %$s отсутствуют DNS-серверы, необходимые для вашего приложения</string>
 </resources>
