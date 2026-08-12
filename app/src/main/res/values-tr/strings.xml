@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_permission_title">WG Tunnel Kontrol Köprüsü</string>
+    <string name="app_permission_description">WG Tunnel Kontrol Köprüsü</string>
     <string name="error_file_extension">Dosya .conf veya .zip değil</string>
     <string name="tunnels">Tüneller</string>
     <string name="tunnel_mobile_data">Mobil veride tünel</string>
@@ -131,4 +132,9 @@
     <string name="include_lan">LAN’ı dahil et</string>
     <string name="tunnel_control">Tünel kontrolü</string>
     <string name="auto_tunnel">Otomatik tünel</string>
+    <!-- AmneziaWG 3.0 -->
+    <!-- Tunnel states -->
+    <!-- Notification formatting -->
+    <!-- Informational notifications -->
+    <!-- Errors -->
 </resources>
