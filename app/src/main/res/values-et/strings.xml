@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_permission_title">Halda tunneleid ja automaatset tunneldust.</string>
+    <string name="app_permission_description">Halda tunneleid ja automaatset tunneldust.</string>
     <string name="error_file_extension">See pole .conf või .zip fail</string>
     <string name="tunnels">Tunnelid</string>
     <string name="tunnel_mobile_data">Loo tunnel mobiilse andmesidega</string>
@@ -197,8 +198,8 @@
     <string name="auto_tunnel_running">Tunneli automaatne käivitamine on kasutusel</string>
     <string name="auto_tunnel_not_running">Tunneli automaatne käivitamine pole kasutusel</string>
     <string name="tunnel_monitoring">Tunnelo monitooring</string>
-    <string name="backup_success">Varundus õnnestus. %1$s</string>
-    <string name="restore_success">Taastamine õnnestus. %1$s</string>
+    <string name="backup_success">Varundus õnnestus. [%1$s]</string>
+    <string name="restore_success">Taastamine õnnestus. [%1$s]</string>
     <string name="restarting_app">Muudatuste jõustamiseks taaskäivitan rakenduse…</string>
     <string name="restore_failed">Varukoopiast taastamine ei õnnestunud.</string>
     <string name="backup_failed">Varukoopia loomine ei õnnestunud.</string>
@@ -298,4 +299,9 @@
     <string name="donation_prompt_suffix">ja nii tagad, et ta jääb vabaks ning pidevalt areneb.</string>
     <string name="cookie_packet_junk_size">Küpsisepaketi rämpsuosa suurus</string>
     <string name="transport_packet_junk_size">Transpordipaketi rämpsuosa suurus</string>
+    <!-- AmneziaWG 3.0 -->
+    <!-- Tunnel states -->
+    <!-- Notification formatting -->
+    <!-- Informational notifications -->
+    <!-- Errors -->
 </resources>
