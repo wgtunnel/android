@@ -112,4 +112,9 @@
     <string name="remove_amnezia_compatibility">Remover compatibilidade Amnezia</string>
     <string name="exclude_lan">Excluir LAN</string>
     <string name="include_lan">Incluir LAN</string>
+    <!-- AmneziaWG 3.0 -->
+    <!-- Tunnel states -->
+    <!-- Notification formatting -->
+    <!-- Informational notifications -->
+    <!-- Errors -->
 </resources>
