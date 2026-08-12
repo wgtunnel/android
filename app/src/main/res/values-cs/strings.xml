@@ -316,6 +316,7 @@
     <string name="cookie_packet_junk_size">Velikost falešného cookie paketu </string>
     <string name="transport_packet_junk_size">Velikost falešného transportního paketu</string>
     <string name="special_junk_packet">Special junk packet</string>
+    <!-- AmneziaWG 3.0 -->
     <string name="copy_from">Zkopírovat z</string>
     <string name="mode">Mode</string>
     <string name="app_selection">Výběr aplikací</string>
