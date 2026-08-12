@@ -196,8 +196,8 @@
     <string name="auto_tunnel_running">El túnel automático está activo</string>
     <string name="auto_tunnel_not_running">El túnel automático no está activo</string>
     <string name="tunnel_monitoring">Monitoreo del túnel</string>
-    <string name="backup_success">Copia de seguridad realizada con éxito. %1$s</string>
-    <string name="restore_success">Restauración completada. %1$s</string>
+    <string name="backup_success">Copia de seguridad realizada con éxito. [%1$s]</string>
+    <string name="restore_success">Restauración completada. [%1$s]</string>
     <string name="restarting_app">Reiniciando la app para aplicar los cambios…</string>
     <string name="restore_failed">No se pudo restaurar la copia de seguridad.</string>
     <string name="backup_failed">No se pudo crear la copia de seguridad.</string>
