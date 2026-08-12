@@ -79,4 +79,9 @@
     <string name="learn_more">Zistiť viac</string>
     <string name="start_auto">Spustiť auto-tunnel</string>
     <string name="stop_auto">Zastaviť auto-tunnel</string>
+    <!-- AmneziaWG 3.0 -->
+    <!-- Tunnel states -->
+    <!-- Notification formatting -->
+    <!-- Informational notifications -->
+    <!-- Errors -->
 </resources>
