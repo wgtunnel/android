@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_permission_title">WG சுரங்கப்பாதை கட்டுப்பாட்டு பாலம்</string>
+    <string name="app_permission_description">WG சுரங்கப்பாதை கட்டுப்பாட்டு பாலம்</string>
     <string name="error_file_extension">கோப்பு ஒரு .conf அல்லது .zip அல்ல</string>
     <string name="tunnels">சுரங்கங்கள்</string>
     <string name="tunnel_mobile_data">மொபைல் தரவுகளில் சுரங்கப்பாதை</string>
@@ -168,4 +169,9 @@
     <string name="allow">இசைவு</string>
     <string name="licenses">உரிமங்கள்</string>
     <string name="update_check_unsupported">புதுப்பிப்பு காசோலை இந்த உருவாக்க வகையை ஆதரிக்கவில்லை.</string>
+    <!-- AmneziaWG 3.0 -->
+    <!-- Tunnel states -->
+    <!-- Notification formatting -->
+    <!-- Informational notifications -->
+    <!-- Errors -->
 </resources>
