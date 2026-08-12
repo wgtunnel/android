@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false">WG Tunnel</string>
+    <string name="app_name">WG Tunnel</string>
     <string name="app_permission_title">Control tunnels and auto-tunnel features.</string>
     <string name="app_permission_description">Control tunnels and auto-tunnel features.</string>
     <string name="vpn_channel_id" translatable="false">VPN Channel</string>
@@ -35,7 +35,7 @@
     <string name="public_key">Public key</string>
     <string name="addresses">Addresses</string>
     <string name="dns_servers">DNS servers</string>
-    <string name="mtu" translatable="false">MTU</string>
+    <string name="mtu">MTU</string>
     <string name="peer">Peer</string>
     <string name="allowed_ips">Allowed IPs</string>
     <string name="endpoint">Endpoint</string>
@@ -172,7 +172,7 @@
     <string name="flavor_template">Flavor: %1$s</string>
     <string name="root_required_template">%1$s (root required)</string>
     <string name="recommended_template">%1$s  (recommended)</string>
-    <string name="hint_template" translatable="false">(%1$s)</string>
+    <string name="hint_template">(%1$s)</string>
     <string name="config_error">Invalid config</string>
     <string name="dns_resolve_error">DNS resolution failed</string>
     <string name="auth_error">Unauthorized</string>
@@ -193,14 +193,14 @@
     <string name="licenses">Licenses</string>
     <string name="update_check_unsupported">Update check is not supported for this build type.</string>
     <string name="darker">Darker</string>
-    <string name="amoled" translatable="false">AMOLED</string>
+    <string name="amoled">AMOLED</string>
     <string name="show_qr">Show QR</string>
     <string name="done">Done</string>
     <string name="wifi_detection_method">Wi-Fi detection method</string>
     <string name="_default">Default</string>
     <string name="legacy">Legacy</string>
     <string name="root">Root</string>
-    <string name="shizuku" translatable="false">Shizuku</string>
+    <string name="shizuku">Shizuku</string>
     <string name="legacy_api_description">Use an Android 12 deprecated method for getting Wi-Fi information that limits
         location queries, but may not work reliably on newer devices
     </string>
@@ -248,7 +248,7 @@
     <string name="password">Password</string>
     <string name="proxy_credentials">Proxy credentials</string>
     <string name="proxy_settings">Proxy settings</string>
-    <string name="vpn" translatable="false">VPN</string>
+    <string name="vpn">VPN</string>
     <string name="android_integrations">Android integrations</string>
     <string name="show_password">Show password</string>
     <string name="socks_5_bind_address">SOCKS5 bind address</string>
@@ -266,7 +266,7 @@
     <string name="ports_must_differ">Failed. Proxies must have different ports.</string>
     <string name="password_no_spaces">Password cannot have spaces</string>
     <string name="tunnel_name_taken">Tunnel name is already used</string>
-    <string name="range_hint" translatable="false">(%1$d–%2$d)</string>
+    <string name="range_hint">(%1$d–%2$d)</string>
     <string name="mimic_quic">Mimic QUIC</string>
     <string name="mimic_dns">Mimic DNS</string>
     <string name="mimic_sip">Mimic SIP</string>
@@ -443,7 +443,7 @@
     <string name="handshake_template">handshake: %1$s</string>
 
     <!-- Notification formatting -->
-    <string name="notification_tunnel_status_format" translatable="false">%1$s • %2$s</string>
+    <string name="notification_tunnel_status_format">%1$s • %2$s</string>
 
     <!-- Informational notifications -->
     <string name="ipv4_fallback">IPv4 fallback</string>
@@ -563,7 +563,7 @@
     <string name="stop_while_captive_portal">Stop tunnel on captive portal</string>
     <string name="wifi_rules">Wi-Fi Rules</string>
     <string name="add">Add</string>
-    <string name="bssid" translatable="false">BSSID</string>
+    <string name="bssid">BSSID</string>
     <string name="wifi_detection_desc">Select how your network details are detected</string>
     <string name="wildcard_desc">Enable advanced matching for networks using patterns</string>
     <string name="wildcard_wifi_desc">Supports *, ?, and ! for blacklisting</string>
