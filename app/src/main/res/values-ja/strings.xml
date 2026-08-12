@@ -60,4 +60,9 @@
     <string name="trusted_wifi_names">信頼されたWifi名</string>
     <string name="add_wifi_name">Wifi名の追加</string>
     <string name="add_from_clipboard">クリップボードからの追加</string>
+    <!-- AmneziaWG 3.0 -->
+    <!-- Tunnel states -->
+    <!-- Notification formatting -->
+    <!-- Informational notifications -->
+    <!-- Errors -->
 </resources>
