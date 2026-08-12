@@ -179,6 +179,7 @@
     <string name="wifi_detection_method">Метод обнаружения Wi-Fi</string>
     <string name="_default">По умолчанию</string>
     <string name="legacy">Устаревший</string>
+    <string name="root">Root</string>
     <string name="legacy_api_description">Получать информацию о Wi-Fi устаревшим методом Android 12, который ограничивает запросы определения местоположения, но может работать нестабильно на новых устройствах</string>
     <string name="use_shell_via_shizuku">Получать информацию о Wi-Fi через Shizuku без необходимости разрешения определения местоположения на устройствах без root-доступа</string>
     <string name="use_android_recommended">Получать информацию о Wi-Fi рекомендуемым методом на основе версии Android</string>
@@ -245,6 +246,8 @@
     <string name="donate_title">Сделать пожертвование</string>
     <string name="crypto">Криптовалютные адреса</string>
     <string name="github_sponsors">Спонсоры GitHub</string>
+    <string name="liberapay">Liberapay</string>
+    <string name="kofi">Ko-fi</string>
     <string name="donation_thanks_intro">Благодарим вас за желание сделать пожертвование!</string>
     <string name="donation_dev_message">Будучи единственным разработчиком, я неустанно работаю, чтобы сделать WG Tunnel лучшим бесплатным и открытым клиентом WireGuard для Android, но это возможно только с вашей поддержкой.</string>
     <string name="donation_closing">Моя мечта — работать для вас над этим проектом полный рабочий день.</string>
@@ -270,11 +273,13 @@
     <string name="wifi_settings">Настройки Wi-Fi</string>
     <string name="backup_and_restore">Резервное копирование</string>
     <string name="mobile_data">Сотовая сеть</string>
+    <string name="ethernet">Ethernet</string>
     <string name="unknown">Неизвестно</string>
     <string name="no_network">Нет подключения к сети</string>
     <string name="active_network">Активная сеть: </string>
     <string name="security_type">Безопасность: </string>
     <string name="network_name">Сеть: </string>
+    <string name="wifi">Wi-Fi</string>
     <string name="text_too_large_for_qr">Текст слишком большой для отображения QR-кода.</string>
     <string name="all_services_disabled">Для выполнения этого действия необходимо отключить автотуннелирование и туннели.</string>
     <string name="ddns_success_message">Точка подключения динамического DNS успешно обновлена.</string>
