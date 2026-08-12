@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_permission_title">WG Tunnel Vezérlő Híd.</string>
+    <string name="app_permission_description">WG Tunnel Vezérlő Híd.</string>
     <string name="error_file_extension">A fájl nem .conf vagy .zip</string>
     <string name="tunnels">Alagutak</string>
     <string name="tunnel_mobile_data">Alagút mobiladat-forgalmon</string>
@@ -196,8 +197,8 @@
     <string name="auto_tunnel_running">Az auto-alagút fut</string>
     <string name="auto_tunnel_not_running">Az auto-alagút nem fut</string>
     <string name="tunnel_monitoring">Alagút figyelése</string>
-    <string name="backup_success">Sikeres mentés. %1$s</string>
-    <string name="restore_success">Sikeres visszaállítás. %1$s</string>
+    <string name="backup_success">Sikeres mentés. [%1$s]</string>
+    <string name="restore_success">Sikeres visszaállítás. [%1$s]</string>
     <string name="restarting_app">App újraindítása a módosítások alkalmazásához…</string>
     <string name="restore_failed">Sikertelen visszaállítás mentésből.</string>
     <string name="backup_failed">Sikertelen mentés.</string>
@@ -293,4 +294,9 @@
     <string name="donation_prompt_suffix">hogy az app ingyenes maradhasson és tovább fejlődjön.</string>
     <string name="cookie_packet_junk_size">Süti (cookie) csomag szemétmérete</string>
     <string name="transport_packet_junk_size">Transzport csomag szemétmérete</string>
+    <!-- AmneziaWG 3.0 -->
+    <!-- Tunnel states -->
+    <!-- Notification formatting -->
+    <!-- Informational notifications -->
+    <!-- Errors -->
 </resources>
