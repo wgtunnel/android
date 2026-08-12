@@ -226,6 +226,7 @@
     <string name="dns_settings">DNS 설정</string>
     <string name="locked_down">락다운됨</string>
     <string name="system">시스템</string>
+    <string name="doh">DNS over HTTPS (DoH)</string>
     <string name="comma_separated">쉼표로 구분됨</string>
     <string name="server_port">서버:포트</string>
     <string name="new_tunnel">새 터널</string>
@@ -245,6 +246,8 @@
     <string name="donate_title">후원</string>
     <string name="crypto">암호화폐 주소</string>
     <string name="github_sponsors">GitHub 스폰서</string>
+    <string name="liberapay">Liberapay</string>
+    <string name="kofi">Ko-fi</string>
     <string name="donation_thanks_intro">이 프로젝트에 후원을 고려해주셔서 감사드립니다!</string>
     <string name="donation_dev_message">1인 개발자로서 WG Tunnel을 최고의 Android 무료 오픈 소스 WireGuard 클라이언트로 만들기 위해 끊임 없이 노력하고 있지만, 여러분의 지원이 있어야 가능한 일입니다.</string>
     <string name="donation_closing">프로젝트에 모든 시간을 할애하는 것이 제 꿈입니다.</string>
@@ -276,6 +279,7 @@
     <string name="active_network">활성 네트워크:</string>
     <string name="security_type">보안:</string>
     <string name="network_name">네트워크:</string>
+    <string name="wifi">Wi-Fi</string>
     <string name="text_too_large_for_qr">QR로 표시하기에 텍스트가 너무 큽니다.</string>
     <string name="all_services_disabled">이 동작을 수행하려면 자동 터널 및 터널을 비활성화해야 합니다.</string>
     <string name="ddns_success_message">동적 DNS 엔드포인트가 성공적으로 갱신되었습니다.</string>
@@ -322,6 +326,7 @@
     <string name="automation">자동화</string>
     <string name="peer_resolution">피어 리졸브</string>
     <string name="resolution_method">리졸브 방식</string>
+    <string name="dot">DNS over TLS (DoT)</string>
     <string name="plain_dns">평문 DNS (포트 53)</string>
     <string name="current_system_dns">현재 시스템 DNS</string>
     <string name="dns_error_empty">엔드포인트는 비워둘 수 없음</string>
