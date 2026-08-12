@@ -195,8 +195,8 @@
     <string name="auto_tunnel_running">Auto-Tunnel läuft</string>
     <string name="auto_tunnel_not_running">Auto-Tunnel läuft nicht</string>
     <string name="tunnel_monitoring">Tunnelüberwachung</string>
-    <string name="backup_success">Backuperfolg. %1$s</string>
-    <string name="restore_success">Wiederherstellerfolg. %1$s</string>
+    <string name="backup_success">Backuperfolg. [%1$s]</string>
+    <string name="restore_success">Wiederherstellerfolg. [%1$s]</string>
     <string name="restarting_app">Starte App neu, um Änderungen anzuwenden …</string>
     <string name="restore_failed">Wiederherstellung aus Backup fehlgeschlagen.</string>
     <string name="backup_failed">Backup konnte nicht erstellt werden.</string>
@@ -442,7 +442,6 @@
     <string name="network_name_in_use">Dieser Netzwerkname oder dieses Muster wird bereits verwendet</string>
     <string name="log_export_success">Logs erfolgreich exportiert</string>
     <string name="stored_logs_deleted">Gespeicherte Logs erfolgreich gelöscht</string>
-    <string name="snackbar_seamless_recovery_attempt">Es wurde ein Verbindungsproblem festgestellt. Wiederherstellung läuft </string>
     <string name="seamless_recovery_attempt_title">Nahtlose Wiederherstellung</string>
     <string name="seamless_recovery_attempt_message">Es wurde ein Verbindungsproblem festgestellt. Es wird versucht, das Problem automatisch zu beheben.</string>
     <string name="local_domain_suffixes">Lokale Domain-Suffixe</string>
