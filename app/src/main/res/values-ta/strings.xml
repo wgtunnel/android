@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Wg சுரங்கப்பாதை</string>
     <string name="app_permission_title">WG சுரங்கப்பாதை கட்டுப்பாட்டு பாலம்</string>
     <string name="error_file_extension">கோப்பு ஒரு .conf அல்லது .zip அல்ல</string>
     <string name="tunnels">சுரங்கங்கள்</string>
@@ -21,7 +20,6 @@
     <string name="public_key">பொது விசை</string>
     <string name="addresses">முகவரிகள்</string>
     <string name="dns_servers">டிஎன்எச் சேவையகங்கள்</string>
-    <string name="mtu">மனிதன்</string>
     <string name="peer">ஒப்பி</string>
     <string name="allowed_ips">அனுமதிக்கப்பட்ட ஐபிக்கள்</string>
     <string name="endpoint">முனைப்புள்ளி</string>

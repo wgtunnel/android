@@ -21,7 +21,6 @@
     <string name="public_key">کلید عمومی </string>
     <string name="addresses">آدرس‌ها </string>
     <string name="dns_servers">سرورهای DNS </string>
-    <string name="mtu">شخص </string>
     <string name="peer">همتا</string>
     <string name="allowed_ips">آی‌پی‌های مجاز </string>
     <string name="endpoint">نقطه پایانی </string>
@@ -166,12 +165,10 @@
     <string name="licenses">مجوزها</string>
     <string name="update_check_unsupported">بررسی به‌روزرسانی برای این نوع ساخت پشتیبانی نمی‌شود.</string>
     <string name="darker">تیره‌تر </string>
-    <string name="amoled">آمولد </string>
     <string name="show_qr">نمایش QR</string>
     <string name="done">انجام شد</string>
     <string name="wifi_detection_method">روش تشخیص وای فای </string>
     <string name="legacy">قدمت</string>
-    <string name="shizuku">شیزوکو </string>
     <string name="legacy_api_description">از یک روش منسوخ‌شده در اندروید ۱۲ برای دریافت اطلاعات وای‌فای استفاده کنید که درخواست‌های موقعیت مکانی را محدود می‌کند، اما ممکن است در دستگاه‌های جدیدتر به طور قابل اعتمادی کار نکند</string>
     <string name="use_android_recommended">از روش پیشنهادی اندروید برای دریافت اطلاعات وای‌فای، بر اساس نسخه اندروید، استفاده کنید</string>
     <string name="release_notes">یادداشت‌های انتشار </string>

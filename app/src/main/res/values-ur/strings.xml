@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">ڈبلیو جی ٹنل</string>
     <string name="app_permission_title">ڈبلیو جی ٹنل کنٹرول برج</string>
     <string name="error_file_extension">فائل conf یا zip نہیں ہے</string>
     <string name="tunnels">ٹنلز</string>
@@ -21,7 +20,6 @@
     <string name="public_key">عوامی کلید</string>
     <string name="addresses">پتے</string>
     <string name="dns_servers">ڈی این ایس سرورز</string>
-    <string name="mtu">ایم ٹی یو</string>
     <string name="peer">پیر</string>
     <string name="allowed_ips">اجازت یافتہ آئی پی</string>
     <string name="endpoint">اختتامی نقطہ</string>
@@ -174,14 +172,12 @@
     <string name="licenses">لائسنس</string>
     <string name="update_check_unsupported">اس قسم کی تعمیر کے لیے تازہ کاری معائنہ تعاون یافتہ نہیں ہے۔</string>
     <string name="darker">بہت گہرا</string>
-    <string name="amoled">ایمولیڈ</string>
     <string name="show_qr">کیو آر دکھائیں</string>
     <string name="done">ہوگیا</string>
     <string name="wifi_detection_method">وائی فائی کا پتہ لگانے کا طریقہ</string>
     <string name="_default">طے شدہ</string>
     <string name="legacy">میراث</string>
     <string name="root">رووٹ</string>
-    <string name="shizuku">شیزوکو</string>
     <string name="legacy_api_description">وائی فائی کی معلومات حاصل کرنے کے لیے ایک اینڈرائڈ 12 فرسودہ طریقہ استعمال کریں جو مقام کے استفسارات کو محدود کرتا ہے، لیکن ہو سکتا ہے کہ نئے آلات پر قابل اعتماد طریقے سے کام نہ کرے</string>
     <string name="use_shell_via_shizuku">وائی فائی کی معلومات حاصل کرنے کے لیے شیزوکو کے ذریعے شیل کا استعمال کریں، غیر رووٹ والے آلات پر مقام کی اجازت کی ضرورت کو روکتے ہوئے</string>
     <string name="use_android_recommended">اینڈرائیڈ ورژن کی بنیاد پر وائی فائی کی معلومات حاصل کرنے کے لیے اینڈرائیڈ کا تجویز کردہ طریقہ استعمال کریں</string>
@@ -218,7 +214,6 @@
     <string name="password">پاس ورڈ</string>
     <string name="proxy_credentials">پراکسی اسناد</string>
     <string name="proxy_settings">پراکسی ترتیبات</string>
-    <string name="vpn">وی‌پی‌این</string>
     <string name="android_integrations">اینڈرائیڈ انضمام</string>
     <string name="show_password">پاس ورڈ دکھائیں</string>
     <string name="socks_5_bind_address">ساکس5 بائنڈ ایڈریس</string>

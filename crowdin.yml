@@ -5,9 +5,13 @@
 # - English source lives only in values/strings.xml and fastlane/.../en-US/.
 # - Locale files must contain REAL translations only. Android falls back to
 #   values/strings.xml for missing keys — do not export English placeholders.
+# - Brands/acronyms (app_name, MTU, VPN, Shizuku, AMOLED, …) use
+#   translatable="false" in the source file so Crowdin ignores them and locales
+#   do not need copies. Full phrases ("DNS servers", "VPN on") stay translatable.
 # - In Crowdin project settings, disable any "export untranslated as source"
 #   / fill-with-English options so the dashboard shows true untranslated work.
-# - Fastlane: omit untranslated store listing files; Play falls back to en-US.
+# - Fastlane: en-US is the only required metadata set for CI/Play upload.
+#   Other locales: ship only real translations; missing files fall back to en-US.
 #
 preserve_hierarchy: true
 

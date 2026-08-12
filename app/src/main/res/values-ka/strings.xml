@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">ვგ ტუნელი</string>
     <string name="app_permission_title">ვგ ტუნელის კონტროლის ხიდი</string>
     <string name="error_file_extension">ფაილი არ წარმოადგენს .conf ან .zip ფორმატს</string>
     <string name="tunnels">ტუნელები</string>

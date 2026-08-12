@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Tunel WG</string>
     <string name="error_file_extension">Súbor nie je typu .conf ani .zip</string>
     <string name="tunnels">Tunely</string>
     <string name="privacy_policy">Zobraziť zásady ochrany osobných údajov</string>
