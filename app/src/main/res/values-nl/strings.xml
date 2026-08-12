@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_permission_title">Beheert tunnels en autotunnelfuncties.</string>
+    <string name="app_permission_description">Beheert tunnels en autotunnelfuncties.</string>
     <string name="error_file_extension">Bestand is geen .conf of .zip</string>
     <string name="tunnel_mobile_data">Tunnel bij mobiele data</string>
     <string name="privacy_policy">Privacybeleid</string>
@@ -177,8 +178,8 @@
     <string name="auto_tunnel_running">Auto-tunnel is actief</string>
     <string name="auto_tunnel_not_running">Auto-tunnel is niet actief</string>
     <string name="tunnel_monitoring">Tunnel bekijken</string>
-    <string name="backup_success">Backup succesvol. %1$s</string>
-    <string name="restore_success">Herstel succesvol. %1$s</string>
+    <string name="backup_success">Backup succesvol. [%1$s]</string>
+    <string name="restore_success">Herstel succesvol. [%1$s]</string>
     <string name="restarting_app">App wordt herstart om veranderingen in te voeren…</string>
     <string name="restore_failed">Herstel van backup mislukt.</string>
     <string name="backup_failed">Backup maken mislukt.</string>
@@ -258,4 +259,9 @@
     <string name="donation_prompt_prefix">Bedankt voor het gebruik van WG Tunnel! Als het je lukt, overweeg dan alstublieft</string>
     <string name="donation_prompt_link">het project ondersteunen</string>
     <string name="donation_prompt_suffix">om het gratis te houden en te blijven verbeteren.</string>
+    <!-- AmneziaWG 3.0 -->
+    <!-- Tunnel states -->
+    <!-- Notification formatting -->
+    <!-- Informational notifications -->
+    <!-- Errors -->
 </resources>
