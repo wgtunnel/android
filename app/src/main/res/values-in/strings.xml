@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_permission_title">Kontrol terowongan dan fitur terowongan otomatis.</string>
+    <string name="app_permission_description">Kontrol terowongan dan fitur terowongan otomatis.</string>
     <string name="error_file_extension">File bukan berformat .conf atau .zip</string>
     <string name="tunnels">Terowongan</string>
     <string name="tunnel_mobile_data">Terowongan pada data seluler</string>
@@ -192,8 +193,8 @@
     <string name="auto_tunnel_running">Terowongan otomatis sedang berjalan</string>
     <string name="auto_tunnel_not_running">Terowongan otomatis tidak berjalan</string>
     <string name="tunnel_monitoring">Pemantauan terowongan</string>
-    <string name="backup_success">Pencadangan berhasil. %1$s</string>
-    <string name="restore_success">Pemulihan berhasil. %1$s</string>
+    <string name="backup_success">Pencadangan berhasil. [%1$s]</string>
+    <string name="restore_success">Pemulihan berhasil. [%1$s]</string>
     <string name="restarting_app">Memulai ulang aplikasi untuk menerapkan perubahan…</string>
     <string name="restore_failed">Gagal memulihkan dari cadangan.</string>
     <string name="backup_failed">Gagal membuat cadangan.</string>
@@ -286,4 +287,9 @@
     <string name="donation_prompt_suffix">agar tetap gratis dan terus berkembang.</string>
     <string name="cookie_packet_junk_size">Ukuran sampah paket cookie</string>
     <string name="transport_packet_junk_size">Ukuran sampah paket transport</string>
+    <!-- AmneziaWG 3.0 -->
+    <!-- Tunnel states -->
+    <!-- Notification formatting -->
+    <!-- Informational notifications -->
+    <!-- Errors -->
 </resources>
