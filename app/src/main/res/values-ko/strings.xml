@@ -316,6 +316,7 @@
     <string name="cookie_packet_junk_size">쿠키 패킷 정크 크기</string>
     <string name="transport_packet_junk_size">전송 패킷 정크 크기</string>
     <string name="special_junk_packet">특수 정크 패킷</string>
+    <!-- AmneziaWG 3.0 -->
     <string name="copy_from">항목에서 복사하기</string>
     <string name="mode">모드</string>
     <string name="app_selection">앱 선택</string>
