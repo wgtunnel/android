@@ -21,7 +21,9 @@
     <string name="public_key">Clave pública</string>
     <string name="addresses">Direcciones</string>
     <string name="dns_servers">Servidores DNS</string>
+    <string name="peer">Peer</string>
     <string name="allowed_ips">IPs permitidas</string>
+    <string name="endpoint">Endpoint</string>
     <string name="name">Nombre</string>
     <string name="always_on_vpn_support">Permitir VPN siempre activa</string>
     <string name="location_services_not_detected">Servicios de ubicación no detectados</string>
@@ -133,6 +135,7 @@
     <string name="add_from_url">Añadir desde URL</string>
     <string name="enter_config_url">Introducir URL de configuración</string>
     <string name="error_download_failed">Fallo al descargar configuración</string>
+    <string name="wg_url_confirm_message">Are you sure you want to add tunnels from %1$s? Never connect to an untrusted VPN!</string>
     <string name="save">Guardar</string>
     <string name="search">Buscar</string>
     <string name="select">Seleccionar</string>
@@ -176,12 +179,15 @@
     <string name="wifi_detection_method">Método de detección de red Wi-Fi</string>
     <string name="_default">Por defecto</string>
     <string name="legacy">Antiguo</string>
+    <string name="root">Root</string>
     <string name="legacy_api_description">Usar un método obsoleto de Android 12 para obtener la información de Wi-Fi que limita las peticiones de ubicación, pero podría no funcionar en dispositivos más nuevos</string>
     <string name="use_shell_via_shizuku">Usar la shell mediante Shizuku para obtener la información de Wi-Fi, evitando la necesidad del permiso de ubicación en dispositivos que no tienen acceso root</string>
     <string name="use_android_recommended">Usar el método recomendado por Android para obtener la información de Wi-Fi, basado en la versión de Android</string>
     <string name="release_notes">Notas de la versión</string>
     <string name="shizuku_not_detected">Shizuku no detectado</string>
     <string name="sort">Ordenar</string>
+    <string name="sort_by_latency">Sort by latency</string>
+    <string name="pinging_servers">Pinging servers…</string>
     <string name="drag_handle">Control de arrastre</string>
     <string name="move_up">Mover hacia arriba</string>
     <string name="move_down">Mover hacia abajo</string>
@@ -203,6 +209,7 @@
     <string name="backup_failed">No se pudo crear la copia de seguridad.</string>
     <string name="backup_application">Crear copia de los datos de la app</string>
     <string name="restore_application">Restaurar desde una copia de seguridad</string>
+    <string name="proxy">Proxy</string>
     <string name="backend_mode">Modo de la app</string>
     <string name="selected">Seleccionado</string>
     <string name="socks_5_proxy">Proxy SOCKS5</string>
@@ -238,6 +245,9 @@
     <string name="lockdown">Aislamiento</string>
     <string name="donate_title">Donar</string>
     <string name="crypto">Direcciones de criptomonedas</string>
+    <string name="github_sponsors">GitHub Sponsors</string>
+    <string name="liberapay">Liberapay</string>
+    <string name="kofi">Ko-fi</string>
     <string name="donation_thanks_intro">¡Gracias por considerar hacer una donación a este proyecto!</string>
     <string name="donation_dev_message">Como desarrollador único, trabajo sin descanso para hacer de WG Tunnel el mejor cliente WireGuard libre y de código abierto, pero esto solo es posible con tu apoyo.</string>
     <string name="donation_closing">Es mi sueño trabajar a tiempo completo en este projecto para vosotros.</string>
@@ -246,6 +256,7 @@
     <string name="delete_active_message">No se puede borrar el túnel activo.</string>
     <string name="back">Atrás</string>
     <string name="configuration">Configuración</string>
+    <string name="kernel_wireguard_unsupported">Kernel does not include WireGuard support (module missing or not built-in into kernel)!</string>
     <string name="about">Acerca de</string>
     <string name="resources">Recursos</string>
     <string name="website">Sitio web de la app</string>
@@ -253,6 +264,7 @@
     <string name="review">Valorar la app</string>
     <string name="other">Otros</string>
     <string name="options">Opciones</string>
+    <string name="general">General</string>
     <string name="networks">Redes</string>
     <string name="preferred_tunnel_label">Túnel preferido:</string>
     <string name="preferred_tunnel">Túnel preferido</string>
@@ -261,11 +273,13 @@
     <string name="wifi_settings">Ajustes de Wi-Fi</string>
     <string name="backup_and_restore">Copia de seguridad/Restaurar</string>
     <string name="mobile_data">Datos móviles</string>
+    <string name="ethernet">Ethernet</string>
     <string name="unknown">Desconocido</string>
     <string name="no_network">No hay conexión de red</string>
     <string name="active_network">Red activa:</string>
     <string name="security_type">Seguridad:</string>
     <string name="network_name">Red:</string>
+    <string name="wifi">Wi-Fi</string>
     <string name="text_too_large_for_qr">El texto es demasiado grande para mostrar el QR.</string>
     <string name="all_services_disabled">El túnel automático y el resto de túneles deben ser desactivados para realizar esta operación.</string>
     <string name="ddns_success_message">Endpoint del DNS dinámico actualizado correctamente.</string>
@@ -278,10 +292,12 @@
     <string name="metered_tunnel">Túnel de uso medido</string>
     <string name="lockdown_settings">Configuración de aislamiento</string>
     <string name="unavailable_in_mode">No disponible en el modo actual</string>
+    <string name="dual_stack">Dual-stack</string>
     <string name="dual_stack_description">Los túneles deben soportar IPv4 e IPv6</string>
     <string name="save_changes">Guardar cambios</string>
     <string name="restart_message_template">Guardar los cambios hara que el %1$s se reinicie, desea continuar?</string>
     <string name="_continue">Continuar</string>
+    <string name="kill_switch">kill switch</string>
     <string name="translation">Traducción</string>
     <string name="help_translate">Ayuda a traducir la app</string>
     <string name="info">Información</string>
@@ -292,6 +308,7 @@
     <string name="donation_prompt_suffix">para que siga siendo libre y siga mejorando.</string>
     <string name="cookie_packet_junk_size">Tamaño de los datos «ruido» del paquete de cookies</string>
     <string name="transport_packet_junk_size">Tamaño de los datos «ruido» del paquete de transporte</string>
+    <string name="special_junk_packet">Special junk packet</string>
     <!-- AmneziaWG 3.0 -->
     <string name="copy_from">Copiar de</string>
     <string name="mode">Modo</string>
@@ -309,6 +326,8 @@
     <string name="automation">Automatización </string>
     <string name="peer_resolution">Resolución Peer</string>
     <string name="resolution_method">Método de resolución</string>
+    <string name="dot">DNS over TLS (DoT)</string>
+    <string name="plain_dns">Plain DNS (port 53)</string>
     <string name="current_system_dns">DNS actual del sistema</string>
     <string name="dns_error_empty">El Endpoint no puede estar vacío</string>
     <string name="dns_error_invalid_url">Formato URL incorrecto</string>
@@ -331,6 +350,8 @@
     <string name="tunnel_state_starting">Iniciando</string>
     <string name="status_template">Estado: %1$s</string>
     <string name="uptime_template">Tiempo activo: %1$s</string>
+    <string name="peer_template">peer: %1$s</string>
+    <string name="handshake_template">handshake: %1$s</string>
     <!-- Notification formatting -->
     <!-- Informational notifications -->
     <string name="ipv4_fallback">Respaldo IPv4</string>
@@ -355,6 +376,7 @@
     <string name="excluded_apps">
         %1$s aplicaciones excluidas
     </string>
+    <string name="error">Error</string>
     <string name="tunnel_globals">Globales de túnel</string>
     <string name="screen_recording_protection">Protección de grabación de pantalla</string>
     <string name="security">Seguridad</string>
@@ -378,6 +400,7 @@
     <string name="app_channel_description">Un canal para notificaciones generales de la aplicación, como actualizaciones de versión</string>
     <string name="stop_all">Detener todo</string>
     <string name="tunnel_state_establishing_connection">Estableciendo conexión</string>
+    <string name="peer_endpoints">Peer endpoints</string>
     <string name="prefer_ipv6">IPv6 preferido</string>
     <string name="prefer_ipv6_desc">Utilice los puntos finales IPv6 cuando la red lo soporte</string>
     <string name="fallback_to_ipv4">Recuperación a IPv4</string>
@@ -405,6 +428,7 @@
     <string name="app_shortcuts_desc">Añadir acciones rápidas al icono de la aplicación</string>
     <string name="remote_control">Control remoto</string>
     <string name="remote_control_desc">Permitir a otras aplicaciones (como Tasker) controlar túneles</string>
+    <string name="endpoint_template">endpoint: %1$s</string>
     <string name="encrypted">Cifrado</string>
     <string name="confirm_password">Confirmar contraseña</string>
     <string name="passwords_do_not_match">Las contraseñas no coinciden</string>
