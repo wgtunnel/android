@@ -153,7 +153,6 @@
     <string name="flavor_template">版本架构：%1$s</string>
     <string name="root_required_template">%1$s （需 root）</string>
     <string name="recommended_template">%1$s （推荐）</string>
-    <string name="hint_template">（%1$s）</string>
     <string name="config_error">无效配置</string>
     <string name="dns_resolve_error">DNS 解析失败</string>
     <string name="auth_error">未授权</string>
@@ -201,8 +200,8 @@
     <string name="auto_tunnel_running">自动隧道运行中</string>
     <string name="auto_tunnel_not_running">自动隧道未运行</string>
     <string name="tunnel_monitoring">隧道监控</string>
-    <string name="backup_success">成功备份：%1$s</string>
-    <string name="restore_success">成功恢复：%1$s</string>
+    <string name="backup_success">成功备份：[%1$s]</string>
+    <string name="restore_success">成功恢复：[%1$s]</string>
     <string name="restarting_app">正重启应用来应用更改…</string>
     <string name="restore_failed">未能从备份恢复。</string>
     <string name="backup_failed">创建备份失败。</string>
@@ -233,7 +232,6 @@
     <string name="ports_must_differ">失败了。代理必须有不同的端口。</string>
     <string name="password_no_spaces">密码不能有空格。</string>
     <string name="tunnel_name_taken">已经有同名隧道。</string>
-    <string name="range_hint">（%1$d–%2$d）</string>
     <string name="mimic_quic">模拟 QUIC</string>
     <string name="mimic_dns">模拟 DNS</string>
     <string name="mimic_sip">模拟 SIP</string>
