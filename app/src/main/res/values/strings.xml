@@ -172,7 +172,7 @@
     <string name="flavor_template">Flavor: %1$s</string>
     <string name="root_required_template">%1$s (root required)</string>
     <string name="recommended_template">%1$s  (recommended)</string>
-    <string name="hint_template">(%1$s)</string>
+    <string name="hint_template" translatable="false">(%1$s)</string>
     <string name="config_error">Invalid config</string>
     <string name="dns_resolve_error">DNS resolution failed</string>
     <string name="auth_error">Unauthorized</string>
@@ -266,7 +266,7 @@
     <string name="ports_must_differ">Failed. Proxies must have different ports.</string>
     <string name="password_no_spaces">Password cannot have spaces</string>
     <string name="tunnel_name_taken">Tunnel name is already used</string>
-    <string name="range_hint">(%1$d–%2$d)</string>
+    <string name="range_hint" translatable="false">(%1$d–%2$d)</string>
     <string name="mimic_quic">Mimic QUIC</string>
     <string name="mimic_dns">Mimic DNS</string>
     <string name="mimic_sip">Mimic SIP</string>
@@ -443,7 +443,7 @@
     <string name="handshake_template">handshake: %1$s</string>
 
     <!-- Notification formatting -->
-    <string name="notification_tunnel_status_format">%1$s • %2$s</string>
+    <string name="notification_tunnel_status_format" translatable="false">%1$s • %2$s</string>
 
     <!-- Informational notifications -->
     <string name="ipv4_fallback">IPv4 fallback</string>
