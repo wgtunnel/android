@@ -50,19 +50,14 @@ fun TunnelsScreen(sharedViewModel: SharedAppViewModel = koinActivityViewModel())
 
     val selectedTunnelsExportLauncher =
         rememberFileExportLauncherForResult(
-            onSuccess = { uri -> sharedViewModel.exportSelectedTunnels(uri, context) },
+            onSuccess = { uri -> sharedViewModel.exportSelectedTunnels(uri) },
             onCanceled = {
                 sharedViewModel.showSnackMessage(
                     StringValue.StringResource(R.string.export_canceled),
                     ToastType.Warning,
                 )
             },
-            onUnsupported = {
-                sharedViewModel.showSnackMessage(
-                    StringValue.StringResource(R.string.export_unsupported),
-                    ToastType.Warning,
-                )
-            },
+            onUnsupported = { sharedViewModel.exportSelectedTunnels(uri = null) },
         )
 
     var showImportSheet by rememberSaveable { mutableStateOf(false) }
@@ -77,7 +72,7 @@ fun TunnelsScreen(sharedViewModel: SharedAppViewModel = koinActivityViewModel())
                 val (fileName, mimeType) = uiState.selectedTunnels.asFileExportName()
                 // Fallback, especially for TV, for downloads export
                 if (isTv && !context.hasSAFSupport(mimeType)) {
-                    sharedViewModel.exportSelectedTunnels(uri = null, context)
+                    sharedViewModel.exportSelectedTunnels(uri = null)
                 } else {
                     selectedTunnelsExportLauncher.launch(fileName)
                 }

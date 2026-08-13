@@ -22,10 +22,9 @@ import java.time.Instant
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LogsBottomSheet(
-    onExport: (Uri) -> Unit,
+    onExport: (Uri?) -> Unit,
     onDelete: () -> Unit,
     onCanceled: () -> Unit,
-    onUnsupported: () -> Unit,
     onDismiss: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -35,7 +34,7 @@ fun LogsBottomSheet(
             mimeType = FileUtils.ZIP_FILE_MIME_TYPE,
             onSuccess = { uri -> onExport(uri) },
             onCanceled = onCanceled,
-            onUnsupported = onUnsupported,
+            onUnsupported = { onExport(null) },
         )
 
     fun handleFileExport() {
@@ -46,7 +45,7 @@ fun LogsBottomSheet(
 
             exportLauncher.launch(fileName)
         } else {
-            onUnsupported()
+            onExport(null)
         }
     }
 

@@ -46,6 +46,7 @@ files:
         tr: tr
         uk: uk
         vi: vi
+        eu: eu
 
     excluded_target_languages:
       - en
@@ -53,18 +54,107 @@ files:
 
   - source: "/fastlane/metadata/android/en-US/title.txt"
     translation: "/fastlane/metadata/android/%locale%/%original_file_name%"
+    languages_mapping:
+      locale:
+        fr: fr-FR
+        es-ES: es-ES
+        cs: cs-CZ
+        de: de-DE
+        eu: eu
+        fi: fi-FI
+        hu: hu-HU
+        it: it-IT
+        ja: ja-JP
+        ka: ka-GE
+        ko: ko-KR
+        nl: nl-NL
+        pl: pl-PL
+        pt-PT: pt-PT
+        ru: ru-RU
+        sk: sk
+        tr: tr-TR
+        uk: uk
+        zh-CN: zh-CN
+        zh-TW: zh-TW
+        ur-PK: ur-PK
+        vi: vi
+        pt-BR: pt-BR
+        id: id
+        fa: fa-IR
+        ta: ta-IN
+        et: et
     excluded_target_languages:
       - en
       - en-US
 
   - source: "/fastlane/metadata/android/en-US/short_description.txt"
     translation: "/fastlane/metadata/android/%locale%/%original_file_name%"
+    skip_untranslated_files: true
+    languages_mapping:
+      locale:
+        fr: fr-FR
+        es-ES: es-ES
+        cs: cs-CZ
+        de: de-DE
+        eu: eu
+        fi: fi-FI
+        hu: hu-HU
+        it: it-IT
+        ja: ja-JP
+        ka: ka-GE
+        ko: ko-KR
+        nl: nl-NL
+        pl: pl-PL
+        pt-PT: pt-PT
+        ru: ru-RU
+        sk: sk
+        tr: tr-TR
+        uk: uk
+        zh-CN: zh-CN
+        zh-TW: zh-TW
+        ur-PK: ur-PK
+        vi: vi
+        pt-BR: pt-BR
+        id: id
+        fa: fa-IR
+        ta: ta-IN
+        et: et
     excluded_target_languages:
       - en
       - en-US
 
   - source: "/fastlane/metadata/android/en-US/full_description.txt"
     translation: "/fastlane/metadata/android/%locale%/%original_file_name%"
+    skip_untranslated_files: true
+    languages_mapping:
+      locale:
+        fr: fr-FR
+        es-ES: es-ES
+        cs: cs-CZ
+        de: de-DE
+        eu: eu
+        fi: fi-FI
+        hu: hu-HU
+        it: it-IT
+        ja: ja-JP
+        ka: ka-GE
+        ko: ko-KR
+        nl: nl-NL
+        pl: pl-PL
+        pt-PT: pt-PT
+        ru: ru-RU
+        sk: sk
+        tr: tr-TR
+        uk: uk
+        zh-CN: zh-CN
+        zh-TW: zh-TW
+        ur-PK: ur-PK
+        vi: vi
+        pt-BR: pt-BR
+        id: id
+        fa: fa-IR
+        ta: ta-IN
+        et: et
     excluded_target_languages:
       - en
       - en-US

@@ -19,11 +19,9 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import org.orbitmvi.orbit.OrbitContainerHost
 import org.orbitmvi.orbit.viewmodel.orbitContainer
-import timber.log.Timber
 
 class LoggerViewModel(
     private val logReader: LogReader,
-    private val fileUtils: FileUtils,
     private val globalEffectRepository: GlobalEffectRepository,
 ) : OrbitContainerHost<LoggerUiState, LoggerUiState, Nothing>, ViewModel() {
 
@@ -60,58 +58,16 @@ class LoggerViewModel(
     }
 
     fun exportLogs(uri: Uri?) = intent {
-        if (uri == null) {
-            postSideEffect(
-                GlobalSideEffect.Snackbar(
-                    StringValue.StringResource(R.string.export_unsupported),
-                    ToastType.Warning,
-                )
-            )
-            return@intent
-        }
-
         val timestamp = Instant.now().toUserFriendlyTimestamp()
-        val result =
-            fileUtils.createNewShareFile(
-                "${Constants.BASE_LOG_FILE_NAME}_${timestamp}_${BuildConfig.VERSION_NAME}_${BuildConfig.FLAVOR}.zip"
+        postSideEffect(
+            GlobalSideEffect.ExportFile(
+                uri = uri,
+                fileName =
+                    "${Constants.BASE_LOG_FILE_NAME}_${timestamp}_${BuildConfig.VERSION_NAME}_${BuildConfig.FLAVOR}.zip",
+                mimeType = FileUtils.ZIP_FILE_MIME_TYPE,
+                successMessage = StringValue.StringResource(R.string.log_export_success),
+                prepareFile = { file -> logReader.zipLogFiles(file.absolutePath) },
             )
-
-        val onFailure = { action: Throwable ->
-            Timber.e(action)
-            intent {
-                postSideEffect(
-                    GlobalSideEffect.Snackbar(
-                        StringValue.StringResource(
-                            R.string.export_failed,
-                            ": ${action.localizedMessage}",
-                        ),
-                        ToastType.Error,
-                    )
-                )
-            }
-            Unit
-        }
-
-        result.fold(
-            onSuccess = { file ->
-                try {
-                    logReader.zipLogFiles(file.absolutePath)
-                    fileUtils
-                        .exportFile(file, uri, FileUtils.ZIP_FILE_MIME_TYPE)
-                        .onFailure(onFailure)
-                        .onSuccess {
-                            postSideEffect(
-                                GlobalSideEffect.Snackbar(
-                                    StringValue.StringResource(R.string.log_export_success),
-                                    ToastType.Success,
-                                )
-                            )
-                        }
-                } finally {
-                    if (file.exists()) file.delete()
-                }
-            },
-            onFailure = onFailure,
         )
     }
 

@@ -79,6 +79,7 @@ import com.dokar.sonner.ToastType
 import com.dokar.sonner.Toaster
 import com.dokar.sonner.rememberToasterState
 import com.zaneschepke.networkmonitor.NetworkMonitor
+import com.zaneschepke.wireguardautotunnel.core.orchestration.FileExportCoordinator
 import com.zaneschepke.wireguardautotunnel.data.AppDatabase
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelMode
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
@@ -170,6 +171,7 @@ class MainActivity : AppCompatActivity() {
     private val tunnelRepository: TunnelRepository by inject()
     private val appDatabase: AppDatabase by inject()
     private val networkMonitor: NetworkMonitor by inject()
+    private val fileExportCoordinator: FileExportCoordinator by inject()
 
     val viewModel by viewModel<SharedAppViewModel>()
     private lateinit var roomBackup: RoomBackup
@@ -217,14 +219,25 @@ class MainActivity : AppCompatActivity() {
             var showLocalNetworkRationale by remember { mutableStateOf(false) }
             var hasPromptedLocalNetwork by rememberSaveable { mutableStateOf(false) }
 
+            var pendingExport by remember { mutableStateOf<GlobalSideEffect.ExportFile?>(null) }
             val requestPermissionLauncher =
                 rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {
                     isGranted ->
-                    if (isGranted) {
-                        // Export the files on granted
-                        viewModel.exportSelectedTunnels(uri = null, context)
+                    val export = pendingExport
+                    pendingExport = null
+                    if (isGranted && export != null) {
+                        lifecycleScope.launch { fileExportCoordinator.execute(export) }
                     }
                 }
+
+            fun startExport(export: GlobalSideEffect.ExportFile) {
+                if (fileExportCoordinator.needsWritePermission(export.uri)) {
+                    pendingExport = export
+                    requestPermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                } else {
+                    lifecycleScope.launch { fileExportCoordinator.execute(export) }
+                }
+            }
 
             val localNetworkPermissionLauncher =
                 rememberLauncherForActivityResult(
@@ -317,11 +330,7 @@ class MainActivity : AppCompatActivity() {
                         is GlobalSideEffect.Snackbar -> snackbarChannel.send(sideEffect)
                         is GlobalSideEffect.LaunchUrl -> context.openWebUrl(sideEffect.url)
                         is GlobalSideEffect.InstallApk -> context.installApk(sideEffect.apk)
-                        GlobalSideEffect.RequestWriteStoragePermission -> {
-                            requestPermissionLauncher.launch(
-                                Manifest.permission.WRITE_EXTERNAL_STORAGE
-                            )
-                        }
+                        is GlobalSideEffect.ExportFile -> startExport(sideEffect)
                     }
                 }
             }

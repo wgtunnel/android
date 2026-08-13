@@ -1,7 +1,6 @@
 default_platform(:android)
 
 platform :android do
-
   private_lane :build_aab do
     gradle(
       task: "clean bundleGoogleRelease",
@@ -11,28 +10,50 @@ platform :android do
     )
   end
 
+  # Removes any locale that only has title.txt or is incomplete.
+  private_lane :cleanup_incomplete_metadata do
+    metadata_path = "fastlane/metadata/android"
+
+    Dir.glob("#{metadata_path}/*").each do |locale_dir|
+      next unless File.directory?(locale_dir)
+      next if File.basename(locale_dir) == "en-US"
+
+      has_title = File.exist?("#{locale_dir}/title.txt")
+      has_short = File.exist?("#{locale_dir}/short_description.txt")
+      has_full  = File.exist?("#{locale_dir}/full_description.txt")
+
+      unless has_title && has_short && has_full
+        UI.message("Removing incomplete locale: #{File.basename(locale_dir)}")
+        FileUtils.rm_rf(locale_dir)
+      end
+    end
+  end
+
   desc 'Deploy a new internal version to the Google Play Store'
   lane :internal do
     build_aab
+    cleanup_incomplete_metadata
     upload_to_play_store(track: 'internal', skip_upload_apk: true)
   end
 
   desc "Deploy an alpha version to the Google Play"
   lane :alpha do
     build_aab
+    cleanup_incomplete_metadata
     upload_to_play_store(track: 'alpha', skip_upload_apk: true)
   end
 
   desc "Deploy a beta version to the Google Play"
   lane :beta do
     build_aab
+    cleanup_incomplete_metadata
     upload_to_play_store(track: 'beta', skip_upload_apk: true)
   end
 
   desc "Deploy a new version to the Google Play"
   lane :production do
     build_aab
+    cleanup_incomplete_metadata
     upload_to_play_store(skip_upload_apk: true)
   end
-
 end

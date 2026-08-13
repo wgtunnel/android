@@ -38,6 +38,9 @@ fun Context.launchNotificationSettings() {
 }
 
 fun Context.hasSAFSupport(mimeType: String): Boolean {
+    // Some Android TV devices falsely report to support SAF
+    // In general, on Android TV devices we should fall back to legacy exports
+    if (isRunningOnTv()) return false
     val intent =
         Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
             type = mimeType

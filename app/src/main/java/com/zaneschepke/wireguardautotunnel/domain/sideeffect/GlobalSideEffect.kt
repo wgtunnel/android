@@ -1,5 +1,6 @@
 package com.zaneschepke.wireguardautotunnel.domain.sideeffect
 
+import android.net.Uri
 import com.dokar.sonner.ToastType
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelMode
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
@@ -22,7 +23,14 @@ sealed class GlobalSideEffect {
 
     data object ConfigChanged : GlobalSideEffect()
 
-    data object RequestWriteStoragePermission : GlobalSideEffect()
+    data class ExportFile(
+        val uri: Uri?,
+        val fileName: String,
+        val mimeType: String,
+        val successMessage: StringValue,
+        val prepareFile: suspend (File) -> Unit,
+        val onComplete: () -> Unit = {},
+    ) : GlobalSideEffect()
 
     data class RequestVpnPermission(val requestingMode: TunnelMode, val config: TunnelConfig?) :
         GlobalSideEffect()

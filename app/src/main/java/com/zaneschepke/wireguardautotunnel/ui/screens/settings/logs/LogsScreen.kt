@@ -97,13 +97,6 @@ fun LogsScreen(
                 )
                 showLogsSheet = false
             },
-            onUnsupported = {
-                sharedViewModel.showSnackMessage(
-                    StringValue.StringResource(R.string.export_unsupported),
-                    ToastType.Warning,
-                )
-                showLogsSheet = false
-            },
             onDismiss = { showLogsSheet = false },
         )
     }
