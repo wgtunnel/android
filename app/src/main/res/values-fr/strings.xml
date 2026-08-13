@@ -3,7 +3,6 @@
     <string name="app_permission_title">Pont de contrôle du tunnel WG.</string>
     <string name="app_permission_description">Pont de contrôle du tunnel WG.</string>
     <string name="error_file_extension">Le fichier n\'est pas un .conf ou .zip</string>
-    <string name="tunnels">Tunnels</string>
     <string name="tunnel_mobile_data">Tunnel sur données mobiles</string>
     <string name="privacy_policy">Politique de Confidentialité</string>
     <string name="okay">Ok</string>
@@ -31,7 +30,6 @@
     <string name="vpn_off">VPN éteint</string>
     <string name="create_import">Créer à partir de zéro</string>
     <string name="add_peer">Ajouter un pair</string>
-    <string name="interface_">Interface</string>
     <string name="rotate_keys">Rotation des clés</string>
     <string name="private_key">Clé privée</string>
     <string name="copy_public_key">Copier la clé publique</string>
@@ -60,7 +58,6 @@
     <string name="no_email_detected">Aucune application de mail détectée</string>
     <string name="no_browser_detected">Aucun navigateur détecté</string>
     <string name="open_issue">Signaler un problème</string>
-    <string name="auto">(Auto)</string>
     <string name="incorrect_pin">Code PIN incorrect</string>
     <string name="pin_created">Code PIN bien créé</string>
     <string name="enter_pin">Entrez votre code PIN</string>
@@ -88,7 +85,6 @@
     <string name="never">Jamais</string>
     <string name="logs">Journaux</string>
     <string name="appearance">Apparence</string>
-    <string name="notifications">Notifications</string>
     <string name="automatic">Automatique</string>
     <string name="light">Clair</string>
     <string name="dark">Sombre</string>
@@ -119,10 +115,6 @@
     <string name="stop">Arrête</string>
     <string name="splt_tunneling">Tunneling sélectif</string>
     <string name="show_scripts">Voir les scripts</string>
-    <string name="pre_up">Pre up</string>
-    <string name="post_up">Post up</string>
-    <string name="pre_down">Pre down</string>
-    <string name="post_down">Post down</string>
     <string name="quick_actions">Actions rapides</string>
     <string name="hide_amnezia_properties">Cacher les propriétés d\'Amnezia</string>
     <string name="hide_scripts">Cacher les scripts</string>
@@ -179,7 +171,6 @@
     <string name="wifi_detection_method">Méthode de détection Wi-Fi</string>
     <string name="_default">Par défaut</string>
     <string name="legacy">Obsolète</string>
-    <string name="root">Root</string>
     <string name="legacy_api_description">Utilisez une méthode obsolète d\'Android 12 pour récupérer des informations Wi-Fi qui limite les requêtes de localisation, mais qui peut ne pas fonctionner de manière fiable sur les appareils plus récents</string>
     <string name="use_shell_via_shizuku">Utilisez le shell via Shizuku pour obtenir les informations Wi-Fi, ce qui évite de devoir demander l\'autorisation d\'accès à la localisation sur les appareils non rootés</string>
     <string name="use_android_recommended">Utilisez la méthode recommandée par Android pour obtenir les informations Wi-Fi, en fonction de la version d\'Android</string>
@@ -191,7 +182,6 @@
     <string name="drag_handle">Poignée de glissement</string>
     <string name="move_up">Avancez</string>
     <string name="move_down">Descendre</string>
-    <string name="tunnel">tunnel</string>
     <string name="warning">Attention</string>
     <string name="location_permissions">Permissions de localisation</string>
     <string name="location_justification">Pour pouvoir lire les noms des réseaux Wi-Fi en arrière-plan avec votre méthode de détection actuelle, Android exige que les applications disposent des autorisations « Autoriser en permanence » et « Précis » (Localisation en arrière-plan sur les appareils plus anciens). Veuillez activer ces autorisations dans les paramètres de votre application Android.</string>
@@ -209,7 +199,6 @@
     <string name="backup_failed">Échec de la création de la sauvegarde.</string>
     <string name="backup_application">Sauvegarder les données de l\'application</string>
     <string name="restore_application">Restaurer à partir d\'une sauvegarde</string>
-    <string name="proxy">Proxy</string>
     <string name="backend_mode">Mode application</string>
     <string name="selected">Sélectionné</string>
     <string name="socks_5_proxy">Proxy SOCKS5</string>
@@ -245,9 +234,6 @@
     <string name="lockdown">Confinement</string>
     <string name="donate_title">Faire un don</string>
     <string name="crypto">Adresses de cryptomonnaie</string>
-    <string name="github_sponsors">GitHub Sponsors</string>
-    <string name="liberapay">Liberapay</string>
-    <string name="kofi">Ko-fi</string>
     <string name="donation_thanks_intro">Merci d\'envisager de faire un don à ce projet !</string>
     <string name="donation_dev_message">En tant que seul développeur, je travaille sans relâche pour faire de WG Tunnel le meilleur client WireGuard gratuit et open source pour Android, mais cela n\'est possible que grâce à votre soutien.</string>
     <string name="donation_closing">Mon rêve serait de travailler à plein temps pour vous sur ce projet.</string>
@@ -255,15 +241,12 @@
     <string name="google_donation_message">Malheureusement, en raison des règles de Google, les liens vers les pages de dons ne sont pas autorisés dans la version de cette application disponible sur le Play Store. Veuillez consulter les pages Web du projet pour savoir comment faire un don.</string>
     <string name="delete_active_message">Impossible de supprimer un tunnel actif.</string>
     <string name="back">Retour</string>
-    <string name="configuration">Configuration</string>
     <string name="kernel_wireguard_unsupported">Le noyau ne prend pas en charge WireGuard (module manquant ou non intégré au noyau) !</string>
     <string name="about">À propos</string>
     <string name="resources">Ressources</string>
     <string name="website">Site web de l\'application</string>
-    <string name="contact">Contact</string>
     <string name="review">Évaluer l\'application</string>
     <string name="other">Autres</string>
-    <string name="options">Options</string>
     <string name="general">Général</string>
     <string name="networks">Réseaux</string>
     <string name="preferred_tunnel_label">Tunnel préféré :</string>
@@ -273,13 +256,11 @@
     <string name="wifi_settings">Paramètres Wi-Fi</string>
     <string name="backup_and_restore">Sauvegarde et restauration</string>
     <string name="mobile_data">Données mobiles</string>
-    <string name="ethernet">Ethernet</string>
     <string name="unknown">Inconnu</string>
     <string name="no_network">Aucun réseau connecté</string>
     <string name="active_network">Réseau actif:</string>
     <string name="security_type">Sécurité :</string>
     <string name="network_name">Réseau:</string>
-    <string name="wifi">Wi-Fi</string>
     <string name="text_too_large_for_qr">Le texte est trop grand pour afficher QR.</string>
     <string name="all_services_disabled">L\'auto-tunnel et les tunnels doivent être désactivés pour effectuer cette action.</string>
     <string name="ddns_success_message">Le point de terminaison DNS dynamique a été mis à jour avec succès.</string>
@@ -297,7 +278,6 @@
     <string name="save_changes">Enregistrer les modifications</string>
     <string name="restart_message_template">L\'enregistrement des modifications entraînera le redémarrage de %1$s. Souhaitez-vous continuer ?</string>
     <string name="_continue">Continuer</string>
-    <string name="kill_switch">kill switch</string>
     <string name="translation">Traduction</string>
     <string name="help_translate">Aidez-nous à traduire l\'application</string>
     <string name="info">Infos</string>
@@ -311,7 +291,6 @@
     <string name="special_junk_packet">Paquet indésirable spécial</string>
     <!-- AmneziaWG 3.0 -->
     <string name="copy_from">Copier depuis</string>
-    <string name="mode">Mode</string>
     <string name="app_selection">Sélection des applications</string>
     <string name="import_url_description">L\'URL doit être sécurisée et servir un fichier .conf.</string>
     <string name="export_unsupported">L\'exportation n\'est pas prise en charge sur cet appareil</string>
