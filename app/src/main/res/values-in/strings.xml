@@ -193,8 +193,8 @@
     <string name="auto_tunnel_running">Terowongan otomatis sedang berjalan</string>
     <string name="auto_tunnel_not_running">Terowongan otomatis tidak berjalan</string>
     <string name="tunnel_monitoring">Pemantauan terowongan</string>
-    <string name="backup_success">Pencadangan berhasil. [%1$s]</string>
-    <string name="restore_success">Pemulihan berhasil. [%1$s]</string>
+    <string name="backup_success">Pencadangan berhasil. %1$s</string>
+    <string name="restore_success">Pemulihan berhasil. %1$s</string>
     <string name="restarting_app">Memulai ulang aplikasi untuk menerapkan perubahan…</string>
     <string name="restore_failed">Gagal memulihkan dari cadangan.</string>
     <string name="backup_failed">Gagal membuat cadangan.</string>

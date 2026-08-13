@@ -186,8 +186,8 @@
     <string name="auto_tunnel_running">Auto-tunnel attivo</string>
     <string name="auto_tunnel_not_running">Auto-tunnel non è in esecuzione</string>
     <string name="tunnel_monitoring">Monitoraggio tunnel</string>
-    <string name="backup_success">Bakcup riuscito. [%1$s]</string>
-    <string name="restore_success">Ripristino riuscito. [%1$s]</string>
+    <string name="backup_success">Bakcup riuscito. %1$s</string>
+    <string name="restore_success">Ripristino riuscito. %1$s</string>
     <string name="restarting_app">Riavviando l\'app per applicare le modifiche…</string>
     <string name="restore_failed">Impossibile ripristinare dal backup.</string>
     <string name="backup_failed">Impossibile creare il backup.</string>

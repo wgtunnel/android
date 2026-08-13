@@ -178,8 +178,8 @@
     <string name="auto_tunnel_running">Auto-tunnel is actief</string>
     <string name="auto_tunnel_not_running">Auto-tunnel is niet actief</string>
     <string name="tunnel_monitoring">Tunnel bekijken</string>
-    <string name="backup_success">Backup succesvol. [%1$s]</string>
-    <string name="restore_success">Herstel succesvol. [%1$s]</string>
+    <string name="backup_success">Backup succesvol. %1$s</string>
+    <string name="restore_success">Herstel succesvol. %1$s</string>
     <string name="restarting_app">App wordt herstart om veranderingen in te voeren…</string>
     <string name="restore_failed">Herstel van backup mislukt.</string>
     <string name="backup_failed">Backup maken mislukt.</string>

@@ -200,8 +200,8 @@
     <string name="auto_tunnel_running">自动隧道运行中</string>
     <string name="auto_tunnel_not_running">自动隧道未运行</string>
     <string name="tunnel_monitoring">隧道监控</string>
-    <string name="backup_success">成功备份：[%1$s]</string>
-    <string name="restore_success">成功恢复：[%1$s]</string>
+    <string name="backup_success">成功备份：%1$s</string>
+    <string name="restore_success">成功恢复：%1$s</string>
     <string name="restarting_app">正重启应用来应用更改…</string>
     <string name="restore_failed">未能从备份恢复。</string>
     <string name="backup_failed">创建备份失败。</string>

@@ -199,8 +199,8 @@
     <string name="auto_tunnel_running">آٹو ٹنل چل رہا ہے</string>
     <string name="auto_tunnel_not_running">آٹو ٹنل نہیں چل رہا ہے</string>
     <string name="tunnel_monitoring">ٹنل کی نگرانی</string>
-    <string name="backup_success">بیک اپ کامیاب۔ [%1$s]</string>
-    <string name="restore_success">بحالی کامیاب۔ [%1$s]</string>
+    <string name="backup_success">بیک اپ کامیاب۔ %1$s</string>
+    <string name="restore_success">بحالی کامیاب۔ %1$s</string>
     <string name="restarting_app">تبدیلیاں لاگو کرنے کے لیے ایپ کو دوبارہ شروع کیا جا رہا ہے…</string>
     <string name="restore_failed">بیک اپ سے بحالی ناکام۔</string>
     <string name="backup_failed">بیک اپ بنانے میں ناکام۔</string>

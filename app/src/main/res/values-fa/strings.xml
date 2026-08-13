@@ -144,6 +144,7 @@
     <string name="current_template">فعلی: %1$s </string>
     <string name="flavor_template">مناسب (گونه): %1$s</string>
     <string name="root_required_template">%1$s (نیازمند روت)</string>
+    <string name="recommended_template">%1$s (توصیه می‌شود) </string>
     <string name="config_error">پیکربندی نامعتبر </string>
     <string name="dns_resolve_error">حل مشکل DNS با شکست مواجه شد </string>
     <string name="auth_error">غیرمجاز </string>

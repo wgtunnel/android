@@ -202,8 +202,8 @@
     <string name="auto_tunnel_running">Auto-tunnel est en cours d\'exécution</string>
     <string name="auto_tunnel_not_running">Auto-tunnel ne fonctionne pas</string>
     <string name="tunnel_monitoring">Surveillance des tunnels</string>
-    <string name="backup_success">Sauvegarde réussie. [%1$s]</string>
-    <string name="restore_success">Restauration réussi. [%1$s]</string>
+    <string name="backup_success">Sauvegarde réussie. %1$s</string>
+    <string name="restore_success">Restauration réussi. %1$s</string>
     <string name="restarting_app">Redémarrage de l\'application pour appliquer les modifications…</string>
     <string name="restore_failed">La restauration à partir de la sauvegarde a échoué.</string>
     <string name="backup_failed">Échec de la création de la sauvegarde.</string>

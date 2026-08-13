@@ -199,8 +199,8 @@
     <string name="auto_tunnel_running">Autotunel jest uruchomiony</string>
     <string name="auto_tunnel_not_running">Autotunel nie jest uruchomiony</string>
     <string name="tunnel_monitoring">Monitorowanie tunelu</string>
-    <string name="backup_success">Powodzenie tworzenia kopii zapasowej. [%1$s]</string>
-    <string name="restore_success">Powodzenie przywracania. [%1$s]</string>
+    <string name="backup_success">Powodzenie tworzenia kopii zapasowej. %1$s</string>
+    <string name="restore_success">Powodzenie przywracania. %1$s</string>
     <string name="restarting_app">Ponowne uruchomienie aplikacji w celu zastosowania zmian…</string>
     <string name="restore_failed">Nie udało się przywrócić danych z kopii zapasowej.</string>
     <string name="backup_failed">Nie udało się utworzyć kopii zapasowej.</string>

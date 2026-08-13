@@ -198,8 +198,8 @@
     <string name="auto_tunnel_running">Tunneli automaatne käivitamine on kasutusel</string>
     <string name="auto_tunnel_not_running">Tunneli automaatne käivitamine pole kasutusel</string>
     <string name="tunnel_monitoring">Tunnelo monitooring</string>
-    <string name="backup_success">Varundus õnnestus. [%1$s]</string>
-    <string name="restore_success">Taastamine õnnestus. [%1$s]</string>
+    <string name="backup_success">Varundus õnnestus. %1$s</string>
+    <string name="restore_success">Taastamine õnnestus. %1$s</string>
     <string name="restarting_app">Muudatuste jõustamiseks taaskäivitan rakenduse…</string>
     <string name="restore_failed">Varukoopiast taastamine ei õnnestunud.</string>
     <string name="backup_failed">Varukoopia loomine ei õnnestunud.</string>

@@ -202,8 +202,8 @@
     <string name="auto_tunnel_running">자동 터널 실행 중</string>
     <string name="auto_tunnel_not_running">자동 터널 미실행 중</string>
     <string name="tunnel_monitoring">터널 모니터링</string>
-    <string name="backup_success">백업 성공. [%1$s]</string>
-    <string name="restore_success">복원 성공. [%1$s]</string>
+    <string name="backup_success">백업 성공. %1$s</string>
+    <string name="restore_success">복원 성공. %1$s</string>
     <string name="restarting_app">변경 사항을 적용하기 위해 재시작하는 중…</string>
     <string name="restore_failed">백업에서 복원하는 데 실패했습니다.</string>
     <string name="backup_failed">백업 생성에 실패했습니다.</string>

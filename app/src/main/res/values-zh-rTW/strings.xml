@@ -194,8 +194,8 @@
     <string name="auto_tunnel_running">自動隧道管理正在執行</string>
     <string name="auto_tunnel_not_running">自動隧道管理未執行</string>
     <string name="tunnel_monitoring">隧道監測</string>
-    <string name="backup_success">備份成功。[%1$s]</string>
-    <string name="restore_success">還原成功。 [%1$s]</string>
+    <string name="backup_success">備份成功。%1$s</string>
+    <string name="restore_success">還原成功。 %1$s</string>
     <string name="restarting_app">正在重啟應用程式以應用變更…</string>
     <string name="restore_failed">還原備份失敗。</string>
     <string name="backup_failed">建立備份失敗。</string>
