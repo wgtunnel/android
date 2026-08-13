@@ -1,17 +1,17 @@
-WG Tunnel WireGuard VPN bezero bat da, sinpletasunaren eta sendotasunaren arteko oreka lortzen duena, erabiltzaile arruntentzat zein erabiltzaile aurreratuentzat bezero ezin hobea bihurtuz.
-Zure VPNera noiz konektatu automatizatu nahi duzun edo pribatutasun-erabilera aurreratuak dituzun erabiltzaile aditua zaren, WG Tunnel-ek estaltzen zaitu.
+WG Tunnel is a WireGuard VPN client that strikes the balance between simplicity and robustness, making it the ideal client for casual and power users alike.
+Whether you simply want to automate when you're connected to your VPN or you're a power user with advanced privacy use cases, WG Tunnel has you covered.
 
-Ezaugarriak:
+Features:
 
-- **Tunel Automatikoa:** Aktibatu tunelak automatikoki, zure gailuaren sare-xehetasun aktiboetan oinarrituta.
-- **Amaiera-puntuen Abiarazte Atzeratua:** Amaiera-puntuak modu seguruan ebazten ditu eta parekideak eguneratzen ditu tunela martxan jarri ondoren, abioan fidagarritasun eta ihes-babes hobea izateko.
-- **Eskuemate Monitorizazioa:** Eskuemateen denbora errealeko monitorizazioa, tunelaren osasunari buruzko berehalako informazioa emateko.
-- **AmneziaWG Euskarria:** AmneziaWG 2.0-rako euskarri osoa, zentsuraren aurkako babes sendoa emanez.
-- **Tunel Zatiketa:** Aplikazio edo trafiko jakinak VPNaren bidez bideratzeko euskarri malgua.
-- **Proxy Lokal Modua:** WireGuard tunelak SOCKS5 edo HTTP proxy lokal baten bidez erakusten ditu, arakatzaileei edo suebaki-aplikazioei (AdGuard bezalakoei) erabilgarri jartzeko.
-- **Blokeo Modua:** Aplikazio barneko "kill switch" aurreratua, tunela erorita dagoenean trafiko guztia blokeatzen duena.
-- **Kontrol Bizkorrak:** Ezarpen Azkarren fitxa eta hasierako pantailako lasterbideak, erraz aktibatzeko/desaktibatzeko.
-- **Urruneko Kontrol Euskarria:** "Intent" bidezko automatizazioa, tunelak eta tunel-automatikoa automatizazio-aplikazioetatik (Tasker bezalakoetatik) kontrolatzeko.
-- **DNS Dinamikoaren Kudeaketa:** Zerbitzariaren IP helbidea aldatzen denean amaiera-puntuak automatikoki detektatu eta eguneratzen ditu, berrabiarazi beharrik gabe.
-- **IPv6 Amaiera-puntuak:** IPv6 amaiera-puntuetara automatikoki igotzen da edo IPv4ra itzultzen da sare-baldintzen arabera, berrabiarazi beharrik gabe.
-- **Android TV Euskarria:** Android TVn ezaugarri ia guztientzako euskarri osoa.
+- **Auto-Tunneling:** Automatically activate tunnels based on your device's active network details.
+- **Deferred Endpoint Bootstrapping:** Safely resolves endpoints and updates peers after the tunnel is up for better reliability and leak protection on startup.
+- **Handshake Monitoring:** Real-time handshake monitoring for instant tunnel health feedback.
+- **AmneziaWG Support:** Full support for AmneziaWG 2.0, providing robust censorship protection.
+- **Split Tunneling:** Flexible support for routing specific apps or traffic through the VPN.
+- **Local Proxy Mode:** Expose WireGuard tunnels over a local SOCKS5 or HTTP proxy to browsers or firewall apps (like AdGuard).
+- **Lockdown Mode:** Advanced in-app kill switch that blocks all traffic while the tunnel is down.
+- **Quick Controls:** Quick Settings tile and home screen shortcuts for easy toggling.
+- **Remote Control Support:** Intent-based automation for controlling tunnels and auto-tunneling from automation apps (like Tasker).
+- **Dynamic DNS Handling:** Automatically detect and update endpoints on server IP changes without requiring a restart.
+- **IPv6 Endpoints:** Automatically upgrade to IPv6 endpoints or fall back to IPv4 based on network conditions without requiring a restart.
+- **Android TV Support:** Full support for nearly all features on Android TV.
