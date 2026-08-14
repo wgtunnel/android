@@ -385,11 +385,7 @@
     <string name="tunnel_state_establishing_connection">установка соединения</string>
     <string name="peer_endpoints">Точки подключения узлов</string>
     <string name="prefer_ipv6">Предпочитать IPv6</string>
-    <string name="prefer_ipv6_desc">Использовать протокол IPv6, если поддерживает сеть.</string>
-    <string name="fallback_to_ipv4">Возвращаться на IPv4</string>
-    <string name="fallback_to_ipv4_desc">Переключаться обратно на IPv4, если обнаружено, что сеть не поддерживает IPv6</string>
     <string name="restore_ipv6">Восстановить IPv6</string>
-    <string name="restore_ipv6_desc">Переключаться обратно на IPv6, если обнаружено, что сеть его поддерживает.</string>
     <string name="no_tunnels_yet">Здесь пока ничего нет…</string>
     <string name="getting_started_guidance">Используйте кнопку +, чтобы импортировать туннель, или просмотрите руководство по началу работы.</string>
     <string name="getting_started_guide_link">посмотреть руководство по началу работы</string>
