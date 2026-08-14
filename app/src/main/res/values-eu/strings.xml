@@ -402,11 +402,7 @@
     <string name="tunnel_state_establishing_connection">Konexioa ezartzen</string>
     <string name="peer_endpoints">Parekideen amaiera-puntuak</string>
     <string name="prefer_ipv6">Hobetsi IPv6</string>
-    <string name="prefer_ipv6_desc">Erabili IPv6 amaiera-puntuak sareak onartzen duenean</string>
-    <string name="fallback_to_ipv4">IPv4ra itzuli</string>
-    <string name="fallback_to_ipv4_desc">Aldatu IPv4ra IPv6k huts egiten badu, tunela berrabiarazi gabe</string>
     <string name="restore_ipv6">Berrezarri IPv6</string>
-    <string name="restore_ipv6_desc">Itzuli IPv6ra IPv6 sare bat detektatzen denean.</string>
     <string name="no_tunnels_yet">Ezer ez hemen… oraindik.</string>
     <string name="getting_started_guidance">Erabili + botoia tunel bat inportatzeko, edo ikusi hasteko gida.</string>
     <string name="getting_started_guide_link">ikusi hasteko gida</string>
