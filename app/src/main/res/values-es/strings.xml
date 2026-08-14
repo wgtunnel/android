@@ -402,11 +402,7 @@
     <string name="tunnel_state_establishing_connection">Estableciendo conexión</string>
     <string name="peer_endpoints">Peer endpoints</string>
     <string name="prefer_ipv6">IPv6 preferido</string>
-    <string name="prefer_ipv6_desc">Utilice los puntos finales IPv6 cuando la red lo soporte</string>
-    <string name="fallback_to_ipv4">Recuperación a IPv4</string>
-    <string name="fallback_to_ipv4_desc">Cambie a IPv4 si IPv6 falla, sin reiniciar el túnel</string>
     <string name="restore_ipv6">Restaurar IPv6</string>
-    <string name="restore_ipv6_desc">Vuelva a IPv6 cuando se detecte una red IPv6.</string>
     <string name="no_tunnels_yet">Nada aquí... todavía.</string>
     <string name="getting_started_guidance">Utilice el botón + para importar un túnel o vea la guía de inicio.</string>
     <string name="getting_started_guide_link">Ver la guía de inicio</string>
