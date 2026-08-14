@@ -381,9 +381,5 @@
     <string name="tunnel_state_establishing_connection">Nawiązywanie połączenia</string>
     <string name="peer_endpoints">Punkty końcowe peerów</string>
     <string name="prefer_ipv6">Preferuj IPv6</string>
-    <string name="prefer_ipv6_desc">Używaj punktów końcowych IPv6, jeśli sieć to obsługuje.</string>
-    <string name="fallback_to_ipv4">Awaryjny powrót do IPv4</string>
-    <string name="fallback_to_ipv4_desc">W przypadku awarii protokołu IPv6 przełącz się na protokół IPv4 bez ponownego uruchamiania tunelu.</string>
     <string name="restore_ipv6">Przywróć IPv6</string>
-    <string name="restore_ipv6_desc">Po wykryciu sieci IPv6 przełącz się z powrotem na IPv6.</string>
 </resources>
