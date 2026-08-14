@@ -397,11 +397,7 @@
     <string name="tunnel_state_establishing_connection">연결 설정 중</string>
     <string name="peer_endpoints">피어 엔드포인트</string>
     <string name="prefer_ipv6">IPv6 선호</string>
-    <string name="prefer_ipv6_desc">네트워크가 지원하면 IPv6 엔드포인트 사용</string>
-    <string name="fallback_to_ipv4">IPv4로 폴백</string>
-    <string name="fallback_to_ipv4_desc">IPv6 연결에 실패하면, 터널 재시작 없이 IPv4로 전환</string>
     <string name="restore_ipv6">IPv6 복원</string>
-    <string name="restore_ipv6_desc">IPv6 네트워크가 감지되면 IPv6로 다시 전환</string>
     <string name="no_tunnels_yet">아직 아무것도 없습니다…</string>
     <string name="getting_started_guidance">+ 버튼을 이용해 터널을 가져오거나, 시작 도움말을 확인하세요.</string>
     <string name="getting_started_guide_link">시작 도움말 확인하기</string>
