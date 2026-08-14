@@ -382,11 +382,7 @@
     <string name="tunnel_state_establishing_connection">Verbindung wird hergestellt</string>
     <string name="peer_endpoints">Peer Endpunkte</string>
     <string name="prefer_ipv6">IPv6 bevorzugen</string>
-    <string name="prefer_ipv6_desc">IPv6 Endpunkte verwenden, wenn das Netzwerk dies unterstützt</string>
-    <string name="fallback_to_ipv4">Fallback auf IPv4</string>
-    <string name="fallback_to_ipv4_desc">Falls IPv6 fehlschlägt, zu IPv4 wechseln, ohne den Tunnel neu zu starten</string>
     <string name="restore_ipv6">IPv6 wiederherstellen</string>
-    <string name="restore_ipv6_desc">Zurück zu IPv6 wechseln, sobald ein IPv6-Netzwerk erkannt wird.</string>
     <string name="no_tunnels_yet">Hier gibt es noch nichts.</string>
     <string name="getting_started_guidance">Benutze die + Taste, um einen Tunnel zu importieren, oder sieh dir die Schnellstartanleitung  an.</string>
     <string name="getting_started_guide_link">Schnellstartanleitung ansehen</string>
