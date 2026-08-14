@@ -387,11 +387,7 @@
     <string name="tunnel_state_establishing_connection">正在建立连接</string>
     <string name="peer_endpoints">节点端点</string>
     <string name="prefer_ipv6">优先使用 IPv6</string>
-    <string name="prefer_ipv6_desc">当网络支持时使用 IPv6 端点</string>
-    <string name="fallback_to_ipv4">回退到 IPv4</string>
-    <string name="fallback_to_ipv4_desc">IPv6 失败时切换到 IPv4，而不重启隧道。</string>
     <string name="restore_ipv6">恢复 IPv6</string>
-    <string name="restore_ipv6_desc">检测到 IPv6 网络时切换回 IPv6。</string>
     <string name="no_tunnels_yet">这里什么都没有。</string>
     <string name="getting_started_guidance">使用 + 按钮导入隧道，或查看入门指南。</string>
     <string name="getting_started_guide_link">查看入门指南</string>
