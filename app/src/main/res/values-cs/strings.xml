@@ -361,7 +361,6 @@
     <string name="events_channel_description">Kanál pro události aplikace, jako události automatizace </string>
     <string name="app">Aplikace</string>
     <string name="stop_all">Zastavit vše </string>
-    <string name="prefer_ipv6_desc">Použít IPv6 endpoints pokud to síť podporuje</string>
     <string name="restore_ipv6">Obnovit IPv6</string>
     <string name="no_tunnels_yet">Tady nic není… zatím. </string>
     <string name="local_proxy">Místní proxy</string>
