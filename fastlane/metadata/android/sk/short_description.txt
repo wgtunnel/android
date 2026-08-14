@@ -1,1 +1,1 @@
-Alternatívny VPN klient pre WireGuard a AmneziaWG s extra funkciami
+A WireGuard & AmneziaWG VPN client with auto-tunneling, lockdown & proxying.
