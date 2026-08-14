@@ -381,11 +381,7 @@
     <string name="tunnel_state_establishing_connection">Établissement de la connexion</string>
     <string name="peer_endpoints">Points de terminaison des pairs</string>
     <string name="prefer_ipv6">Préférer IPv6</string>
-    <string name="prefer_ipv6_desc">Utiliser les points de terminaison IPv6 lorsque le réseau le prend en charge</string>
-    <string name="fallback_to_ipv4">Repli sur IPv4</string>
-    <string name="fallback_to_ipv4_desc">Basculer vers IPv4 si IPv6 échoue, sans redémarrer le tunnel</string>
     <string name="restore_ipv6">Restaurer IPv6</string>
-    <string name="restore_ipv6_desc">Revenir à IPv6 lorsqu\'un réseau IPv6 est détecté.</string>
     <string name="no_tunnels_yet">Rien ici… pour l\'instant.</string>
     <string name="getting_started_guidance">Utilisez le bouton + pour importer un tunnel, ou consultez le guide de démarrage.</string>
     <string name="getting_started_guide_link">consulter le guide de démarrage</string>
