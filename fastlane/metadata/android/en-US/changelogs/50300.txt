@@ -1,0 +1,7 @@
+What's new:
+- Amnezia 3.0 support
+- Fix for restoring tunnels/auto tunnel on system kill/package update
+- Android TV and legacy android versions tunnel export support
+- DDNS and seamless recovery fixes and improvements
+- Locale updates
+- Various other fixes and improvements

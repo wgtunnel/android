@@ -44,8 +44,14 @@ class FileExportCoordinator(
                 postFailure(it)
                 return
             }
+            val successMessage =
+                if (export.uri == null) {
+                    StringValue.StringResource(R.string.export_success_downloads)
+                } else {
+                    export.successMessage
+                }
             globalEffectRepository.post(
-                GlobalSideEffect.Snackbar(export.successMessage, ToastType.Success)
+                GlobalSideEffect.Snackbar(successMessage, ToastType.Success)
             )
             export.onComplete()
         } catch (error: Exception) {

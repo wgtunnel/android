@@ -1,0 +1,27 @@
+name: publish-play-listing
+
+on:
+  workflow_dispatch:
+  workflow_call:
+
+jobs:
+  publish-listing:
+    name: Publish Play Store listing
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Create service_account.json
+        run: echo '${{ secrets.SERVICE_ACCOUNT_JSON }}' > service_account.json
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+          bundler-cache: true
+
+      - name: Upload listing metadata
+        run: |
+          bundle exec fastlane android upload_listing \
+            json_key:"service_account.json" \
+            package_name:"com.zaneschepke.wireguardautotunnel"

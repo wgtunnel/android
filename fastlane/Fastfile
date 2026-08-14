@@ -56,4 +56,32 @@ platform :android do
     cleanup_incomplete_metadata
     upload_to_play_store(skip_upload_apk: true)
   end
+
+  # CI already built the AAB. Listing copy is a separate workflow so a bad
+  # Crowdin locale cannot block the production binary.
+  desc "Upload an already-built AAB to Google Play"
+  lane :upload_aab do |options|
+    upload_to_play_store(
+      track: options[:track],
+      aab: options[:aab],
+      json_key: options[:json_key],
+      package_name: options[:package_name],
+      skip_upload_apk: true,
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+    )
+  end
+
+  desc "Upload Play Store listing metadata only"
+  lane :upload_listing do |options|
+    cleanup_incomplete_metadata
+    upload_to_play_store(
+      json_key: options[:json_key],
+      package_name: options[:package_name],
+      skip_upload_apk: true,
+      skip_upload_aab: true,
+      skip_upload_changelogs: true,
+    )
+  end
 end

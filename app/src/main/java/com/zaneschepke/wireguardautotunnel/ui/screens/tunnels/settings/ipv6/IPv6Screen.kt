@@ -7,38 +7,27 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowForward
 import androidx.compose.material.icons.outlined.Public
 import androidx.compose.material.icons.outlined.Restore
-import androidx.compose.material.icons.outlined.SwapHoriz
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ThemedSwitch
 import com.zaneschepke.wireguardautotunnel.ui.common.label.GroupLabel
 import com.zaneschepke.wireguardautotunnel.ui.common.text.DescriptionText
-import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
 import com.zaneschepke.wireguardautotunnel.ui.theme.Disabled
 import com.zaneschepke.wireguardautotunnel.viewmodel.TunnelViewModel
 import org.orbitmvi.orbit.compose.collectAsState
 
 @Composable
 fun IPv6Screen(viewModel: TunnelViewModel) {
-
-    val navController = LocalNavController.current
 
     val uiState by viewModel.collectAsState()
 
@@ -74,37 +63,6 @@ fun IPv6Screen(viewModel: TunnelViewModel) {
             val iconTint =
                 if (!tunnel.isIpv6Preferred) Disabled else MaterialTheme.colorScheme.onSurface
             val ipv6Enabled = tunnel.isIpv6Preferred
-
-            SurfaceRow(
-                leading = {
-                    Icon(Icons.Outlined.SwapHoriz, contentDescription = null, tint = iconTint)
-                },
-                title = stringResource(R.string.fallback_to_ipv4),
-                onClick = { navController.push(Route.Settings) },
-                enabled = ipv6Enabled,
-                description = {
-                    val normalDesc = stringResource(R.string.fallback_to_ipv4_desc)
-                    val nowInText =
-                        stringResource(
-                            R.string.now_in_template,
-                            stringResource(R.string.seamless_recovery),
-                        )
-
-                    val text = buildAnnotatedString {
-                        append(normalDesc)
-                        append("\n")
-
-                        withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { append(nowInText) }
-                    }
-
-                    DescriptionText(text = text, disabled = !ipv6Enabled)
-                },
-                trailing = {
-                    IconButton({ navController.push(Route.Settings) }) {
-                        Icon(Icons.AutoMirrored.Outlined.ArrowForward, null)
-                    }
-                },
-            )
 
             SurfaceRow(
                 leading = {

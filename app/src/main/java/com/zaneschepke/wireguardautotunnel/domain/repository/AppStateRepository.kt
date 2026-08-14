@@ -16,5 +16,11 @@ interface AppStateRepository {
 
     suspend fun shouldShowDonationSnackbar(): Boolean
 
+    suspend fun getLastActiveTunnelIds(): List<Int>
+
+    suspend fun setLastActiveTunnelIds(ids: List<Int>)
+
+    suspend fun clearLastActiveTunnelIds()
+
     val flow: Flow<AppState>
 }

@@ -52,37 +52,46 @@ files:
       - en
       - en-US
 
+  # Folder names must match Play Console listing locales, not Crowdin defaults.
+  # https://support.google.com/googleplay/android-developer/table/4419860
+  # Quote "no": YAML 1.1 treats `no` as boolean, and Crowdin's Java parser
+  # then fails with Boolean cannot be cast to String.
   - source: "/fastlane/metadata/android/en-US/title.txt"
     translation: "/fastlane/metadata/android/%locale%/%original_file_name%"
     languages_mapping:
       locale:
-        fr: fr-FR
-        es-ES: es-ES
+        ar: ar
         cs: cs-CZ
+        da: da-DK
         de: de-DE
-        eu: eu
+        es-ES: es-ES
+        et: et
+        eu: eu-ES
+        fa: fa
         fi: fi-FI
+        fr: fr-FR
         hu: hu-HU
+        id: id
         it: it-IT
         ja: ja-JP
         ka: ka-GE
         ko: ko-KR
         nl: nl-NL
+        "no": "no-NO"
         pl: pl-PL
+        pt-BR: pt-BR
         pt-PT: pt-PT
         ru: ru-RU
         sk: sk
+        sr: sr
+        ta: ta-IN
+        th: th
         tr: tr-TR
         uk: uk
+        ur-PK: ur
+        vi: vi
         zh-CN: zh-CN
         zh-TW: zh-TW
-        ur-PK: ur-PK
-        vi: vi
-        pt-BR: pt-BR
-        id: id
-        fa: fa-IR
-        ta: ta-IN
-        et: et
     excluded_target_languages:
       - en
       - en-US
@@ -92,33 +101,38 @@ files:
     skip_untranslated_files: true
     languages_mapping:
       locale:
-        fr: fr-FR
-        es-ES: es-ES
+        ar: ar
         cs: cs-CZ
+        da: da-DK
         de: de-DE
-        eu: eu
+        es-ES: es-ES
+        et: et
+        eu: eu-ES
+        fa: fa
         fi: fi-FI
+        fr: fr-FR
         hu: hu-HU
+        id: id
         it: it-IT
         ja: ja-JP
         ka: ka-GE
         ko: ko-KR
         nl: nl-NL
+        "no": "no-NO"
         pl: pl-PL
+        pt-BR: pt-BR
         pt-PT: pt-PT
         ru: ru-RU
         sk: sk
+        sr: sr
+        ta: ta-IN
+        th: th
         tr: tr-TR
         uk: uk
+        ur-PK: ur
+        vi: vi
         zh-CN: zh-CN
         zh-TW: zh-TW
-        ur-PK: ur-PK
-        vi: vi
-        pt-BR: pt-BR
-        id: id
-        fa: fa-IR
-        ta: ta-IN
-        et: et
     excluded_target_languages:
       - en
       - en-US
@@ -128,33 +142,38 @@ files:
     skip_untranslated_files: true
     languages_mapping:
       locale:
-        fr: fr-FR
-        es-ES: es-ES
+        ar: ar
         cs: cs-CZ
+        da: da-DK
         de: de-DE
-        eu: eu
+        es-ES: es-ES
+        et: et
+        eu: eu-ES
+        fa: fa
         fi: fi-FI
+        fr: fr-FR
         hu: hu-HU
+        id: id
         it: it-IT
         ja: ja-JP
         ka: ka-GE
         ko: ko-KR
         nl: nl-NL
+        "no": "no-NO"
         pl: pl-PL
+        pt-BR: pt-BR
         pt-PT: pt-PT
         ru: ru-RU
         sk: sk
+        sr: sr
+        ta: ta-IN
+        th: th
         tr: tr-TR
         uk: uk
+        ur-PK: ur
+        vi: vi
         zh-CN: zh-CN
         zh-TW: zh-TW
-        ur-PK: ur-PK
-        vi: vi
-        pt-BR: pt-BR
-        id: id
-        fa: fa-IR
-        ta: ta-IN
-        et: et
     excluded_target_languages:
       - en
       - en-US

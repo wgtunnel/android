@@ -13,6 +13,7 @@ import com.zaneschepke.wireguardautotunnel.domain.model.LockdownSettings
 import com.zaneschepke.wireguardautotunnel.domain.model.MonitoringSettings
 import com.zaneschepke.wireguardautotunnel.domain.model.ProxySettings
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
+import com.zaneschepke.wireguardautotunnel.domain.repository.AppStateRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.LockdownSettingsRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.MonitoringSettingsRepository
@@ -43,6 +44,7 @@ class TunnelCoordinator(
     monitoringSettingsRepository: MonitoringSettingsRepository,
     proxyRepository: ProxySettingsRepository,
     lockdownModeRepository: LockdownSettingsRepository,
+    private val appStateRepository: AppStateRepository,
     scope: CoroutineScope,
 ) {
 
@@ -106,9 +108,9 @@ class TunnelCoordinator(
             _userOverrideFlow.tryEmit(Unit)
         }
 
-        // enforce single tunnel, for now
+        // enforce single tunnel, for now — do not clear last-active here; start success replaces it
         if (backendStatus.value.activeTunnels.isNotEmpty()) {
-            stopActiveTunnelsInternal(source)
+            stopActiveTunnelsInternal(source, persistLastActive = false)
         }
 
         startTunnelInternal(config, source)
@@ -127,7 +129,7 @@ class TunnelCoordinator(
             if (source == TunnelActionSource.USER) {
                 _userOverrideFlow.tryEmit(Unit)
             }
-            stopActiveTunnelsInternal(source)
+            stopActiveTunnelsInternal(source, persistLastActive = true)
         }
 
     private suspend fun startTunnelInternal(
@@ -204,6 +206,9 @@ class TunnelCoordinator(
                 _actions.emit(
                     TunnelActionEvent.Started(tunnelId = tunnelConfig.id, source = source)
                 )
+                replaceLastActiveTunnelIds(
+                    tunnelProvider.backendStatus.value.activeTunnels.keys + tunnelConfig.id
+                )
             }
             .onFailure {
                 Timber.e(it)
@@ -247,7 +252,7 @@ class TunnelCoordinator(
                     _actions.emit(TunnelActionEvent.Stopped(tunnelId = id, source = source))
                 }
 
-                stopActiveTunnelsInternal(source)
+                stopActiveTunnelsInternal(source, persistLastActive = true)
                 return@withLock
             }
 
@@ -268,12 +273,18 @@ class TunnelCoordinator(
     private suspend fun stopTunnelInternal(id: Int, source: TunnelActionSource) {
         tunnelProvider
             .stopTunnel(id)
-            .onSuccess { _actions.emit(TunnelActionEvent.Stopped(tunnelId = id, source = source)) }
+            .onSuccess {
+                _actions.emit(TunnelActionEvent.Stopped(tunnelId = id, source = source))
+                replaceLastActiveTunnelIds(
+                    tunnelProvider.backendStatus.value.activeTunnels.keys - id
+                )
+            }
             .onFailure { _errors.emit(TunnelErrorEvent.from(it, id)) }
     }
 
     private suspend fun stopActiveTunnelsInternal(
-        source: TunnelActionSource = TunnelActionSource.USER
+        source: TunnelActionSource = TunnelActionSource.USER,
+        persistLastActive: Boolean,
     ) {
         val active = tunnelProvider.backendStatus.value.activeTunnels
 
@@ -282,5 +293,16 @@ class TunnelCoordinator(
         }
 
         tunnelProvider.stopActiveTunnels()
+        if (persistLastActive) {
+            replaceLastActiveTunnelIds(emptySet())
+        }
+    }
+
+    private suspend fun replaceLastActiveTunnelIds(ids: Set<Int>) {
+        if (ids.isEmpty()) {
+            appStateRepository.clearLastActiveTunnelIds()
+        } else {
+            appStateRepository.setLastActiveTunnelIds(ids.toList())
+        }
     }
 }

@@ -7,6 +7,7 @@ import com.wgtunnel.backend.service.AlwaysOnCallback
 import com.wgtunnel.backend.service.RuntimeManager
 import com.zaneschepke.wireguardautotunnel.core.event.TunnelEventDispatcher
 import com.zaneschepke.wireguardautotunnel.core.orchestration.AppBoostrapCoordinator
+import com.zaneschepke.wireguardautotunnel.core.orchestration.StartupCoordinator
 import com.zaneschepke.wireguardautotunnel.core.orchestration.TunnelCoordinator
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelProvider
 import com.zaneschepke.wireguardautotunnel.di.Dispatcher
@@ -45,6 +46,8 @@ class WireGuardAutoTunnel : Application(), KoinComponent {
 
     private val notificationService: NotificationService by inject()
 
+    private val startupCoordinator: StartupCoordinator by inject()
+
     private val tunnelCoordinator: TunnelCoordinator by inject()
 
     private val backend: Backend by inject()
@@ -52,7 +55,16 @@ class WireGuardAutoTunnel : Application(), KoinComponent {
     private val alwaysOnCallback =
         object : AlwaysOnCallback {
             override fun alwaysOnTriggered() {
-                applicationScope.launch { tunnelCoordinator.startDefault() }
+                applicationScope.launch { startupCoordinator.handleAlwaysOnTrigger() }
+            }
+
+            override fun onStickyRestart() {
+                applicationScope.launch { startupCoordinator.restoreAfterStickyRestart() }
+            }
+
+            override fun onVpnRevoked() {
+                startupCoordinator.markVpnRevoked()
+                applicationScope.launch { startupCoordinator.handleVpnRevoked() }
             }
         }
 

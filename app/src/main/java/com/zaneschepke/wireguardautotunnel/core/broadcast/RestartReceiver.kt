@@ -40,8 +40,8 @@ class RestartReceiver : BroadcastReceiver(), KoinComponent {
                     }
 
                     Intent.ACTION_MY_PACKAGE_REPLACED -> {
-                        Timber.i("Restoring state on package upgrade")
-                        startupCoordinator.applyStartupPolicy()
+                        Timber.i("Restoring runtime state on package upgrade")
+                        startupCoordinator.restoreAfterPackageReplace()
                         logReader.deleteAndClearLogs()
                         appStateRepository.setShouldShowDonationSnackbar(true)
                     }

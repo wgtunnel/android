@@ -179,6 +179,7 @@
     <string name="service_running_error">Service not running</string>
     <string name="select_all">Select all</string>
     <string name="export_success">Export success</string>
+    <string name="export_success_downloads">Exported successfully to Downloads</string>
     <string name="download">Download</string>
     <string name="check_for_update">Check for update</string>
     <string name="update_check_failed">Update check failed.</string>
@@ -505,13 +506,10 @@
     <string name="tunnel_state_establishing_connection">Establishing connection</string>
     <string name="peer_endpoints">Peer endpoints</string>
     <string name="prefer_ipv6">Prefer IPv6</string>
-    <string name="prefer_ipv6_desc">Use IPv6 endpoints when the network supports it</string>
-
-    <string name="fallback_to_ipv4">Fallback to IPv4</string>
-    <string name="fallback_to_ipv4_desc">Switch to IPv4 if IPv6 fails, without restarting the tunnel</string>
+    <string name="prefer_ipv6_desc">Use IPv6 endpoints when the network supports it, falling back to IPv4 automatically if the tunnel is failing</string>
 
     <string name="restore_ipv6">Restore IPv6</string>
-    <string name="restore_ipv6_desc">Switch back to IPv6 when an IPv6 network is detected.</string>
+    <string name="restore_ipv6_desc">Attempt to restore IPv6 endpoints when the tunnel is healthy on an IPv6 supported network</string>
     <string name="no_tunnels_yet">Nothing here… yet.</string>
     <string name="getting_started_guidance">Use the + button to import a tunnel, or view the getting started guide.</string>
     <string name="getting_started_guide_link">view the getting started guide</string>

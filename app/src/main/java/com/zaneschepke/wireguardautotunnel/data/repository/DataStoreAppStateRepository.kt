@@ -43,6 +43,27 @@ class DataStoreAppStateRepository(
         return dataStoreManager.getFromStore(DataStoreManager.shouldShowDonationSnackbar) ?: false
     }
 
+    override suspend fun getLastActiveTunnelIds(): List<Int> {
+        val stored = dataStoreManager.getFromStore(DataStoreManager.lastActiveTunnelIds).orEmpty()
+        if (stored.isBlank()) return emptyList()
+        return stored.split(',').mapNotNull { it.toIntOrNull() }
+    }
+
+    override suspend fun setLastActiveTunnelIds(ids: List<Int>) {
+        if (ids.isEmpty()) {
+            clearLastActiveTunnelIds()
+            return
+        }
+        dataStoreManager.saveToDataStore(
+            DataStoreManager.lastActiveTunnelIds,
+            ids.distinct().joinToString(","),
+        )
+    }
+
+    override suspend fun clearLastActiveTunnelIds() {
+        dataStoreManager.saveToDataStore(DataStoreManager.lastActiveTunnelIds, "")
+    }
+
     override val flow: Flow<Domain> =
         dataStoreManager.preferencesFlow
             .map { prefs ->

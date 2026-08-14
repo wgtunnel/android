@@ -158,7 +158,7 @@ fun ActiveTunnel.uptimeText(context: Context, now: Long): String? {
 fun List<TunnelConfig>.asFileExportName(): Pair<String, String> {
     return if (size == 1) {
         val tunnel = first()
-        "${tunnel.name}.conf" to FileUtils.TEXT_MIME_TYPE
+        "${tunnel.name}.conf" to FileUtils.ALL_FILE_TYPES
     } else {
         "wgtunnel_export_${Instant.now().toUserFriendlyTimestamp()}.zip" to
             FileUtils.ZIP_FILE_MIME_TYPE

@@ -239,9 +239,15 @@ jobs:
       - name: Upload to Google Play
         run: |
           track=${{ github.event_name == 'push' && 'production' || inputs.track }}
-          bundle exec fastlane run upload_to_play_store \
+          bundle exec fastlane android upload_aab \
             track:"$track" \
             aab:"${{ steps.find-aab.outputs.aab_path }}" \
             json_key:"service_account.json" \
-            package_name:"com.zaneschepke.wireguardautotunnel" \
-            skip_upload_apk:true
+            package_name:"com.zaneschepke.wireguardautotunnel"
+
+  publish-listing:
+    if: ${{ github.event_name == 'push' || inputs.track != 'none' }}
+    name: Publish Play Store listing
+    needs: publish-play
+    uses: ./.github/workflows/publish-play-listing.yml
+    secrets: inherit
