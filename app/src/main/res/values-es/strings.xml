@@ -21,9 +21,9 @@
     <string name="public_key">Clave pública</string>
     <string name="addresses">Direcciones</string>
     <string name="dns_servers">Servidores DNS</string>
-    <string name="peer">Peer</string>
+    <string name="peer">peer</string>
     <string name="allowed_ips">IPs permitidas</string>
-    <string name="endpoint">Endpoint</string>
+    <string name="endpoint">endpoint</string>
     <string name="name">Nombre</string>
     <string name="always_on_vpn_support">Permitir VPN siempre activa</string>
     <string name="location_services_not_detected">Servicios de ubicación no detectados</string>
@@ -160,6 +160,7 @@
     <string name="service_running_error">El servicio no está en ejecución</string>
     <string name="select_all">Seleccionar todos</string>
     <string name="export_success">Exportación completada</string>
+    <string name="export_success_downloads">Exportado con éxito a las descargas</string>
     <string name="download">Descargar</string>
     <string name="check_for_update">Comprobar actualización</string>
     <string name="update_check_failed">Fallo al comprobar la actualización.</string>
@@ -167,6 +168,8 @@
     <string name="latest_installed">Ya se está ejecutando la última versión.</string>
     <string name="update_download_failed">Fallo al descargar actualización.</string>
     <string name="update_available">¡Actualización disponible!</string>
+    <string name="update">Actualización</string>
+    <string name="update_notification_message">La versión %1$s está disponible.</string>
     <string name="download_and_install">Descargar e instalar</string>
     <string name="permission_required">Permiso requerido</string>
     <string name="install_updated_permission">Esta app necesita permiso para instalar actualizaciónes.</string>
@@ -246,7 +249,7 @@
     <string name="donate_title">Donar</string>
     <string name="crypto">Direcciones de criptomonedas</string>
     <string name="github_sponsors">Patrocinadores de GitHub</string>
-    <string name="liberapay">Liberapay</string>
+    <string name="liberapay">Leberapay</string>
     <string name="kofi">Ko-fi</string>
     <string name="donation_thanks_intro">¡Gracias por considerar hacer una donación a este proyecto!</string>
     <string name="donation_dev_message">Como desarrollador único, trabajo sin descanso para hacer de WG Tunnel el mejor cliente WireGuard libre y de código abierto, pero esto solo es posible con tu apoyo.</string>
@@ -297,7 +300,7 @@
     <string name="save_changes">Guardar cambios</string>
     <string name="restart_message_template">Guardar los cambios hara que el %1$s se reinicie, desea continuar?</string>
     <string name="_continue">Continuar</string>
-    <string name="kill_switch">kill switch</string>
+    <string name="kill_switch">Interruptor de apagado</string>
     <string name="translation">Traducción</string>
     <string name="help_translate">Ayuda a traducir la app</string>
     <string name="info">Información</string>
@@ -376,7 +379,7 @@
     <string name="excluded_apps">
         %1$s aplicaciones excluidas
     </string>
-    <string name="error">Error</string>
+    <string name="error"></string>
     <string name="tunnel_globals">Globales de túnel</string>
     <string name="screen_recording_protection">Protección de grabación de pantalla</string>
     <string name="security">Seguridad</string>
@@ -402,7 +405,9 @@
     <string name="tunnel_state_establishing_connection">Estableciendo conexión</string>
     <string name="peer_endpoints">Peer endpoints</string>
     <string name="prefer_ipv6">IPv6 preferido</string>
+    <string name="prefer_ipv6_desc">Usar endpoints IPv6 cuando la red lo admita, volver a IPv4 automáticamente si el túnel está fallando.</string>
     <string name="restore_ipv6">Restaurar IPv6</string>
+    <string name="restore_ipv6_desc">Intentar restaurar los endpoints de IPv6 cuando el túnel sea funcional en una red compatible con IPv6</string>
     <string name="no_tunnels_yet">Nada aquí... todavía.</string>
     <string name="getting_started_guidance">Utilice el botón + para importar un túnel o vea la guía de inicio.</string>
     <string name="getting_started_guide_link">Ver la guía de inicio</string>
@@ -466,16 +471,27 @@
     <string name="seamless_recovery_attempt_title">Recuperación sin fugas</string>
     <string name="seamless_recovery_attempt_message">Se detectó un problema de conexión. Intentando recuperarla automáticamente.</string>
     <string name="local_domain_suffixes">Sufijos de dominio locales</string>
+    <string name="domain_suffixes">Sufijos de dominio</string>
     <string name="encrypted_dns">DNS Cifrado</string>
     <string name="split_dns">DNS dividido</string>
     <string name="system_dns_only">Solo DNS del sistema</string>
     <string name="default_dns_desc">DNS normal plano a través del túnel utilizando los servidores DNS del túnel</string>
     <string name="encrypted_dns_desc">DNS cifrado a través del túnel utilizando un servidor personalizado</string>
-    <string name="split_dns_desc">Los dominios con prefijo local se redirigen al DNS del sistema, mientras que todo lo demás se canaliza a través de opciones personalizables</string>
+    <string name="split_dns_desc">Resolución dividida por sufijo de dominio entre DNS del sistema y DNS del túnel</string>
     <string name="system_dns_only_desc">Todas las consultas de DNS se envían a los servidores DNS del sistema y no pasan por el túnel</string>
     <string name="protocol">Protocolo</string>
     <string name="tunnel_dns_mode">Modo DNS del túnel</string>
     <string name="tunnel_dns">DNS de túnel</string>
     <string name="use_tunnel_dns_servers">Utilizar servidores DNS de túnel</string>
+    <string name="split_suffix_target">Ruta de sufijos</string>
+    <string name="split_suffix_target_system">DNS del sistema</string>
+    <string name="split_suffix_target_tunnel">DNS de túnel</string>
+    <string name="split_suffix_target_desc">Donde los sufijos deben ser enrutados. Todo lo demás se enruta a través del DNS del túnel.</string>
+    <string name="private_dns_enabled_warning">El DNS privado está habilitado. Deshabilitarlo para que el DNS del túnel funcione correctamente</string>
+    <string name="foreign_dns_policy">Política de DNS externo</string>
+    <string name="foreign_dns_policy_desc">Cómo manejar una solicitud DNS simple enviada a un servidor diferente de los servidores DNS del túnel</string>
+    <string name="foreign_dns_redirect">Redirigir</string>
+    <string name="foreign_dns_block">Bloquear</string>
+    <string name="foreign_dns_allow">Permitir</string>
     <string name="error_config_missing_dns">Al túnel %1$s le faltan los servidores DNS necesarios para la configuración actual de la aplicación</string>
 </resources>
