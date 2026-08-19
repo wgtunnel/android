@@ -60,6 +60,7 @@
     <string name="no_email_detected">Ez da mezularitza-aplikaziorik detektatu</string>
     <string name="no_browser_detected">Ez da arakatzailerik detektatu</string>
     <string name="open_issue">Ireki arazo bat</string>
+    <string name="auto">(Automatikoa)</string>
     <string name="incorrect_pin">PINa okerra da</string>
     <string name="pin_created">PINa ongi sortu da</string>
     <string name="enter_pin">Sartu PINa</string>
@@ -159,6 +160,7 @@
     <string name="service_running_error">Zerbitzua ez dabil martxan</string>
     <string name="select_all">Hautatu guztiak</string>
     <string name="export_success">Esportazioa ongi egin da</string>
+    <string name="export_success_downloads">Deskargak karpetara ongi esportatu da</string>
     <string name="download">Deskargatu</string>
     <string name="check_for_update">Bilatu eguneraketak</string>
     <string name="update_check_failed">Eguneraketen bilaketak huts egin du.</string>
@@ -166,6 +168,8 @@
     <string name="latest_installed">Jadanik azken bertsioa erabiltzen ari zara.</string>
     <string name="update_download_failed">Eguneraketaren deskargak huts egin du.</string>
     <string name="update_available">Eguneraketa erabilgarri!</string>
+    <string name="update">Eguneratu</string>
+    <string name="update_notification_message">%1$s bertsioa erabilgarri dago.</string>
     <string name="download_and_install">Deskargatu eta instalatu</string>
     <string name="permission_required">Baimena beharrezkoa</string>
     <string name="install_updated_permission">Aplikazio honek baimena behar du eguneraketak instalatzeko.</string>
@@ -178,6 +182,7 @@
     <string name="wifi_detection_method">Wi-Fi detekzio-metodoa</string>
     <string name="_default">Lehenetsia</string>
     <string name="legacy">Zaharra</string>
+    <string name="root">Root</string>
     <string name="legacy_api_description">Erabili Android 12n zaharkitutako metodoa Wi-Fi informazioa lortzeko, kokapen-kontsultak mugatzen dituena, baina agian ez du modu fidagarrian funtzionatuko gailu berrienetan
     </string>
     <string name="use_shell_via_shizuku">Erabili shell-a Shizuku bidez Wi-Fi informazioa lortzeko, kokapen-baimenaren beharra saihestuz root gabeko gailuetan
@@ -249,6 +254,9 @@
     <string name="lockdown">Blokeo osoa</string>
     <string name="donate_title">Dohaintza egin</string>
     <string name="crypto">Kriptomoneta helbideak</string>
+    <string name="github_sponsors">GitHub Sponsors</string>
+    <string name="liberapay">Liberapay</string>
+    <string name="kofi">Ko-fi</string>
     <string name="donation_thanks_intro">Eskerrik asko proiektu honi dohaintza egitea pentsatzeagatik!</string>
     <string name="donation_dev_message">Garatzaile bakarra naizen aldetik, nekaezinik lan egiten dut WG Tunnel Androiderako WireGuard bezero libre eta kode irekiko onena izan dadin, baina hori zure laguntzarekin bakarrik da posible.</string>
     <string name="donation_closing">Nire ametsa da proiektu honetan zuretzat lanaldi osoz aritzea.</string>
@@ -275,11 +283,13 @@
     <string name="wifi_settings">Wi-Fi ezarpenak</string>
     <string name="backup_and_restore">Babeskopia eta berrezarpena</string>
     <string name="mobile_data">Datu mugikorrak</string>
+    <string name="ethernet">Ethernet</string>
     <string name="unknown">Ezezaguna</string>
     <string name="no_network">Ez dago sarerik konektatuta</string>
     <string name="active_network">Sare aktiboa: </string>
     <string name="security_type">Segurtasuna: </string>
     <string name="network_name">Sarea: </string>
+    <string name="wifi">Wi-Fi</string>
     <string name="text_too_large_for_qr">Testua handiegia da QR gisa bistaratzeko.</string>
     <string name="all_services_disabled">Tunel automatikoa eta tunelak desgaituta egon behar dute ekintza hau gauzatzeko.</string>
     <string name="ddns_success_message">DNS dinamikoaren amaiera-puntua ongi eguneratu da.</string>
@@ -402,7 +412,9 @@
     <string name="tunnel_state_establishing_connection">Konexioa ezartzen</string>
     <string name="peer_endpoints">Parekideen amaiera-puntuak</string>
     <string name="prefer_ipv6">Hobetsi IPv6</string>
+    <string name="prefer_ipv6_desc">Erabili IPv6 amaiera-puntuak sareak onartzen dituenean, eta itzuli automatikoki IPv4ra tunelak huts egiten badu</string>
     <string name="restore_ipv6">Berrezarri IPv6</string>
+    <string name="restore_ipv6_desc">Saiatu IPv6 amaiera-puntuak berrezartzen tunela osasuntsu dagoenean IPv6 onartzen duen sare batean</string>
     <string name="no_tunnels_yet">Ezer ez hemen… oraindik.</string>
     <string name="getting_started_guidance">Erabili + botoia tunel bat inportatzeko, edo ikusi hasteko gida.</string>
     <string name="getting_started_guide_link">ikusi hasteko gida</string>
@@ -466,6 +478,7 @@
     <string name="seamless_recovery_attempt_title">Berreskurapen jarraitua</string>
     <string name="seamless_recovery_attempt_message">Konexio-arazoa detektatu da. Berreskurapen automatikoa saiatzen.</string>
     <string name="local_domain_suffixes">Domeinu lokalaren atzizkiak</string>
+    <string name="domain_suffixes">Domeinu-atzizkiak</string>
     <string name="encrypted_dns">DNS enkriptatua</string>
     <string name="split_dns">DNS zatitua</string>
     <string name="system_dns_only">Sistemaren DNSa soilik</string>
@@ -477,5 +490,15 @@
     <string name="tunnel_dns_mode">Tunelaren DNS modua</string>
     <string name="tunnel_dns">Tunelaren DNSa</string>
     <string name="use_tunnel_dns_servers">Erabili tunelaren DNS zerbitzariak</string>
+    <string name="split_suffix_target">Atzizkien bideratze-helburua</string>
+    <string name="split_suffix_target_system">Sistemaren DNSa</string>
+    <string name="split_suffix_target_tunnel">Tunelaren DNSa</string>
+    <string name="split_suffix_target_desc">Atzizkiak non bideratu behar diren. Gainerako guztia tunelaren DNSaren bidez bideratzen da</string>
+    <string name="private_dns_enabled_warning">DNS pribatua gaituta dago. Desgaitu ezazu tunelaren DNSak behar bezala funtziona dezan</string>
+    <string name="transit_dns_policy">Igarotzeko DNS eskaerak</string>
+    <string name="transit_dns_policy_desc">Nola kudeatu tunelaren DNS zerbitzariak ez diren beste zerbitzari batera bidalitako DNS eskaera arruntak</string>
+    <string name="transit_dns_redirect">Birbideratu</string>
+    <string name="transit_dns_block">Blokeatu</string>
+    <string name="transit_dns_allow">Baimendu</string>
     <string name="error_config_missing_dns">%1$s tunelak zure uneko ezarpenetarako beharrezkoak diren DNS zerbitzariak falta ditu</string>
 </resources>
