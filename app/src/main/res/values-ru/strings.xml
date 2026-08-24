@@ -299,6 +299,9 @@
     <string name="dual_stack_description">Туннели должны поддерживать IPv4 и IPv6</string>
     <string name="save_changes">Сохранить изменения</string>
     <string name="restart_message_template">Сохранение изменений вызовет перезапуск %1$s, продолжить?</string>
+    <string name="restart_required">Требуется перезапуск</string>
+    <string name="restart_to_apply_message">Для вступления изменений в силу необходимо перезапустить активный туннель.</string>
+    <string name="save_and_restart">Сохранить и перезапустить</string>
     <string name="_continue">Продолжить</string>
     <string name="kill_switch">экстренное отключение</string>
     <string name="translation">Перевод</string>
@@ -454,6 +457,12 @@
     <string name="stored_logs_deleted">Сохранённые журналы успешно удалены</string>
     <string name="seamless_recovery">Восстанавливать туннель</string>
     <string name="seamless_recovery_desc">Восстанавливает подключение при недоступности, например после изменения записей DNS или проблем с NAT</string>
+    <string name="tunnel_recovery">Восстановление туннеля</string>
+    <string name="recovery_bounce_delay">Задержка восстановления</string>
+    <string name="recovery_bounce_delay_desc">Порог ожидания подтверждения подключения перед срабатыванием функции восстановления</string>
+    <string name="recovery_details">Подробности восстановления</string>
+    <string name="recovery_events">Восстановлений: %d</string>
+    <string name="recovery_last_event">Последнее восстановление: %s</string>
     <string name="now_in_template">Теперь в разделе «%1$s»</string>
     <string name="snackbar_seamless_recovery_attempt">Обнаружена проблема соединения. Восстановление %s…</string>
     <string name="seamless_recovery_attempt_title">Восстановление туннеля</string>
@@ -483,4 +492,5 @@
     <string name="transit_dns_block">Блокировать</string>
     <string name="transit_dns_allow">Разрешить</string>
     <string name="error_config_missing_dns">В туннеле %1$s отсутствуют DNS-серверы, необходимые для вашего приложения</string>
+    <string name="active_tunnel_updated">Активный туннель обновлён</string>
 </resources>
