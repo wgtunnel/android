@@ -459,7 +459,7 @@
     <string name="seamless_recovery_desc">Восстанавливает подключение при недоступности, например после изменения записей DNS или проблем с NAT</string>
     <string name="tunnel_recovery">Восстановление туннеля</string>
     <string name="recovery_bounce_delay">Задержка восстановления</string>
-    <string name="recovery_bounce_delay_desc">Порог ожидания подтверждения подключения перед срабатыванием функции восстановления</string>
+    <string name="recovery_bounce_delay_desc">Время ожидания ответа перед автоматическим восстановлением</string>
     <string name="recovery_details">Подробности восстановления</string>
     <string name="recovery_events">Восстановлений: %d</string>
     <string name="recovery_last_event">Последнее восстановление: %s</string>
