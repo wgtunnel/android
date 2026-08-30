@@ -213,7 +213,6 @@ class AndroidTunnelNotificationService(private val notificationService: Notifica
                 description = message,
                 onGoing = false,
                 onlyAlertOnce = true,
-                groupKey = VPN_GROUP_KEY,
                 style = NotificationCompat.BigTextStyle().bigText(message),
             )
 
@@ -221,7 +220,6 @@ class AndroidTunnelNotificationService(private val notificationService: Notifica
     }
 
     private fun showEvent(title: String, message: String) {
-
         val notification =
             notificationService.createNotification(
                 channel = NotificationChannels.Events,
@@ -229,7 +227,6 @@ class AndroidTunnelNotificationService(private val notificationService: Notifica
                 description = message,
                 onGoing = false,
                 onlyAlertOnce = true,
-                groupKey = VPN_GROUP_KEY,
             )
 
         notificationService.show(TUNNEL_MESSAGES_NOTIFICATION_ID, notification)
