@@ -182,17 +182,17 @@ class AndroidTunnelNotificationService(private val notificationService: Notifica
     }
 
     override fun showSocks5PortUnavailable(port: Int, tunnelName: String) {
-        val context = notificationService.context
-        val message = context.getString(R.string.error_socks5_port_unavailable, port)
-
-        showError(message)
+        showErrorNotification(
+            title = "${context.getString(R.string.error)} • $tunnelName",
+            message = context.getString(R.string.error_socks5_port_unavailable, port),
+        )
     }
 
     override fun showHttpPortUnavailable(port: Int, tunnelName: String) {
-        val context = notificationService.context
-        val message = context.getString(R.string.error_http_port_unavailable, port)
-
-        showError(message)
+        showErrorNotification(
+            title = "${context.getString(R.string.error)} • $tunnelName",
+            message = context.getString(R.string.error_http_port_unavailable, port),
+        )
     }
 
     override fun showConfigMissingDns(tunnelName: String) {
@@ -202,10 +202,14 @@ class AndroidTunnelNotificationService(private val notificationService: Notifica
     }
 
     override fun showError(message: String) {
+        showErrorNotification(title = context.getString(R.string.error), message = message)
+    }
+
+    private fun showErrorNotification(title: String, message: String) {
         val notification =
             notificationService.createNotification(
                 channel = NotificationChannels.Errors,
-                title = notificationService.context.getString(R.string.error),
+                title = title,
                 description = message,
                 onGoing = false,
                 onlyAlertOnce = true,
