@@ -86,6 +86,7 @@ import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppStateRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.domain.sideeffect.GlobalSideEffect
+import com.zaneschepke.wireguardautotunnel.domain.sideeffect.NotificationPendingAction
 import com.zaneschepke.wireguardautotunnel.notification.NotificationService
 import com.zaneschepke.wireguardautotunnel.notification.NotificationService.Companion.EXTRA_AUTO_UPDATE
 import com.zaneschepke.wireguardautotunnel.notification.NotificationService.Companion.EXTRA_OPEN_SUPPORT
@@ -226,6 +227,9 @@ class MainActivity : AppCompatActivity() {
             var requestingTunnelMode by remember {
                 mutableStateOf<Pair<TunnelMode?, TunnelConfig?>>(Pair(null, null))
             }
+            var pendingNotificationAction by remember {
+                mutableStateOf<NotificationPendingAction?>(null)
+            }
             var showLocalNetworkRationale by remember { mutableStateOf(false) }
             var hasPromptedLocalNetwork by rememberSaveable { mutableStateOf(false) }
 
@@ -328,6 +332,17 @@ class MainActivity : AppCompatActivity() {
                     },
                 )
 
+            val notificationPermissionLauncher =
+                rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {
+                    when (val action = pendingNotificationAction) {
+                        is NotificationPendingAction.StartTunnel ->
+                            viewModel.startTunnel(action.config)
+                        NotificationPendingAction.ToggleAutoTunnel -> viewModel.toggleAutoTunnel()
+                        null -> Unit
+                    }
+                    pendingNotificationAction = null
+                }
+
             LaunchedEffect(uiState.isAppLoaded, coldStartAutoUpdate) {
                 if (!uiState.isAppLoaded || !coldStartAutoUpdate) return@LaunchedEffect
                 coldStartAutoUpdate = false
@@ -354,6 +369,12 @@ class MainActivity : AppCompatActivity() {
                             requestingTunnelMode =
                                 Pair(sideEffect.requestingMode, sideEffect.config)
                             vpnActivity.launch(VpnService.prepare(this@MainActivity))
+                        }
+                        is GlobalSideEffect.RequestNotificationPermission -> {
+                            pendingNotificationAction = sideEffect.pendingAction
+                            notificationPermissionLauncher.launch(
+                                Manifest.permission.POST_NOTIFICATIONS
+                            )
                         }
                         is GlobalSideEffect.Snackbar -> snackbarChannel.send(sideEffect)
                         is GlobalSideEffect.LaunchUrl -> context.openWebUrl(sideEffect.url)

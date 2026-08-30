@@ -11,10 +11,12 @@ import com.zaneschepke.wireguardautotunnel.core.orchestration.AutoTunnelCoordina
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelMode
 import com.zaneschepke.wireguardautotunnel.domain.enums.WifiDetectionMethod
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
+import com.zaneschepke.wireguardautotunnel.domain.repository.AppStateRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.AutoTunnelSettingsRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.GlobalEffectRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.domain.sideeffect.GlobalSideEffect
+import com.zaneschepke.wireguardautotunnel.domain.sideeffect.NotificationPendingAction
 import com.zaneschepke.wireguardautotunnel.service.ServiceManager
 import com.zaneschepke.wireguardautotunnel.service.autotunnel.AutoTunnelStateHolder
 import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.AutoTunnelScreenSideEffect
@@ -37,6 +39,7 @@ class AutoTunnelViewModel(
     private val autoTunnelCoordinator: AutoTunnelCoordinator,
     private val tunnelsRepository: TunnelRepository,
     private val autoTunnelStateHolder: AutoTunnelStateHolder,
+    private val appStateRepository: AppStateRepository,
 ) :
     OrbitContainerHost<AutoTunnelUiState, AutoTunnelUiState, AutoTunnelScreenSideEffect>,
     ViewModel() {
@@ -83,6 +86,17 @@ class AutoTunnelViewModel(
                         )
 
                 else -> Unit
+            }
+            if (
+                !serviceManager.hasNotificationPermission() &&
+                    !appStateRepository.isNotificationPermissionRequested()
+            ) {
+                appStateRepository.setNotificationPermissionRequested(true)
+                return@intent postSideEffect(
+                    GlobalSideEffect.RequestNotificationPermission(
+                        NotificationPendingAction.ToggleAutoTunnel
+                    )
+                )
             }
         }
         autoTunnelCoordinator.toggle()

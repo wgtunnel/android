@@ -7,6 +7,7 @@ import com.dokar.sonner.ToastType
 import com.wgtunnel.parser.Config
 import com.wgtunnel.parser.ConfigParseException
 import com.zaneschepke.wireguardautotunnel.R
+import com.zaneschepke.wireguardautotunnel.core.orchestration.AutoTunnelCoordinator
 import com.zaneschepke.wireguardautotunnel.core.orchestration.TunnelBackendCoordinator
 import com.zaneschepke.wireguardautotunnel.core.orchestration.TunnelCoordinator
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelMode
@@ -17,6 +18,7 @@ import com.zaneschepke.wireguardautotunnel.domain.repository.GlobalEffectReposit
 import com.zaneschepke.wireguardautotunnel.domain.repository.SelectedTunnelsRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.domain.sideeffect.GlobalSideEffect
+import com.zaneschepke.wireguardautotunnel.domain.sideeffect.NotificationPendingAction
 import com.zaneschepke.wireguardautotunnel.service.ServiceManager
 import com.zaneschepke.wireguardautotunnel.service.autotunnel.AutoTunnelStateHolder
 import com.zaneschepke.wireguardautotunnel.ui.sideeffect.LocalSideEffect
@@ -62,6 +64,7 @@ class SharedAppViewModel(
     private val appStateRepository: AppStateRepository,
     private val serviceManager: ServiceManager,
     private val tunnelCoordinator: TunnelCoordinator,
+    private val autoTunnelCoordinator: AutoTunnelCoordinator,
     private val globalEffectRepository: GlobalEffectRepository,
     private val tunnelRepository: TunnelRepository,
     private val settingsRepository: GeneralSettingRepository,
@@ -151,8 +154,21 @@ class SharedAppViewModel(
                     GlobalSideEffect.RequestVpnPermission(TunnelMode.VPN, tunnelConfig)
                 )
         }
+        if (
+            !serviceManager.hasNotificationPermission() &&
+                !appStateRepository.isNotificationPermissionRequested()
+        ) {
+            appStateRepository.setNotificationPermissionRequested(true)
+            return@intent postSideEffect(
+                GlobalSideEffect.RequestNotificationPermission(
+                    NotificationPendingAction.StartTunnel(tunnelConfig)
+                )
+            )
+        }
         tunnelCoordinator.startTunnel(tunnelConfig)
     }
+
+    fun toggleAutoTunnel() = intent { autoTunnelCoordinator.toggle() }
 
     fun postSideEffect(localSideEffect: LocalSideEffect) = intent {
         postSideEffect(localSideEffect)

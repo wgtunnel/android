@@ -35,6 +35,18 @@ class DataStoreAppStateRepository(
         dataStoreManager.saveToDataStore(DataStoreManager.batteryDisableShown, shown)
     }
 
+    override suspend fun isNotificationPermissionRequested(): Boolean {
+        return dataStoreManager.getFromStore(DataStoreManager.notificationPermissionRequested)
+            ?: false
+    }
+
+    override suspend fun setNotificationPermissionRequested(requested: Boolean) {
+        dataStoreManager.saveToDataStore(
+            DataStoreManager.notificationPermissionRequested,
+            requested,
+        )
+    }
+
     override suspend fun setShouldShowDonationSnackbar(show: Boolean) {
         dataStoreManager.saveToDataStore(DataStoreManager.shouldShowDonationSnackbar, show)
     }
@@ -74,6 +86,8 @@ class DataStoreAppStateRepository(
                                 pref[DataStoreManager.locationDisclosureShown] ?: false,
                             isBatteryOptimizationDisableShown =
                                 pref[DataStoreManager.batteryDisableShown] ?: false,
+                            isNotificationPermissionRequested =
+                                pref[DataStoreManager.notificationPermissionRequested] ?: false,
                             shouldShowDonationSnackbar =
                                 pref[DataStoreManager.shouldShowDonationSnackbar] ?: false,
                         )

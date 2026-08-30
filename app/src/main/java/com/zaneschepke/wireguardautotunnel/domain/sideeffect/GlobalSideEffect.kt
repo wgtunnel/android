@@ -35,5 +35,14 @@ sealed class GlobalSideEffect {
     data class RequestVpnPermission(val requestingMode: TunnelMode, val config: TunnelConfig?) :
         GlobalSideEffect()
 
+    data class RequestNotificationPermission(val pendingAction: NotificationPendingAction) :
+        GlobalSideEffect()
+
     data class InstallApk(val apk: File) : GlobalSideEffect()
+}
+
+sealed class NotificationPendingAction {
+    data class StartTunnel(val config: TunnelConfig) : NotificationPendingAction()
+
+    data object ToggleAutoTunnel : NotificationPendingAction()
 }
