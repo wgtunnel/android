@@ -16,5 +16,4 @@ interface LogReader {
     suspend fun clearBufferedLogs()
 
     val bufferedLogs: Flow<LogMessage>
-    val liveLogs: Flow<LogMessage>
 }
