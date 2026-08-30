@@ -21,6 +21,8 @@ interface NotificationService {
         groupKey: String? = null,
         isGroupSummary: Boolean = false,
         style: NotificationCompat.Style? = null,
+        requestPromotedOngoing: Boolean = false,
+        shortCriticalText: String? = null,
     ): Notification
 
     fun createAllChannels()

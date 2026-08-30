@@ -39,6 +39,8 @@ class AndroidNotificationService(override val context: Context) : NotificationSe
         groupKey: String?,
         isGroupSummary: Boolean,
         style: NotificationCompat.Style?,
+        requestPromotedOngoing: Boolean,
+        shortCriticalText: String?,
     ): Notification {
         notificationManager.createNotificationChannel(channel.asChannel())
         return channel
@@ -68,6 +70,10 @@ class AndroidNotificationService(override val context: Context) : NotificationSe
                     }
                 }
                 style?.let { setStyle(it) }
+                if (requestPromotedOngoing) {
+                    setRequestPromotedOngoing(true)
+                }
+                shortCriticalText?.let { setShortCriticalText(it) }
             }
             .build()
     }
