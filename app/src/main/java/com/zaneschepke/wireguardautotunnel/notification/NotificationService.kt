@@ -37,8 +37,6 @@ interface NotificationService {
     fun showUpdateAvailable(version: String)
 
     companion object {
-        const val VPN_GROUP_KEY = "VPN_GROUP"
-        const val PROXY_GROUP_KEY = "PROXY_GROUP"
         const val AUTO_TUNNEL_GROUP_KEY = "AUTO_TUNNEL_GROUP"
         const val AUTO_TUNNEL_LOCATION_PERMISSION_ID = 123
         const val AUTO_TUNNEL_LOCATION_SERVICES_ID = 124

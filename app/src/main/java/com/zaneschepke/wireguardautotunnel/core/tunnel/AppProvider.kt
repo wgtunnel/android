@@ -12,8 +12,6 @@ import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.notification.AndroidNotificationService
 import com.zaneschepke.wireguardautotunnel.notification.NotificationService
-import com.zaneschepke.wireguardautotunnel.notification.NotificationService.Companion.PROXY_GROUP_KEY
-import com.zaneschepke.wireguardautotunnel.notification.NotificationService.Companion.VPN_GROUP_KEY
 import com.zaneschepke.wireguardautotunnel.notification.TunnelNotificationLine
 import com.zaneschepke.wireguardautotunnel.notification.TunnelNotificationService
 import com.zaneschepke.wireguardautotunnel.service.tile.TunnelTileRefresher
@@ -49,7 +47,6 @@ class AppProvider(
                 channel = AndroidNotificationService.NotificationChannels.Tunnel.VPN,
                 title = context.getString(R.string.initializing),
                 onGoing = true,
-                groupKey = VPN_GROUP_KEY,
             )
 
     override val proxyInitNotification: Notification
@@ -58,7 +55,6 @@ class AppProvider(
                 channel = AndroidNotificationService.NotificationChannels.Tunnel.Proxy,
                 title = context.getString(R.string.initializing),
                 onGoing = true,
-                groupKey = PROXY_GROUP_KEY,
             )
 
     override val vpnNotificationId: Int

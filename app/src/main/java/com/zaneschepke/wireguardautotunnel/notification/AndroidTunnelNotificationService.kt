@@ -4,10 +4,8 @@ import androidx.core.app.NotificationCompat
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.domain.enums.NotificationAction
 import com.zaneschepke.wireguardautotunnel.notification.AndroidNotificationService.NotificationChannels
-import com.zaneschepke.wireguardautotunnel.notification.NotificationService.Companion.PROXY_GROUP_KEY
 import com.zaneschepke.wireguardautotunnel.notification.NotificationService.Companion.TUNNEL_ERROR_NOTIFICATION_ID
 import com.zaneschepke.wireguardautotunnel.notification.NotificationService.Companion.TUNNEL_MESSAGES_NOTIFICATION_ID
-import com.zaneschepke.wireguardautotunnel.notification.NotificationService.Companion.VPN_GROUP_KEY
 
 class AndroidTunnelNotificationService(private val notificationService: NotificationService) :
     TunnelNotificationService {
@@ -17,7 +15,6 @@ class AndroidTunnelNotificationService(private val notificationService: Notifica
     private fun createGroupNotification(
         tunnelNotificationLines: Map<Int, TunnelNotificationLine>,
         channel: NotificationChannels.Tunnel,
-        groupKey: String,
     ): android.app.Notification {
         val title =
             if (tunnelNotificationLines.size == 1) {
@@ -84,7 +81,6 @@ class AndroidTunnelNotificationService(private val notificationService: Notifica
             actions = actions,
             onGoing = true,
             onlyAlertOnce = true,
-            groupKey = groupKey,
             style = style,
         )
     }
@@ -92,21 +88,13 @@ class AndroidTunnelNotificationService(private val notificationService: Notifica
     override fun buildVpnPersistentNotification(
         tunnelNotificationLines: Map<Int, TunnelNotificationLine>
     ): android.app.Notification {
-        return createGroupNotification(
-            tunnelNotificationLines,
-            NotificationChannels.Tunnel.VPN,
-            VPN_GROUP_KEY,
-        )
+        return createGroupNotification(tunnelNotificationLines, NotificationChannels.Tunnel.VPN)
     }
 
     override fun buildProxyPersistentNotification(
         tunnelNotificationLines: Map<Int, TunnelNotificationLine>
     ): android.app.Notification {
-        return createGroupNotification(
-            tunnelNotificationLines,
-            NotificationChannels.Tunnel.Proxy,
-            PROXY_GROUP_KEY,
-        )
+        return createGroupNotification(tunnelNotificationLines, NotificationChannels.Tunnel.Proxy)
     }
 
     override fun showIpv4Fallback(tunnelName: String) {
