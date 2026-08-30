@@ -84,6 +84,11 @@ class LogcatManager(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
+    override suspend fun clearBufferedLogs() {
+        mutex.withLock { _bufferedLogs.resetReplayCache() }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
     override suspend fun deleteAndClearLogs() {
         val wasStarted = mutex.withLock { isStarted }
         stop()

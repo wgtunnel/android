@@ -1,12 +1,14 @@
 package com.zaneschepke.wireguardautotunnel
 
 import android.app.Application
+import android.content.ComponentCallbacks2
 import android.os.StrictMode
 import com.wgtunnel.backend.Backend
 import com.wgtunnel.backend.BackendLog
 import com.wgtunnel.backend.LogLevel
 import com.wgtunnel.backend.service.AlwaysOnCallback
 import com.wgtunnel.backend.service.RuntimeManager
+import com.zaneschepke.logcatter.LogReader
 import com.zaneschepke.wireguardautotunnel.core.event.TunnelEventDispatcher
 import com.zaneschepke.wireguardautotunnel.core.orchestration.AppBoostrapCoordinator
 import com.zaneschepke.wireguardautotunnel.core.orchestration.StartupCoordinator
@@ -119,6 +121,14 @@ class WireGuardAutoTunnel : Application(), KoinComponent {
 
         applicationScope.launch(ioDispatcher) {
             boostrapCoordinator.bootstrap(this@WireGuardAutoTunnel)
+        }
+    }
+
+    override fun onTrimMemory(level: Int) {
+        super.onTrimMemory(level)
+        // numeric compare also covers the deprecated levels above background on older apis
+        if (level >= ComponentCallbacks2.TRIM_MEMORY_BACKGROUND) {
+            applicationScope.launch { get<LogReader>().clearBufferedLogs() }
         }
     }
 
