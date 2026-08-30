@@ -34,7 +34,7 @@ import com.zaneschepke.wireguardautotunnel.data.entity.TunnelConfig
             DnsSettings::class,
             LockdownSettings::class,
         ],
-    version = 38,
+    version = 39,
     autoMigrations =
         [
             AutoMigration(from = 1, to = 2),
@@ -71,6 +71,7 @@ import com.zaneschepke.wireguardautotunnel.data.entity.TunnelConfig
             AutoMigration(from = 35, to = 36),
             AutoMigration(from = 36, to = 37),
             AutoMigration(from = 37, to = 38),
+            AutoMigration(from = 38, to = 39),
         ],
     exportSchema = true,
 )

@@ -83,6 +83,10 @@ class SettingsViewModel(
         settingsRepository.upsert(state.settings.copy(isAlwaysOnVpnEnabled = to))
     }
 
+    fun setLiveUpdatesEnabled(to: Boolean) = intent {
+        settingsRepository.upsert(state.settings.copy(isLiveUpdatesEnabled = to))
+    }
+
     fun setRestoreOnBootEnabled(to: Boolean) = intent {
         settingsRepository.upsert(state.settings.copy(isRestoreOnBootEnabled = to))
     }

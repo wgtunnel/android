@@ -620,4 +620,10 @@
     <string name="transit_dns_allow">Allow</string>
     <string name="error_config_missing_dns">Tunnel %1$s is missing DNS servers that are required for your current app settings</string>
     <string name="active_tunnel_updated">Active tunnel updated</string>
+    <string name="live_updates">Live updates</string>
+    <string name="live_updates_desc">Show the active tunnel\'s connection progress and status in the status bar and on the lock screen. Applies when a single tunnel is running</string>
+    <string name="notification_vpn_connected_title">VPN connected: %1$s</string>
+    <string name="notification_proxy_connected_title">Proxy connected: %1$s</string>
+    <string name="notification_connection_manual">Manual connection</string>
+    <string name="notification_connection_auto">Auto-tunnel</string>
 </resources>

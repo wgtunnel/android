@@ -29,7 +29,7 @@ class AndroidNotificationService(override val context: Context) : NotificationSe
 
     override fun createNotification(
         channel: NotificationChannels,
-        title: String,
+        title: CharSequence,
         subText: String?,
         actions: Collection<Action>,
         description: String,
@@ -41,6 +41,7 @@ class AndroidNotificationService(override val context: Context) : NotificationSe
         style: NotificationCompat.Style?,
         requestPromotedOngoing: Boolean,
         shortCriticalText: String?,
+        chronometerBaseMillis: Long?,
     ): Notification {
         notificationManager.createNotificationChannel(channel.asChannel())
         return channel
@@ -74,6 +75,10 @@ class AndroidNotificationService(override val context: Context) : NotificationSe
                     setRequestPromotedOngoing(true)
                 }
                 shortCriticalText?.let { setShortCriticalText(it) }
+                chronometerBaseMillis?.let {
+                    setWhen(it)
+                    setUsesChronometer(true)
+                }
             }
             .build()
     }

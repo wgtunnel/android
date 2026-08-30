@@ -85,7 +85,7 @@ class TunnelCoordinator(
             )
         }
 
-    private val _actions = MutableSharedFlow<TunnelActionEvent>()
+    private val _actions = MutableSharedFlow<TunnelActionEvent>(extraBufferCapacity = 8)
     val actions = _actions.asSharedFlow()
 
     private val runtimeSettingsSnapshotState =

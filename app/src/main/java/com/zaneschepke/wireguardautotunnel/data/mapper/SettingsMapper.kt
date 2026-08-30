@@ -24,6 +24,7 @@ fun Entity.toDomain(): Domain =
         tunnelScriptingEnabled = tunnelScriptingEnabled,
         seamlessRecoveryEnabled = seamlessRecoveryEnabled,
         seamlessRecoveryBounceDelaySec = seamlessRecoveryBounceDelaySec,
+        isLiveUpdatesEnabled = isLiveUpdatesEnabled,
     )
 
 fun Domain.toEntity(): Entity =
@@ -46,4 +47,5 @@ fun Domain.toEntity(): Entity =
         tunnelScriptingEnabled = tunnelScriptingEnabled,
         seamlessRecoveryEnabled = seamlessRecoveryEnabled,
         seamlessRecoveryBounceDelaySec = seamlessRecoveryBounceDelaySec,
+        isLiveUpdatesEnabled = isLiveUpdatesEnabled,
     )

@@ -11,7 +11,7 @@ interface NotificationService {
 
     fun createNotification(
         channel: NotificationChannels,
-        title: String = "",
+        title: CharSequence = "",
         subText: String? = null,
         actions: Collection<NotificationCompat.Action> = emptyList(),
         description: String = "",
@@ -23,6 +23,7 @@ interface NotificationService {
         style: NotificationCompat.Style? = null,
         requestPromotedOngoing: Boolean = false,
         shortCriticalText: String? = null,
+        chronometerBaseMillis: Long? = null,
     ): Notification
 
     fun createAllChannels()

@@ -38,4 +38,6 @@ data class GeneralSettings(
     val seamlessRecoveryEnabled: Boolean = true,
     @ColumnInfo(name = "seamless_recovery_bounce_delay_sec", defaultValue = "30")
     val seamlessRecoveryBounceDelaySec: Int = 30,
+    @ColumnInfo(name = "live_updates_enabled", defaultValue = "1")
+    val isLiveUpdatesEnabled: Boolean = true,
 )

@@ -12,6 +12,7 @@ import com.zaneschepke.networkmonitor.StableNetworkEngine
 import com.zaneschepke.wireguardautotunnel.core.event.TunnelEventDispatcher
 import com.zaneschepke.wireguardautotunnel.core.tunnel.AppProvider
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelBackendProvider
+import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelOriginHolder
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelProvider
 import com.zaneschepke.wireguardautotunnel.domain.repository.AutoTunnelSettingsRepository
 import com.zaneschepke.wireguardautotunnel.lifecyle.AppVisibilityObserver
@@ -32,6 +33,7 @@ import kotlinx.coroutines.withTimeout
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
+import org.koin.dsl.bind
 import org.koin.dsl.module
 import timber.log.Timber
 
@@ -40,13 +42,17 @@ val tunnelBackendProviderModule = module {
     single { AppVisibilityObserver() }
     singleOf(::TunnelEventDispatcher)
 
-    single<ApplicationProvider> {
+    singleOf(::TunnelOriginHolder)
+
+    single {
         AppProvider(
             notificationService = get(),
             tunnelNotificationService = get(),
             tunnelRepository = get(),
+            settingsRepository = get(),
+            tunnelOriginHolder = get(),
         )
-    }
+    } bind ApplicationProvider::class
 
     single {
         StableNetworkEngine(

@@ -23,4 +23,5 @@ data class GeneralSettings(
     val tunnelScriptingEnabled: Boolean = false,
     val seamlessRecoveryEnabled: Boolean = true,
     val seamlessRecoveryBounceDelaySec: Int = 30,
+    val isLiveUpdatesEnabled: Boolean = true,
 )

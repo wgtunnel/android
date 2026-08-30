@@ -1,11 +1,19 @@
 package com.zaneschepke.wireguardautotunnel.notification
 
+import android.graphics.Typeface
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.StyleSpan
+import androidx.compose.ui.graphics.toArgb
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.domain.enums.NotificationAction
+import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelActionSource
 import com.zaneschepke.wireguardautotunnel.notification.AndroidNotificationService.NotificationChannels
 import com.zaneschepke.wireguardautotunnel.notification.NotificationService.Companion.TUNNEL_ERROR_NOTIFICATION_ID
 import com.zaneschepke.wireguardautotunnel.notification.NotificationService.Companion.TUNNEL_MESSAGES_NOTIFICATION_ID
+import com.zaneschepke.wireguardautotunnel.ui.state.DisplayTunnelState
 
 class AndroidTunnelNotificationService(private val notificationService: NotificationService) :
     TunnelNotificationService {
@@ -15,9 +23,42 @@ class AndroidTunnelNotificationService(private val notificationService: Notifica
     private fun createGroupNotification(
         tunnelNotificationLines: Map<Int, TunnelNotificationLine>,
         channel: NotificationChannels.Tunnel,
+        liveUpdatesEnabled: Boolean,
     ): android.app.Notification {
-        val title =
-            if (tunnelNotificationLines.size == 1) {
+        val promote =
+            liveUpdatesEnabled &&
+                tunnelNotificationLines.size == 1 &&
+                NotificationManagerCompat.from(context).canPostPromotedNotifications()
+
+        val connectedLine =
+            if (promote) {
+                tunnelNotificationLines.values.singleOrNull()?.takeIf {
+                    it.displayState == DisplayTunnelState.Connected
+                }
+            } else {
+                null
+            }
+        val connectedStartMillis = connectedLine?.startedAtMillis
+
+        val title: CharSequence =
+            if (connectedLine != null) {
+                val text =
+                    when (channel) {
+                        is NotificationChannels.Tunnel.VPN ->
+                            context.getString(
+                                R.string.notification_vpn_connected_title,
+                                connectedLine.name,
+                            )
+                        is NotificationChannels.Tunnel.Proxy ->
+                            context.getString(
+                                R.string.notification_proxy_connected_title,
+                                connectedLine.name,
+                            )
+                    }
+                SpannableString(text).apply {
+                    setSpan(StyleSpan(Typeface.BOLD), 0, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                }
+            } else if (tunnelNotificationLines.size == 1) {
                 val name = tunnelNotificationLines.values.first().name
                 when (channel) {
                     is NotificationChannels.Tunnel.VPN ->
@@ -42,7 +83,18 @@ class AndroidTunnelNotificationService(private val notificationService: Notifica
                     context.getString(R.string.notification_tunnel_status_format, line.name, status)
                 }
             }
-        val description = formattedLines.joinToString("\n")
+        val description =
+            when {
+                connectedLine != null ->
+                    when (connectedLine.origin) {
+                        TunnelActionSource.USER ->
+                            context.getString(R.string.notification_connection_manual)
+                        TunnelActionSource.AUTO_TUNNEL ->
+                            context.getString(R.string.notification_connection_auto)
+                        null -> formattedLines.joinToString("\n")
+                    }
+                else -> formattedLines.joinToString("\n")
+            }
 
         val actions =
             if (tunnelNotificationLines.size == 1) {
@@ -63,13 +115,24 @@ class AndroidTunnelNotificationService(private val notificationService: Notifica
             }
 
         val style =
-            if (tunnelNotificationLines.size > 1) {
-                NotificationCompat.InboxStyle()
-                    .setBigContentTitle(title)
-                    .setSummaryText(
-                        "${tunnelNotificationLines.size} ${context.getString(R.string.tunnels).lowercase()}"
-                    )
-                    .also { inbox -> formattedLines.forEach { inbox.addLine(it) } }
+            when {
+                tunnelNotificationLines.size > 1 ->
+                    NotificationCompat.InboxStyle()
+                        .setBigContentTitle(title)
+                        .setSummaryText(
+                            "${tunnelNotificationLines.size} ${context.getString(R.string.tunnels).lowercase()}"
+                        )
+                        .also { inbox -> formattedLines.forEach { inbox.addLine(it) } }
+                promote -> tunnelNotificationLines.values.first().displayState.asProgressStyle()
+                else -> null
+            }
+
+        val shortCriticalText =
+            if (promote) {
+                when (channel) {
+                    is NotificationChannels.Tunnel.VPN -> context.getString(R.string.vpn)
+                    is NotificationChannels.Tunnel.Proxy -> context.getString(R.string.proxy)
+                }
             } else {
                 null
             }
@@ -82,19 +145,53 @@ class AndroidTunnelNotificationService(private val notificationService: Notifica
             onGoing = true,
             onlyAlertOnce = true,
             style = style,
+            requestPromotedOngoing = promote,
+            shortCriticalText = shortCriticalText,
+            chronometerBaseMillis = connectedStartMillis,
         )
     }
 
+    // Progress is only shown during transitional phases; stable states render as a standard
+    // promoted notification instead of a permanently full bar.
+    private fun DisplayTunnelState.asProgressStyle(): NotificationCompat.ProgressStyle? {
+        val progress =
+            when (this) {
+                DisplayTunnelState.ResolvingDns -> 25
+                DisplayTunnelState.EstablishingConnection -> 75
+                else -> return null
+            }
+        val color = asColor().toArgb()
+        return NotificationCompat.ProgressStyle()
+            .setProgressSegments(
+                listOf(
+                    NotificationCompat.ProgressStyle.Segment(50).setColor(color),
+                    NotificationCompat.ProgressStyle.Segment(50).setColor(color),
+                )
+            )
+            .setProgress(progress)
+            .setStyledByProgress(false)
+    }
+
     override fun buildVpnPersistentNotification(
-        tunnelNotificationLines: Map<Int, TunnelNotificationLine>
+        tunnelNotificationLines: Map<Int, TunnelNotificationLine>,
+        liveUpdatesEnabled: Boolean,
     ): android.app.Notification {
-        return createGroupNotification(tunnelNotificationLines, NotificationChannels.Tunnel.VPN)
+        return createGroupNotification(
+            tunnelNotificationLines,
+            NotificationChannels.Tunnel.VPN,
+            liveUpdatesEnabled,
+        )
     }
 
     override fun buildProxyPersistentNotification(
-        tunnelNotificationLines: Map<Int, TunnelNotificationLine>
+        tunnelNotificationLines: Map<Int, TunnelNotificationLine>,
+        liveUpdatesEnabled: Boolean,
     ): android.app.Notification {
-        return createGroupNotification(tunnelNotificationLines, NotificationChannels.Tunnel.Proxy)
+        return createGroupNotification(
+            tunnelNotificationLines,
+            NotificationChannels.Tunnel.Proxy,
+            liveUpdatesEnabled,
+        )
     }
 
     override fun showIpv4Fallback(tunnelName: String) {

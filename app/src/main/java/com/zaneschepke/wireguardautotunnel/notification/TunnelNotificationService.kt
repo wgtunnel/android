@@ -5,11 +5,13 @@ import android.app.Notification
 interface TunnelNotificationService {
 
     fun buildVpnPersistentNotification(
-        tunnelNotificationLines: Map<Int, TunnelNotificationLine>
+        tunnelNotificationLines: Map<Int, TunnelNotificationLine>,
+        liveUpdatesEnabled: Boolean,
     ): Notification
 
     fun buildProxyPersistentNotification(
-        tunnelNotificationLines: Map<Int, TunnelNotificationLine>
+        tunnelNotificationLines: Map<Int, TunnelNotificationLine>,
+        liveUpdatesEnabled: Boolean,
     ): Notification
 
     fun showIpv4Fallback(tunnelName: String)
