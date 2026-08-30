@@ -398,4 +398,10 @@
     <string name="tunnel_dns">Tunelová DNS</string>
     <string name="use_tunnel_dns_servers">Použít tunelové DNS servery</string>
     <string name="error_config_missing_dns">V tunelu %1$s chybí DNS servery které jsou vyžadovány pro vaše aktuální nastavení aplikace </string>
+    <string name="live_updates">Živé aktualizace</string>
+    <string name="live_updates_desc">Zobrazuje průběh a stav připojení aktivního tunelu ve stavovém řádku a na zamykací obrazovce. Platí, když běží jediný tunel</string>
+    <string name="notification_vpn_connected_title">VPN připojena: %1$s</string>
+    <string name="notification_proxy_connected_title">Proxy připojen: %1$s</string>
+    <string name="notification_connection_manual">Ruční připojení</string>
+    <string name="notification_connection_auto">Auto-tunel</string>
 </resources>

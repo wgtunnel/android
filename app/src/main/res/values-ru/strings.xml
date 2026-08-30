@@ -461,4 +461,10 @@
     <string name="tunnel_dns">Туннельный DNS</string>
     <string name="use_tunnel_dns_servers">DNS-серверы туннеля</string>
     <string name="error_config_missing_dns">В туннеле %1$s отсутствуют DNS-серверы, необходимые для вашего приложения</string>
+    <string name="live_updates">Обновления в реальном времени</string>
+    <string name="live_updates_desc">Показывает ход подключения и состояние активного туннеля в строке состояния и на экране блокировки. Действует, когда запущен только один туннель</string>
+    <string name="notification_vpn_connected_title">VPN подключена: %1$s</string>
+    <string name="notification_proxy_connected_title">Прокси подключён: %1$s</string>
+    <string name="notification_connection_manual">Ручное подключение</string>
+    <string name="notification_connection_auto">Автотуннелирование</string>
 </resources>

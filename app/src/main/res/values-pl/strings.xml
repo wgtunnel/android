@@ -382,4 +382,10 @@
     <string name="peer_endpoints">Punkty końcowe peerów</string>
     <string name="prefer_ipv6">Preferuj IPv6</string>
     <string name="restore_ipv6">Przywróć IPv6</string>
+    <string name="live_updates">Aktualizacje na żywo</string>
+    <string name="live_updates_desc">Pokazuje postęp i stan połączenia aktywnego tunelu na pasku stanu i ekranie blokady. Obowiązuje, gdy działa tylko jeden tunel</string>
+    <string name="notification_vpn_connected_title">Połączono z VPN: %1$s</string>
+    <string name="notification_proxy_connected_title">Połączono z proxy: %1$s</string>
+    <string name="notification_connection_manual">Połączenie ręczne</string>
+    <string name="notification_connection_auto">Autotunel</string>
 </resources>

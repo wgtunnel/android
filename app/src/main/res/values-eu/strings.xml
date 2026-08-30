@@ -500,4 +500,10 @@
     <string name="transit_dns_block">Blokeatu</string>
     <string name="transit_dns_allow">Baimendu</string>
     <string name="error_config_missing_dns">%1$s tunelak zure uneko ezarpenetarako beharrezkoak diren DNS zerbitzariak falta ditu</string>
+    <string name="live_updates">Zuzeneko eguneratzeak</string>
+    <string name="live_updates_desc">Tunel aktiboaren konexioaren aurrerapena eta egoera erakusten ditu egoera-barran eta blokeo-pantailan. Tunel bakarra martxan dagoenean aplikatzen da</string>
+    <string name="notification_vpn_connected_title">VPN konektatuta: %1$s</string>
+    <string name="notification_proxy_connected_title">Proxy-a konektatuta: %1$s</string>
+    <string name="notification_connection_manual">Eskuzko konexioa</string>
+    <string name="notification_connection_auto">Tunel automatikoa</string>
 </resources>
