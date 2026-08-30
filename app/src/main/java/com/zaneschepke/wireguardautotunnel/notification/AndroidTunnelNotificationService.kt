@@ -214,6 +214,7 @@ class AndroidTunnelNotificationService(private val notificationService: Notifica
                 onGoing = false,
                 onlyAlertOnce = true,
                 groupKey = VPN_GROUP_KEY,
+                style = NotificationCompat.BigTextStyle().bigText(message),
             )
 
         notificationService.show(TUNNEL_ERROR_NOTIFICATION_ID, notification)
