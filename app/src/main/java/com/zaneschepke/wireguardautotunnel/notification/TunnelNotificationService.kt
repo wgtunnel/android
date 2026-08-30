@@ -4,10 +4,6 @@ import android.app.Notification
 
 interface TunnelNotificationService {
 
-    fun updateProxyPersistentNotification(tunnelNotificationLines: Map<Int, TunnelNotificationLine>)
-
-    fun updateVpnPersistentNotification(tunnelNotificationLines: Map<Int, TunnelNotificationLine>)
-
     fun buildVpnPersistentNotification(
         tunnelNotificationLines: Map<Int, TunnelNotificationLine>
     ): Notification

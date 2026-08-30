@@ -5,7 +5,6 @@ import android.content.Context
 import androidx.core.app.NotificationCompat
 import com.zaneschepke.wireguardautotunnel.domain.enums.NotificationAction
 import com.zaneschepke.wireguardautotunnel.notification.AndroidNotificationService.NotificationChannels
-import com.zaneschepke.wireguardautotunnel.util.StringValue
 
 interface NotificationService {
     val context: Context
@@ -16,20 +15,6 @@ interface NotificationService {
         subText: String? = null,
         actions: Collection<NotificationCompat.Action> = emptyList(),
         description: String = "",
-        showTimestamp: Boolean = true,
-        onGoing: Boolean = false,
-        onlyAlertOnce: Boolean = true,
-        groupKey: String? = null,
-        isGroupSummary: Boolean = false,
-        style: NotificationCompat.Style? = null,
-    ): Notification
-
-    fun createNotification(
-        channel: NotificationChannels,
-        title: StringValue,
-        subText: String? = null,
-        actions: Collection<NotificationCompat.Action> = emptyList(),
-        description: StringValue,
         showTimestamp: Boolean = true,
         onGoing: Boolean = false,
         onlyAlertOnce: Boolean = true,

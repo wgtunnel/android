@@ -5,11 +5,9 @@ import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.domain.enums.NotificationAction
 import com.zaneschepke.wireguardautotunnel.notification.AndroidNotificationService.NotificationChannels
 import com.zaneschepke.wireguardautotunnel.notification.NotificationService.Companion.PROXY_GROUP_KEY
-import com.zaneschepke.wireguardautotunnel.notification.NotificationService.Companion.PROXY_NOTIFICATION_ID
 import com.zaneschepke.wireguardautotunnel.notification.NotificationService.Companion.TUNNEL_ERROR_NOTIFICATION_ID
 import com.zaneschepke.wireguardautotunnel.notification.NotificationService.Companion.TUNNEL_MESSAGES_NOTIFICATION_ID
 import com.zaneschepke.wireguardautotunnel.notification.NotificationService.Companion.VPN_GROUP_KEY
-import com.zaneschepke.wireguardautotunnel.notification.NotificationService.Companion.VPN_NOTIFICATION_ID
 
 class AndroidTunnelNotificationService(private val notificationService: NotificationService) :
     TunnelNotificationService {
@@ -109,38 +107,6 @@ class AndroidTunnelNotificationService(private val notificationService: Notifica
             NotificationChannels.Tunnel.Proxy,
             PROXY_GROUP_KEY,
         )
-    }
-
-    override fun updateVpnPersistentNotification(
-        tunnelNotificationLines: Map<Int, TunnelNotificationLine>
-    ) {
-        if (tunnelNotificationLines.isEmpty()) {
-            notificationService.remove(VPN_NOTIFICATION_ID)
-            return
-        }
-        val notification =
-            createGroupNotification(
-                tunnelNotificationLines,
-                NotificationChannels.Tunnel.VPN,
-                VPN_GROUP_KEY,
-            )
-        notificationService.show(VPN_NOTIFICATION_ID, notification)
-    }
-
-    override fun updateProxyPersistentNotification(
-        tunnelNotificationLines: Map<Int, TunnelNotificationLine>
-    ) {
-        if (tunnelNotificationLines.isEmpty()) {
-            notificationService.remove(PROXY_NOTIFICATION_ID)
-            return
-        }
-        val notification =
-            createGroupNotification(
-                tunnelNotificationLines,
-                NotificationChannels.Tunnel.Proxy,
-                PROXY_GROUP_KEY,
-            )
-        notificationService.show(PROXY_NOTIFICATION_ID, notification)
     }
 
     override fun showIpv4Fallback(tunnelName: String) {

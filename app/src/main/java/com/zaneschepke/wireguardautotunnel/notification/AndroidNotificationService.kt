@@ -22,7 +22,6 @@ import com.zaneschepke.wireguardautotunnel.notification.NotificationService.Comp
 import com.zaneschepke.wireguardautotunnel.notification.NotificationService.Companion.EXTRA_ID
 import com.zaneschepke.wireguardautotunnel.notification.NotificationService.Companion.EXTRA_OPEN_SUPPORT
 import com.zaneschepke.wireguardautotunnel.notification.NotificationService.Companion.UPDATE_AVAILABLE_NOTIFICATION_ID
-import com.zaneschepke.wireguardautotunnel.util.StringValue
 
 class AndroidNotificationService(override val context: Context) : NotificationService {
 
@@ -71,34 +70,6 @@ class AndroidNotificationService(override val context: Context) : NotificationSe
                 style?.let { setStyle(it) }
             }
             .build()
-    }
-
-    override fun createNotification(
-        channel: NotificationChannels,
-        title: StringValue,
-        subText: String?,
-        actions: Collection<Action>,
-        description: StringValue,
-        showTimestamp: Boolean,
-        onGoing: Boolean,
-        onlyAlertOnce: Boolean,
-        groupKey: String?,
-        isGroupSummary: Boolean,
-        style: NotificationCompat.Style?,
-    ): Notification {
-        return createNotification(
-            channel,
-            title.asString(context),
-            subText,
-            actions,
-            description.asString(context),
-            showTimestamp,
-            onGoing,
-            onlyAlertOnce,
-            groupKey,
-            isGroupSummary,
-            style,
-        )
     }
 
     override fun createNotificationAction(
