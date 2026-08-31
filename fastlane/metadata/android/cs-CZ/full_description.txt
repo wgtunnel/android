@@ -1,0 +1,17 @@
+WG Tunnel je klient VPN pro WireGuard, který nabízí rovnováhu mezi jednoduchostí a spolehlivostí, díky čemuž je ideálním klientem jak pro běžné, tak pro pokročilé uživatele.
+Ať už chcete pouze automatizovat připojení k VPN, nebo jste pokročilý uživatel s náročnými požadavky na ochranu soukromí, WG Tunnel je pro vás tím pravým řešením.
+
+Vlastnosti:
+
+- **Automatické tunelování:** Automaticky aktivuje tunely na základě informací o aktuální síti zařízení.
+- **Odložené zavádění koncových bodů:** Bezpečně překládá adresy  koncových bodů a aktualizuje peery až po sestavení tunelu pro vyšší spolehlivost a ochranu proti únikům při startu. 
+- **Sledování navázání spojení:** Sledování navázání spojení v reálném čase pro okamžitou zpětnou vazbu o stavu tunelu.
+- **Podpora AmneziaWG:** Plná podpora pro AmneziaWG 2.0, která zajišťuje spolehlivou ochranu před cenzurou.
+- **Split Tunneling:** Flexibilní podpora pro směrování konkrétních aplikací nebo síťového provozu přes VPN.
+- **Režim místní proxy:** Zpřístupnění WireGuard tunelů přes lokální SOCKS5 nebo HTTP proxy pro prohlížeče a firewallové aplikace (např. AdGuard).
+- **Režim uzamčení:** Pokročilý integrovaný kill switch, který blokuje veškerý síťový provoz, pokud je tunel odpojen.
+- **Rychlé ovládání:** Dlaždice v Rychlém nastavení a zkratky na domovskou obrazovku pro snadné přepínání.
+- **Podpora vzdáleného ovládání:** Automatizace pomocí Intentů pro ovládání tunelů a automatického tunelování z automatizačních aplikací (např. Tasker).
+- **Zpracování dynamického DNS:** Automaticky detekuje a aktualizuje koncové body při změně IP adresy serveru bez nutnosti restartu.
+- **IPv6 koncové body:** Automatický přechod na IPv6 koncové body nebo návrat k IPv4 podle stavu sítě bez nutnosti restartu.
+- **Podpora pro Android TV:** Plná podpora téměř všech funkcí na Android TV.

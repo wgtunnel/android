@@ -160,6 +160,7 @@
     <string name="service_running_error">서비스 미실행 중</string>
     <string name="select_all">모두 선택</string>
     <string name="export_success">내보내기 성공</string>
+    <string name="export_success_downloads">다운로드 폴더로 내보내기 성공</string>
     <string name="download">다운로드</string>
     <string name="check_for_update">업데이트 확인</string>
     <string name="update_check_failed">업데이트 확인에 실패했습니다.</string>
@@ -167,6 +168,8 @@
     <string name="latest_installed">이미 최신 버전을 실행하고 있습니다.</string>
     <string name="update_download_failed">업데이트 다운로드에 실패했습니다.</string>
     <string name="update_available">업데이트할 수 있습니다!</string>
+    <string name="update">업데이트</string>
+    <string name="update_notification_message">%1$s 버전을 사용할 수 있습니다.</string>
     <string name="download_and_install">다운로드 및 설치</string>
     <string name="permission_required">권한 필요</string>
     <string name="install_updated_permission">앱이 업데이트를 설치하려면 권한이 필요합니다.</string>
@@ -226,6 +229,7 @@
     <string name="dns_settings">DNS 설정</string>
     <string name="locked_down">락다운됨</string>
     <string name="system">시스템</string>
+    <string name="doh">DNS over HTTPS (DoH)</string>
     <string name="comma_separated">쉼표로 구분됨</string>
     <string name="server_port">서버:포트</string>
     <string name="new_tunnel">새 터널</string>
@@ -245,6 +249,8 @@
     <string name="donate_title">후원</string>
     <string name="crypto">암호화폐 주소</string>
     <string name="github_sponsors">GitHub 스폰서</string>
+    <string name="liberapay">Liberapay</string>
+    <string name="kofi">Ko-fi</string>
     <string name="donation_thanks_intro">이 프로젝트에 후원을 고려해주셔서 감사드립니다!</string>
     <string name="donation_dev_message">1인 개발자로서 WG Tunnel을 최고의 Android 무료 오픈 소스 WireGuard 클라이언트로 만들기 위해 끊임 없이 노력하고 있지만, 여러분의 지원이 있어야 가능한 일입니다.</string>
     <string name="donation_closing">프로젝트에 모든 시간을 할애하는 것이 제 꿈입니다.</string>
@@ -276,6 +282,7 @@
     <string name="active_network">활성 네트워크:</string>
     <string name="security_type">보안:</string>
     <string name="network_name">네트워크:</string>
+    <string name="wifi">Wi-Fi</string>
     <string name="text_too_large_for_qr">QR로 표시하기에 텍스트가 너무 큽니다.</string>
     <string name="all_services_disabled">이 동작을 수행하려면 자동 터널 및 터널을 비활성화해야 합니다.</string>
     <string name="ddns_success_message">동적 DNS 엔드포인트가 성공적으로 갱신되었습니다.</string>
@@ -322,6 +329,7 @@
     <string name="automation">자동화</string>
     <string name="peer_resolution">피어 리졸브</string>
     <string name="resolution_method">리졸브 방식</string>
+    <string name="dot">DNS over TLS (DoT)</string>
     <string name="plain_dns">평문 DNS (포트 53)</string>
     <string name="current_system_dns">현재 시스템 DNS</string>
     <string name="dns_error_empty">엔드포인트는 비워둘 수 없음</string>
@@ -397,7 +405,9 @@
     <string name="tunnel_state_establishing_connection">연결 설정 중</string>
     <string name="peer_endpoints">피어 엔드포인트</string>
     <string name="prefer_ipv6">IPv6 선호</string>
+    <string name="prefer_ipv6_desc">네트워크가 지원하면 IPv6 엔드포인트 사용, 터널링에 실패하면 자동으로 IPv4로 폴백</string>
     <string name="restore_ipv6">IPv6 복원</string>
+    <string name="restore_ipv6_desc">IPv6 지원 네트워크에서 터널 상태가 정상일 때 IPv6 엔드포인트 복원 시도</string>
     <string name="no_tunnels_yet">아직 아무것도 없습니다…</string>
     <string name="getting_started_guidance">+ 버튼을 이용해 터널을 가져오거나, 시작 도움말을 확인하세요.</string>
     <string name="getting_started_guide_link">시작 도움말 확인하기</string>
@@ -461,16 +471,27 @@
     <string name="seamless_recovery_attempt_title">끊김 없는 복구</string>
     <string name="seamless_recovery_attempt_message">연결 문제 감지됨. 자동 복구 시도 중.</string>
     <string name="local_domain_suffixes">로컬 도메인 접미사</string>
+    <string name="domain_suffixes">도메인 접미사</string>
     <string name="encrypted_dns">암호화된 DNS</string>
     <string name="split_dns">분할 DNS</string>
     <string name="system_dns_only">시스템 DNS만</string>
     <string name="default_dns_desc">터널 DNS 서버를 사용해 터널을 거치는 표준 평문 DNS</string>
     <string name="encrypted_dns_desc">사용자 지정 서버를 사용해 터널을 거치는 암호화된 DNS</string>
-    <string name="split_dns_desc">로컬 접두사 ​​도메인은 시스템 DNS로 분할되고 나머지는 모두 사용자 지정 옵션을 통해 터널링</string>
+    <string name="split_dns_desc">도메인 접미사에 따라 시스템 DNS와 터널 DNS로 분할 리졸브</string>
     <string name="system_dns_only_desc">모든 DNS 쿼리를 시스템 DNS 서버로 전송하며 터널을 우회</string>
     <string name="protocol">프로토콜</string>
     <string name="tunnel_dns_mode">터널 DNS 모드</string>
     <string name="tunnel_dns">터널 DNS</string>
     <string name="use_tunnel_dns_servers">터널 DNS 서버 사용</string>
+    <string name="split_suffix_target">접미사를 라우팅할 대상</string>
+    <string name="split_suffix_target_system">시스템 DNS</string>
+    <string name="split_suffix_target_tunnel">터널 DNS</string>
+    <string name="split_suffix_target_desc">접미사를 라우팅할 위치입니다. 나머지는 모두 터널 DNS로 라우팅합니다</string>
+    <string name="private_dns_enabled_warning">개인 DNS가 활성화되었습니다. 터널 DNS가 제대로 동작하려면 비활성화해야 합니다</string>
+    <string name="foreign_dns_policy">외부 DNS 정책</string>
+    <string name="foreign_dns_policy_desc">터널 DNS 서버 외의 서버로 보내는 평문 DNS 요청을 처리하는 방식</string>
+    <string name="foreign_dns_redirect">리다이렉트</string>
+    <string name="foreign_dns_block">차단</string>
+    <string name="foreign_dns_allow">허용</string>
     <string name="error_config_missing_dns">%1$s 터널에 현재 앱 설정에서 필요한 DNS 서버가 누락됨</string>
 </resources>

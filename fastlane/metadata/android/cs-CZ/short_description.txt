@@ -1,0 +1,1 @@
+VPN klient pro WireGuard a AmneziaWG s automatickým tunelováním, funkcí uzamčení a proxy.
