@@ -144,7 +144,6 @@ import com.zaneschepke.wireguardautotunnel.util.StringValue
 import com.zaneschepke.wireguardautotunnel.util.extensions.installApk
 import com.zaneschepke.wireguardautotunnel.util.extensions.isRunningOnTv
 import com.zaneschepke.wireguardautotunnel.util.extensions.openWebUrl
-import com.zaneschepke.wireguardautotunnel.util.extensions.restartApp
 import com.zaneschepke.wireguardautotunnel.util.permission.LocalNetworkPermissionHelper
 import com.zaneschepke.wireguardautotunnel.viewmodel.ConfigEditViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.SharedAppViewModel
@@ -347,7 +346,6 @@ class MainActivity : AppCompatActivity() {
             LaunchedEffect(Unit) {
                 viewModel.globalSideEffect.collectLatest { sideEffect ->
                     when (sideEffect) {
-                        GlobalSideEffect.ConfigChanged -> restartApp()
                         GlobalSideEffect.PopBackStack -> navController.pop()
                         is GlobalSideEffect.RequestVpnPermission -> {
                             requestingTunnelMode =

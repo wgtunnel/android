@@ -127,7 +127,6 @@ class SharedAppViewModel(
                         state.copy(
                             theme = settings.theme,
                             tunnelMode = settings.tunnelMode,
-                            locale = settings.locale ?: LocaleUtil.OPTION_PHONE_LANGUAGE,
                             tunnelNames = tunNames,
                             alreadyDonated = settings.alreadyDonated,
                             isAutoTunnelActive = autoTunnelActive,

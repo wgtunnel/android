@@ -21,8 +21,6 @@ sealed class GlobalSideEffect {
 
     data class LaunchUrl(val url: String) : GlobalSideEffect()
 
-    data object ConfigChanged : GlobalSideEffect()
-
     data class ExportFile(
         val uri: Uri?,
         val fileName: String,
