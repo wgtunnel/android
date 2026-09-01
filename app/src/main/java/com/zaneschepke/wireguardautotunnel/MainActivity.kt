@@ -140,7 +140,6 @@ import com.zaneschepke.wireguardautotunnel.ui.theme.SilverTree
 import com.zaneschepke.wireguardautotunnel.ui.theme.Straw
 import com.zaneschepke.wireguardautotunnel.ui.theme.WireguardAutoTunnelTheme
 import com.zaneschepke.wireguardautotunnel.util.FileUtils
-import com.zaneschepke.wireguardautotunnel.util.LocaleUtil
 import com.zaneschepke.wireguardautotunnel.util.StringValue
 import com.zaneschepke.wireguardautotunnel.util.extensions.installApk
 import com.zaneschepke.wireguardautotunnel.util.extensions.isRunningOnTv
@@ -213,7 +212,7 @@ class MainActivity : AppCompatActivity() {
 
             LaunchedEffect(uiState.isAppLoaded) {
                 if (uiState.isAppLoaded) {
-                    uiState.locale.let { LocaleUtil.changeLocale(it) }
+                    viewModel.syncLocale()
                 }
             }
 
