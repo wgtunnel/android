@@ -35,21 +35,14 @@ class LogcatManager(
             replay = 10_000,
             onBufferOverflow = BufferOverflow.DROP_OLDEST,
         )
-    private val _liveLogs =
-        MutableSharedFlow<LogMessage>(replay = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
-
     override val bufferedLogs: Flow<LogMessage> = _bufferedLogs.asSharedFlow()
-    override val liveLogs: Flow<LogMessage> = _liveLogs.asSharedFlow()
 
     override suspend fun start() {
         mutex.withLock {
             if (isStarted) return
             stopInternal()
             logJob = logScope.launch {
-                logcatReader.readLogs().collect { logMessage ->
-                    _bufferedLogs.emit(logMessage)
-                    _liveLogs.emit(logMessage)
-                }
+                logcatReader.readLogs().collect { logMessage -> _bufferedLogs.emit(logMessage) }
             }
             isStarted = true
         }
@@ -81,6 +74,11 @@ class LogcatManager(
             logcatReader.clearLogs()
             start()
         }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override suspend fun clearBufferedLogs() {
+        mutex.withLock { _bufferedLogs.resetReplayCache() }
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)

@@ -96,7 +96,7 @@ sealed class ActiveNetwork {
 
     fun key(bssidAware: Boolean): String {
         return when (val active = this) {
-            is Wifi -> "wifi:${networkId}${active.bssid}"
+            is Wifi -> if (bssidAware) "wifi:${networkId}${active.bssid}" else "wifi:${networkId}"
             is Cellular -> "cell:${network?.hashCode() ?: 0}"
             is Ethernet -> "eth:${network?.hashCode() ?: 0}"
             is Disconnected -> "none"

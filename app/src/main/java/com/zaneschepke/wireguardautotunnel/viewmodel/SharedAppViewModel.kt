@@ -1,6 +1,7 @@
 package com.zaneschepke.wireguardautotunnel.viewmodel
 
 import android.net.Uri
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dokar.sonner.ToastType
@@ -129,7 +130,6 @@ class SharedAppViewModel(
                         state.copy(
                             theme = settings.theme,
                             tunnelMode = settings.tunnelMode,
-                            locale = settings.locale ?: LocaleUtil.OPTION_PHONE_LANGUAGE,
                             tunnelNames = tunNames,
                             alreadyDonated = settings.alreadyDonated,
                             isAutoTunnelActive = autoTunnelActive,
@@ -181,8 +181,23 @@ class SharedAppViewModel(
     fun setTheme(theme: Theme) = intent { settingsRepository.updateTheme(theme) }
 
     fun setLocale(locale: String) = intent {
-        settingsRepository.updateLocale(locale)
-        postSideEffect(GlobalSideEffect.ConfigChanged)
+        // pre-T the stored value is reapplied on startup, on T+ the system persists it
+        if (!LocaleUtil.isSystemManaged) settingsRepository.updateLocale(locale)
+        withContext(Dispatchers.Main) { LocaleUtil.changeLocale(locale) }
+    }
+
+    fun syncLocale() = intent {
+        val stored = settingsRepository.flow.firstOrNull()?.locale ?: return@intent
+        if (stored == LocaleUtil.OPTION_PHONE_LANGUAGE) return@intent
+        if (LocaleUtil.isSystemManaged) {
+            // one-time handoff to the system, without overriding a locale set in system settings
+            if (AppCompatDelegate.getApplicationLocales().isEmpty) {
+                withContext(Dispatchers.Main) { LocaleUtil.changeLocale(stored) }
+            }
+            settingsRepository.updateLocale(LocaleUtil.OPTION_PHONE_LANGUAGE)
+        } else {
+            withContext(Dispatchers.Main) { LocaleUtil.changeLocale(stored) }
+        }
     }
 
     fun setPinLockEnabled(enabled: Boolean) = intent {

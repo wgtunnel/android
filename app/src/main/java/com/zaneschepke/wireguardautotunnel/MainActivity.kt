@@ -142,12 +142,10 @@ import com.zaneschepke.wireguardautotunnel.ui.theme.SilverTree
 import com.zaneschepke.wireguardautotunnel.ui.theme.Straw
 import com.zaneschepke.wireguardautotunnel.ui.theme.WireguardAutoTunnelTheme
 import com.zaneschepke.wireguardautotunnel.util.FileUtils
-import com.zaneschepke.wireguardautotunnel.util.LocaleUtil
 import com.zaneschepke.wireguardautotunnel.util.StringValue
 import com.zaneschepke.wireguardautotunnel.util.extensions.installApk
 import com.zaneschepke.wireguardautotunnel.util.extensions.isRunningOnTv
 import com.zaneschepke.wireguardautotunnel.util.extensions.openWebUrl
-import com.zaneschepke.wireguardautotunnel.util.extensions.restartApp
 import com.zaneschepke.wireguardautotunnel.util.permission.LocalNetworkPermissionHelper
 import com.zaneschepke.wireguardautotunnel.viewmodel.ConfigEditViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.SharedAppViewModel
@@ -215,7 +213,7 @@ class MainActivity : AppCompatActivity() {
 
             LaunchedEffect(uiState.isAppLoaded) {
                 if (uiState.isAppLoaded) {
-                    uiState.locale.let { LocaleUtil.changeLocale(it) }
+                    viewModel.syncLocale()
                 }
             }
 
@@ -364,7 +362,6 @@ class MainActivity : AppCompatActivity() {
             LaunchedEffect(Unit) {
                 viewModel.globalSideEffect.collectLatest { sideEffect ->
                     when (sideEffect) {
-                        GlobalSideEffect.ConfigChanged -> restartApp()
                         GlobalSideEffect.PopBackStack -> navController.pop()
                         is GlobalSideEffect.RequestVpnPermission -> {
                             requestingTunnelMode =

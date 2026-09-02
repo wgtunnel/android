@@ -35,6 +35,7 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import org.koin.dsl.onClose
 import org.koin.viewmodel.scope.viewModelScope
 
 @OptIn(KoinExperimentalAPI::class, KoinViewModelScopeApi::class)
@@ -79,11 +80,7 @@ val databaseModule = module {
     singleOf(::RoomTunnelRepository) bind TunnelRepository::class
     viewModelScope {
         scoped<InstalledPackageRepository> {
-            InstalledAndroidPackageRepository(
-                androidContext(),
-                get(named(Dispatcher.IO)),
-                get(named(Scope.APPLICATION)),
-            )
-        }
+            InstalledAndroidPackageRepository(androidContext(), get(named(Dispatcher.IO)))
+        } onClose { (it as? AutoCloseable)?.close() }
     }
 }

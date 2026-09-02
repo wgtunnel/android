@@ -1,3 +1,5 @@
+import com.ncorti.ktfmt.gradle.tasks.KtfmtBaseTask
+import com.ncorti.ktfmt.gradle.tasks.KtfmtCheckTask
 import com.ncorti.ktfmt.gradle.tasks.KtfmtFormatTask
 
 plugins {
@@ -10,6 +12,24 @@ plugins {
 	alias(libs.plugins.licensee) apply false
     alias(libs.plugins.jetbrains.kotlin.jvm) apply false
 	alias(libs.plugins.aboutlibraries) apply false
+}
+
+ktfmt { kotlinLangStyle() }
+
+fun KtfmtBaseTask.useRepoKotlinSources() {
+	source = fileTree(rootDir)
+	include("**/*.kt")
+	exclude("**/build/**", ".*generated.*", "**/amneziawg-tools/**", "**/.gradle/**")
+}
+
+tasks.register<KtfmtFormatTask>("format") {
+	description = "Format Kotlin sources with the same scope as formatCheck."
+	useRepoKotlinSources()
+}
+
+tasks.register<KtfmtCheckTask>("formatCheck") {
+	description = "Fail if Kotlin sources would change under ./gradlew format."
+	useRepoKotlinSources()
 }
 
 subprojects {
@@ -27,13 +47,6 @@ subprojects {
 		extensions.configure<org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension> {
 			jvmToolchain(21)
 		}
-	}
-
-	tasks.register<KtfmtFormatTask>("format") {
-		description = "Format Kotlin code style deviations."
-        source = project.fileTree(rootDir)
-		include("**/*.kt")
-		exclude("**/build/**", ".*generated.*", "**/amneziawg-tools/**", "**/.gradle/**")
 	}
 
 	ktfmt {

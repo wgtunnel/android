@@ -12,6 +12,8 @@ interface LogReader {
 
     suspend fun deleteAndClearLogs()
 
+    // clears the in-memory replay cache only, log files on disk are untouched
+    suspend fun clearBufferedLogs()
+
     val bufferedLogs: Flow<LogMessage>
-    val liveLogs: Flow<LogMessage>
 }

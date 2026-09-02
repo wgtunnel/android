@@ -11,14 +11,12 @@ import android.provider.Settings
 import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import com.zaneschepke.wireguardautotunnel.BuildConfig
-import com.zaneschepke.wireguardautotunnel.MainActivity
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.util.Constants
 import com.zaneschepke.wireguardautotunnel.util.FileUtils
 import java.io.File
 import java.io.InputStream
 import java.util.Locale
-import kotlin.system.exitProcess
 import timber.log.Timber
 
 fun Context.openWebUrl(url: String): Result<Unit> = runCatching {
@@ -196,13 +194,6 @@ fun Context.launchPlayStoreReview(): Result<Unit> = runCatching {
 
 fun Activity.setScreenBrightness(brightness: Float) {
     window.attributes = window.attributes.apply { screenBrightness = brightness }
-}
-
-fun MainActivity.restartApp() {
-    Intent(this, MainActivity::class.java).also {
-        startActivity(it)
-        exitProcess(0)
-    }
 }
 
 fun PackageManager.getFriendlyAppName(packageName: String, appInfo: ApplicationInfo): String {
