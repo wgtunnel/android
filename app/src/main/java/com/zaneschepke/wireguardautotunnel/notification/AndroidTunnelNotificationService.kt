@@ -1,9 +1,6 @@
 package com.zaneschepke.wireguardautotunnel.notification
 
-import android.graphics.Typeface
-import android.text.Spannable
-import android.text.SpannableString
-import android.text.style.StyleSpan
+import android.text.format.Formatter
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -23,95 +20,54 @@ class AndroidTunnelNotificationService(private val notificationService: Notifica
     private fun createGroupNotification(
         tunnelNotificationLines: Map<Int, TunnelNotificationLine>,
         channel: NotificationChannels.Tunnel,
-        liveUpdatesEnabled: Boolean,
+        options: TunnelNotificationOptions,
+        lockdown: Boolean = false,
     ): android.app.Notification {
+        val singleTunnel = tunnelNotificationLines.size == 1
         val promote =
-            liveUpdatesEnabled &&
-                tunnelNotificationLines.size == 1 &&
+            options.liveUpdatesEnabled &&
                 NotificationManagerCompat.from(context).canPostPromotedNotifications()
 
-        val connectedLine =
-            if (promote) {
-                tunnelNotificationLines.values.singleOrNull()?.takeIf {
-                    it.displayState == DisplayTunnelState.Connected
-                }
-            } else {
-                null
+        val kind =
+            when {
+                lockdown -> context.getString(R.string.lockdown)
+                channel is NotificationChannels.Tunnel.VPN -> context.getString(R.string.vpn)
+                channel is NotificationChannels.Tunnel.Proxy -> context.getString(R.string.proxy)
+                else -> context.getString(R.string.vpn)
             }
-        val connectedStartMillis = connectedLine?.startedAtMillis
 
-        val title: CharSequence =
-            if (connectedLine != null) {
-                val text =
-                    when (channel) {
-                        is NotificationChannels.Tunnel.VPN ->
-                            context.getString(
-                                R.string.notification_vpn_connected_title,
-                                connectedLine.name,
-                            )
-                        is NotificationChannels.Tunnel.Proxy ->
-                            context.getString(
-                                R.string.notification_proxy_connected_title,
-                                connectedLine.name,
-                            )
-                    }
-                SpannableString(text).apply {
-                    setSpan(StyleSpan(Typeface.BOLD), 0, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-                }
-            } else if (tunnelNotificationLines.size == 1) {
-                val name = tunnelNotificationLines.values.first().name
-                when (channel) {
-                    is NotificationChannels.Tunnel.VPN ->
-                        "${context.getString(R.string.vpn)} • $name"
-                    is NotificationChannels.Tunnel.Proxy ->
-                        "${context.getString(R.string.proxy)} • $name"
-                }
-            } else {
-                when (channel) {
-                    is NotificationChannels.Tunnel.VPN -> context.getString(R.string.vpn)
-                    is NotificationChannels.Tunnel.Proxy -> context.getString(R.string.proxy)
-                }
+        val title =
+            when {
+                singleTunnel -> "$kind • ${tunnelNotificationLines.values.first().name}"
+                else -> kind
             }
 
         val formattedLines =
             tunnelNotificationLines.values.map { line ->
-                val status = line.displayState.asLocalizedString(context)
+                formatLine(line, includeName = !singleTunnel, options = options)
+            }
 
-                if (tunnelNotificationLines.size == 1) {
-                    status
-                } else {
-                    context.getString(R.string.notification_tunnel_status_format, line.name, status)
-                }
-            }
-        val description =
-            when {
-                connectedLine != null ->
-                    when (connectedLine.origin) {
-                        TunnelActionSource.USER ->
-                            context.getString(R.string.notification_connection_manual)
-                        TunnelActionSource.AUTO_TUNNEL ->
-                            context.getString(R.string.notification_connection_auto)
-                        null -> formattedLines.joinToString("\n")
-                    }
-                else -> formattedLines.joinToString("\n")
-            }
+        val description = formattedLines.joinToString("\n")
 
         val actions =
-            if (tunnelNotificationLines.size == 1) {
-                val tunnelId = tunnelNotificationLines.keys.first()
-                listOf(
-                    notificationService.createNotificationAction(
-                        notificationAction = NotificationAction.TUNNEL_OFF,
-                        extraId = tunnelId,
+            when {
+                singleTunnel ->
+                    listOf(
+                        notificationService.createNotificationAction(
+                            notificationAction = NotificationAction.TUNNEL_OFF,
+                            extraId = tunnelNotificationLines.keys.first(),
+                            authenticationRequired = true,
+                        )
                     )
-                )
-            } else {
-                listOf(
-                    notificationService.createNotificationAction(
-                        notificationAction = NotificationAction.STOP_ALL,
-                        extraId = null,
+                tunnelNotificationLines.isNotEmpty() ->
+                    listOf(
+                        notificationService.createNotificationAction(
+                            notificationAction = NotificationAction.STOP_ALL,
+                            extraId = null,
+                            authenticationRequired = true,
+                        )
                     )
-                )
+                else -> emptyList()
             }
 
         val style =
@@ -123,16 +79,27 @@ class AndroidTunnelNotificationService(private val notificationService: Notifica
                             "${tunnelNotificationLines.size} ${context.getString(R.string.tunnels).lowercase()}"
                         )
                         .also { inbox -> formattedLines.forEach { inbox.addLine(it) } }
-                promote -> tunnelNotificationLines.values.first().displayState.asProgressStyle()
+                description.contains('\n') -> NotificationCompat.BigTextStyle().bigText(description)
                 else -> null
             }
 
-        val shortCriticalText =
-            if (promote) {
-                when (channel) {
-                    is NotificationChannels.Tunnel.VPN -> context.getString(R.string.vpn)
-                    is NotificationChannels.Tunnel.Proxy -> context.getString(R.string.proxy)
-                }
+        val shortCriticalText = if (promote) kind else null
+
+        val chronometerBaseMillis =
+            if (options.liveUpdatesEnabled && singleTunnel) {
+                tunnelNotificationLines.values.first().startedAtMillis
+            } else {
+                null
+            }
+
+        val color =
+            if (
+                options.showFailureTint &&
+                    tunnelNotificationLines.values.any {
+                        it.displayState == DisplayTunnelState.HandshakeFailure
+                    }
+            ) {
+                DisplayTunnelState.HandshakeFailure.asColor().toArgb()
             } else {
                 null
             }
@@ -144,53 +111,90 @@ class AndroidTunnelNotificationService(private val notificationService: Notifica
             actions = actions,
             onGoing = true,
             onlyAlertOnce = true,
+            showTimestamp = chronometerBaseMillis != null,
             style = style,
             requestPromotedOngoing = promote,
             shortCriticalText = shortCriticalText,
-            chronometerBaseMillis = connectedStartMillis,
+            chronometerBaseMillis = chronometerBaseMillis,
+            color = color,
         )
     }
 
-    // Progress is only shown during transitional phases; stable states render as a standard
-    // promoted notification instead of a permanently full bar.
-    private fun DisplayTunnelState.asProgressStyle(): NotificationCompat.ProgressStyle? {
-        val progress =
-            when (this) {
-                DisplayTunnelState.ResolvingDns -> 25
-                DisplayTunnelState.EstablishingConnection -> 75
-                else -> return null
-            }
-        val color = asColor().toArgb()
-        return NotificationCompat.ProgressStyle()
-            .setProgressSegments(
-                listOf(
-                    NotificationCompat.ProgressStyle.Segment(50).setColor(color),
-                    NotificationCompat.ProgressStyle.Segment(50).setColor(color),
-                )
+    private fun formatLine(
+        line: TunnelNotificationLine,
+        includeName: Boolean,
+        options: TunnelNotificationOptions,
+    ): String {
+        val parts = labeledParts(line, options)
+        return if (includeName) {
+            (listOf(line.name) + parts).joinToString(" • ")
+        } else {
+            parts.joinToString("\n")
+        }
+    }
+
+    private fun labeledParts(
+        line: TunnelNotificationLine,
+        options: TunnelNotificationOptions,
+    ): List<String> {
+        val parts = mutableListOf<String>()
+        parts +=
+            context.getString(
+                R.string.notification_status_format,
+                line.displayState.asLocalizedString(context),
             )
-            .setProgress(progress)
-            .setStyledByProgress(false)
+        if (options.showOrigin) {
+            when (line.origin) {
+                TunnelActionSource.USER ->
+                    parts +=
+                        context.getString(
+                            R.string.notification_source_format,
+                            context.getString(R.string.notification_connection_manual),
+                        )
+                TunnelActionSource.AUTO_TUNNEL ->
+                    parts +=
+                        context.getString(
+                            R.string.notification_source_format,
+                            context.getString(R.string.notification_connection_auto),
+                        )
+                null -> Unit
+            }
+        }
+        if (options.showTransfer) {
+            parts +=
+                context.getString(
+                    R.string.notification_transfer_format,
+                    Formatter.formatFileSize(context, line.rxBytes),
+                    Formatter.formatFileSize(context, line.txBytes),
+                )
+        }
+        if (options.showRecovery && line.recoveryAttempts > 0) {
+            parts += context.getString(R.string.notification_recovery_format, line.recoveryAttempts)
+        }
+        return parts
     }
 
     override fun buildVpnPersistentNotification(
         tunnelNotificationLines: Map<Int, TunnelNotificationLine>,
-        liveUpdatesEnabled: Boolean,
+        options: TunnelNotificationOptions,
+        lockdown: Boolean,
     ): android.app.Notification {
         return createGroupNotification(
             tunnelNotificationLines,
             NotificationChannels.Tunnel.VPN,
-            liveUpdatesEnabled,
+            options,
+            lockdown = lockdown,
         )
     }
 
     override fun buildProxyPersistentNotification(
         tunnelNotificationLines: Map<Int, TunnelNotificationLine>,
-        liveUpdatesEnabled: Boolean,
+        options: TunnelNotificationOptions,
     ): android.app.Notification {
         return createGroupNotification(
             tunnelNotificationLines,
             NotificationChannels.Tunnel.Proxy,
-            liveUpdatesEnabled,
+            options,
         )
     }
 

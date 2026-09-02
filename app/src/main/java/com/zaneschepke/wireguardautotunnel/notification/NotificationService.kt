@@ -24,6 +24,7 @@ interface NotificationService {
         requestPromotedOngoing: Boolean = false,
         shortCriticalText: String? = null,
         chronometerBaseMillis: Long? = null,
+        color: Int? = null,
     ): Notification
 
     fun createAllChannels()
@@ -31,6 +32,7 @@ interface NotificationService {
     fun createNotificationAction(
         notificationAction: NotificationAction,
         extraId: Int? = null,
+        authenticationRequired: Boolean = false,
     ): NotificationCompat.Action
 
     fun remove(notificationId: Int)

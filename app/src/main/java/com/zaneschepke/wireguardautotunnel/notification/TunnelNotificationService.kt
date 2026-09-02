@@ -6,12 +6,13 @@ interface TunnelNotificationService {
 
     fun buildVpnPersistentNotification(
         tunnelNotificationLines: Map<Int, TunnelNotificationLine>,
-        liveUpdatesEnabled: Boolean,
+        options: TunnelNotificationOptions,
+        lockdown: Boolean = false,
     ): Notification
 
     fun buildProxyPersistentNotification(
         tunnelNotificationLines: Map<Int, TunnelNotificationLine>,
-        liveUpdatesEnabled: Boolean,
+        options: TunnelNotificationOptions,
     ): Notification
 
     fun showIpv4Fallback(tunnelName: String)

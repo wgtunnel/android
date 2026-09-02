@@ -42,6 +42,8 @@ sealed class Route : NavKey {
 
     @Keep @Serializable data object Display : Route()
 
+    @Keep @Serializable data object Notifications : Route()
+
     @Keep
     @Serializable
     data object Tunnels : Route(), SecureRoute {
@@ -208,6 +210,7 @@ enum class Tab(
                 Route.Appearance,
                 Route.Language,
                 Route.Display,
+                Route.Notifications,
                 is Route.ConfigGlobal,
                 Route.TunnelGlobals,
                 Route.Security,

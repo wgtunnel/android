@@ -87,6 +87,22 @@ class SettingsViewModel(
         settingsRepository.upsert(state.settings.copy(isLiveUpdatesEnabled = to))
     }
 
+    fun setNotificationOriginEnabled(to: Boolean) = intent {
+        settingsRepository.upsert(state.settings.copy(isNotificationOriginEnabled = to))
+    }
+
+    fun setNotificationTransferEnabled(to: Boolean) = intent {
+        settingsRepository.upsert(state.settings.copy(isNotificationTransferEnabled = to))
+    }
+
+    fun setNotificationRecoveryEnabled(to: Boolean) = intent {
+        settingsRepository.upsert(state.settings.copy(isNotificationRecoveryEnabled = to))
+    }
+
+    fun setNotificationFailureTintEnabled(to: Boolean) = intent {
+        settingsRepository.upsert(state.settings.copy(isNotificationFailureTintEnabled = to))
+    }
+
     fun setRestoreOnBootEnabled(to: Boolean) = intent {
         settingsRepository.upsert(state.settings.copy(isRestoreOnBootEnabled = to))
     }

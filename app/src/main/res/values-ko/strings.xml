@@ -475,8 +475,6 @@
     <string name="error_config_missing_dns">%1$s 터널에 현재 앱 설정에서 필요한 DNS 서버가 누락됨</string>
     <string name="live_updates">실시간 업데이트</string>
     <string name="live_updates_desc">활성 터널의 연결 진행 상황과 상태를 상태 표시줄과 잠금 화면에 표시합니다. 터널이 하나만 실행 중일 때 적용됩니다</string>
-    <string name="notification_vpn_connected_title">VPN 연결됨: %1$s</string>
-    <string name="notification_proxy_connected_title">프록시 연결됨: %1$s</string>
     <string name="notification_connection_manual">수동 연결</string>
     <string name="notification_connection_auto">자동 터널</string>
 </resources>

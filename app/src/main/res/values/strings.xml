@@ -620,10 +620,21 @@
     <string name="transit_dns_allow">Allow</string>
     <string name="error_config_missing_dns">Tunnel %1$s is missing DNS servers that are required for your current app settings</string>
     <string name="active_tunnel_updated">Active tunnel updated</string>
+    <string name="display">Display</string>
     <string name="live_updates">Live updates</string>
-    <string name="live_updates_desc">Show the active tunnel\'s connection progress and status in the status bar and on the lock screen. Applies when a single tunnel is running</string>
-    <string name="notification_vpn_connected_title">VPN connected: %1$s</string>
-    <string name="notification_proxy_connected_title">Proxy connected: %1$s</string>
-    <string name="notification_connection_manual">Manual connection</string>
+    <string name="live_updates_desc">Pin the tunnel notification to the status bar</string>
+    <string name="notification_connection_manual">Manual</string>
     <string name="notification_connection_auto">Auto-tunnel</string>
+    <string name="notification_show_origin">Connection source</string>
+    <string name="notification_show_origin_desc">Show whether the tunnel was started manually or by auto-tunnel</string>
+    <string name="notification_show_transfer">Transfer stats</string>
+    <string name="notification_show_transfer_desc">Show received and sent traffic in the tunnel notification</string>
+    <string name="notification_show_recovery">Recovery attempts</string>
+    <string name="notification_show_recovery_desc">Show seamless recovery attempts in the tunnel notification</string>
+    <string name="notification_status_format">Status: %1$s</string>
+    <string name="notification_source_format">Source: %1$s</string>
+    <string name="notification_transfer_format">Transfer: ↓ %1$s  ↑ %2$s</string>
+    <string name="notification_recovery_format">Recovery attempts: %1$d</string>
+    <string name="notification_failure_tint">Handshake warning</string>
+    <string name="notification_failure_tint_desc">Tint the notification icon when a tunnel has a handshake failure</string>
 </resources>

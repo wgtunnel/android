@@ -115,7 +115,7 @@ class WireGuardAutoTunnel : Application(), KoinComponent {
         // for notifications
         dispatcher.bind(applicationScope, provider.events, tunnelCoordinator.errors)
         get<TunnelOriginHolder>().bind(applicationScope, tunnelCoordinator.actions)
-        get<AppProvider>().bind(applicationScope, provider.backendStatus)
+        get<AppProvider>().bind(applicationScope)
 
         if (BuildConfig.FLAVOR == Constants.STANDALONE_FLAVOR) {
             UpdateCheckWorker.start(this)

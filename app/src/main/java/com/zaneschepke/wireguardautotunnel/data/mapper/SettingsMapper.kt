@@ -25,6 +25,10 @@ fun Entity.toDomain(): Domain =
         seamlessRecoveryEnabled = seamlessRecoveryEnabled,
         seamlessRecoveryBounceDelaySec = seamlessRecoveryBounceDelaySec,
         isLiveUpdatesEnabled = isLiveUpdatesEnabled,
+        isNotificationOriginEnabled = isNotificationOriginEnabled,
+        isNotificationTransferEnabled = isNotificationTransferEnabled,
+        isNotificationRecoveryEnabled = isNotificationRecoveryEnabled,
+        isNotificationFailureTintEnabled = isNotificationFailureTintEnabled,
     )
 
 fun Domain.toEntity(): Entity =
@@ -48,4 +52,8 @@ fun Domain.toEntity(): Entity =
         seamlessRecoveryEnabled = seamlessRecoveryEnabled,
         seamlessRecoveryBounceDelaySec = seamlessRecoveryBounceDelaySec,
         isLiveUpdatesEnabled = isLiveUpdatesEnabled,
+        isNotificationOriginEnabled = isNotificationOriginEnabled,
+        isNotificationTransferEnabled = isNotificationTransferEnabled,
+        isNotificationRecoveryEnabled = isNotificationRecoveryEnabled,
+        isNotificationFailureTintEnabled = isNotificationFailureTintEnabled,
     )

@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 39,
-    "identityHash": "f3ae334305f24610c80579d08384a6b3",
+    "identityHash": "95beface5b2527377d3370b53792d16a",
     "entities": [
       {
         "tableName": "tunnel_config",
@@ -177,7 +177,7 @@
       },
       {
         "tableName": "general_settings",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `is_shortcuts_enabled` INTEGER NOT NULL DEFAULT 0, `is_restore_on_boot_enabled` INTEGER NOT NULL DEFAULT 0, `is_multi_tunnel_enabled` INTEGER NOT NULL DEFAULT 0, `global_split_tunnel_enabled` INTEGER NOT NULL DEFAULT 0, `app_mode` INTEGER NOT NULL DEFAULT 0, `theme` TEXT NOT NULL DEFAULT 'AUTOMATIC', `locale` TEXT, `remote_key` TEXT, `is_remote_control_enabled` INTEGER NOT NULL DEFAULT 0, `is_pin_lock_enabled` INTEGER NOT NULL DEFAULT 0, `is_always_on_vpn_enabled` INTEGER NOT NULL DEFAULT 0, `already_donated` INTEGER NOT NULL DEFAULT 0, `screen_recording_security` INTEGER NOT NULL DEFAULT 1, `global_amnezia_enabled` INTEGER NOT NULL DEFAULT 0, `tunnel_scripting_enabled` INTEGER NOT NULL DEFAULT 0, `seamless_recovery` INTEGER NOT NULL DEFAULT 1, `seamless_recovery_bounce_delay_sec` INTEGER NOT NULL DEFAULT 30, `live_updates_enabled` INTEGER NOT NULL DEFAULT 1)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `is_shortcuts_enabled` INTEGER NOT NULL DEFAULT 0, `is_restore_on_boot_enabled` INTEGER NOT NULL DEFAULT 0, `is_multi_tunnel_enabled` INTEGER NOT NULL DEFAULT 0, `global_split_tunnel_enabled` INTEGER NOT NULL DEFAULT 0, `app_mode` INTEGER NOT NULL DEFAULT 0, `theme` TEXT NOT NULL DEFAULT 'AUTOMATIC', `locale` TEXT, `remote_key` TEXT, `is_remote_control_enabled` INTEGER NOT NULL DEFAULT 0, `is_pin_lock_enabled` INTEGER NOT NULL DEFAULT 0, `is_always_on_vpn_enabled` INTEGER NOT NULL DEFAULT 0, `already_donated` INTEGER NOT NULL DEFAULT 0, `screen_recording_security` INTEGER NOT NULL DEFAULT 1, `global_amnezia_enabled` INTEGER NOT NULL DEFAULT 0, `tunnel_scripting_enabled` INTEGER NOT NULL DEFAULT 0, `seamless_recovery` INTEGER NOT NULL DEFAULT 1, `seamless_recovery_bounce_delay_sec` INTEGER NOT NULL DEFAULT 30, `live_updates_enabled` INTEGER NOT NULL DEFAULT 0, `notification_show_origin` INTEGER NOT NULL DEFAULT 0, `notification_show_transfer` INTEGER NOT NULL DEFAULT 0, `notification_show_recovery` INTEGER NOT NULL DEFAULT 0, `notification_failure_tint` INTEGER NOT NULL DEFAULT 0)",
         "fields": [
           {
             "fieldPath": "id",
@@ -305,7 +305,35 @@
             "columnName": "live_updates_enabled",
             "affinity": "INTEGER",
             "notNull": true,
-            "defaultValue": "1"
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "isNotificationOriginEnabled",
+            "columnName": "notification_show_origin",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "isNotificationTransferEnabled",
+            "columnName": "notification_show_transfer",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "isNotificationRecoveryEnabled",
+            "columnName": "notification_show_recovery",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "isNotificationFailureTintEnabled",
+            "columnName": "notification_failure_tint",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
           }
         ],
         "primaryKey": {
@@ -580,7 +608,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f3ae334305f24610c80579d08384a6b3')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '95beface5b2527377d3370b53792d16a')"
     ]
   }
 }

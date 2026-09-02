@@ -480,8 +480,6 @@
     <string name="error_config_missing_dns">Al túnel %1$s le faltan los servidores DNS necesarios para la configuración actual de la aplicación</string>
     <string name="live_updates">Actualizaciones en directo</string>
     <string name="live_updates_desc">Muestra el progreso y el estado de la conexión del túnel activo en la barra de estado y en la pantalla de bloqueo. Se aplica cuando hay un solo túnel en ejecución</string>
-    <string name="notification_vpn_connected_title">VPN conectada: %1$s</string>
-    <string name="notification_proxy_connected_title">Proxy conectado: %1$s</string>
     <string name="notification_connection_manual">Conexión manual</string>
     <string name="notification_connection_auto">Túnel automático</string>
 </resources>

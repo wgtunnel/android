@@ -455,8 +455,6 @@
     <string name="error_config_missing_dns">Für Tunnel %1$s fehlen DNS-Server, die für Ihre aktuelle Konfiguration erforderlich sind</string>
     <string name="live_updates">Live-Updates</string>
     <string name="live_updates_desc">Zeigt Verbindungsfortschritt und -status des aktiven Tunnels in der Statusleiste und auf dem Sperrbildschirm an. Gilt, wenn nur ein Tunnel läuft</string>
-    <string name="notification_vpn_connected_title">VPN verbunden: %1$s</string>
-    <string name="notification_proxy_connected_title">Proxy verbunden: %1$s</string>
     <string name="notification_connection_manual">Manuelle Verbindung</string>
     <string name="notification_connection_auto">Auto-Tunnel</string>
 </resources>

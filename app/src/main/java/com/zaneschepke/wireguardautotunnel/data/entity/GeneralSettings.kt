@@ -38,6 +38,14 @@ data class GeneralSettings(
     val seamlessRecoveryEnabled: Boolean = true,
     @ColumnInfo(name = "seamless_recovery_bounce_delay_sec", defaultValue = "30")
     val seamlessRecoveryBounceDelaySec: Int = 30,
-    @ColumnInfo(name = "live_updates_enabled", defaultValue = "1")
-    val isLiveUpdatesEnabled: Boolean = true,
+    @ColumnInfo(name = "live_updates_enabled", defaultValue = "0")
+    val isLiveUpdatesEnabled: Boolean = false,
+    @ColumnInfo(name = "notification_show_origin", defaultValue = "0")
+    val isNotificationOriginEnabled: Boolean = false,
+    @ColumnInfo(name = "notification_show_transfer", defaultValue = "0")
+    val isNotificationTransferEnabled: Boolean = false,
+    @ColumnInfo(name = "notification_show_recovery", defaultValue = "0")
+    val isNotificationRecoveryEnabled: Boolean = false,
+    @ColumnInfo(name = "notification_failure_tint", defaultValue = "0")
+    val isNotificationFailureTintEnabled: Boolean = false,
 )

@@ -9,4 +9,8 @@ data class TunnelNotificationLine(
     val displayState: DisplayTunnelState,
     val startedAtMillis: Long?,
     val origin: TunnelActionSource?,
+    val rxBytes: Long = 0L,
+    val txBytes: Long = 0L,
+    val recoveryAttempts: Int = 0,
+    val lockdown: Boolean = false,
 )

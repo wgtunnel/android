@@ -115,6 +115,7 @@ import com.zaneschepke.wireguardautotunnel.ui.screens.settings.SettingsScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.appearance.AppearanceScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.appearance.display.DisplayScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.appearance.language.LanguageScreen
+import com.zaneschepke.wireguardautotunnel.ui.screens.settings.appearance.notifications.NotificationsScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.dns.DnsSettingsScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.globals.TunnelGlobalsScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.integrations.AndroidIntegrationsScreen
@@ -685,6 +686,7 @@ class MainActivity : AppCompatActivity() {
                                                 entry<Route.Appearance> { AppearanceScreen() }
                                                 entry<Route.Language> { LanguageScreen() }
                                                 entry<Route.Display> { DisplayScreen() }
+                                                entry<Route.Notifications> { NotificationsScreen() }
                                                 entry<Route.Logs> { LogsScreen() }
                                                 entry<Route.Support> { SupportScreen() }
                                                 entry<Route.License> { LicenseScreen() }
