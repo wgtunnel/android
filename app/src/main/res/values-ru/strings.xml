@@ -493,4 +493,21 @@
     <string name="transit_dns_allow">Разрешить</string>
     <string name="error_config_missing_dns">В туннеле %1$s отсутствуют DNS-серверы, необходимые для вашего приложения</string>
     <string name="active_tunnel_updated">Активный туннель обновлён</string>
+    <string name="display">Отображение</string>
+    <string name="live_updates">Постоянное уведомление</string>
+    <string name="live_updates_desc">Закрепить уведомление туннеля в строке состояния</string>
+    <string name="notification_connection_manual">Вручную</string>
+    <string name="notification_connection_auto">Автотуннелирование</string>
+    <string name="notification_show_origin">Источник подключения</string>
+    <string name="notification_show_origin_desc">Показывать, запущен туннель вручную или автотуннелированием</string>
+    <string name="notification_show_transfer">Статистика передачи</string>
+    <string name="notification_show_transfer_desc">Показывать полученный и отправленный трафик в уведомлении туннеля</string>
+    <string name="notification_show_recovery">Попытки восстановления</string>
+    <string name="notification_show_recovery_desc">Показывать попытки восстановления в уведомлении туннеля</string>
+    <string name="notification_status_format">Статус: %1$s</string>
+    <string name="notification_source_format">Источник: %1$s</string>
+    <string name="notification_transfer_format">Передача: ↓ %1$s  ↑ %2$s</string>
+    <string name="notification_recovery_format">Попытки восстановления: %1$d</string>
+    <string name="notification_failure_tint">Предупреждение подключения</string>
+    <string name="notification_failure_tint_desc">Окрашивать значок уведомления, когда в туннеле происходит сбой подключения</string>
 </resources>
