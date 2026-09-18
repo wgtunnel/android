@@ -356,6 +356,10 @@
     <string name="tunnel_state_starting">Uruchamianie</string>
     <string name="status_template">stan: %1$s</string>
     <string name="uptime_template">czas pracy: %1$s</string>
+    <string name="socks5_proxy_template">serwer proxy socks5: %1$s</string>
+    <string name="socks5_proxy_protected_template">serwer proxy socks5: %1$s (zabezpieczony hasłami)</string>
+    <string name="http_proxy_template">serwer proxy http: %1$s</string>
+    <string name="http_proxy_protected_template">serwer proxy http: %1$s (zabezpieczony hasłami)</string>
     <string name="peer_template">peer: %1$s</string>
     <string name="handshake_template">wymiana potwierdzeń: %1$s</string>
     <!-- Notification formatting -->
