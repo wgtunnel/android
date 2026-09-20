@@ -297,6 +297,7 @@ class TunnelCoordinator(
                 replaceLastActiveTunnelIds(
                     tunnelProvider.backendStatus.value.activeTunnels.keys + tunnelConfig.id
                 )
+                appStateRepository.setLastActiveTunnelName(tunnelConfig.name)
             }
             .onFailure {
                 Timber.e(it)
