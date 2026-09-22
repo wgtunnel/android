@@ -356,6 +356,10 @@
     <string name="tunnel_state_starting">запуск</string>
     <string name="status_template">статус: %1$s</string>
     <string name="uptime_template">работает: %1$s</string>
+    <string name="socks5_proxy_template">socks5-прокси: %1$s</string>
+    <string name="socks5_proxy_protected_template">socks5-прокси: %1$s (с паролем)</string>
+    <string name="http_proxy_template">http-прокси: %1$s</string>
+    <string name="http_proxy_protected_template">http-прокси: %1$s (с паролем)</string>
     <string name="peer_template">узел: %1$s</string>
     <string name="handshake_template">подключение: %1$s</string>
     <!-- Notification formatting -->
