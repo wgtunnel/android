@@ -9,15 +9,12 @@ import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppStateRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
-import org.koin.java.KoinJavaComponent.inject
-import kotlin.getValue
 
 class DynamicShortcutManager(
     private val context: Context,
     private val ioDispatcher: CoroutineDispatcher,
+    private val appStateRepository: AppStateRepository,
 ) : ShortcutManager {
-
-    private val appStateRepository: AppStateRepository by inject(AppStateRepository::class.java)
 
     override suspend fun addShortcuts() {
         withContext(ioDispatcher) {
