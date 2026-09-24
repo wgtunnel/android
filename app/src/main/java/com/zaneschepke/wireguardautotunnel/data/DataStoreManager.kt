@@ -30,6 +30,7 @@ class DataStoreManager(
             booleanPreferencesKey("NOTIFICATION_PERMISSION_REQUESTED")
         val shouldShowDonationSnackbar = booleanPreferencesKey("SHOW_DONATION_SNACK")
         val lastActiveTunnelIds = stringPreferencesKey("LAST_ACTIVE_TUNNEL_IDS")
+        val lastActiveTunnelName = stringPreferencesKey("LAST_ACTIVE_TUNNEL_NAME")
     }
 
     suspend fun init() {
