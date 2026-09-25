@@ -226,6 +226,13 @@ class AndroidTunnelNotificationService(private val notificationService: Notifica
         )
     }
 
+    override fun showUnreachableStop(tunnelName: String) {
+        showEvent(
+            title = "${context.getString(R.string.stop_on_unreachable)} • $tunnelName",
+            message = context.getString(R.string.notification_tunnel_stopped_unreachable),
+        )
+    }
+
     override fun showVpnRequired() {
         showError(notificationService.context.getString(R.string.vpn_permission_required))
     }

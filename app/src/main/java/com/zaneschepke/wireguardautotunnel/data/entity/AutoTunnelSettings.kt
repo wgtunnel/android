@@ -22,6 +22,8 @@ data class AutoTunnelSettings(
     val isWildcardsEnabled: Boolean = false,
     @ColumnInfo(name = "is_stop_on_no_internet_enabled", defaultValue = "0")
     val isStopOnNoInternetEnabled: Boolean = false,
+    @ColumnInfo(name = "is_stop_on_unreachable_enabled", defaultValue = "0")
+    val isStopOnUnreachableEnabled: Boolean = false,
     @ColumnInfo(name = "is_tunnel_on_unsecure_enabled", defaultValue = "0")
     val isTunnelOnUnsecureEnabled: Boolean = false,
     @ColumnInfo(name = "wifi_detection_method", defaultValue = "0")

@@ -204,13 +204,15 @@ class TunnelCoordinator(
         startTunnelInternal(config, source)
     }
 
-    suspend fun stopTunnel(id: Int, source: TunnelActionSource = TunnelActionSource.USER) =
-        tunnelMutex.withLock {
-            if (source == TunnelActionSource.USER) {
-                _userOverrideFlow.tryEmit(Unit)
-            }
-            stopTunnelInternal(id, source)
+    suspend fun stopTunnel(
+        id: Int,
+        source: TunnelActionSource = TunnelActionSource.USER,
+    ): Result<Unit> = tunnelMutex.withLock {
+        if (source == TunnelActionSource.USER) {
+            _userOverrideFlow.tryEmit(Unit)
         }
+        stopTunnelInternal(id, source)
+    }
 
     suspend fun stopActiveTunnels(source: TunnelActionSource = TunnelActionSource.USER) =
         tunnelMutex.withLock {
@@ -377,7 +379,10 @@ class TunnelCoordinator(
             tunnelsToStart.forEach { startTunnelInternal(it, source) }
         }
 
-    private suspend fun stopTunnelInternal(id: Int, source: TunnelActionSource) {
+    private suspend fun stopTunnelInternal(
+        id: Int,
+        source: TunnelActionSource,
+    ): Result<Unit> =
         tunnelProvider
             .stopTunnel(id)
             .onSuccess {
@@ -387,7 +392,6 @@ class TunnelCoordinator(
                 )
             }
             .onFailure { _errors.emit(TunnelErrorEvent.from(it, id)) }
-    }
 
     private suspend fun stopActiveTunnelsInternal(
         source: TunnelActionSource = TunnelActionSource.USER,

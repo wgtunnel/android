@@ -1,21 +1,26 @@
 package com.zaneschepke.wireguardautotunnel.service.autotunnel
 
 import android.content.Intent
+import android.provider.Settings
 import androidx.core.app.ServiceCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
+import com.wgtunnel.backend.state.BackendStatus
 import com.zaneschepke.networkmonitor.ActiveNetwork
 import com.zaneschepke.networkmonitor.AndroidNetworkMonitor
 import com.zaneschepke.networkmonitor.StableNetworkEngine
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.core.orchestration.TunnelCoordinator
+import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelOriginHolder
 import com.zaneschepke.wireguardautotunnel.di.Dispatcher
 import com.zaneschepke.wireguardautotunnel.domain.enums.NotificationAction
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelActionSource
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelMode
 import com.zaneschepke.wireguardautotunnel.domain.events.AutoTunnelEvent
 import com.zaneschepke.wireguardautotunnel.domain.model.AutoTunnelSettings
+import com.zaneschepke.wireguardautotunnel.domain.model.GeneralSettings
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
+import com.zaneschepke.wireguardautotunnel.domain.policy.StopOnUnreachablePolicy
 import com.zaneschepke.wireguardautotunnel.domain.repository.AutoTunnelSettingsRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
@@ -23,6 +28,7 @@ import com.zaneschepke.wireguardautotunnel.domain.state.AutoTunnelState
 import com.zaneschepke.wireguardautotunnel.domain.state.toDomain
 import com.zaneschepke.wireguardautotunnel.notification.AndroidNotificationService
 import com.zaneschepke.wireguardautotunnel.notification.NotificationService
+import com.zaneschepke.wireguardautotunnel.notification.TunnelNotificationService
 import com.zaneschepke.wireguardautotunnel.service.tile.AutoTunnelTileRefresher
 import com.zaneschepke.wireguardautotunnel.util.Constants
 import com.zaneschepke.wireguardautotunnel.util.extensions.debounceFalling
@@ -33,6 +39,7 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
@@ -40,7 +47,9 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.plus
 import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -66,7 +75,24 @@ class AutoTunnelService : LifecycleService() {
     private val settingsRepository: GeneralSettingRepository by inject()
     private val tunnelsRepository: TunnelRepository by inject()
     private val tunnelCoordinator: TunnelCoordinator by inject()
+    private val tunnelOriginHolder: TunnelOriginHolder by inject()
+    private val tunnelNotificationService: TunnelNotificationService by inject()
     private var noInternetStopJob: Job? = null
+    private val ioScope by lazy { lifecycleScope + ioDispatcher }
+
+    private val unreachableMonitor by lazy {
+        UnreachableTunnelMonitor(
+            scope = ioScope,
+            stopTunnel = { id ->
+                Timber.i("Stopping unreachable tunnel $id")
+                tunnelCoordinator.stopTunnel(id, TunnelActionSource.AUTO_TUNNEL)
+            },
+            onStopped = { id ->
+                val name = tunnelsRepository.getById(id)?.name ?: id.toString()
+                tunnelNotificationService.showUnreachableStop(name)
+            },
+        )
+    }
 
     private data class PermissionWarningState(
         val detectionMethod: AndroidNetworkMonitor.WifiDetectionMethod,
@@ -137,6 +163,11 @@ class AutoTunnelService : LifecycleService() {
                 )
             }
             .distinctUntilChanged()
+            .shareIn(
+                scope = ioScope,
+                started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5_000L),
+                replay = 1,
+            )
     }
 
     override fun onCreate() {
@@ -167,6 +198,7 @@ class AutoTunnelService : LifecycleService() {
                     launch { runAutoTunnelStateJob() }
                     launch { runLocationPermissionsNotificationJob() }
                     launch { runUserOverrideJob() }
+                    launch { runUnreachableJob() }
                 }
             }
         }
@@ -270,27 +302,56 @@ class AutoTunnelService : LifecycleService() {
     private suspend fun runAutoTunnelStateJob() {
         // Add startup settle to prevent flapping after OS kill
         var hasSettled = false
-        autoTunnelStateFlow.collectLatest { state ->
-            if (!hasSettled) {
-                delay(STARTUP_SETTLE_MS)
-                hasSettled = true
+        combine(autoTunnelStateFlow, unreachableMonitor.suspended) { state, suspended ->
+                state to suspended
             }
-            reconciliationMutex.withLock {
-                lastConfirmedHasUsableNetwork = state.confirmedHasUsableNetwork
-                updateFingerprintIfNeeded(state)
-                val rawEvent = engine.evaluate(state)
-                val event = applyOverrides(rawEvent)
-                Timber.d("AutoTunnel reconciliation event: $event")
-                handleAutoTunnelEvent(event)
+            .collectLatest { (state, suspended) ->
+                if (!hasSettled) {
+                    delay(STARTUP_SETTLE_MS)
+                    hasSettled = true
+                }
+                reconciliationMutex.withLock {
+                    lastConfirmedHasUsableNetwork = state.confirmedHasUsableNetwork
+                    updateFingerprintIfNeeded(state)
+                    val rawEvent = engine.evaluate(state)
+                    val event = applyOverrides(rawEvent).withoutSuspendedStarts(suspended)
+                    Timber.d("AutoTunnel reconciliation event: $event")
+                    handleAutoTunnelEvent(event)
+                }
             }
-        }
     }
 
+    // Only Auto-Tunnel's own tunnels are stopped; manually started ones are left alone.
+    private suspend fun runUnreachableJob() {
+        combine(
+                autoTunnelStateFlow,
+                tunnelCoordinator.backendStatus,
+                tunnelOriginHolder.origins,
+                settingsRepository.flow,
+            ) { state, status, origins, general ->
+                buildUnreachableTunnelSnapshot(
+                    state = state,
+                    status = status,
+                    origins = origins,
+                    general = general,
+                    androidVpnLockdown = isAndroidVpnLockdown(),
+                )
+            }
+            .distinctUntilChanged()
+            .collect(unreachableMonitor::update)
+    }
+
+    // always_on_vpn_lockdown is a hidden setting, so this is best effort; unreadable counts as on.
+    private fun isAndroidVpnLockdown(): Boolean =
+        try {
+            Settings.Secure.getInt(contentResolver, ALWAYS_ON_VPN_LOCKDOWN, 0) == 1
+        } catch (e: SecurityException) {
+            Timber.w(e, "Unable to read always-on VPN lockdown setting")
+            true
+        }
+
     private fun updateFingerprintIfNeeded(state: AutoTunnelState) {
-        val needsBSSIDAwareness =
-            state.settings.trustedNetworkBSSIDs.isNotEmpty() ||
-                state.tunnels.any { it.tunnelBSSIDs.isNotEmpty() }
-        val networkKey = state.networkState.activeNetwork.key(needsBSSIDAwareness)
+        val networkKey = state.networkKey()
 
         if (lastNetworkKey != networkKey) {
             if (hasUserOverride) {
@@ -416,5 +477,52 @@ class AutoTunnelService : LifecycleService() {
         private const val NO_INTERNET_CONFIRM_MS = 8_000L
         private const val STARTUP_SETTLE_MS = 2_000L
         private const val NETWORK_IDENTITY_SETTLE_MS = 500L
+        private const val ALWAYS_ON_VPN_LOCKDOWN = "always_on_vpn_lockdown"
     }
+}
+
+internal fun buildUnreachableTunnelSnapshot(
+    state: AutoTunnelState,
+    status: BackendStatus,
+    origins: Map<Int, TunnelActionSource>,
+    general: GeneralSettings,
+    androidVpnLockdown: Boolean,
+): UnreachableTunnelSnapshot {
+    val hasUsableNetwork = state.confirmedHasUsableNetwork
+    val autoStarted =
+        status.activeTunnels.filterKeys { origins[it] == TunnelActionSource.AUTO_TUNNEL }
+    val tunnelsById = state.tunnels.associateBy(TunnelConfig::id)
+
+    return UnreachableTunnelSnapshot(
+        // Stopping the tunnel under lockdown would block all traffic instead.
+        enabled =
+            state.settings.isAutoTunnelEnabled &&
+                state.settings.isStopOnUnreachableEnabled &&
+                state.tunnelMode != TunnelMode.LOCK_DOWN &&
+                !status.killSwitch.enabled &&
+                !androidVpnLockdown,
+        networkKey = state.networkKey(),
+        armFailureGracePeriodsMs =
+            autoStarted
+                .filterValues { it.shouldArmFailureRecovery(hasUsableNetwork) }
+                .mapValues { (id, _) ->
+                    StopOnUnreachablePolicy.gracePeriodMs(tunnelsById[id], general)
+                },
+        keepFailureIds =
+            autoStarted.filterValues { it.shouldKeepFailureRecoveryEpisode(hasUsableNetwork) }.keys,
+        connectedIds = status.activeTunnels.filterValues { it.isTransportHealthy() }.keys,
+    )
+}
+
+internal fun AutoTunnelEvent.withoutSuspendedStarts(suspended: Set<Int>): AutoTunnelEvent {
+    if (this !is AutoTunnelEvent.Sync) return this
+    // Sync is an atomic replacement in the current single-tunnel design. If its replacement is
+    // cooling down, retaining only the stop would tear down the working tunnel.
+    return if (start.any { it.id in suspended }) AutoTunnelEvent.DoNothing else this
+}
+
+private fun AutoTunnelState.networkKey(): String {
+    val needsBSSIDAwareness =
+        settings.trustedNetworkBSSIDs.isNotEmpty() || tunnels.any { it.tunnelBSSIDs.isNotEmpty() }
+    return networkState.activeNetwork.key(needsBSSIDAwareness)
 }

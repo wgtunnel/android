@@ -128,6 +128,7 @@
     <string name="local_logging">Local logging</string>
     <string name="add_from_clipboard">Add from clipboard</string>
     <string name="stop_on_no_internet">Stop on no network</string>
+    <string name="stop_on_unreachable">Stop when server is unreachable</string>
     <string name="native_kill_switch">Native kill switch</string>
     <string name="allow_lan_traffic">Allow LAN traffic</string>
     <string name="bypass_lan_for_kill_switch">Bypass LAN for kill switch</string>
@@ -530,6 +531,8 @@
     <string name="lockdown_desc">Permanent kill switch that blocks all non-tunnel traffic</string>
     <string name="vpn_desc">Standard system-wide VPN mode</string>
     <string name="stop_on_no_internet_desc">Stop the tunnel when the device has no network connection</string>
+    <string name="stop_on_unreachable_desc">After WireGuard reports a server unreachable, allow configured recovery attempts for up to %1$d seconds, then stop a tunnel started by Auto-Tunnel so normal Internet and DNS keep working. Auto-Tunnel tries again after %2$d minutes. Stopping is skipped while a kill switch or VPN lockdown is active.</string>
+    <string name="notification_tunnel_stopped_unreachable">Tunnel stopped because the server is unreachable</string>
     <string name="start_on_boot_desc">Start auto-tunnel automatically on boot</string>
     <string name="local_logging_desc">Local log storage with live viewer</string>
     <string name="tunnel_globals_desc">Global configuration overrides for all tunnels</string>
