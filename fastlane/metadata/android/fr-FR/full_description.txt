@@ -6,8 +6,9 @@ Fonctionnalités :
 - **Tunneling automatique :** activez automatiquement des tunnels en fonction du SSID Wi-Fi, des connexions Ethernet ou des réseaux de données mobiles.
 - **Initialisation différée des points de terminaison :** résout les points de terminaison et met à jour les pairs en toute sécurité une fois le tunnel actif, pour une meilleure fiabilité et une protection contre les fuites au démarrage.
 - **Suivi de la négociation :** surveillance en temps réel de la négociation (handshake) pour un retour instantané sur l’état du tunnel.
-- **Intégration AmneziaWG :** prise en charge complète d'AmneziaWG, offrant une contournement efficace de la censure.
+- **Prise en charge d'AmneziaWG :** prise en charge complète d'AmneziaWG 2.0 à 3.1, offrant une protection robuste contre la censure.
 - **Split Tunneling :** prise en charge flexible du routage d'applications ou de trafic spécifiques via le VPN.
+- **DNS fractionné et chiffré :** résolution DNS via le tunnel en DNS en clair, DoT ou DoH, avec répartition facultative par suffixe de domaine (tunnel ou système).
 - **Options de proxy :** prise en charge intégrée des proxys HTTP et SOCKS5 permettant aux applications tierces de tunneler leur trafic.
 - **Modes d'application :** prise en charge de plusieurs modes de tunnel, notamment les modes VPN standard, noyau, verrouillage (kill switch personnalisé) et proxy.
 - **Commandes rapides :** vignette Paramètres rapides et raccourcis sur l'écran d'accueil pour des actions faciles à activer.
