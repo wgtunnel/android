@@ -206,6 +206,7 @@
     <string name="sort">Sortuj</string>
     <string name="sort_by_latency">Sortuj według opóźnienia</string>
     <string name="pinging_servers">Pingowanie serwerów…</string>
+    <string name="ping_unreachable">nieosiągalny</string>
     <string name="drag_handle">Uchwyt do przeciągania</string>
     <string name="move_up">Przesuń w górę</string>
     <string name="move_down">Przesuń w dół</string>
@@ -529,4 +530,28 @@
     <string name="notification_recovery_format">Próby odzyskania: %1$d</string>
     <string name="notification_failure_tint">Ostrzeżenie o uzgadnianiu</string>
     <string name="notification_failure_tint_desc">Przyciemnij ikonę powiadomień, gdy tunel ma błąd uzgadniania</string>
+    <string name="add_group">Dodaj grupę</string>
+    <string name="group_name">Nazwa grupy</string>
+    <string name="rename_group">Zmień nazwę grupy</string>
+    <string name="delete_group">Usuń grupę</string>
+    <string name="delete_group_message">Tunele w tej grupie nie będą pogrupowane.</string>
+    <string name="delete_group_and_tunnels">Usuń grupę i tunele</string>
+    <string name="delete_group_and_tunnels_message">Spowoduje to usunięcie grupy i wszystkich tuneli wewnątrz niej.</string>
+    <string name="export_group">Eksportuj grupę</string>
+    <string name="move_to_group">Przenieś do grupy</string>
+    <string name="ungroup">Rozgrupuj</string>
+    <string name="reorder">Zmień kolejność</string>
+    <string name="expand_group">Rozwiń grupę</string>
+    <string name="collapse_group">Zwiń grupę</string>
+    <string name="group_with_count">%1$s (%2$d)</string>
+    <string name="group_active_count">Aktywne: %1$d</string>
+    <string name="add_group_ellipsis">Dodaj grupę…</string>
+    <string name="no_tunnels_in_group">Ta grupa nie ma tuneli do eksportu</string>
+    <string name="n_selected">Wybrano: %d</string>
+    <plurals name="group_tunnel_count">
+        <item quantity="one">%d tunel</item>
+        <item quantity="few">%d tunele</item>
+        <item quantity="many">%d tuneli</item>
+        <item quantity="other">%d tuneli</item>
+    </plurals>
 </resources>
