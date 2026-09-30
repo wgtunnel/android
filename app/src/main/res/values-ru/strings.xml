@@ -206,6 +206,7 @@
     <string name="sort">Сортировка</string>
     <string name="sort_by_latency">Сортировка по задержке</string>
     <string name="pinging_servers">Проверка отклика серверов…</string>
+    <string name="ping_unreachable">недоступен</string>
     <string name="drag_handle">Перетаскивание</string>
     <string name="move_up">Переместить вверх</string>
     <string name="move_down">Переместить вниз</string>
@@ -529,4 +530,28 @@
     <string name="notification_recovery_format">Попытки восстановления: %1$d</string>
     <string name="notification_failure_tint">Предупреждение подключения</string>
     <string name="notification_failure_tint_desc">Окрашивать значок уведомления, когда в туннеле происходит сбой подключения</string>
+    <string name="add_group">Добавить группу</string>
+    <string name="group_name">Имя группы</string>
+    <string name="rename_group">Переименовать группу</string>
+    <string name="delete_group">Удалить группу</string>
+    <string name="delete_group_message">Туннели из этой группы будут разгруппированы.</string>
+    <string name="delete_group_and_tunnels">Удалить группу и туннели</string>
+    <string name="delete_group_and_tunnels_message">Будет удалена группа и все туннели в ней.</string>
+    <string name="export_group">Экспорт группы</string>
+    <string name="move_to_group">Переместить в группу</string>
+    <string name="ungroup">Разгруппировать</string>
+    <string name="reorder">Упорядочить</string>
+    <string name="expand_group">Развернуть группу</string>
+    <string name="collapse_group">Свернуть группу</string>
+    <string name="group_with_count">%1$s (%2$d)</string>
+    <string name="group_active_count">Активно: %1$d</string>
+    <string name="add_group_ellipsis">Добавить группу…</string>
+    <string name="no_tunnels_in_group">В группе нет туннелей для экспорта</string>
+    <string name="n_selected">Выбрано: %d</string>
+    <plurals name="group_tunnel_count">
+        <item quantity="one">%d туннель</item>
+        <item quantity="few">%d туннеля</item>
+        <item quantity="many">%d туннелей</item>
+        <item quantity="other">%d туннелей</item>
+    </plurals>
 </resources>
