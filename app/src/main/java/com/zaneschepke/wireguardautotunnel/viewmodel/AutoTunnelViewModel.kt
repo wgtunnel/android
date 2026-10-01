@@ -13,6 +13,7 @@ import com.zaneschepke.wireguardautotunnel.domain.enums.WifiDetectionMethod
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppStateRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.AutoTunnelSettingsRepository
+import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.GlobalEffectRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.domain.sideeffect.GlobalSideEffect
@@ -32,6 +33,7 @@ import rikka.shizuku.Shizuku
 
 class AutoTunnelViewModel(
     private val autoTunnelRepository: AutoTunnelSettingsRepository,
+    private val generalSettingRepository: GeneralSettingRepository,
     private val serviceManager: ServiceManager,
     private val stableNetworkEngine: StableNetworkEngine,
     networkMonitor: NetworkMonitor,
@@ -57,13 +59,15 @@ class AutoTunnelViewModel(
                 combine(
                         stableNetworkEngine.stableState.mapNotNull { it?.state },
                         autoTunnelRepository.flow,
+                        generalSettingRepository.flow,
                         tunnelsRepository.userTunnelsFlow,
                         autoTunnelStateHolder.active,
-                    ) { connectivity, autoTunnel, tunnels, active ->
+                    ) { connectivity, autoTunnel, general, tunnels, active ->
                         state.copy(
                             autoTunnelActive = active,
                             connectivityState = connectivity,
                             autoTunnelSettings = autoTunnel,
+                            generalSettings = general,
                             tunnels = tunnels,
                             isLoading = false,
                         )
@@ -131,6 +135,10 @@ class AutoTunnelViewModel(
 
     fun setStopOnNoInternetEnabled(to: Boolean) = intent {
         autoTunnelRepository.upsert(state.autoTunnelSettings.copy(isStopOnNoInternetEnabled = to))
+    }
+
+    fun setStopOnUnreachableEnabled(to: Boolean) = intent {
+        autoTunnelRepository.upsert(state.autoTunnelSettings.copy(isStopOnUnreachableEnabled = to))
     }
 
     fun saveTrustedNetworkName(name: String) = intent {

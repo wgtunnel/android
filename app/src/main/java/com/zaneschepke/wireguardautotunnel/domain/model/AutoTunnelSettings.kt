@@ -11,6 +11,7 @@ data class AutoTunnelSettings(
     val isTunnelOnWifiEnabled: Boolean = false,
     val isWildcardsEnabled: Boolean = false,
     val isStopOnNoInternetEnabled: Boolean = false,
+    val isStopOnUnreachableEnabled: Boolean = false,
     val isTunnelOnUnsecureEnabled: Boolean = false,
     val wifiDetectionMethod: WifiDetectionMethod = WifiDetectionMethod.fromValue(0),
     val startOnBoot: Boolean = false,
