@@ -6,13 +6,16 @@ import androidx.core.content.pm.ShortcutInfoCompat
 import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.core.graphics.drawable.IconCompat
 import com.zaneschepke.wireguardautotunnel.R
+import com.zaneschepke.wireguardautotunnel.domain.repository.AppStateRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 
 class DynamicShortcutManager(
     private val context: Context,
     private val ioDispatcher: CoroutineDispatcher,
+    private val appStateRepository: AppStateRepository,
 ) : ShortcutManager {
+
     override suspend fun addShortcuts() {
         withContext(ioDispatcher) {
             ShortcutManagerCompat.setDynamicShortcuts(context, createShortcuts())
@@ -25,7 +28,9 @@ class DynamicShortcutManager(
         }
     }
 
-    private fun createShortcuts(): List<ShortcutInfoCompat> {
+    private suspend fun createShortcuts(): List<ShortcutInfoCompat> {
+        val lastActiveTunnelName = appStateRepository.getLastActiveTunnelName()
+
         return listOf(
             buildShortcut(
                 context.getString(R.string.vpn_off),
@@ -45,6 +50,7 @@ class DynamicShortcutManager(
                 intent =
                     Intent(context, ShortcutsActivity::class.java).apply {
                         putExtra("className", "WireGuardTunnelService")
+                        putExtra(ShortcutContract.EXTRA_TUNNEL_NAME, lastActiveTunnelName)
                         action = ShortcutContract.Action.START.name
                     },
                 shortcutIcon = R.drawable.vpn_on,

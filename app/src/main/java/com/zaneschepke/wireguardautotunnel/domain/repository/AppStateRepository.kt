@@ -26,5 +26,9 @@ interface AppStateRepository {
 
     suspend fun clearLastActiveTunnelIds()
 
+    suspend fun getLastActiveTunnelName(): String?
+
+    suspend fun setLastActiveTunnelName(name: String)
+
     val flow: Flow<AppState>
 }

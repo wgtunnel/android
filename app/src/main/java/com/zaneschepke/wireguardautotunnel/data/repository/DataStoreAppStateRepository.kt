@@ -76,6 +76,15 @@ class DataStoreAppStateRepository(
         dataStoreManager.saveToDataStore(DataStoreManager.lastActiveTunnelIds, "")
     }
 
+    override suspend fun getLastActiveTunnelName(): String? {
+        return dataStoreManager.getFromStore(DataStoreManager.lastActiveTunnelName)
+    }
+
+    override suspend fun setLastActiveTunnelName(name: String) {
+        if (name.isEmpty()) return
+        dataStoreManager.saveToDataStore(DataStoreManager.lastActiveTunnelName, name)
+    }
+
     override val flow: Flow<Domain> =
         dataStoreManager.preferencesFlow
             .map { prefs ->
