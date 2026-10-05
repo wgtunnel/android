@@ -14,6 +14,7 @@ import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CheckCircle
+import androidx.compose.material.icons.outlined.CloudOff
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.PublicOff
 import androidx.compose.material.icons.outlined.RestartAlt
@@ -50,6 +51,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.zaneschepke.networkmonitor.ActiveNetwork
 import com.zaneschepke.networkmonitor.AndroidNetworkMonitor
 import com.zaneschepke.wireguardautotunnel.R
+import com.zaneschepke.wireguardautotunnel.domain.policy.StopOnUnreachablePolicy
 import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.common.banner.WarningBanner
@@ -387,6 +389,33 @@ fun AutoTunnelScreen(
                 onClick = {
                     viewModel.setStopOnNoInternetEnabled(
                         !uiState.autoTunnelSettings.isStopOnNoInternetEnabled
+                    )
+                },
+            )
+            SurfaceRow(
+                leading = { Icon(Icons.Outlined.CloudOff, contentDescription = null) },
+                title = stringResource(R.string.stop_on_unreachable),
+                description = {
+                    DescriptionText(
+                        stringResource(
+                            R.string.stop_on_unreachable_desc,
+                            StopOnUnreachablePolicy.maximumGracePeriodMs(
+                                uiState.tunnels,
+                                uiState.generalSettings,
+                            ) / 1_000,
+                            StopOnUnreachablePolicy.COOLDOWN_MS / 60_000,
+                        )
+                    )
+                },
+                trailing = {
+                    ThemedSwitch(
+                        checked = uiState.autoTunnelSettings.isStopOnUnreachableEnabled,
+                        onClick = { viewModel.setStopOnUnreachableEnabled(it) },
+                    )
+                },
+                onClick = {
+                    viewModel.setStopOnUnreachableEnabled(
+                        !uiState.autoTunnelSettings.isStopOnUnreachableEnabled
                     )
                 },
             )
