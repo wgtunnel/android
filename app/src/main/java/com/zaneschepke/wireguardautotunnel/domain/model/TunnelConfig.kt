@@ -25,6 +25,7 @@ data class TunnelConfig(
     val tunnelBSSIDs: List<String> = emptyList(),
     val isDDNSTunnel: Boolean = false,
     val groupId: Int? = null,
+    val entryTunnelId: Int? = null,
 ) {
 
     fun toSummary() = TunnelSummary(id = id, name = name)

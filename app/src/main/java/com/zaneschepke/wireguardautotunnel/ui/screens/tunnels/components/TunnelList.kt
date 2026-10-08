@@ -433,6 +433,18 @@ private fun ListRow(
                     )
                 },
                 title = tunnel.name,
+                description =
+                    tunnel.entryTunnelId
+                        ?.let { id -> uiState.tunnels.firstOrNull { it.id == id }?.name }
+                        ?.let { entryName ->
+                            {
+                                Text(
+                                    text = stringResource(R.string.via_entry, entryName),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.outline,
+                                )
+                            }
+                        },
                 onClick = {
                     when {
                         uiState.isReorderMode -> Unit

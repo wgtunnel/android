@@ -673,9 +673,7 @@ class AndroidNetworkMonitor(
         }
     }
 
-    /**
-     * Active tethered iface names from the sticky tethering broadcast.
-     */
+    /** Active tethered iface names from the sticky tethering broadcast. */
     private fun tetheredInterfaceNames(): Set<String> {
         val filter = IntentFilter(TETHER_STATE_CHANGED_ACTION)
         val intent =
@@ -690,7 +688,9 @@ class AndroidNetworkMonitor(
     }
 
     private fun stringListExtra(intent: Intent, key: String): List<String> {
-        intent.getStringArrayListExtra(key)?.let { return it }
+        intent.getStringArrayListExtra(key)?.let {
+            return it
+        }
         return intent.getStringArrayExtra(key)?.toList().orEmpty()
     }
 

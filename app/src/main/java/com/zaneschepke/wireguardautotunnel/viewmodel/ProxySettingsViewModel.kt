@@ -36,6 +36,7 @@ class ProxySettingsViewModel(
                             isLoading = false,
                             socks5Enabled = settings.socks5ProxyEnabled,
                             httpEnabled = settings.httpProxyEnabled,
+                            allowSocks4 = settings.allowSocks4,
                             socksBindAddress = settings.socks5ProxyBindAddress ?: "",
                             httpBindAddress = settings.httpProxyBindAddress ?: "",
                             proxyUsername = settings.proxyUsername ?: "",
@@ -52,14 +53,17 @@ class ProxySettingsViewModel(
         val current = state
 
         val updated =
-            current.proxySettings.copy(
-                socks5ProxyEnabled = current.socks5Enabled,
-                httpProxyEnabled = current.httpEnabled,
-                socks5ProxyBindAddress = current.socksBindAddress.ifBlank { null },
-                httpProxyBindAddress = current.httpBindAddress.ifBlank { null },
-                proxyUsername = current.proxyUsername.ifBlank { null },
-                proxyPassword = current.proxyPassword.ifBlank { null },
-            )
+            current.proxySettings
+                .copy(
+                    socks5ProxyEnabled = current.socks5Enabled,
+                    httpProxyEnabled = current.httpEnabled,
+                    allowSocks4 = current.allowSocks4,
+                    socks5ProxyBindAddress = current.socksBindAddress.ifBlank { null },
+                    httpProxyBindAddress = current.httpBindAddress.ifBlank { null },
+                    proxyUsername = current.proxyUsername.ifBlank { null },
+                    proxyPassword = current.proxyPassword.ifBlank { null },
+                )
+                .let { if (it.canAllowSocks4) it else it.copy(allowSocks4 = false) }
 
         val isHttpDefault = updated.httpProxyBindAddress == null
         val isSocks5Default = updated.socks5ProxyBindAddress == null
@@ -147,7 +151,19 @@ class ProxySettingsViewModel(
     }
 
     fun onUsernameChanged(value: String) = intent {
-        reduce { state.copy(proxyUsername = value, isUserNameError = false) }
+        reduce {
+            state.copy(
+                proxyUsername = value,
+                isUserNameError = false,
+                // SOCKS4 has no auth - turn the toggle off rather than leave it silently
+                // ignored once credentials are configured.
+                allowSocks4 = if (value.isBlank()) state.allowSocks4 else false,
+            )
+        }
+    }
+
+    fun onAllowSocks4Changed(allowed: Boolean) = intent {
+        reduce { state.copy(allowSocks4 = allowed) }
     }
 
     fun onPasswordChanged(value: String) = intent {

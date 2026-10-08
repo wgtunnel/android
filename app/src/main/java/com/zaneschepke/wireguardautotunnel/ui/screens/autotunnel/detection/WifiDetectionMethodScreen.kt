@@ -17,6 +17,7 @@ import com.zaneschepke.wireguardautotunnel.ui.common.button.IconSurfaceButton
 import com.zaneschepke.wireguardautotunnel.util.extensions.asDescriptionString
 import com.zaneschepke.wireguardautotunnel.util.extensions.asTitleString
 import com.zaneschepke.wireguardautotunnel.viewmodel.AutoTunnelViewModel
+import kotlin.enums.enumEntries
 import org.koin.androidx.compose.koinViewModel
 import org.orbitmvi.orbit.compose.collectAsState
 
@@ -30,9 +31,11 @@ fun WifiDetectionMethodScreen(viewModel: AutoTunnelViewModel = koinViewModel()) 
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.spacedBy(24.dp, Alignment.Top),
         modifier =
-            Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 16.dp),
+            Modifier.fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 16.dp),
     ) {
-        enumValues<WifiDetectionMethod>().forEach {
+        enumEntries<WifiDetectionMethod>().forEach {
             val title = it.asTitleString(context)
             val description = it.asDescriptionString(context)
             IconSurfaceButton(

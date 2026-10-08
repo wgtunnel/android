@@ -176,9 +176,13 @@ class AppProvider(
                     return@mapNotNull null
                 val tunnel = allTunnels.find { it.id == id } ?: return@mapNotNull null
                 notificationLine(
-                    id,
-                    tunnel.name,
-                    activeTunnel,
+                    id = id,
+                    name = tunnel.name,
+                    viaName =
+                        tunnel.entryTunnelId?.let { entryId ->
+                            allTunnels.firstOrNull { it.id == entryId }?.name
+                        },
+                    activeTunnel = activeTunnel,
                     lockdown = mode is BackendMode.Proxy.KillSwitchPrimary,
                 )
             }
@@ -195,7 +199,15 @@ class AppProvider(
                 val mode = activeTunnel.mode ?: return@mapNotNull null
                 if (mode !is BackendMode.Proxy.Standard) return@mapNotNull null
                 val tunnel = allTunnels.find { it.id == id } ?: return@mapNotNull null
-                notificationLine(id, tunnel.name, activeTunnel)
+                notificationLine(
+                    id = id,
+                    name = tunnel.name,
+                    viaName =
+                        tunnel.entryTunnelId?.let { entryId ->
+                            allTunnels.firstOrNull { it.id == entryId }?.name
+                        },
+                    activeTunnel = activeTunnel,
+                )
             }
             .associateBy { it.id }
     }
@@ -203,6 +215,7 @@ class AppProvider(
     private fun notificationLine(
         id: Int,
         name: String,
+        viaName: String? = null,
         activeTunnel: ActiveTunnel,
         lockdown: Boolean = false,
     ): TunnelNotificationLine {
@@ -210,6 +223,7 @@ class AppProvider(
         return TunnelNotificationLine(
             id = id,
             name = name,
+            viaName = viaName,
             displayState = DisplayTunnelState.from(activeTunnel),
             startedAtMillis = activeTunnel.uptime,
             origin = tunnelOriginHolder.origins.value[id],

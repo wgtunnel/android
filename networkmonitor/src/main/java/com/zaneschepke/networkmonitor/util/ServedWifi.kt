@@ -10,8 +10,8 @@ internal const val EXTRA_ACTIVE_TETHER_IFACES = "tetherArray"
 internal const val EXTRA_ACTIVE_LOCAL_ONLY_IFACES = "android.net.extra.ACTIVE_LOCAL_ONLY"
 
 /**
- * Interface names used by the phone when it is the AP or P2P group owner, not a STA client.
- * `wlan1` is intentionally omitted: some devices use it as a second STA radio.
+ * Interface names used by the phone when it is the AP or P2P group owner, not a STA client. `wlan1`
+ * is intentionally omitted: some devices use it as a second STA radio.
  */
 internal fun interfaceNameLooksLikeSoftApOrP2p(name: String?): Boolean {
     val n = name?.lowercase() ?: return false

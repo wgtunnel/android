@@ -20,6 +20,7 @@ fun Entity.toDomain(): Domain =
         tunnelBSSIDs = tunnelBSSIDs,
         isDDNSTunnel = isDDNSTunnel,
         groupId = groupId,
+        entryTunnelId = entryTunnelId,
     )
 
 fun Domain.toEntity(): Entity =
@@ -39,4 +40,5 @@ fun Domain.toEntity(): Entity =
         tunnelBSSIDs = tunnelBSSIDs,
         isDDNSTunnel = isDDNSTunnel,
         groupId = groupId,
+        entryTunnelId = entryTunnelId,
     )

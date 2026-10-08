@@ -1,6 +1,5 @@
 package com.zaneschepke.wireguardautotunnel
 
-import ProxySettingsScreen
 import android.Manifest
 import android.content.Intent
 import android.graphics.Color
@@ -123,6 +122,7 @@ import com.zaneschepke.wireguardautotunnel.ui.screens.settings.integrations.Andr
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.lockdown.LockdownSettingsScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.logs.LogsScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.monitoring.MonitoringScreen
+import com.zaneschepke.wireguardautotunnel.ui.screens.settings.proxy.ProxySettingsScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.recovery.TunnelRecoveryScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.security.SecurityScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.support.SupportScreen
@@ -133,6 +133,7 @@ import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.TunnelsScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.settings.TunnelSettingsScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.settings.config.ConfigScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.settings.config.edit.ConfigEditScreen
+import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.settings.entry.EntryTunnelScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.settings.ipv6.IPv6Screen
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.splittunnel.SplitTunnelScreen
 import com.zaneschepke.wireguardautotunnel.ui.theme.AlertRed
@@ -700,6 +701,13 @@ class MainActivity : AppCompatActivity() {
                                                             parameters = { parametersOf(key.id) }
                                                         )
                                                     IPv6Screen(viewModel)
+                                                }
+                                                entry<Route.EntryTunnel> { key ->
+                                                    val viewModel: TunnelViewModel =
+                                                        koinViewModel(
+                                                            parameters = { parametersOf(key.id) }
+                                                        )
+                                                    EntryTunnelScreen(viewModel)
                                                 }
                                                 entry<Route.LockdownSettings> {
                                                     LockdownSettingsScreen()

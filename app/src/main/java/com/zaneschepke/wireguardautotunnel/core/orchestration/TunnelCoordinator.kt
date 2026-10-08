@@ -3,6 +3,7 @@ package com.zaneschepke.wireguardautotunnel.core.orchestration
 import com.dokar.sonner.ToastType
 import com.wgtunnel.backend.model.BackendMode
 import com.wgtunnel.parser.AmneziaConfigNormalizer
+import com.wgtunnel.parser.Config
 import com.wgtunnel.parser.ConfigReconciler
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.core.event.TunnelErrorEvent
@@ -276,13 +277,20 @@ class TunnelCoordinator(
                 settings.isGlobalAmneziaEnabled,
             )
 
+        val globalConfig =
+            if (policy.hasAnyOverrides) {
+                tunnelRepository.globalTunnelFlow.firstOrNull()?.getConfig()
+            } else {
+                null
+            }
+
         val runConfig =
             if (policy.hasAnyOverrides) {
-                val globalConfig = tunnelRepository.globalTunnelFlow.firstOrNull()?.getConfig()
                 ConfigReconciler.reconcileConfig(config, globalConfig, policy)
             } else config
 
         val tunnelDnsConfig = dnsSettings.toTunnelDnsConfigOrNull(runConfig)
+        val outerConfig = resolveOuterConfig(tunnelConfig, globalConfig, policy)
 
         val backendMode =
             when (settings.tunnelMode) {
@@ -320,7 +328,8 @@ class TunnelCoordinator(
                         settings,
                     ),
                 mode = backendMode,
-                tunnelDnsConfig,
+                tunnelDnsConfig = tunnelDnsConfig,
+                outerConfig = outerConfig,
             )
             .onSuccess {
                 _actions.emit(
@@ -334,6 +343,43 @@ class TunnelCoordinator(
                 Timber.e(it)
                 _errors.emit(TunnelErrorEvent.from(it, tunnelConfig.id))
             }
+    }
+
+    private suspend fun resolveOuterConfig(
+        exit: TunnelConfig,
+        globalConfig: Config?,
+        policy: ConfigReconciler.ConfigReconcilePolicy,
+    ): Config? {
+        val entryId = exit.entryTunnelId ?: return null
+        if (entryId == exit.id) {
+            Timber.w("Ignoring self-referential entry tunnel on ${exit.name}")
+            return null
+        }
+        val entry = tunnelRepository.getById(entryId)
+        if (entry == null) {
+            Timber.w("Entry tunnel id=$entryId missing for ${exit.name}; starting one-hop")
+            return null
+        }
+        return runCatching {
+            var outer = AmneziaConfigNormalizer.ensureAmneziaCompatibility(entry.getConfig())
+            if (policy.amnezia) {
+                outer =
+                    ConfigReconciler.reconcileConfig(
+                        outer,
+                        globalConfig,
+                        ConfigReconciler.ConfigReconcilePolicy(
+                            dns = false,
+                            splitTunnel = false,
+                            amnezia = true,
+                        ),
+                    )
+            }
+            outer
+        }
+            .onFailure {
+                Timber.e(it, "Failed to load entry tunnel ${entry.name} for ${exit.name}")
+            }
+            .getOrNull()
     }
 
     suspend fun startDefault() {

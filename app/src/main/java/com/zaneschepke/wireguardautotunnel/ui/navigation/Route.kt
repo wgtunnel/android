@@ -62,6 +62,8 @@ sealed class Route : NavKey {
 
     @Keep @Serializable data class IPv6(val id: Int) : Route()
 
+    @Keep @Serializable data class EntryTunnel(val id: Int) : Route()
+
     @Keep
     @Serializable
     data class ConfigEdit(val id: Int?) : Route(), SecureRoute {
@@ -192,6 +194,7 @@ enum class Tab(
                 is Route.Lock,
                 is Route.Config,
                 is Route.IPv6,
+                is Route.EntryTunnel,
                 is Route.SplitTunnel -> TUNNELS
                 is Route.AutoTunnel,
                 Route.WifiDetectionMethod,

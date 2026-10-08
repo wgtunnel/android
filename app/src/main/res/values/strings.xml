@@ -115,6 +115,12 @@
     <string name="trusted_wifi_names">Trusted Wi-Fi</string>
     <string name="add_wifi_name">Add Wi-Fi name</string>
     <string name="primary_tunnel">Default tunnel</string>
+    <string name="entry_tunnel">Entry tunnel</string>
+    <string name="entry_tunnel_desc">Send this tunnel through another tunnel.</string>
+    <string name="entry_tunnel_none">None</string>
+    <string name="entry_tunnel_none_desc">Use this tunnel on its own.</string>
+    <string name="entry_tunnel_add_another">Add another tunnel to use as entry.</string>
+    <string name="via_entry">via %1$s</string>
     <string name="skip">Skip</string>
     <string name="launch_app_settings">Launch app settings</string>
     <string name="use_wildcards">Use rule wildcards</string>
@@ -263,6 +269,8 @@
     <string name="selected">Selected</string>
     <string name="socks_5_proxy">SOCKS5 proxy</string>
     <string name="http_proxy">HTTP proxy</string>
+    <string name="allow_socks4">Allow SOCKS4 clients</string>
+    <string name="allow_socks4_desc">Accept SOCKS4 connections on the SOCKS5 proxy. Only available when proxy credentials are disabled.</string>
     <string name="username">Username</string>
     <string name="password">Password</string>
     <string name="proxy_credentials">Proxy credentials</string>
@@ -347,6 +355,7 @@
     <string name="other">Other</string>
     <string name="options">Options</string>
     <string name="general">General</string>
+    <string name="multihop">Multihop</string>
     <string name="networks">Networks</string>
     <string name="preferred_tunnel_label">Preferred tunnel: </string>
     <string name="preferred_tunnel">Preferred tunnel</string>
@@ -679,4 +688,6 @@
         <item quantity="one">%d tunnel</item>
         <item quantity="other">%d tunnels</item>
     </plurals>
+    <string name="socks5" translatable="false">SOCKS5</string>
+    <string name="http" translatable="false">HTTP</string>
 </resources>

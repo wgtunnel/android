@@ -6,6 +6,7 @@ import android.service.quicksettings.TileService
 import com.wgtunnel.backend.state.ActiveTunnel
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.core.orchestration.TunnelCoordinator
+import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.ui.state.DisplayTunnelState
 import java.util.Locale
@@ -62,41 +63,53 @@ class TunnelControlTile : TileService() {
             val active = tunnelCoordinator.backendStatus.value.activeTunnels
 
             if (active.isNotEmpty()) {
-                val activeMap =
-                    tunnels
-                        .filter { active.containsKey(it.id) }
-                        .associate { tunnel -> tunnel.name to active.getValue(tunnel.id) }
-                setActive(activeMap)
+                val activeConfigs = tunnels.filter { active.containsKey(it.id) }
+                setActive(activeConfigs, tunnels, active)
             } else {
                 setInactive()
             }
         }
     }
 
-    private fun setActive(activeByName: Map<String, ActiveTunnel>) {
+    private fun setActive(
+        activeConfigs: List<TunnelConfig>,
+        allTunnels: List<TunnelConfig>,
+        active: Map<Int, ActiveTunnel>,
+    ) {
         val context = this
         qsTile?.apply {
             state = Tile.STATE_ACTIVE
 
-            when (activeByName.size) {
+            when (activeConfigs.size) {
                 1 -> {
-                    val (fullName, activeTunnel) = activeByName.entries.first()
+                    val tunnel = activeConfigs.first()
+                    val activeTunnel = active.getValue(tunnel.id)
                     val state = DisplayTunnelState.from(activeTunnel).asLocalizedString(context)
+                    val viaName =
+                        tunnel.entryTunnelId?.let { id ->
+                            allTunnels.firstOrNull { it.id == id }?.name
+                        }
 
-                    label = fullName
+                    label = tunnel.name
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                        subtitle = state
+                        subtitle =
+                            if (viaName != null) getString(R.string.via_entry, viaName) else state
                     }
-                    contentDescription = "$fullName • $state}"
+                    contentDescription =
+                        if (viaName != null) {
+                            "${tunnel.name} • ${getString(R.string.via_entry, viaName)} • $state"
+                        } else {
+                            "${tunnel.name} • $state"
+                        }
                 }
 
                 else -> {
-                    val tunnels = getString(R.string.tunnels).lowercase(Locale.getDefault())
-                    label = "${activeByName.size} $tunnels"
+                    val tunnelsLabel = getString(R.string.tunnels).lowercase(Locale.getDefault())
+                    label = "${activeConfigs.size} $tunnelsLabel"
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                         subtitle = ""
                     }
-                    contentDescription = "${activeByName.size} $tunnels"
+                    contentDescription = "${activeConfigs.size} $tunnelsLabel"
                 }
             }
             updateTile()

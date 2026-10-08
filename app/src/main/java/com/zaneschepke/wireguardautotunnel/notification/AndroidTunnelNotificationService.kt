@@ -143,6 +143,9 @@ class AndroidTunnelNotificationService(private val notificationService: Notifica
                 R.string.notification_status_format,
                 line.displayState.asLocalizedString(context),
             )
+        if (!line.viaName.isNullOrBlank()) {
+            parts += context.getString(R.string.via_entry, line.viaName)
+        }
         if (options.showOrigin) {
             when (line.origin) {
                 TunnelActionSource.USER ->

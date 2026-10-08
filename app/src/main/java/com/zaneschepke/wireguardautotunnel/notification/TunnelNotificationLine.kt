@@ -6,6 +6,7 @@ import com.zaneschepke.wireguardautotunnel.ui.state.DisplayTunnelState
 data class TunnelNotificationLine(
     val id: Int,
     val name: String,
+    val viaName: String? = null,
     val displayState: DisplayTunnelState,
     val startedAtMillis: Long?,
     val origin: TunnelActionSource?,
