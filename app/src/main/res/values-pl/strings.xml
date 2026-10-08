@@ -98,6 +98,12 @@
     <string name="trusted_wifi_names">Zaufane nazwy sieci Wi-Fi</string>
     <string name="add_wifi_name">Dodaj nazwę sieci Wi-Fi</string>
     <string name="primary_tunnel">Tunel domyślny</string>
+    <string name="entry_tunnel">Tunel wejściowy</string>
+    <string name="entry_tunnel_desc">Wyślij ten tunel przez inny tunel.</string>
+    <string name="entry_tunnel_none">Brak</string>
+    <string name="entry_tunnel_none_desc">Użyj tego tunelu samodzielnie.</string>
+    <string name="entry_tunnel_add_another">Dodaj kolejny tunel, aby użyć go jako wpisu.</string>
+    <string name="via_entry">poprzez %1$s</string>
     <string name="skip">Pomiń</string>
     <string name="launch_app_settings">Uruchom ustawienia aplikacji</string>
     <string name="use_wildcards">Użyj symboli wieloznacznych nazw</string>
@@ -233,6 +239,8 @@
     <string name="selected">Wybrane</string>
     <string name="socks_5_proxy">Proxy SOCKS5</string>
     <string name="http_proxy">Proxy HTTP</string>
+    <string name="allow_socks4">Zezwalaj na klienty SOCKS4</string>
+    <string name="allow_socks4_desc">Akceptuj połączenia SOCKS4 na proxy SOCKS5. Dostępne tylko wtedy, gdy dane uwierzytelniające proxy są wyłączone.</string>
     <string name="username">Nazwa użytkownika</string>
     <string name="password">Hasło</string>
     <string name="proxy_credentials">Poświadczenia proxy</string>
@@ -284,6 +292,7 @@
     <string name="other">Inne</string>
     <string name="options">Opcje</string>
     <string name="general">Ogólne</string>
+    <string name="multihop">Wieloskokowy</string>
     <string name="networks">Sieci</string>
     <string name="preferred_tunnel_label">Preferowany tunel:</string>
     <string name="preferred_tunnel">Preferowany tunel</string>
