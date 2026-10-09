@@ -98,6 +98,12 @@
     <string name="trusted_wifi_names">Доверенные сети Wi-Fi</string>
     <string name="add_wifi_name">Добавить сеть Wi-Fi</string>
     <string name="primary_tunnel">Основной туннель</string>
+    <string name="entry_tunnel">Входной туннель</string>
+    <string name="entry_tunnel_desc">Направлять этот туннель через другой туннель.</string>
+    <string name="entry_tunnel_none">Нет</string>
+    <string name="entry_tunnel_none_desc">Использовать этот туннель самостоятельно.</string>
+    <string name="entry_tunnel_add_another">Добавить другой туннель в качестве входного.</string>
+    <string name="via_entry">через %1$s</string>
     <string name="skip">Пропустить</string>
     <string name="launch_app_settings">Настройки запуска приложения</string>
     <string name="use_wildcards">Использовать подстановочные знаки в имени</string>
@@ -233,6 +239,8 @@
     <string name="selected">Выбрано</string>
     <string name="socks_5_proxy">SOCKS5-прокси</string>
     <string name="http_proxy">HTTP-прокси</string>
+    <string name="allow_socks4">Разрешать SOCKS4</string>
+    <string name="allow_socks4_desc">Принимать подключения SOCKS4 через прокси-сервер SOCKS5. Доступно только при отключенных учётных данных прокси-сервера.</string>
     <string name="username">Пользователь</string>
     <string name="password">Пароль</string>
     <string name="proxy_credentials">Учётные данные прокси</string>
@@ -284,6 +292,7 @@
     <string name="other">Другое</string>
     <string name="options">Параметры</string>
     <string name="general">Общие</string>
+    <string name="multihop">Мультихоп</string>
     <string name="networks">Сети</string>
     <string name="preferred_tunnel_label">Предпочтительный туннель: </string>
     <string name="preferred_tunnel">Предпочтительный туннель</string>
