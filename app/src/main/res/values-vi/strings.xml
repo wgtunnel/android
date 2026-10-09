@@ -28,4 +28,8 @@
     <!-- Notification formatting -->
     <!-- Informational notifications -->
     <!-- Errors -->
+    <string name="live_updates">Cập nhật trực tiếp</string>
+    <string name="live_updates_desc">Hiển thị tiến trình và trạng thái kết nối của đường nối đang hoạt động trên thanh trạng thái và màn hình khóa. Áp dụng khi chỉ có một đường nối đang chạy</string>
+    <string name="notification_connection_manual">Kết nối thủ công</string>
+    <string name="notification_connection_auto">Đường nối tự động</string>
 </resources>

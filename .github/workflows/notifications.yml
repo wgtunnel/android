@@ -50,16 +50,15 @@ jobs:
             --data-urlencode "text=$TEXT"
 
       - name: Send to Telegram - New Release
-        if: github.event_name == 'release' && ((github.event.action == 'published' && !github.event.release.prerelease) || (github.event.action == 'prereleased' && github.event.release.prerelease && github.event.release.name == 'nightly'))
+        if: github.event_name == 'release' && github.event.action == 'published' && (!github.event.release.prerelease || github.event.release.tag_name == 'nightly')
         env:
           NAME: ${{ github.event.release.name }}
           TAG: ${{ github.event.release.tag_name }}
           BODY: ${{ github.event.release.body || 'No notes provided' }}
           URL: ${{ github.event.release.html_url }}
-          ACTION: ${{ github.event.action }}
         run: |
           BODY_TRUNC="${BODY:0:200}"
-          if [ "$ACTION" == "prereleased" ]; then
+          if [ "$TAG" = "nightly" ]; then
             ICON="🌙"
             PREFIX="New Nightly Release"
           else
@@ -121,15 +120,14 @@ jobs:
             -d "$PAYLOAD"
 
       - name: Send to Matrix - New Release
-        if: github.event_name == 'release' && ((github.event.action == 'published' && !github.event.release.prerelease) || (github.event.action == 'prereleased' && github.event.release.prerelease && github.event.release.name == 'nightly'))
+        if: github.event_name == 'release' && github.event.action == 'published' && (!github.event.release.prerelease || github.event.release.tag_name == 'nightly')
         env:
           NAME: ${{ github.event.release.name }}
           TAG: ${{ github.event.release.tag_name }}
           BODY: ${{ github.event.release.body || 'No notes provided' }}
           URL: ${{ github.event.release.html_url }}
-          ACTION: ${{ github.event.action }}
         run: |
-          if [ "$ACTION" == "prereleased" ]; then
+          if [ "$TAG" = "nightly" ]; then
             ICON="🌙"
             PREFIX="New Nightly Release"
           else

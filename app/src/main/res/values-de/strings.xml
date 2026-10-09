@@ -453,4 +453,8 @@
     <string name="tunnel_dns_mode">Tunnel DNS-Modus</string>
     <string name="use_tunnel_dns_servers">Tunnel DNS-Server verwenden</string>
     <string name="error_config_missing_dns">Für Tunnel %1$s fehlen DNS-Server, die für Ihre aktuelle Konfiguration erforderlich sind</string>
+    <string name="live_updates">Live-Updates</string>
+    <string name="live_updates_desc">Zeigt Verbindungsfortschritt und -status des aktiven Tunnels in der Statusleiste und auf dem Sperrbildschirm an. Gilt, wenn nur ein Tunnel läuft</string>
+    <string name="notification_connection_manual">Manuelle Verbindung</string>
+    <string name="notification_connection_auto">Auto-Tunnel</string>
 </resources>

@@ -100,9 +100,7 @@ class ConfigEditViewModel(
                 }
         }
 
-    fun save() = intent {
-        reduce { state.copy(ui = state.ui.copy(showSaveModal = false)) }
-
+    fun save(restart: Boolean = false) = intent {
         if (state.isTunnelNameTaken) {
 
             postSideEffect(
@@ -147,7 +145,7 @@ class ConfigEditViewModel(
 
                 settingsRepository.updateGlobalAmneziaEnabled(state.globalSettings.amneziaEnabled)
 
-                if (state.isRunning) {
+                if (restart && state.isRunning) {
                     tunnelCoordinator.stopTunnel(it.id)
                     tunnelCoordinator.startTunnel(it)
                 }
@@ -189,10 +187,6 @@ class ConfigEditViewModel(
         globalEffectRepository.post(globalSideEffect)
     }
 
-    fun setShowSaveModal(show: Boolean) = intent {
-        reduce { state.copy(ui = state.ui.copy(showSaveModal = show)) }
-    }
-
     fun setGlobalTunnelDnsEnabled(to: Boolean) = intent {
         reduce { state.copy(globalSettings = state.globalSettings.copy(dnsEnabled = to)) }
     }
@@ -208,7 +202,6 @@ class ConfigEditViewModel(
                     } else {
                         val dnsServers =
                             state.draft.config.`interface`.dnsServers.split(",").map { it.trim() }
-                                ?: emptyList()
                         peer.excludeLan(dnsServers)
                     }
 

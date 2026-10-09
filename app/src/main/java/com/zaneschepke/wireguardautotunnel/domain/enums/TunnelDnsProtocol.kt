@@ -1,6 +1,7 @@
 package com.zaneschepke.wireguardautotunnel.domain.enums
 
 import android.content.Context
+import com.wgtunnel.backend.model.dns.DnsEndpointProtocol
 import com.zaneschepke.wireguardautotunnel.R
 
 enum class TunnelDnsProtocol(val value: Int) {
@@ -15,6 +16,13 @@ enum class TunnelDnsProtocol(val value: Int) {
             Plain -> context.getString(R.string.plain_dns)
         }
     }
+
+    fun toCore(): DnsEndpointProtocol =
+        when (this) {
+            Doh -> DnsEndpointProtocol.DOH
+            Dot -> DnsEndpointProtocol.DOT
+            Plain -> DnsEndpointProtocol.UDP
+        }
 
     companion object {
         fun fromValue(value: Int): TunnelDnsProtocol = entries.find { it.value == value } ?: Doh

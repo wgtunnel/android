@@ -49,4 +49,8 @@ class RoomSettingsRepository(private val settingsDao: GeneralSettingsDao) :
     override suspend fun updateSeamlessRecovery(enabled: Boolean) {
         settingsDao.updateSeamlessRecovery(enabled)
     }
+
+    override suspend fun updateSeamlessRecoveryBounceDelay(seconds: Int) {
+        settingsDao.updateSeamlessRecoveryBounceDelay(seconds)
+    }
 }

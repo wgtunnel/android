@@ -25,6 +25,7 @@ import androidx.compose.ui.text.withLink
 import androidx.compose.ui.unit.dp
 import com.zaneschepke.wireguardautotunnel.BuildConfig
 import com.zaneschepke.wireguardautotunnel.R
+import com.zaneschepke.wireguardautotunnel.domain.model.UpdateDownloadState
 import com.zaneschepke.wireguardautotunnel.ui.common.dialog.InfoDialog
 import com.zaneschepke.wireguardautotunnel.util.Constants
 import com.zaneschepke.wireguardautotunnel.util.extensions.canInstallPackages
@@ -36,14 +37,30 @@ import org.orbitmvi.orbit.compose.collectAsState
 @Composable
 fun UpdateDialog(viewModel: SupportViewModel, context: Context, onPermissionNeeded: () -> Unit) {
     val supportState by viewModel.collectAsState()
+    val download = supportState.download
+    val downloading = download as? UpdateDownloadState.Downloading
+    val downloadedFile =
+        (download as? UpdateDownloadState.Completed)?.file?.takeIf {
+            it.name == supportState.appUpdate?.apkFileName
+        }
+    val isStandalone = BuildConfig.FLAVOR == Constants.STANDALONE_FLAVOR
 
     InfoDialog(
+        // Closing the dialog leaves a running download alone, the cancel button stops it
         onDismiss = { viewModel.dismissUpdate() },
+        confirmEnabled = downloading == null,
+        dismissText =
+            stringResource(if (downloading != null) R.string.cancel_download else R.string.cancel),
+        onDismissButton = {
+            if (downloading != null) viewModel.cancelDownload()
+            viewModel.dismissUpdate()
+        },
         onAttest = {
-            if (BuildConfig.FLAVOR != Constants.STANDALONE_FLAVOR) {
+            if (!isStandalone) {
                 supportState.appUpdate?.apkUrl?.let { context.openWebUrl(it) }
                 return@InfoDialog
             }
+            if (downloading != null) return@InfoDialog
             if (context.canInstallPackages()) {
                 viewModel.downloadAndInstall()
             } else {
@@ -80,21 +97,47 @@ fun UpdateDialog(viewModel: SupportViewModel, context: Context, onPermissionNeed
                 }
 
                 Text(text = annotatedString)
-                if (supportState.isLoading) {
+                if (downloading != null) {
                     val stroke = Stroke(cap = StrokeCap.Round, width = 4.0f)
-                    LinearWavyProgressIndicator(
-                        progress = { supportState.downloadProgress },
-                        modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
-                        color = MaterialTheme.colorScheme.primary,
-                        trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                        stroke = stroke,
-                        trackStroke = stroke,
+                    val progress = downloading.progress
+                    if (progress != null) {
+                        LinearWavyProgressIndicator(
+                            progress = { progress },
+                            modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+                            color = MaterialTheme.colorScheme.primary,
+                            trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                            stroke = stroke,
+                            trackStroke = stroke,
+                        )
+                    } else {
+                        LinearWavyProgressIndicator(
+                            modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+                            color = MaterialTheme.colorScheme.primary,
+                            trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                            stroke = stroke,
+                            trackStroke = stroke,
+                        )
+                    }
+                    Text(
+                        text = downloadStatusText(downloading),
+                        style = MaterialTheme.typography.bodySmall,
+                    )
+                    Text(
+                        text = stringResource(R.string.update_download_background_hint),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
             }
         },
         confirmText =
-            if (BuildConfig.FLAVOR != Constants.STANDALONE_FLAVOR) stringResource(R.string.download)
-            else stringResource(R.string.download_and_install),
+            stringResource(
+                when {
+                    !isStandalone -> R.string.download
+                    downloading != null -> R.string.downloading
+                    downloadedFile != null -> R.string.install
+                    else -> R.string.download_and_install
+                }
+            ),
     )
 }

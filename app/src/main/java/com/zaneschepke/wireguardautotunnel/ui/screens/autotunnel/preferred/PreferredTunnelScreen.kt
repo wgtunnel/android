@@ -14,7 +14,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.scrollbar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,6 +35,7 @@ import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
 import com.zaneschepke.wireguardautotunnel.ui.common.functions.rememberRotatingHint
 import com.zaneschepke.wireguardautotunnel.ui.common.label.GroupLabel
+import com.zaneschepke.wireguardautotunnel.ui.common.scroll.appScrollbar
 import com.zaneschepke.wireguardautotunnel.ui.common.text.DescriptionText
 import com.zaneschepke.wireguardautotunnel.ui.navigation.TunnelNetwork
 import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.AutoTunnelScreenSideEffect
@@ -92,7 +92,7 @@ fun PreferredTunnelScreen(
         modifier =
             Modifier.pointerInput(Unit) { if (uiState.tunnels.isEmpty()) return@pointerInput }
                 .overscroll(rememberOverscrollEffect())
-                .scrollbar(lazyListState.scrollIndicatorState, Orientation.Vertical),
+                .appScrollbar(lazyListState.scrollIndicatorState, Orientation.Vertical),
         state = lazyListState,
         userScrollEnabled = true,
         reverseLayout = false,

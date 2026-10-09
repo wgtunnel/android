@@ -1,15 +1,22 @@
 package com.zaneschepke.wireguardautotunnel
 
 import android.app.Application
+import android.content.ComponentCallbacks2
 import android.os.StrictMode
 import com.wgtunnel.backend.Backend
+import com.wgtunnel.backend.BackendLog
+import com.wgtunnel.backend.LogLevel
 import com.wgtunnel.backend.service.AlwaysOnCallback
 import com.wgtunnel.backend.service.RuntimeManager
+import com.zaneschepke.logcatter.LogReader
 import com.zaneschepke.wireguardautotunnel.core.event.TunnelEventDispatcher
 import com.zaneschepke.wireguardautotunnel.core.orchestration.AppBoostrapCoordinator
 import com.zaneschepke.wireguardautotunnel.core.orchestration.StartupCoordinator
 import com.zaneschepke.wireguardautotunnel.core.orchestration.TunnelCoordinator
+import com.zaneschepke.wireguardautotunnel.core.tunnel.AppProvider
+import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelOriginHolder
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelProvider
+import com.zaneschepke.wireguardautotunnel.core.worker.UpdateCheckWorker
 import com.zaneschepke.wireguardautotunnel.di.Dispatcher
 import com.zaneschepke.wireguardautotunnel.di.Scope
 import com.zaneschepke.wireguardautotunnel.di.appModule
@@ -20,6 +27,7 @@ import com.zaneschepke.wireguardautotunnel.di.networkModule
 import com.zaneschepke.wireguardautotunnel.di.tunnelBackendProviderModule
 import com.zaneschepke.wireguardautotunnel.di.workerModule
 import com.zaneschepke.wireguardautotunnel.notification.NotificationService
+import com.zaneschepke.wireguardautotunnel.util.Constants
 import com.zaneschepke.wireguardautotunnel.util.ReleaseTree
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -71,6 +79,7 @@ class WireGuardAutoTunnel : Application(), KoinComponent {
     @OptIn(KoinViewModelScopeApi::class)
     override fun onCreate() {
         super.onCreate()
+        BackendLog.setMinLevel(if (BuildConfig.DEBUG) LogLevel.Debug else LogLevel.Info)
         startKoin {
             androidContext(this@WireGuardAutoTunnel)
             if (BuildConfig.DEBUG) androidLogger()
@@ -107,9 +116,23 @@ class WireGuardAutoTunnel : Application(), KoinComponent {
 
         // for notifications
         dispatcher.bind(applicationScope, provider.events, tunnelCoordinator.errors)
+        get<TunnelOriginHolder>().bind(applicationScope, tunnelCoordinator.actions)
+        get<AppProvider>().bind(applicationScope)
+
+        if (BuildConfig.FLAVOR == Constants.STANDALONE_FLAVOR) {
+            UpdateCheckWorker.start(this)
+        }
 
         applicationScope.launch(ioDispatcher) {
             boostrapCoordinator.bootstrap(this@WireGuardAutoTunnel)
+        }
+    }
+
+    override fun onTrimMemory(level: Int) {
+        super.onTrimMemory(level)
+        // numeric compare also covers the deprecated levels above background on older apis
+        if (level >= ComponentCallbacks2.TRIM_MEMORY_BACKGROUND) {
+            applicationScope.launch { get<LogReader>().clearBufferedLogs() }
         }
     }
 

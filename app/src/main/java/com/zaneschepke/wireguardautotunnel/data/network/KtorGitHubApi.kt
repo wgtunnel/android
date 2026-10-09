@@ -27,25 +27,14 @@ class KtorGitHubApi(private val client: HttpClient) : GitHubApi {
 
     override suspend fun getNightlyRelease(owner: String, repo: String): Result<GitHubRelease> {
         return try {
-            // Fetch all releases
-            val releases: List<GitHubRelease> =
-                client.get("https://api.github.com/repos/$owner/$repo/releases").body()
-
-            // Find the first release with "nightly" in the tag_name (case-insensitive)
-            val nightlyRelease = releases.firstOrNull { release ->
-                release.tagName.contains("nightly", ignoreCase = true)
-            }
-
-            if (nightlyRelease != null) {
-                Result.success(nightlyRelease)
-            } else {
-                Result.failure(Exception("No release with 'nightly' tag found"))
-            }
+            // Only one nightly exists at a time
+            val response: GitHubRelease =
+                client.get("https://api.github.com/repos/$owner/$repo/releases/tags/nightly").body()
+            Result.success(response)
         } catch (e: ClientRequestException) {
             when (e.response.status) {
                 HttpStatusCode.Forbidden -> Result.failure(Exception("Rate limit exceeded"))
-                HttpStatusCode.NotFound ->
-                    Result.failure(Exception("Repository or release not found"))
+                HttpStatusCode.NotFound -> Result.failure(Exception("Nightly release not found"))
                 else -> Result.failure(e)
             }
         } catch (e: Exception) {

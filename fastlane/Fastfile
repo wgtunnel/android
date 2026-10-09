@@ -10,51 +10,80 @@ platform :android do
     )
   end
 
-  # Removes any locale that only has title.txt or is incomplete.
-  private_lane :cleanup_incomplete_metadata do
-    metadata_path = "fastlane/metadata/android"
+  # Play rejects a locale that is missing title, short, or full description.
+  def listing_text_present?(path)
+    File.file?(path) && !File.read(path).strip.empty?
+  end
 
-    Dir.glob("#{metadata_path}/*").each do |locale_dir|
-      next unless File.directory?(locale_dir)
-      next if File.basename(locale_dir) == "en-US"
+  def play_listing_source_dir
+    File.expand_path("metadata/android", FastlaneCore::FastlaneFolder.path)
+  end
 
-      has_title = File.exist?("#{locale_dir}/title.txt")
-      has_short = File.exist?("#{locale_dir}/short_description.txt")
-      has_full  = File.exist?("#{locale_dir}/full_description.txt")
+  # Copy only complete locales to a temp dir and return that path.
+  private_lane :prepared_listing_metadata do
+    source = play_listing_source_dir
+    dest = Dir.mktmpdir("play-listing-")
+    required = %w[title.txt short_description.txt full_description.txt]
 
-      unless has_title && has_short && has_full
-        UI.message("Removing incomplete locale: #{File.basename(locale_dir)}")
-        FileUtils.rm_rf(locale_dir)
+    UI.message("Preparing Play listing metadata from #{source}")
+
+    Dir.children(source).sort.each do |locale|
+      src_dir = File.join(source, locale)
+      next unless File.directory?(src_dir)
+
+      missing = required.reject { |name| listing_text_present?(File.join(src_dir, name)) }
+      if locale != "en-US" && !missing.empty?
+        UI.important("Skipping incomplete Play locale #{locale} (#{missing.join(', ')})")
+        next
       end
+      if locale == "en-US" && !missing.empty?
+        UI.user_error!("Default locale en-US is incomplete (#{missing.join(', ')})")
+      end
+
+      FileUtils.cp_r(src_dir, File.join(dest, locale))
+      UI.message("Including Play locale #{locale}")
     end
+
+    dest
   end
 
   desc 'Deploy a new internal version to the Google Play Store'
   lane :internal do
     build_aab
-    cleanup_incomplete_metadata
-    upload_to_play_store(track: 'internal', skip_upload_apk: true)
+    upload_to_play_store(
+      track: 'internal',
+      skip_upload_apk: true,
+      metadata_path: prepared_listing_metadata
+    )
   end
 
   desc "Deploy an alpha version to the Google Play"
   lane :alpha do
     build_aab
-    cleanup_incomplete_metadata
-    upload_to_play_store(track: 'alpha', skip_upload_apk: true)
+    upload_to_play_store(
+      track: 'alpha',
+      skip_upload_apk: true,
+      metadata_path: prepared_listing_metadata
+    )
   end
 
   desc "Deploy a beta version to the Google Play"
   lane :beta do
     build_aab
-    cleanup_incomplete_metadata
-    upload_to_play_store(track: 'beta', skip_upload_apk: true)
+    upload_to_play_store(
+      track: 'beta',
+      skip_upload_apk: true,
+      metadata_path: prepared_listing_metadata
+    )
   end
 
   desc "Deploy a new version to the Google Play"
   lane :production do
     build_aab
-    cleanup_incomplete_metadata
-    upload_to_play_store(skip_upload_apk: true)
+    upload_to_play_store(
+      skip_upload_apk: true,
+      metadata_path: prepared_listing_metadata
+    )
   end
 
   # CI already built the AAB. Listing copy is a separate workflow so a bad
@@ -75,13 +104,13 @@ platform :android do
 
   desc "Upload Play Store listing metadata only"
   lane :upload_listing do |options|
-    cleanup_incomplete_metadata
     upload_to_play_store(
       json_key: options[:json_key],
       package_name: options[:package_name],
       skip_upload_apk: true,
       skip_upload_aab: true,
       skip_upload_changelogs: true,
+      metadata_path: prepared_listing_metadata
     )
   end
 end

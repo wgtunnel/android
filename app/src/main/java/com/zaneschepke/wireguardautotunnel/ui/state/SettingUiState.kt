@@ -16,4 +16,6 @@ data class SettingUiState(
     val tunnels: List<TunnelConfig> = emptyList(),
     val monitoring: MonitoringSettings = MonitoringSettings(),
     val tunnelActive: Boolean = false,
+    val recoveryEventCount: Int = 0,
+    val lastRecoveryEventMs: Long = 0L,
 )

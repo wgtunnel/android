@@ -7,5 +7,6 @@ fun Entity.toDomain(): Domain =
     Domain(
         isLocationDisclosureShown = isLocationDisclosureShown,
         isBatteryOptimizationDisableShown = isBatteryOptimizationDisableShown,
+        isNotificationPermissionRequested = isNotificationPermissionRequested,
         shouldShowDonationSnackbar = shouldShowDonationSnackbar,
     )

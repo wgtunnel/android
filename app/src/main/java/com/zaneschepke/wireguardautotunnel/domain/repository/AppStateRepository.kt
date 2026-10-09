@@ -12,6 +12,10 @@ interface AppStateRepository {
 
     suspend fun setBatteryOptimizationDisableShown(shown: Boolean)
 
+    suspend fun isNotificationPermissionRequested(): Boolean
+
+    suspend fun setNotificationPermissionRequested(requested: Boolean)
+
     suspend fun setShouldShowDonationSnackbar(show: Boolean)
 
     suspend fun shouldShowDonationSnackbar(): Boolean

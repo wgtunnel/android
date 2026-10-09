@@ -1,6 +1,7 @@
 package com.zaneschepke.wireguardautotunnel.domain.model
 
 import com.wgtunnel.backend.model.ProxyConfig
+import com.wgtunnel.backend.model.parseProxyBindAddress
 
 data class ProxySettings(
     val id: Long = 0,
@@ -10,7 +11,12 @@ data class ProxySettings(
     val httpProxyBindAddress: String? = null,
     val proxyUsername: String? = null,
     val proxyPassword: String? = null,
+    val allowSocks4: Boolean = false,
 ) {
+    // SOCKS4 has no auth mechanism, so the toggle only ever takes effect when no
+    // username/password is configured.
+    val canAllowSocks4: Boolean
+        get() = proxyUsername.isNullOrBlank()
 
     fun toProxyConfig(): ProxyConfig {
         val socks5 =
@@ -22,6 +28,7 @@ data class ProxySettings(
                         port = port,
                         username = proxyUsername,
                         password = proxyPassword,
+                        allowSocks4 = allowSocks4 && canAllowSocks4,
                     )
                 }
             } else null
@@ -42,15 +49,7 @@ data class ProxySettings(
         return ProxyConfig(socks5 = socks5, http = http)
     }
 
-    private fun parseAddress(address: String): Pair<String, Int>? {
-        val parts = address.split(":")
-        if (parts.size != 2) return null
-
-        val host = parts[0]
-        val port = parts[1].toIntOrNull() ?: return null
-
-        return host to port
-    }
+    private fun parseAddress(address: String): Pair<String, Int>? = address.parseProxyBindAddress()
 
     companion object {
         const val DEFAULT_SOCKS_BIND_ADDRESS = "127.0.0.1:25344"

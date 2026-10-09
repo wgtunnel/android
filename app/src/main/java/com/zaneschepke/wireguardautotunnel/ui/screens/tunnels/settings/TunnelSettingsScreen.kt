@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.AltRoute
 import androidx.compose.material.icons.automirrored.outlined.CallSplit
 import androidx.compose.material.icons.outlined.Bolt
 import androidx.compose.material.icons.outlined.DataUsage
@@ -99,6 +100,29 @@ fun TunnelSettingsScreen(
                     )
                 },
                 onClick = { viewModel.togglePrimaryTunnel() },
+            )
+        }
+        Column {
+            GroupLabel(
+                stringResource(R.string.multihop),
+                modifier = Modifier.padding(horizontal = 16.dp),
+            )
+            val selectedEntry = uiState.userTunnels.firstOrNull { it.id == tunnel.entryTunnelId }
+            val entryLabel = selectedEntry?.name ?: stringResource(R.string.entry_tunnel_none)
+            val entryDescription =
+                when {
+                    uiState.userTunnels.size <= 1 ->
+                        stringResource(R.string.entry_tunnel_add_another)
+                    else ->
+                        stringResource(R.string.current_template, entryLabel) +
+                            "\n" +
+                            stringResource(R.string.entry_tunnel_desc)
+                }
+            SurfaceRow(
+                leading = { Icon(Icons.AutoMirrored.Outlined.AltRoute, contentDescription = null) },
+                title = stringResource(R.string.entry_tunnel),
+                description = { DescriptionText(entryDescription) },
+                onClick = { navController.push(Route.EntryTunnel(tunnel.id)) },
             )
         }
         Column {

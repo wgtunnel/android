@@ -1,6 +1,8 @@
 package com.zaneschepke.wireguardautotunnel.domain.model
 
 import com.zaneschepke.wireguardautotunnel.domain.enums.BootstrapDnsProtocol
+import com.zaneschepke.wireguardautotunnel.domain.enums.ForeignDnsPolicy
+import com.zaneschepke.wireguardautotunnel.domain.enums.SplitDnsSuffixTarget
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelDnsMode
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelDnsProtocol
 
@@ -14,4 +16,6 @@ data class DnsSettings(
     val tunnelDnsEndpoint: String? = null,
     val useTunnelDnsServersInSplit: Boolean = true,
     val localSuffixes: String? = null,
+    val foreignDnsPolicy: ForeignDnsPolicy = ForeignDnsPolicy.Redirect,
+    val splitSuffixTarget: SplitDnsSuffixTarget = SplitDnsSuffixTarget.System,
 )

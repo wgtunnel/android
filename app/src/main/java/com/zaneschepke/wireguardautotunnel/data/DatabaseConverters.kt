@@ -2,6 +2,8 @@ package com.zaneschepke.wireguardautotunnel.data
 
 import androidx.room.TypeConverter
 import com.zaneschepke.wireguardautotunnel.domain.enums.BootstrapDnsProtocol
+import com.zaneschepke.wireguardautotunnel.domain.enums.ForeignDnsPolicy
+import com.zaneschepke.wireguardautotunnel.domain.enums.SplitDnsSuffixTarget
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelDnsMode
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelDnsProtocol
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelMode
@@ -65,4 +67,15 @@ class DatabaseConverters {
     fun toTunnelDnsProtocol(value: Int): TunnelDnsProtocol = TunnelDnsProtocol.fromValue(value)
 
     @TypeConverter fun fromTunnelDnsProtocol(protocol: TunnelDnsProtocol): Int = protocol.value
+
+    @TypeConverter
+    fun toForeignDnsPolicy(value: Int): ForeignDnsPolicy = ForeignDnsPolicy.fromValue(value)
+
+    @TypeConverter fun fromForeignDnsPolicy(policy: ForeignDnsPolicy): Int = policy.value
+
+    @TypeConverter
+    fun toSplitDnsSuffixTarget(value: Int): SplitDnsSuffixTarget =
+        SplitDnsSuffixTarget.fromValue(value)
+
+    @TypeConverter fun fromSplitDnsSuffixTarget(target: SplitDnsSuffixTarget): Int = target.value
 }

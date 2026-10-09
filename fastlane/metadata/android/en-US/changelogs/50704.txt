@@ -1,0 +1,3 @@
+What's new:
+- Fixes tunnel start failures on 32-bit Android devices (especially Android TV)
+- Fixes tunnel DNS race that can cause DNS leaks for custom tunnel DNS

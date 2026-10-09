@@ -251,18 +251,8 @@ fun SettingsScreen(
             )
             SurfaceRow(
                 leading = { Icon(Icons.Outlined.Autorenew, contentDescription = null) },
-                title = stringResource(R.string.seamless_recovery),
-                trailing = { modifier ->
-                    ThemedSwitch(
-                        checked = uiState.settings.seamlessRecoveryEnabled,
-                        onClick = { viewModel.setSeamlessRecovery(enabled = it) },
-                        modifier = modifier,
-                    )
-                },
-                description = { DescriptionText(stringResource(R.string.seamless_recovery_desc)) },
-                onClick = {
-                    viewModel.setSeamlessRecovery(!uiState.settings.seamlessRecoveryEnabled)
-                },
+                title = stringResource(R.string.tunnel_recovery),
+                onClick = { navController.push(Route.TunnelRecovery) },
             )
             SurfaceRow(
                 leading = { Icon(Icons.Outlined.MonitorHeart, null) },

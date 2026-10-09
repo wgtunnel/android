@@ -1,0 +1,3 @@
+What's new:
+- Auto tunnel race fix on certain devices
+- In app updater improvement and fixes for standalone

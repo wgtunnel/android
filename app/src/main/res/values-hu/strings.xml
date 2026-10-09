@@ -299,4 +299,8 @@
     <!-- Notification formatting -->
     <!-- Informational notifications -->
     <!-- Errors -->
+    <string name="live_updates">Élő frissítések</string>
+    <string name="live_updates_desc">Az aktív alagút kapcsolódásának folyamatát és állapotát mutatja az állapotsávon és a lezárt képernyőn. Csak akkor érvényes, ha egyetlen alagút fut</string>
+    <string name="notification_connection_manual">Kézi csatlakozás</string>
+    <string name="notification_connection_auto">Auto-alagút</string>
 </resources>

@@ -41,6 +41,9 @@ data class EditableInterface(
     val rejectAfterTime: String = "",
     val keepaliveTimeout: String = "",
     val maxHandshakeAttempts: String = "",
+    // AmneziaWG 3.1
+    val randomTrailers: String = "",
+    val disableCookies: String = "",
 ) {
 
     fun hasScripts(): Boolean = listOf(preUp, postUp, preDown, postDown).any { it.isNotBlank() }
@@ -70,6 +73,8 @@ data class EditableInterface(
                 rejectAfterTime,
                 keepaliveTimeout,
                 maxHandshakeAttempts,
+                randomTrailers,
+                disableCookies,
             )
             .any { it.isNotBlank() }
     }
@@ -115,6 +120,8 @@ data class EditableInterface(
             rejectAfterTime = "",
             keepaliveTimeout = "",
             maxHandshakeAttempts = "",
+            randomTrailers = "",
+            disableCookies = "",
         )
     }
 
@@ -208,7 +215,6 @@ data class EditableInterface(
                 junkPacketMaxSize = i.jMax?.toString() ?: "",
                 initPacketJunkSize = i.s1?.toString() ?: "",
                 responsePacketJunkSize = i.s2?.toString() ?: "",
-                // S3 = cookie reply padding, S4 = transport padding
                 cookiePacketJunkSize = i.s3?.toString() ?: "",
                 transportPacketJunkSize = i.s4?.toString() ?: "",
                 initPacketMagicHeader = i.h1 ?: "",
@@ -227,6 +233,8 @@ data class EditableInterface(
                 rejectAfterTime = i.rejectAfterTime ?: "",
                 keepaliveTimeout = i.keepaliveTimeout ?: "",
                 maxHandshakeAttempts = i.maxHandshakeAttempts ?: "",
+                randomTrailers = i.randomTrailers ?: "",
+                disableCookies = i.disableCookies ?: "",
             )
         }
     }

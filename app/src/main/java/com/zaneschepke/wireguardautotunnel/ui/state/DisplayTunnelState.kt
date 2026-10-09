@@ -16,8 +16,6 @@ import com.zaneschepke.wireguardautotunnel.ui.theme.Straw
 sealed class DisplayTunnelState {
     data object Disconnected : DisplayTunnelState()
 
-    data object Connecting : DisplayTunnelState()
-
     data object ResolvingDns : DisplayTunnelState()
 
     data object EstablishingConnection : DisplayTunnelState()
@@ -32,7 +30,6 @@ sealed class DisplayTunnelState {
     fun labelRes(): Int =
         when (this) {
             Disconnected -> R.string.tunnel_state_disconnected
-            Connecting,
             EstablishingConnection -> R.string.tunnel_state_establishing_connection
             ResolvingDns -> R.string.tunnel_state_resolving_dns
             Ready -> R.string.ready
@@ -43,7 +40,6 @@ sealed class DisplayTunnelState {
     fun asColor(): Color =
         when (this) {
             Disconnected -> CoolGray
-            Connecting,
             ResolvingDns,
             EstablishingConnection,
             Ready -> Straw

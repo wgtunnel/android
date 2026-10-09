@@ -1,0 +1,5 @@
+What's new:
+- Fix for IPv6 plain DNS failing during lockdown or split DNS was failing
+- Fix for lockdown and split DNS (plain) resolution loops
+- Fix for IPv6 recovery job not properly triggering
+- Fix for lockdown mode settings changes while a tunnel is active could break the tunnel connection

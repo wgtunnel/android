@@ -321,4 +321,8 @@
     <!-- Notification formatting -->
     <!-- Informational notifications -->
     <!-- Errors -->
+    <string name="live_updates">Оновлення в реальному часі</string>
+    <string name="live_updates_desc">Показує перебіг підключення та стан активного тунелю в рядку стану та на екрані блокування. Діє, коли запущено лише один тунель</string>
+    <string name="notification_connection_manual">Ручне підключення</string>
+    <string name="notification_connection_auto">Автотунель</string>
 </resources>

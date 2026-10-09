@@ -16,19 +16,6 @@ fun String.capitalize(locale: Locale): String {
     return replaceFirstChar { if (it.isLowerCase()) it.titlecase(locale) else it.toString() }
 }
 
-// only allow valid Android ports
-fun String.isValidAndroidProxyBindAddress(): Boolean {
-    // Regex: IPv4 address with mandatory port (1–65535)
-    val regex =
-        Regex(
-            """^((25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)\.){3}(25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d):([1-9]\d{0,4}|[1-5]\d{4}|6[0-5][0-5][0-3][0-5])$"""
-        )
-    if (!regex.matches(this)) return false
-
-    val port = this.substringAfter(":").toIntOrNull() ?: return false
-    return port in 1024..65535
-}
-
 fun List<String>.isMatchingToWildcardList(value: String): Boolean {
     val excludeValues =
         this.filter { it.startsWith("!") }.map { it.removePrefix("!").transformWildcardsToRegex() }

@@ -12,8 +12,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.HdrAuto
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
-import androidx.compose.material3.scrollbar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -24,13 +22,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ThemedSwitch
-import com.zaneschepke.wireguardautotunnel.ui.common.dialog.InfoDialog
+import com.zaneschepke.wireguardautotunnel.ui.common.dialog.rememberRestartToApplyChanges
+import com.zaneschepke.wireguardautotunnel.ui.common.scroll.appScrollbar
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.settings.config.edit.components.AddPeerButton
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.settings.config.edit.components.InterfaceSection
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.settings.config.edit.components.PeersSection
@@ -51,17 +49,19 @@ fun ConfigEditScreen(
     val uiState by viewModel.collectAsState()
 
     if (uiState.isLoading) return
-    val locale = Locale.current.platformLocale
-
     var showSelectionDialog by rememberSaveable { mutableStateOf(false) }
 
     val scrollState = rememberScrollState()
 
+    val requestApply =
+        rememberRestartToApplyChanges(
+            needsRestart = uiState.isRunning,
+            onSave = viewModel::save,
+        )
+
     sharedViewModel.collectSideEffect { sideEffect ->
         when (sideEffect) {
-            is LocalSideEffect.SaveChanges -> {
-                if (uiState.isRunning) viewModel.setShowSaveModal(true) else viewModel.save()
-            }
+            is LocalSideEffect.SaveChanges -> requestApply()
             is LocalSideEffect.Modal.SelectTunnel -> {
                 showSelectionDialog = true
             }
@@ -87,23 +87,6 @@ fun ConfigEditScreen(
         },
     )
 
-    if (uiState.ui.showSaveModal) {
-        InfoDialog(
-            onDismiss = { viewModel.setShowSaveModal(false) },
-            onAttest = viewModel::save,
-            title = stringResource(R.string.save_changes),
-            body = {
-                Text(
-                    stringResource(
-                        R.string.restart_message_template,
-                        stringResource(R.string.tunnels).lowercase(locale),
-                    )
-                )
-            },
-            confirmText = stringResource(R.string._continue),
-        )
-    }
-
     Column(
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.Top),
@@ -111,7 +94,7 @@ fun ConfigEditScreen(
             Modifier.fillMaxSize()
                 .imePadding()
                 .verticalScroll(scrollState)
-                .scrollbar(
+                .appScrollbar(
                     state = scrollState.scrollIndicatorState,
                     orientation = Orientation.Vertical,
                 ),

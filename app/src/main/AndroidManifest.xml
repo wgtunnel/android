@@ -4,6 +4,7 @@
 
 	<uses-permission android:name="android.permission.INTERNET" />
 	<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+	<uses-permission android:name="android.permission.POST_PROMOTED_NOTIFICATIONS" />
 
     <!-- Legacy storage only needed on API ≤ 28, especially for Android TV -->
     <uses-permission
@@ -253,6 +254,15 @@
 				<action android:name="com.zaneschepke.wireguardautotunnel.STOP_AUTO_TUNNEL" />
 				<action android:name="com.zaneschepke.wireguardautotunnel.START_KILL_SWITCH" />
 				<action android:name="com.zaneschepke.wireguardautotunnel.STOP_KILL_SWITCH" />
+			</intent-filter>
+		</receiver>
+		<!--DownloadManager events for in-app updates. Must be exported -->
+		<receiver
+			android:name=".core.broadcast.UpdateDownloadReceiver"
+			android:exported="true" tools:ignore="ExportedReceiver">
+			<intent-filter>
+				<action android:name="android.intent.action.DOWNLOAD_COMPLETE" />
+				<action android:name="android.intent.action.DOWNLOAD_NOTIFICATION_CLICKED" />
 			</intent-filter>
 		</receiver>
 		<receiver

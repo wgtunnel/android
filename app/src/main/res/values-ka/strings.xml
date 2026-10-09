@@ -82,4 +82,8 @@
     <!-- Notification formatting -->
     <!-- Informational notifications -->
     <!-- Errors -->
+    <string name="live_updates">ცოცხალი განახლებები</string>
+    <string name="live_updates_desc">აჩვენებს აქტიური ტუნელის კავშირის მიმდინარეობასა და სტატუსს სტატუსის ზოლზე და ჩაკეტილ ეკრანზე. მოქმედებს, როცა მხოლოდ ერთი ტუნელი მუშაობს</string>
+    <string name="notification_connection_manual">ხელით დაკავშირება</string>
+    <string name="notification_connection_auto">ავტომატური ტუნელი</string>
 </resources>

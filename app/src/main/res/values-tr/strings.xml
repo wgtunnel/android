@@ -137,4 +137,8 @@
     <!-- Notification formatting -->
     <!-- Informational notifications -->
     <!-- Errors -->
+    <string name="live_updates">Canlı güncellemeler</string>
+    <string name="live_updates_desc">Etkin tünelin bağlantı ilerlemesini ve durumunu durum çubuğunda ve kilit ekranında gösterir. Yalnızca tek bir tünel çalışırken geçerlidir</string>
+    <string name="notification_connection_manual">Manuel bağlantı</string>
+    <string name="notification_connection_auto">Otomatik tünel</string>
 </resources>

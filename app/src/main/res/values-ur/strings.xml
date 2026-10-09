@@ -256,4 +256,8 @@
     <!-- Notification formatting -->
     <!-- Informational notifications -->
     <!-- Errors -->
+    <string name="live_updates">براہ راست اپ ڈیٹس</string>
+    <string name="live_updates_desc">فعال ٹنل کی کنکشن کی پیش رفت اور حیثیت اسٹیٹس بار اور لاک اسکرین پر دکھاتا ہے۔ صرف اس وقت لاگو ہوتا ہے جب ایک ٹنل چل رہا ہو</string>
+    <string name="notification_connection_manual">دستی کنکشن</string>
+    <string name="notification_connection_auto">خودکار ٹنل</string>
 </resources>

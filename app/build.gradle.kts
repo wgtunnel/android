@@ -11,6 +11,11 @@ plugins {
     alias(libs.plugins.aboutlibraries)
 }
 
+// TODO temp fix for duplicate tink conflict from core
+configurations.configureEach {
+    exclude(group = "com.google.crypto.tink", module = "tink")
+}
+
 ksp {
     arg("room.schemaLocation", "$projectDir/schemas")
 }
@@ -252,10 +257,6 @@ dependencies {
 
     // Lifecycle Compose
     implementation(libs.lifecycle.runtime.compose)
-
-    // Local dev
-//    implementation("com.wgtunnel.tunnel:backend")
-//    implementation("com.wgtunnel.tunnel:backend-android-jni")
 
     // Testing
     testImplementation(libs.junit)

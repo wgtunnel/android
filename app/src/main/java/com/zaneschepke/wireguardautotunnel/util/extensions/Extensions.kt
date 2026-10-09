@@ -5,8 +5,6 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import kotlin.math.pow
 import kotlin.math.roundToInt
-import kotlin.time.Duration
-import kotlin.time.Duration.Companion.milliseconds
 
 fun <T> List<T>.update(index: Int, item: T): List<T> = toMutableList().apply { this[index] = item }
 
@@ -26,6 +24,12 @@ fun Double.round(decimals: Int): Double {
 fun Instant.toUserFriendlyTimestamp(): String =
     DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss").withZone(ZoneId.systemDefault()).format(this)
 
-fun Long.secondsAgo(): Duration {
-    return (System.currentTimeMillis() - (this * 1000L)).milliseconds
+fun Throwable.isFileAccessDenied(): Boolean {
+    if (this is SecurityException) return true
+    return generateSequence(this) { it.cause }
+        .any { error ->
+            val message = error.message.orEmpty()
+            message.contains("EACCES", ignoreCase = true) ||
+                message.contains("Permission denied", ignoreCase = true)
+        }
 }

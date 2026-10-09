@@ -289,4 +289,8 @@
     <string name="system_dns_only_desc">Tutte le richieste DNS sono inviate ai server DNS del sistema e bypassano il tunnel</string>
     <string name="protocol">Protocollo</string>
     <string name="error_config_missing_dns">Il tunnel %1$s non ha i server DNS necessari per la tua attuale configurazione dell\'app</string>
+    <string name="live_updates">Aggiornamenti in tempo reale</string>
+    <string name="live_updates_desc">Mostra l\'avanzamento e lo stato della connessione del tunnel attivo nella barra di stato e nella schermata di blocco. Si applica quando è in esecuzione un solo tunnel</string>
+    <string name="notification_connection_manual">Connessione manuale</string>
+    <string name="notification_connection_auto">Tunnel automatico</string>
 </resources>

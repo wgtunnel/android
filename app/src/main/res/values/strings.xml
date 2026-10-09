@@ -13,7 +13,7 @@
     <string name="website_url" translatable="false">https://wgtunnel.com</string>
     <string name="translation_url" translatable="false">https://translate.android.wgtunnel.com/project/wgtunnel/invite?h=11b5b7bf2099293095775d4477320c772818907</string>
     <string name="privacy_policy_url" translatable="false">https://wgtunnel.com/privacy-policy/</string>
-    <string name="docs_wildcards" translatable="false">https://wgtunnel.com/docs/auto-tunneling/#use-name-wildcards</string>
+    <string name="docs_wildcards" translatable="false">https://wgtunnel.com/docs/auto-tunneling</string>
     <string name="matrix_url" translatable="false">https://matrix.to/#/#wg-tunnel-space:matrix.org</string>
     <string name="telegram_url" translatable="false">https://t.me/wgtunnel</string>
     <string name="error_file_extension">File is not a .conf or .zip</string>
@@ -115,6 +115,12 @@
     <string name="trusted_wifi_names">Trusted Wi-Fi</string>
     <string name="add_wifi_name">Add Wi-Fi name</string>
     <string name="primary_tunnel">Default tunnel</string>
+    <string name="entry_tunnel">Entry tunnel</string>
+    <string name="entry_tunnel_desc">Send this tunnel through another tunnel.</string>
+    <string name="entry_tunnel_none">None</string>
+    <string name="entry_tunnel_none_desc">Use this tunnel on its own.</string>
+    <string name="entry_tunnel_add_another">Add another tunnel to use as entry.</string>
+    <string name="via_entry">via %1$s</string>
     <string name="skip">Skip</string>
     <string name="launch_app_settings">Launch app settings</string>
     <string name="use_wildcards">Use rule wildcards</string>
@@ -187,7 +193,24 @@
     <string name="latest_installed">You are already running the latest version.</string>
     <string name="update_download_failed">Update download failed.</string>
     <string name="update_available">Update Available!</string>
+    <string name="update">Update</string>
+    <string name="update_notification_message">Version %1$s is available.</string>
     <string name="download_and_install">Download and Install</string>
+    <string name="downloading">Downloading…</string>
+    <string name="install">Install</string>
+    <string name="cancel_download">Cancel download</string>
+    <string name="update_waiting_for_network">Waiting for network…</string>
+    <string name="update_waiting_for_wifi">Waiting for Wi-Fi, this download is large for mobile data.</string>
+    <string name="update_download_retrying">Download interrupted, retrying…</string>
+    <string name="update_download_background_hint">You can close this, the download continues in the background.</string>
+    <string name="update_ready_to_install">Update ready</string>
+    <string name="update_ready_message">Tap to install the downloaded update.</string>
+    <string name="downloading_update">Downloading update…</string>
+    <string name="update_download_failed_title">Update download failed</string>
+    <string name="update_tap_to_install">Tap to install</string>
+    <string name="update_tap_to_retry">Tap to try again</string>
+    <string name="update_download_sizes">%1$s / %2$s</string>
+    <string name="update_download_percent">%1$d%% · %2$s</string>
     <string name="permission_required">Permission Required</string>
     <string name="install_updated_permission">This app needs permission to install updates.</string>
     <string name="allow">Allow</string>
@@ -216,6 +239,7 @@
     <string name="sort">Sort</string>
     <string name="sort_by_latency">Sort by latency</string>
     <string name="pinging_servers">Pinging servers…</string>
+    <string name="ping_unreachable">unreachable</string>
     <string name="drag_handle">Drag Handle</string>
     <string name="move_up">Move Up</string>
     <string name="move_down">Move Down</string>
@@ -245,6 +269,8 @@
     <string name="selected">Selected</string>
     <string name="socks_5_proxy">SOCKS5 proxy</string>
     <string name="http_proxy">HTTP proxy</string>
+    <string name="allow_socks4">Allow SOCKS4 clients</string>
+    <string name="allow_socks4_desc">Accept SOCKS4 connections on the SOCKS5 proxy. Only available when proxy credentials are disabled.</string>
     <string name="username">Username</string>
     <string name="password">Password</string>
     <string name="proxy_credentials">Proxy credentials</string>
@@ -284,6 +310,7 @@
     <string name="liberapay">Liberapay</string>
     <string name="kofi">Ko-fi</string>
     <string name="bitcoin_address" translatable="false">bc1qu6dwlwhav7cwp5gv3kyv3cpwrjrra80p75js6u</string>
+    <string name="bitcoin_lightning_address" translatable="false">wgtunnel@cake.cash</string>
     <string name="litecoin_address" translatable="false">ltc1q983jnz3n2zshp2xyme8ant45aah5hv337k8nm7</string>
     <string name="ethereum_address" translatable="false">0xd711c24D0E355d9D694F60B42FdDAFd8653D2786</string>
     <string name="bitcoin_cash_address" translatable="false">bitcoincash:qp6xacvswha2tjfp2rscguq3gd4eecxeuvcgtyjv58</string>
@@ -292,12 +319,11 @@
     <string name="tron_address" translatable="false">TCbR2SqstTLxCA9zp52iC7G2DfHUGD9ak2</string>
     <string name="monero_address" translatable="false">44D1vWL4CqmEGiRhwtUy6MT2SgaCYpk5o3Nh6YxBFyoCXLZ5eZMLiDGj9uoo51mGjeiLxHWyV28MxDPUzQZN4PoqML16ZB9</string>
     <string name="ecash_address" translatable="false">ecash:qrnnvzhezgm9unazue2mw7np5qhdk2874g996nd2zw</string>
-    <string name="zcash_address" translatable="false">
-        u1fkx80l0mr7cgzmj5xusnf4fa0hlvttaedlqjzl657dyyfqq4tzq49v4ru53u8re0kfnlah7s363msewcva43v8a2rn8zqs56jeeu6m7snrfljs343kfkgv7gsa76xg005wz95855uwlrvgan0er8n3sp75mmmj44n3fnjar5y7jy0pd2k5yw33lgwpuectuknkwstdkkfyqvxh9xq6c
-    </string>
+    <string name="zcash_address" translatable="false">u1fkx80l0mr7cgzmj5xusnf4fa0hlvttaedlqjzl657dyyfqq4tzq49v4ru53u8re0kfnlah7s363msewcva43v8a2rn8zqs56jeeu6m7snrfljs343kfkgv7gsa76xg005wz95855uwlrvgan0er8n3sp75mmmj44n3fnjar5y7jy0pd2k5yw33lgwpuectuknkwstdkkfyqvxh9xq6c</string>
     <string name="stellar_address" translatable="false">GAOHREIPAOKSTD4ELXCMM7LDZPRGKJ2DNHEIXLU752PJS6CDPBAEM75B</string>
     <string name="avalanche_address" translatable="false">0xd711c24D0E355d9D694F60B42FdDAFd8653D2786</string>
     <string name="bitcoin" translatable="false">Bitcoin (BTC)</string>
+    <string name="bitcoin_lightning" translatable="false">Bitcoin Lightning</string>
     <string name="monero" translatable="false">Monero (XMR)</string>
     <string name="ethereum" translatable="false">Ethereum (ETH)</string>
     <string name="litecoin" translatable="false">Litecoin (LTC)</string>
@@ -329,6 +355,7 @@
     <string name="other">Other</string>
     <string name="options">Options</string>
     <string name="general">General</string>
+    <string name="multihop">Multihop</string>
     <string name="networks">Networks</string>
     <string name="preferred_tunnel_label">Preferred tunnel: </string>
     <string name="preferred_tunnel">Preferred tunnel</string>
@@ -360,6 +387,9 @@
     <string name="dual_stack_description">Tunnels must support IPv4 and IPv6</string>
     <string name="save_changes">Save changes</string>
     <string name="restart_message_template">Saving changes will cause the %1$s to restart, do you wish to continue?</string>
+    <string name="restart_required">Restart required</string>
+    <string name="restart_to_apply_message">The active tunnel must be restarted for these changes to take effect.</string>
+    <string name="save_and_restart">Save and restart</string>
     <string name="_continue">Continue</string>
     <string name="kill_switch">kill switch</string>
     <string name="translation">Translation</string>
@@ -397,6 +427,8 @@
     <string name="reject_after_time" translatable="false">RejectAfterTime</string>
     <string name="keepalive_timeout" translatable="false">KeepaliveTimeout</string>
     <string name="max_handshake_attempts" translatable="false">MaxHandshakeAttempts</string>
+    <string name="random_trailers" translatable="false">RandomTrailers</string>
+    <string name="disable_cookies" translatable="false">DisableCookies</string>
     <string name="copy_from">Copy from</string>
     <string name="mode">Mode</string>
     <string name="app_selection">App selection</string>
@@ -440,6 +472,10 @@
 
     <string name="status_template">status: %1$s</string>
     <string name="uptime_template">uptime: %1$s</string>
+    <string name="socks5_proxy_template">socks5 proxy: %1$s</string>
+    <string name="socks5_proxy_protected_template">socks5 proxy: %1$s (password protected)</string>
+    <string name="http_proxy_template">http proxy: %1$s</string>
+    <string name="http_proxy_protected_template">http proxy: %1$s (password protected)</string>
     <string name="peer_template">peer: %1$s</string>
     <string name="handshake_template">handshake: %1$s</string>
 
@@ -577,21 +613,81 @@
     <string name="stored_logs_deleted">Stored logs deleted successfully</string>
     <string name="seamless_recovery">Seamless tunnel recovery</string>
     <string name="seamless_recovery_desc">Maintains protection while recovering from DDNS changes, network switches, and NAT issues</string>
+    <string name="tunnel_recovery">Tunnel recovery</string>
+    <string name="recovery_bounce_delay">Seamless recovery delay</string>
+    <string name="recovery_bounce_delay_desc">Handshake failure threshold before seamless recovery triggers</string>
+    <string name="recovery_details">Recovery details</string>
+    <string name="recovery_events">Recoveries: %d</string>
+    <string name="recovery_last_event">Last recovery: %s</string>
     <string name="now_in_template">Now in %1$s</string>
     <string name="snackbar_seamless_recovery_attempt">Connection issue detected. Recovering %s…</string>
     <string name="seamless_recovery_attempt_title">Seamless Recovery</string>
     <string name="seamless_recovery_attempt_message">Connection issue detected. Attempting automatic recovery.</string>
     <string name="local_domain_suffixes">Local domain suffixes</string>
+    <string name="domain_suffixes">Domain suffixes</string>
     <string name="encrypted_dns">Encrypted DNS</string>
     <string name="split_dns">Split DNS</string>
     <string name="system_dns_only">System DNS only</string>
     <string name="default_dns_desc">Standard plain DNS through the tunnel using the tunnel DNS servers</string>
     <string name="encrypted_dns_desc">Encrypted DNS through the tunnel using a custom server</string>
-    <string name="split_dns_desc">Local prefix domains are split to system DNS while everything else is tunneled via customizable options</string>
+    <string name="split_dns_desc">Split resolution by domain suffix between system DNS and tunnel DNS</string>
     <string name="system_dns_only_desc">All DNS queries are send to the system\'s DNS servers and bypass the tunnel</string>
     <string name="protocol">Protocol</string>
     <string name="tunnel_dns_mode">Tunnel DNS mode</string>
     <string name="tunnel_dns">Tunnel DNS</string>
     <string name="use_tunnel_dns_servers">Use tunnel DNS servers</string>
+    <string name="split_suffix_target">Route suffixes via</string>
+    <string name="split_suffix_target_system">System DNS</string>
+    <string name="split_suffix_target_tunnel">Tunnel DNS</string>
+    <string name="split_suffix_target_desc_system">Domain suffixes routed to system DNS. All other queries use tunnel DNS.</string>
+    <string name="split_suffix_target_desc_tunnel">Domain suffixes routed to tunnel DNS. All other queries use system DNS.</string>
+    <string name="private_dns_enabled_warning">Private DNS is enabled. Disable it for tunnel DNS to work properly</string>
+    <string name="transit_dns_policy">Transit DNS requests</string>
+    <string name="transit_dns_policy_desc">How to handle plain DNS request sent to a server different than the tunnel\'s DNS servers</string>
+    <string name="transit_dns_redirect">Redirect</string>
+    <string name="transit_dns_block">Block</string>
+    <string name="transit_dns_allow">Allow</string>
     <string name="error_config_missing_dns">Tunnel %1$s is missing DNS servers that are required for your current app settings</string>
+    <string name="active_tunnel_updated">Active tunnel updated</string>
+    <string name="display">Display</string>
+    <string name="live_updates">Live updates</string>
+    <string name="live_updates_desc">Pin the tunnel notification to the status bar</string>
+    <string name="notification_connection_manual">Manual</string>
+    <string name="notification_connection_auto">Auto-tunnel</string>
+    <string name="notification_show_origin">Connection source</string>
+    <string name="notification_show_origin_desc">Show whether the tunnel was started manually or by auto-tunnel</string>
+    <string name="notification_show_transfer">Transfer stats</string>
+    <string name="notification_show_transfer_desc">Show received and sent traffic in the tunnel notification</string>
+    <string name="notification_show_recovery">Recovery attempts</string>
+    <string name="notification_show_recovery_desc">Show seamless recovery attempts in the tunnel notification</string>
+    <string name="notification_status_format">Status: %1$s</string>
+    <string name="notification_source_format">Source: %1$s</string>
+    <string name="notification_transfer_format">Transfer: ↓ %1$s  ↑ %2$s</string>
+    <string name="notification_recovery_format">Recovery attempts: %1$d</string>
+    <string name="notification_failure_tint">Handshake warning</string>
+    <string name="notification_failure_tint_desc">Tint the notification icon when a tunnel has a handshake failure</string>
+    <string name="add_group">Add group</string>
+    <string name="group_name">Group name</string>
+    <string name="rename_group">Rename group</string>
+    <string name="delete_group">Delete group</string>
+    <string name="delete_group_message">Tunnels in this group will be ungrouped.</string>
+    <string name="delete_group_and_tunnels">Delete group and tunnels</string>
+    <string name="delete_group_and_tunnels_message">This will delete the group and all tunnels inside it.</string>
+    <string name="export_group">Export group</string>
+    <string name="move_to_group">Move to group</string>
+    <string name="ungroup">Ungroup</string>
+    <string name="reorder">Reorder</string>
+    <string name="expand_group">Expand group</string>
+    <string name="collapse_group">Collapse group</string>
+    <string name="group_with_count">%1$s (%2$d)</string>
+    <string name="group_active_count">%1$d active</string>
+    <string name="add_group_ellipsis">Add group…</string>
+    <string name="no_tunnels_in_group">This group has no tunnels to export</string>
+    <string name="n_selected">%d selected</string>
+    <plurals name="group_tunnel_count">
+        <item quantity="one">%d tunnel</item>
+        <item quantity="other">%d tunnels</item>
+    </plurals>
+    <string name="socks5" translatable="false">SOCKS5</string>
+    <string name="http" translatable="false">HTTP</string>
 </resources>

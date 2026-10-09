@@ -304,4 +304,8 @@
     <!-- Notification formatting -->
     <!-- Informational notifications -->
     <!-- Errors -->
+    <string name="live_updates">Reaalajas värskendused</string>
+    <string name="live_updates_desc">Näitab aktiivse tunneli ühenduse edenemist ja olekut olekuribal ning lukustuskuval. Kehtib, kui töötab ainult üks tunnel</string>
+    <string name="notification_connection_manual">Käsitsi ühendus</string>
+    <string name="notification_connection_auto">Automaatne tunneldus</string>
 </resources>

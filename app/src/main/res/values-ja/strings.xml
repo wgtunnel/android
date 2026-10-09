@@ -65,4 +65,8 @@
     <!-- Notification formatting -->
     <!-- Informational notifications -->
     <!-- Errors -->
+    <string name="live_updates">ライブアップデート</string>
+    <string name="live_updates_desc">アクティブなトンネルの接続の進行状況と状態をステータスバーとロック画面に表示します。実行中のトンネルが1つの場合に適用されます</string>
+    <string name="notification_connection_manual">手動接続</string>
+    <string name="notification_connection_auto">自動トンネル</string>
 </resources>

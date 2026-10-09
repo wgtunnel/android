@@ -26,6 +26,8 @@ class DataStoreManager(
     companion object {
         val locationDisclosureShown = booleanPreferencesKey("LOCATION_DISCLOSURE_SHOWN")
         val batteryDisableShown = booleanPreferencesKey("BATTERY_OPTIMIZE_DISABLE_SHOWN")
+        val notificationPermissionRequested =
+            booleanPreferencesKey("NOTIFICATION_PERMISSION_REQUESTED")
         val shouldShowDonationSnackbar = booleanPreferencesKey("SHOW_DONATION_SNACK")
         val lastActiveTunnelIds = stringPreferencesKey("LAST_ACTIVE_TUNNEL_IDS")
     }

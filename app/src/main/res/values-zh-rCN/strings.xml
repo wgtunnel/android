@@ -450,4 +450,8 @@
     <string name="snackbar_seamless_recovery_attempt">检测到连接问题。正在恢复 %s……</string>
     <string name="seamless_recovery_attempt_title">无缝漫游</string>
     <string name="seamless_recovery_attempt_message">检测到连接问题。尝试自动恢复。</string>
+    <string name="live_updates">实时更新</string>
+    <string name="live_updates_desc">在状态栏和锁定屏幕上显示活动隧道的连接进度和状态。仅在运行单个隧道时适用</string>
+    <string name="notification_connection_manual">手动连接</string>
+    <string name="notification_connection_auto">自动隧道</string>
 </resources>

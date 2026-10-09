@@ -22,11 +22,10 @@ class TunnelViewModel(
             buildSettings = { repeatOnSubscribedStopTimeout = 5000L },
         ) {
             combine(
-                    tunnelRepository.userTunnelsFlow.map {
-                        it.firstOrNull { tun -> tun.id == tunnelId }
-                    },
+                    tunnelRepository.userTunnelsFlow,
                     tunnelCoordinator.backendStatus.map { it.activeTunnels[tunnelId] },
-                ) { tunnel, active ->
+                ) { tunnels, active ->
+                    val tunnel = tunnels.firstOrNull { tun -> tun.id == tunnelId }
                     val config = tunnel?.getConfig()
                     val includedAppCount =
                         config?.`interface`?.includedApplications?.takeIf { it.isNotEmpty() }?.size
@@ -36,9 +35,11 @@ class TunnelViewModel(
 
                     state.copy(
                         tunnel = tunnel,
+                        userTunnels = tunnels,
                         excludedAppsCount = excludedAppCount,
                         includedAppsCount = includedAppCount,
                         activeConfig = active?.activeConfig,
+                        lastStatsAtMs = active?.lastStatsAtMs ?: 0L,
                         isLoading = false,
                     )
                 }
@@ -54,6 +55,21 @@ class TunnelViewModel(
     fun onMetered(to: Boolean) = intent { tunnelRepository.setMetered(tunnelId, to) }
 
     fun onDDNSTunnel(to: Boolean) = intent { tunnelRepository.setDDNSTunnel(tunnelId, to) }
+
+    fun onEntryTunnel(entryId: Int?) = intent {
+        val tunnel = state.tunnel ?: return@intent
+        if (entryId == tunnel.id) return@intent
+        if (entryId != null) {
+            val entry = state.userTunnels.firstOrNull { it.id == entryId } ?: return@intent
+            if (entry.entryTunnelId != null) return@intent
+        }
+        val updated = tunnel.copy(entryTunnelId = entryId)
+        tunnelRepository.save(updated)
+        if (state.activeConfig != null) {
+            tunnelCoordinator.stopTunnel(tunnelId)
+            tunnelCoordinator.startTunnel(updated)
+        }
+    }
 
     fun onIPv6Action(iPv6Intent: IPv6Intent) = intent {
         val tunnel = state.tunnel ?: return@intent

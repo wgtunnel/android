@@ -37,4 +37,7 @@ interface GeneralSettingsDao {
 
     @Query("UPDATE general_settings SET seamless_recovery = :enabled")
     suspend fun updateSeamlessRecovery(enabled: Boolean)
+
+    @Query("UPDATE general_settings SET seamless_recovery_bounce_delay_sec = :seconds")
+    suspend fun updateSeamlessRecoveryBounceDelay(seconds: Int)
 }

@@ -29,6 +29,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -41,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import com.dokar.sonner.ToastType
 import com.zaneschepke.wireguardautotunnel.BuildConfig
 import com.zaneschepke.wireguardautotunnel.R
+import com.zaneschepke.wireguardautotunnel.domain.model.UpdateDownloadState
 import com.zaneschepke.wireguardautotunnel.domain.sideeffect.GlobalSideEffect
 import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
@@ -51,19 +53,27 @@ import com.zaneschepke.wireguardautotunnel.ui.common.text.DescriptionText
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
 import com.zaneschepke.wireguardautotunnel.ui.screens.support.components.PermissionDialog
 import com.zaneschepke.wireguardautotunnel.ui.screens.support.components.UpdateDialog
+import com.zaneschepke.wireguardautotunnel.ui.screens.support.components.UpdateDownloadProgress
 import com.zaneschepke.wireguardautotunnel.util.Constants
 import com.zaneschepke.wireguardautotunnel.util.StringValue
+import com.zaneschepke.wireguardautotunnel.util.extensions.canInstallPackages
 import com.zaneschepke.wireguardautotunnel.util.extensions.launchPlayStoreListing
 import com.zaneschepke.wireguardautotunnel.util.extensions.launchPlayStoreReview
 import com.zaneschepke.wireguardautotunnel.util.extensions.launchSupportEmail
 import com.zaneschepke.wireguardautotunnel.util.extensions.openWebUrl
+import com.zaneschepke.wireguardautotunnel.viewmodel.SharedAppViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.SupportViewModel
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.viewmodel.koinActivityViewModel
 import org.orbitmvi.orbit.compose.collectAsState
 
 @Composable
-fun SupportScreen(viewModel: SupportViewModel = koinViewModel()) {
+fun SupportScreen(
+    viewModel: SupportViewModel = koinViewModel(),
+    sharedViewModel: SharedAppViewModel = koinActivityViewModel(),
+) {
     val context = LocalContext.current
     val navController = LocalNavController.current
     val isTv = LocalIsAndroidTV.current
@@ -72,6 +82,21 @@ fun SupportScreen(viewModel: SupportViewModel = koinViewModel()) {
     val supportState by viewModel.collectAsState()
 
     val clipboardManager = rememberClipboardHelper()
+
+    var showPermissionDialog by rememberSaveable { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        sharedViewModel.supportAutoUpdateRequests.collect { startDownload ->
+            if (BuildConfig.DEBUG) return@collect
+            if (BuildConfig.FLAVOR != Constants.STANDALONE_FLAVOR) return@collect
+            if (startDownload && !context.canInstallPackages()) {
+                viewModel.checkForStandaloneUpdate(startDownloadIfAvailable = false)
+                showPermissionDialog = true
+            } else {
+                viewModel.checkForStandaloneUpdate(startDownloadIfAvailable = startDownload)
+            }
+        }
+    }
 
     val issuesUrl = stringResource(R.string.github_url)
     val izzyUrl = stringResource(R.string.fdroid_url)
@@ -98,8 +123,6 @@ fun SupportScreen(viewModel: SupportViewModel = koinViewModel()) {
         }
     }
 
-    var showPermissionDialog by rememberSaveable { mutableStateOf(false) }
-
     if (supportState.appUpdate != null) {
         UpdateDialog(
             viewModel = viewModel,
@@ -125,8 +148,20 @@ fun SupportScreen(viewModel: SupportViewModel = koinViewModel()) {
         }
     }
 
+    val scrollState = rememberScrollState()
+
+    // The update row is the last one, so this brings it into view
+    LaunchedEffect(Unit) {
+        sharedViewModel.showUpdateStatusRequested.collect { requested ->
+            if (!requested) return@collect
+            val bottom = snapshotFlow { scrollState.maxValue }.first { it != Int.MAX_VALUE }
+            scrollState.animateScrollTo(bottom)
+            sharedViewModel.consumeShowUpdateStatus()
+        }
+    }
+
     Column(
-        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
+        modifier = Modifier.fillMaxSize().verticalScroll(scrollState),
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.Top),
     ) {
@@ -261,9 +296,34 @@ fun SupportScreen(viewModel: SupportViewModel = koinViewModel()) {
                 },
                 onClick = { clipboardManager.copy(version) },
             )
+            val download = supportState.download
+            val downloading = download as? UpdateDownloadState.Downloading
+            val downloadReady = download is UpdateDownloadState.Completed
+            val downloadFailed = download is UpdateDownloadState.Failed
             SurfaceRow(
                 leading = { Icon(Icons.Outlined.InstallMobile, contentDescription = null) },
-                title = stringResource(R.string.check_for_update),
+                title =
+                    stringResource(
+                        when {
+                            downloading != null -> R.string.downloading_update
+                            downloadReady -> R.string.update_ready_to_install
+                            downloadFailed -> R.string.update_download_failed_title
+                            else -> R.string.check_for_update
+                        }
+                    ),
+                description =
+                    when {
+                        downloading != null -> {
+                            { UpdateDownloadProgress(downloading) }
+                        }
+                        downloadReady -> {
+                            { DescriptionText(stringResource(R.string.update_tap_to_install)) }
+                        }
+                        downloadFailed -> {
+                            { DescriptionText(stringResource(R.string.update_tap_to_retry)) }
+                        }
+                        else -> null
+                    },
                 onClick = {
                     if (BuildConfig.DEBUG) {
                         scope.launch {
@@ -280,7 +340,13 @@ fun SupportScreen(viewModel: SupportViewModel = koinViewModel()) {
                         Constants.GOOGLE_PLAY_FLAVOR ->
                             context.launchPlayStoreListing().onFailure { openWebUrl(playStoreUrl) }
                         Constants.FDROID_FLAVOR -> openWebUrl(izzyUrl)
-                        else -> viewModel.checkForStandaloneUpdate()
+                        // A running or finished download reopens the dialog, no new check
+                        else ->
+                            if (downloading != null || downloadReady) {
+                                viewModel.showActiveDownload()
+                            } else {
+                                viewModel.checkForStandaloneUpdate()
+                            }
                     }
                 },
                 trailing =

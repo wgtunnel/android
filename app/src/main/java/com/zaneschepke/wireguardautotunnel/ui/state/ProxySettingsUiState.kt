@@ -9,6 +9,7 @@ data class ProxySettingsUiState(
     // edit fields
     val socks5Enabled: Boolean = false,
     val httpEnabled: Boolean = false,
+    val allowSocks4: Boolean = false,
     val socksBindAddress: String = "",
     val httpBindAddress: String = "",
     val proxyUsername: String = "",
@@ -20,5 +21,4 @@ data class ProxySettingsUiState(
     val isUserNameError: Boolean = false,
     val isPasswordError: Boolean = false,
     val isLoading: Boolean = true,
-    val showSaveModal: Boolean = false,
 )

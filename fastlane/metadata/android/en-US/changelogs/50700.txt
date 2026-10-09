@@ -1,0 +1,5 @@
+What's new:
+- Live notifications and notification improvements with detail customization toggles
+- In app language sync with system per app language settings
+- Bugfix for tunnel split DNS suffixes
+- Improvements to app memory usage when logger is active

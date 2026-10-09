@@ -54,7 +54,6 @@ data class ConfigEditUiState(
     val showAmneziaValues: Boolean = false,
     val isInterfaceDropdownExpanded: Boolean = false,
     val isPeerDropdownExpanded: Boolean = false,
-    val showSaveModal: Boolean = false,
     val selectedCopySourceTunnelId: Int? = null,
 )
 

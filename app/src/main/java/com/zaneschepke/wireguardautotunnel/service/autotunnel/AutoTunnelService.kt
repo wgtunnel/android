@@ -4,15 +4,16 @@ import android.content.Intent
 import androidx.core.app.ServiceCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
+import com.wgtunnel.backend.Backend
+import com.wgtunnel.backend.autotunnel.AutoTunnelReconciler
+import com.zaneschepke.networkmonitor.ActiveNetwork
 import com.zaneschepke.networkmonitor.AndroidNetworkMonitor
 import com.zaneschepke.networkmonitor.StableNetworkEngine
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.core.orchestration.TunnelCoordinator
 import com.zaneschepke.wireguardautotunnel.di.Dispatcher
 import com.zaneschepke.wireguardautotunnel.domain.enums.NotificationAction
-import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelActionSource
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelMode
-import com.zaneschepke.wireguardautotunnel.domain.events.AutoTunnelEvent
 import com.zaneschepke.wireguardautotunnel.domain.model.AutoTunnelSettings
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.domain.repository.AutoTunnelSettingsRepository
@@ -24,32 +25,27 @@ import com.zaneschepke.wireguardautotunnel.notification.AndroidNotificationServi
 import com.zaneschepke.wireguardautotunnel.notification.NotificationService
 import com.zaneschepke.wireguardautotunnel.service.tile.AutoTunnelTileRefresher
 import com.zaneschepke.wireguardautotunnel.util.Constants
+import com.zaneschepke.wireguardautotunnel.util.extensions.debounceFalling
 import com.zaneschepke.wireguardautotunnel.util.extensions.to
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.supervisorScope
 import org.koin.android.ext.android.inject
 import org.koin.core.qualifier.named
 import timber.log.Timber
 
 class AutoTunnelService : LifecycleService() {
-
-    private val engine = AutoTunnelEngine()
-
-    private val reconciliationMutex = Mutex()
 
     private val networkEngine: StableNetworkEngine by inject()
 
@@ -63,10 +59,16 @@ class AutoTunnelService : LifecycleService() {
     private val settingsRepository: GeneralSettingRepository by inject()
     private val tunnelsRepository: TunnelRepository by inject()
     private val tunnelCoordinator: TunnelCoordinator by inject()
-    private var autoTunnelJob: Job? = null
-    private var permissionsJob: Job? = null
-    private var overridesJob: Job? = null
-    private var noInternetStopJob: Job? = null
+    private val backend: Backend by inject()
+
+    private val reconciler by lazy {
+        AutoTunnelReconciler(
+            scope = CoroutineScope(lifecycleScope.coroutineContext + ioDispatcher),
+            status = backend.status,
+            host = AndroidAutoTunnelHost(tunnelCoordinator, tunnelsRepository),
+            startupSettle = STARTUP_SETTLE_MS.milliseconds,
+        )
+    }
 
     private data class PermissionWarningState(
         val detectionMethod: AndroidNetworkMonitor.WifiDetectionMethod,
@@ -75,27 +77,49 @@ class AutoTunnelService : LifecycleService() {
         val ssidReadRequired: Boolean,
     )
 
-    @Volatile private var hasUserOverride = false
-    private var lastNetworkKey: String? = null
-
     @OptIn(FlowPreview::class)
     private val autoTunnelStateFlow: Flow<AutoTunnelState> by lazy {
-        val networkFlow = networkEngine.stableState.mapNotNull { it?.state?.toDomain() }
+        // Add stabilization to network identity
+        val networkFlow =
+            networkEngine.stableState
+                .mapNotNull { it?.state?.toDomain() }
+                .debounce(NETWORK_IDENTITY_SETTLE_MS.milliseconds)
 
         val settingsFlow = combineSettings()
 
-        val backendFlow =
-            tunnelCoordinator.backendStatus
-                .distinctUntilChanged { old, new -> old.activeTunnels == new.activeTunnels }
-                .debounce(300L.milliseconds)
+        // Detected captive portal state is trusted immediately, but cleared state
+        // is only trusted once it's held for CAPTIVE_PORTAL_CLEAR_CONFIRM_MS without a change
+        // to prevent flapping on flaky networks.
+        val confirmedCaptivePortalFlow =
+            networkFlow
+                .map {
+                    (it.activeNetwork as? ActiveNetwork.Wifi)?.requiresCaptivePortalLogin == true
+                }
+                .distinctUntilChanged()
+                .debounceFalling(CAPTIVE_PORTAL_CLEAR_CONFIRM_MS.milliseconds)
 
-        combine(networkFlow, settingsFlow, backendFlow) { network, settings, backend ->
+        // Having a usable network is believed immediately, but losing it is only believed once
+        // it's held false for NO_INTERNET_CONFIRM_MS without recovering as Android's connectivity
+        // validation can flap for an extended period during network transitions
+        val confirmedHasUsableNetworkFlow =
+            networkFlow
+                .map { it.hasUsableNetwork }
+                .distinctUntilChanged()
+                .debounceFalling(NO_INTERNET_CONFIRM_MS.milliseconds)
+
+        combine(
+                networkFlow,
+                settingsFlow,
+                confirmedCaptivePortalFlow,
+                confirmedHasUsableNetworkFlow,
+            ) { network, settings, confirmedCaptivePortal, confirmedHasUsableNetwork ->
                 AutoTunnelState(
                     networkState = network,
                     settings = settings.second,
                     tunnelMode = settings.first,
                     tunnels = settings.third,
-                    backendStatus = backend,
+                    confirmedCaptivePortal = confirmedCaptivePortal,
+                    confirmedHasUsableNetwork = confirmedHasUsableNetwork,
                 )
             }
             .distinctUntilChanged()
@@ -105,6 +129,7 @@ class AutoTunnelService : LifecycleService() {
         super.onCreate()
         stateHolder.setActive(true)
         launchWatcherNotification()
+        observeActiveState()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -118,13 +143,18 @@ class AutoTunnelService : LifecycleService() {
         stateHolder.setActive(true)
         AutoTunnelTileRefresher.refresh(this)
         launchWatcherNotification()
-        autoTunnelJob?.cancel()
-        autoTunnelJob = startAutoTunnelStateJob()
-        permissionsJob?.cancel()
-        permissionsJob = startLocationPermissionsNotificationJob()
-        overridesJob?.cancel()
-        overridesJob = startUserOverrideJob()
     }
+
+    private fun observeActiveState() =
+        lifecycleScope.launch(ioDispatcher) {
+            stateHolder.active.collectLatest { isActive ->
+                if (!isActive) return@collectLatest
+                supervisorScope {
+                    launch { runReconciler() }
+                    launch { runLocationPermissionsNotificationJob() }
+                }
+            }
+        }
 
     fun stop() {
         stateHolder.setActive(false)
@@ -132,26 +162,26 @@ class AutoTunnelService : LifecycleService() {
     }
 
     override fun onDestroy() {
-        cancelNoInternetStopJob()
+        reconciler.stop()
+        tunnelCoordinator.userOverrideListener = null
         ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
         stateHolder.setActive(false)
         AutoTunnelTileRefresher.refresh(this)
         super.onDestroy()
     }
 
-    private fun startUserOverrideJob(): Job =
-        lifecycleScope.launch(ioDispatcher) {
-            tunnelCoordinator.userOverrideFlow.collect {
-                reconciliationMutex.withLock {
-                    if (!hasUserOverride) {
-                        Timber.d(
-                            "User manually overrode Auto Tunnel on current network. Pausing auto decisions."
-                        )
-                    }
-                    hasUserOverride = true
-                }
-            }
+    private suspend fun runReconciler() {
+        // The wait is unbounded and the reconciler's actions are not cancellable, so it goes first
+        tunnelCoordinator.awaitReady()
+        tunnelCoordinator.userOverrideListener = { reconciler.notifyUserOverride() }
+        reconciler.start(autoTunnelStateFlow.map { it.toCore() })
+        try {
+            awaitCancellation()
+        } finally {
+            reconciler.stop()
+            tunnelCoordinator.userOverrideListener = null
         }
+    }
 
     private fun launchWatcherNotification(
         description: String = getString(R.string.monitoring_state_changes)
@@ -179,88 +209,6 @@ class AutoTunnelService : LifecycleService() {
         )
     }
 
-    // Instead of stopping tunnel right away on no internet, we kick off this job to add short delay
-    // and re-evaluation to prevent unwanted stops
-    // on flaky networks and network transitions
-    private fun scheduleNoInternetStop() {
-        noInternetStopJob?.cancel()
-
-        noInternetStopJob =
-            lifecycleScope.launch(ioDispatcher) {
-                delay(NO_INTERNET_GRACE_PERIOD_MS.milliseconds)
-
-                reconciliationMutex.withLock {
-                    val currentNetworkState = networkEngine.stableState.value?.state?.toDomain()
-
-                    val stillNoUsableNetwork = currentNetworkState?.hasUsableNetwork == false
-                    val stopOnNoInternetEnabled =
-                        autoTunnelRepository.flow.firstOrNull()?.isStopOnNoInternetEnabled == true
-
-                    if (stillNoUsableNetwork && stopOnNoInternetEnabled) {
-                        val currentActiveIds =
-                            tunnelCoordinator.backendStatus.value.activeTunnels.keys
-
-                        if (currentActiveIds.isNotEmpty()) {
-                            Timber.w(
-                                "No internet grace period expired and still no internet. Stopping tunnels: $currentActiveIds"
-                            )
-                            currentActiveIds.forEach { tunnelId ->
-                                tunnelCoordinator.stopTunnel(
-                                    tunnelId,
-                                    TunnelActionSource.AUTO_TUNNEL,
-                                )
-                            }
-                        }
-                    } else {
-                        Timber.d(
-                            "No internet grace period expired, but internet is back or setting disabled. Doing nothing."
-                        )
-                    }
-                }
-            }
-    }
-
-    private fun cancelNoInternetStopJob() {
-        noInternetStopJob?.cancel()
-        noInternetStopJob = null
-    }
-
-    private fun startAutoTunnelStateJob(): Job =
-        lifecycleScope.launch(ioDispatcher) {
-            autoTunnelStateFlow.collectLatest { state ->
-                reconciliationMutex.withLock {
-                    updateFingerprintIfNeeded(state)
-                    val rawEvent = engine.evaluate(state)
-                    val event = applyOverrides(rawEvent)
-                    Timber.d("AutoTunnel reconciliation event: $event")
-                    handleAutoTunnelEvent(event)
-                }
-            }
-        }
-
-    private fun updateFingerprintIfNeeded(state: AutoTunnelState) {
-        val needsBSSIDAwareness =
-            state.settings.trustedNetworkBSSIDs.isNotEmpty() ||
-                state.tunnels.any { it.tunnelBSSIDs.isNotEmpty() }
-        val networkKey = state.networkState.activeNetwork.key(needsBSSIDAwareness)
-
-        if (lastNetworkKey != networkKey) {
-            if (hasUserOverride) {
-                Timber.d("Network fingerprint changed, clearing user override")
-            }
-            hasUserOverride = false
-            lastNetworkKey = networkKey
-        }
-    }
-
-    private fun applyOverrides(event: AutoTunnelEvent): AutoTunnelEvent {
-        return if (hasUserOverride) {
-            AutoTunnelEvent.DoNothing
-        } else {
-            event
-        }
-    }
-
     private fun combineSettings():
         Flow<Triple<TunnelMode, AutoTunnelSettings, List<TunnelConfig>>> {
         return combine(
@@ -273,98 +221,80 @@ class AutoTunnelService : LifecycleService() {
             .distinctUntilChanged()
     }
 
-    private fun startLocationPermissionsNotificationJob(): Job =
-        lifecycleScope.launch(ioDispatcher) {
-            autoTunnelStateFlow
-                .map { state ->
-                    PermissionWarningState(
-                        detectionMethod = state.settings.wifiDetectionMethod.to(),
-                        locationServicesEnabled = state.networkState.locationServicesEnabled,
-                        locationPermissionsEnabled = state.networkState.locationPermissionGranted,
-                        ssidReadRequired =
-                            state.tunnels.any { it.tunnelNetworks.isNotEmpty() } ||
-                                state.settings.trustedNetworkSSIDs.isNotEmpty(),
-                    )
-                }
-                .distinctUntilChanged()
-                .collect { state ->
-                    val wifiMode = state.detectionMethod
+    private suspend fun runLocationPermissionsNotificationJob() {
+        autoTunnelStateFlow
+            .map { state ->
+                PermissionWarningState(
+                    detectionMethod = state.settings.wifiDetectionMethod.to(),
+                    locationServicesEnabled = state.networkState.locationServicesEnabled,
+                    locationPermissionsEnabled = state.networkState.locationPermissionGranted,
+                    ssidReadRequired =
+                        state.tunnels.any { it.tunnelNetworks.isNotEmpty() } ||
+                            state.settings.trustedNetworkSSIDs.isNotEmpty(),
+                )
+            }
+            .distinctUntilChanged()
+            .collect { state ->
+                val wifiMode = state.detectionMethod
 
-                    if (
-                        wifiMode == AndroidNetworkMonitor.WifiDetectionMethod.DEFAULT ||
-                            wifiMode == AndroidNetworkMonitor.WifiDetectionMethod.LEGACY
-                    ) {
+                if (
+                    wifiMode == AndroidNetworkMonitor.WifiDetectionMethod.DEFAULT ||
+                        wifiMode == AndroidNetworkMonitor.WifiDetectionMethod.LEGACY
+                ) {
 
-                        if (!state.ssidReadRequired) {
-                            notificationService.remove(
-                                NotificationService.AUTO_TUNNEL_LOCATION_SERVICES_ID
-                            )
-                            notificationService.remove(
-                                NotificationService.AUTO_TUNNEL_LOCATION_PERMISSION_ID
-                            )
-                            return@collect
-                        }
+                    if (!state.ssidReadRequired) {
+                        notificationService.remove(
+                            NotificationService.AUTO_TUNNEL_LOCATION_SERVICES_ID
+                        )
+                        notificationService.remove(
+                            NotificationService.AUTO_TUNNEL_LOCATION_PERMISSION_ID
+                        )
+                        return@collect
+                    }
 
-                        if (!state.locationPermissionsEnabled) {
-                            val notification =
-                                notificationService.createNotification(
-                                    AndroidNotificationService.NotificationChannels.AutoTunnel,
-                                    title = getString(R.string.warning),
-                                    description = getString(R.string.location_permissions_missing),
-                                )
+                    if (!state.locationPermissionsEnabled) {
+                        val notification =
+                            notificationService.createNotification(
+                                AndroidNotificationService.NotificationChannels.AutoTunnel,
+                                title = getString(R.string.warning),
+                                description = getString(R.string.location_permissions_missing),
+                            )
 
-                            notificationService.show(
-                                NotificationService.AUTO_TUNNEL_LOCATION_PERMISSION_ID,
-                                notification,
-                            )
-                        } else {
-                            notificationService.remove(
-                                NotificationService.AUTO_TUNNEL_LOCATION_PERMISSION_ID
-                            )
-                        }
+                        notificationService.show(
+                            NotificationService.AUTO_TUNNEL_LOCATION_PERMISSION_ID,
+                            notification,
+                        )
+                    } else {
+                        notificationService.remove(
+                            NotificationService.AUTO_TUNNEL_LOCATION_PERMISSION_ID
+                        )
+                    }
 
-                        if (!state.locationServicesEnabled) {
-                            val notification =
-                                notificationService.createNotification(
-                                    AndroidNotificationService.NotificationChannels.AutoTunnel,
-                                    title = getString(R.string.warning),
-                                    description =
-                                        getString(R.string.location_services_not_detected),
-                                )
+                    if (!state.locationServicesEnabled) {
+                        val notification =
+                            notificationService.createNotification(
+                                AndroidNotificationService.NotificationChannels.AutoTunnel,
+                                title = getString(R.string.warning),
+                                description = getString(R.string.location_services_not_detected),
+                            )
 
-                            notificationService.show(
-                                NotificationService.AUTO_TUNNEL_LOCATION_SERVICES_ID,
-                                notification,
-                            )
-                        } else {
-                            notificationService.remove(
-                                NotificationService.AUTO_TUNNEL_LOCATION_SERVICES_ID
-                            )
-                        }
+                        notificationService.show(
+                            NotificationService.AUTO_TUNNEL_LOCATION_SERVICES_ID,
+                            notification,
+                        )
+                    } else {
+                        notificationService.remove(
+                            NotificationService.AUTO_TUNNEL_LOCATION_SERVICES_ID
+                        )
                     }
                 }
-        }
-
-    private suspend fun handleAutoTunnelEvent(event: AutoTunnelEvent) {
-        when (event) {
-            is AutoTunnelEvent.Sync -> {
-                cancelNoInternetStopJob()
-                event.stop.forEach { tunnelId ->
-                    Timber.d("Stopping tunnel: $tunnelId")
-                    tunnelCoordinator.stopTunnel(tunnelId, TunnelActionSource.AUTO_TUNNEL)
-                }
-
-                event.start.forEach { config ->
-                    Timber.d("Starting tunnel: ${config.name}")
-                    tunnelCoordinator.startTunnel(config, TunnelActionSource.AUTO_TUNNEL)
-                }
             }
-            AutoTunnelEvent.StopAllDueToNoInternet -> scheduleNoInternetStop()
-            AutoTunnelEvent.DoNothing -> Unit
-        }
     }
 
     companion object {
-        private const val NO_INTERNET_GRACE_PERIOD_MS = 10_000L
+        private const val CAPTIVE_PORTAL_CLEAR_CONFIRM_MS = 8_000L
+        private const val NO_INTERNET_CONFIRM_MS = 8_000L
+        private const val STARTUP_SETTLE_MS = 2_000L
+        private const val NETWORK_IDENTITY_SETTLE_MS = 500L
     }
 }

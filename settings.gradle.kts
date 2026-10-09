@@ -6,6 +6,9 @@ pluginManagement {
 		gradlePluginPortal()
 	}
 }
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
+}
 
 dependencyResolutionManagement {
 	repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
@@ -22,12 +25,16 @@ rootProject.name = "WG Tunnel"
 // Local dev
 //includeBuild("../core") {
 //	dependencySubstitution {
-//		// Match coordinates from core's mavenPublishing / project name
-//		substitute(module("com.wgtunnel.tunnel:backend"))
+//		substitute(module("com.wgtunnel:backend"))
 //			.using(project(":backend"))
-//		// if the app also needs the android native AAR wrapper:
-//		substitute(module("com.wgtunnel.tunnel:backend-android-jni"))
+//		substitute(module("com.wgtunnel:backend-android"))
+//			.using(project(":backend"))
+//		substitute(module("com.wgtunnel:backend-android-jni"))
 //			.using(project(":backend-android-jni"))
+//		substitute(module("com.wgtunnel:hevtunnel"))
+//			.using(project(":hevtunnel"))
+//		substitute(module("com.wgtunnel:parser"))
+//			.using(project(":parser"))
 //	}
 //}
 

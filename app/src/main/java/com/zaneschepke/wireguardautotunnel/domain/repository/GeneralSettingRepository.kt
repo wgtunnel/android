@@ -25,4 +25,6 @@ interface GeneralSettingRepository {
     suspend fun updateScreenRecordingSecurity(enabled: Boolean)
 
     suspend fun updateSeamlessRecovery(enabled: Boolean)
+
+    suspend fun updateSeamlessRecoveryBounceDelay(seconds: Int)
 }

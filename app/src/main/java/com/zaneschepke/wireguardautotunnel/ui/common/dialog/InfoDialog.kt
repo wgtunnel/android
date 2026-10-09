@@ -20,6 +20,9 @@ fun InfoDialog(
     body: @Composable (() -> Unit),
     confirmText: String,
     modifier: Modifier = Modifier,
+    confirmEnabled: Boolean = true,
+    dismissText: String = stringResource(R.string.cancel),
+    onDismissButton: () -> Unit = onDismiss,
 ) {
     MaterialTheme(colorScheme = MaterialTheme.colorScheme.copy()) {
         Surface(color = MaterialTheme.colorScheme.surface, tonalElevation = 0.dp) {
@@ -27,12 +30,12 @@ fun InfoDialog(
                 modifier = modifier,
                 onDismissRequest = { onDismiss() },
                 confirmButton = {
-                    TextButton(onClick = { onAttest() }) { Text(text = confirmText) }
+                    TextButton(onClick = { onAttest() }, enabled = confirmEnabled) {
+                        Text(text = confirmText)
+                    }
                 },
                 dismissButton = {
-                    TextButton(onClick = { onDismiss() }) {
-                        Text(text = stringResource(R.string.cancel))
-                    }
+                    TextButton(onClick = { onDismissButton() }) { Text(text = dismissText) }
                 },
                 containerColor = MaterialTheme.colorScheme.surface,
                 title = { Text(text = title) },

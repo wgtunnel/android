@@ -1,16 +1,22 @@
+package com.zaneschepke.wireguardautotunnel.ui.screens.settings.proxy
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.Forward
 import androidx.compose.material.icons.outlined.Forward5
 import androidx.compose.material.icons.outlined.Http
 import androidx.compose.material.icons.outlined.RemoveRedEye
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -20,14 +26,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.domain.model.ProxySettings
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ThemedSwitch
-import com.zaneschepke.wireguardautotunnel.ui.common.dialog.InfoDialog
+import com.zaneschepke.wireguardautotunnel.ui.common.dialog.rememberRestartToApplyChanges
 import com.zaneschepke.wireguardautotunnel.ui.common.label.GroupLabel
+import com.zaneschepke.wireguardautotunnel.ui.common.text.DescriptionText
 import com.zaneschepke.wireguardautotunnel.ui.common.textbox.ConfigurationTextBox
 import com.zaneschepke.wireguardautotunnel.ui.sideeffect.LocalSideEffect
 import com.zaneschepke.wireguardautotunnel.viewmodel.ProxySettingsViewModel
@@ -46,43 +52,28 @@ fun ProxySettingsScreen(
 
     if (uiState.isLoading) return
 
-    val locale = Locale.current.platformLocale
-
     val keyboardController = LocalSoftwareKeyboardController.current
 
     val keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() })
     val keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
 
-    sharedViewModel.collectSideEffect { sideEffect ->
-        if (sideEffect is LocalSideEffect.SaveChanges) {
-            if (uiState.backendStatus.activeTunnels.isNotEmpty()) viewModel.setShowSaveModal(true)
-            else viewModel.save()
-        }
-    }
-
-    if (uiState.showSaveModal) {
-        InfoDialog(
-            onDismiss = { viewModel.setShowSaveModal(false) },
-            onAttest = { viewModel.save() },
-            title = stringResource(R.string.save_changes),
-            body = {
-                Text(
-                    stringResource(
-                        R.string.restart_message_template,
-                        stringResource(R.string.tunnels).lowercase(locale),
-                    )
-                )
-            },
-            confirmText = stringResource(R.string._continue),
+    val requestApply =
+        rememberRestartToApplyChanges(
+            needsRestart = uiState.backendStatus.activeTunnels.isNotEmpty(),
+            onSave = viewModel::save,
         )
+
+    sharedViewModel.collectSideEffect { sideEffect ->
+        if (sideEffect is LocalSideEffect.SaveChanges) requestApply()
     }
 
     Column(
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.Top),
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().imePadding().verticalScroll(rememberScrollState()),
     ) {
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Column {
+            GroupLabel(stringResource(R.string.socks5), Modifier.padding(horizontal = 16.dp))
             SurfaceRow(
                 leading = { Icon(Icons.Outlined.Forward5, contentDescription = null) },
                 title = stringResource(R.string.socks_5_proxy),
@@ -96,7 +87,8 @@ fun ProxySettingsScreen(
             )
             if (uiState.socks5Enabled) {
                 ConfigurationTextBox(
-                    modifier = Modifier.padding(horizontal = 16.dp),
+                    modifier =
+                        Modifier.padding(horizontal = 16.dp).padding(top = 8.dp).fillMaxWidth(),
                     hint =
                         stringResource(
                             R.string.defaults_to_template,
@@ -110,9 +102,28 @@ fun ProxySettingsScreen(
                         viewModel.onSocksBindChanged(it)
                     },
                 )
+                if (uiState.proxyUsername.isBlank()) {
+                    SurfaceRow(
+                        leading = {
+                            Icon(Icons.AutoMirrored.Outlined.Forward, contentDescription = null)
+                        },
+                        title = stringResource(R.string.allow_socks4),
+                        description = {
+                            DescriptionText(stringResource(R.string.allow_socks4_desc))
+                        },
+                        trailing = {
+                            ThemedSwitch(
+                                checked = uiState.allowSocks4,
+                                onClick = { viewModel.onAllowSocks4Changed(it) },
+                            )
+                        },
+                        onClick = { viewModel.onAllowSocks4Changed(!uiState.allowSocks4) },
+                    )
+                }
             }
         }
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Column {
+            GroupLabel(stringResource(R.string.http), Modifier.padding(horizontal = 16.dp))
             SurfaceRow(
                 leading = { Icon(Icons.Outlined.Http, contentDescription = null) },
                 title = stringResource(R.string.http_proxy),
@@ -126,6 +137,8 @@ fun ProxySettingsScreen(
             )
             if (uiState.httpEnabled) {
                 ConfigurationTextBox(
+                    modifier =
+                        Modifier.padding(horizontal = 16.dp).padding(top = 8.dp).fillMaxWidth(),
                     hint =
                         stringResource(
                             R.string.defaults_to_template,
@@ -135,10 +148,9 @@ fun ProxySettingsScreen(
                     value = uiState.httpBindAddress,
                     isError = uiState.isHttpBindAddressError,
                     onValueChange = {
-                        if (uiState.isSocks5BindAddressError) viewModel.clearHttpBindError()
+                        if (uiState.isHttpBindAddressError) viewModel.clearHttpBindError()
                         viewModel.onHttpBindChanged(it)
                     },
-                    modifier = Modifier.padding(horizontal = 12.dp),
                 )
             }
         }
@@ -169,7 +181,7 @@ fun ProxySettingsScreen(
                 ConfigurationTextBox(
                     value = uiState.proxyPassword,
                     onValueChange = {
-                        if (uiState.isUserNameError) viewModel.clearPasswordError()
+                        if (uiState.isPasswordError) viewModel.clearPasswordError()
                         viewModel.onPasswordChanged(it)
                     },
                     label = stringResource(R.string.password),

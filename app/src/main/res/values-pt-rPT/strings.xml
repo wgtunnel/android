@@ -118,4 +118,8 @@
     <!-- Notification formatting -->
     <!-- Informational notifications -->
     <!-- Errors -->
+    <string name="live_updates">Atualizações em direto</string>
+    <string name="live_updates_desc">Mostra o progresso e o estado da ligação do túnel ativo na barra de estado e no ecrã de bloqueio. Aplica-se quando apenas um túnel está em execução</string>
+    <string name="notification_connection_manual">Ligação manual</string>
+    <string name="notification_connection_auto">Túnel automático</string>
 </resources>

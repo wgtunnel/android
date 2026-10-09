@@ -41,9 +41,17 @@ class SettingsViewModel(
                         tunnelsRepository.userTunnelsFlow,
                         monitoringRepository.flow,
                         tunnelCoordinator.backendStatus
-                            .map { it.activeTunnels.isNotEmpty() }
+                            .map { status ->
+                                val active = status.activeTunnels.values
+                                Triple(
+                                    active.isNotEmpty(),
+                                    active.sumOf { it.recoveryAttempts },
+                                    active.maxOfOrNull { it.lastRecoveryAttemptMs } ?: 0L,
+                                )
+                            }
                             .distinctUntilChanged(),
-                    ) { settings, tunnel, tunnels, monitoring, tunnelActive ->
+                    ) { settings, tunnel, tunnels, monitoring, recovery ->
+                        val (tunnelActive, recoveryEventCount, lastRecoveryEventMs) = recovery
                         state.copy(
                             settings = settings,
                             remoteKey = settings.remoteKey,
@@ -54,6 +62,8 @@ class SettingsViewModel(
                             globalTunnelConfig = tunnel,
                             monitoring = monitoring,
                             tunnels = tunnels,
+                            recoveryEventCount = recoveryEventCount,
+                            lastRecoveryEventMs = lastRecoveryEventMs,
                         )
                     }
                     .collect { reduce { it } }
@@ -71,6 +81,26 @@ class SettingsViewModel(
 
     fun setAlwaysOnVpnEnabled(to: Boolean) = intent {
         settingsRepository.upsert(state.settings.copy(isAlwaysOnVpnEnabled = to))
+    }
+
+    fun setLiveUpdatesEnabled(to: Boolean) = intent {
+        settingsRepository.upsert(state.settings.copy(isLiveUpdatesEnabled = to))
+    }
+
+    fun setNotificationOriginEnabled(to: Boolean) = intent {
+        settingsRepository.upsert(state.settings.copy(isNotificationOriginEnabled = to))
+    }
+
+    fun setNotificationTransferEnabled(to: Boolean) = intent {
+        settingsRepository.upsert(state.settings.copy(isNotificationTransferEnabled = to))
+    }
+
+    fun setNotificationRecoveryEnabled(to: Boolean) = intent {
+        settingsRepository.upsert(state.settings.copy(isNotificationRecoveryEnabled = to))
+    }
+
+    fun setNotificationFailureTintEnabled(to: Boolean) = intent {
+        settingsRepository.upsert(state.settings.copy(isNotificationFailureTintEnabled = to))
     }
 
     fun setRestoreOnBootEnabled(to: Boolean) = intent {
@@ -116,6 +146,10 @@ class SettingsViewModel(
 
     fun setSeamlessRecovery(enabled: Boolean) = intent {
         settingsRepository.updateSeamlessRecovery(enabled)
+    }
+
+    fun setSeamlessRecoveryBounceDelay(seconds: Int) = intent {
+        settingsRepository.updateSeamlessRecoveryBounceDelay(seconds)
     }
 
     fun setAlreadyDonated(to: Boolean) = intent {

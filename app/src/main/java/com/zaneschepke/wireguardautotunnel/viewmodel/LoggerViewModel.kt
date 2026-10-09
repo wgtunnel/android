@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import com.dokar.sonner.ToastType
 import com.zaneschepke.logcatter.LogReader
+import com.zaneschepke.logcatter.model.LogMessage
 import com.zaneschepke.wireguardautotunnel.BuildConfig
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.domain.repository.GlobalEffectRepository
@@ -16,7 +17,10 @@ import com.zaneschepke.wireguardautotunnel.util.extensions.toUserFriendlyTimesta
 import java.time.Instant
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.sample
 import org.orbitmvi.orbit.OrbitContainerHost
 import org.orbitmvi.orbit.viewmodel.orbitContainer
 
@@ -25,25 +29,28 @@ class LoggerViewModel(
     private val globalEffectRepository: GlobalEffectRepository,
 ) : OrbitContainerHost<LoggerUiState, LoggerUiState, Nothing>, ViewModel() {
 
-    @OptIn(ExperimentalCoroutinesApi::class)
+    // accumulator shared between the producer and sampler coroutines of the batching pipeline
+    private val logBuffer = ArrayDeque<LogMessage>()
+
+    @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
     override val container =
         orbitContainer<LoggerUiState, Nothing>(
             LoggerUiState(),
             buildSettings = { repeatOnSubscribedStopTimeout = 5000L },
         ) {
             intent {
-                logReader.bufferedLogs.collect { logMessage ->
-                    reduce {
-                        state.copy(
-                            messages =
-                                state.messages.toMutableList().apply {
-                                    if (size >= MAX_LOG_SIZE) removeAt(0)
-                                    add(logMessage)
-                                },
-                            isLoading = false,
-                        )
+                logReader.bufferedLogs
+                    .onEach { logMessage ->
+                        synchronized(logBuffer) {
+                            if (logBuffer.size >= MAX_LOG_SIZE) logBuffer.removeFirst()
+                            logBuffer.addLast(logMessage)
+                        }
                     }
-                }
+                    .sample(BATCH_INTERVAL)
+                    .collect {
+                        val snapshot = synchronized(logBuffer) { logBuffer.toList() }
+                        reduce { state.copy(messages = snapshot, isLoading = false) }
+                    }
             }
             intent {
                 delay(300.milliseconds)
@@ -72,6 +79,7 @@ class LoggerViewModel(
     }
 
     fun deleteLogs() = intent {
+        synchronized(logBuffer) { logBuffer.clear() }
         reduce { state.copy(messages = emptyList()) }
         logReader.deleteAndClearLogs()
         postSideEffect(
@@ -84,5 +92,6 @@ class LoggerViewModel(
 
     companion object {
         const val MAX_LOG_SIZE = 10_000L
+        private val BATCH_INTERVAL = 200.milliseconds
     }
 }

@@ -11,14 +11,12 @@ import android.provider.Settings
 import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import com.zaneschepke.wireguardautotunnel.BuildConfig
-import com.zaneschepke.wireguardautotunnel.MainActivity
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.util.Constants
 import com.zaneschepke.wireguardautotunnel.util.FileUtils
 import java.io.File
 import java.io.InputStream
 import java.util.Locale
-import kotlin.system.exitProcess
 import timber.log.Timber
 
 fun Context.openWebUrl(url: String): Result<Unit> = runCatching {
@@ -122,6 +120,10 @@ fun Context.launchLocationServicesSettings(): Result<Unit> {
     }
 }
 
+fun Context.launchNetworkAndInternetSettings(): Result<Unit> = runCatching {
+    startActivity(Intent(Settings.ACTION_WIRELESS_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+}
+
 fun Context.launchAppSettings() {
     kotlin
         .runCatching {
@@ -151,15 +153,17 @@ fun Context.requestInstallPackagesPermission() {
     startActivity(intent)
 }
 
-fun Context.installApk(apkFile: File) {
+fun Context.apkInstallIntent(apkFile: File): Intent {
     val apkUri = FileProvider.getUriForFile(this, BuildConfig.FILE_PROVIDER_AUTHORITY, apkFile)
-    val intent =
-        Intent(Intent.ACTION_VIEW).apply {
-            setDataAndType(apkUri, "application/vnd.android.package-archive")
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        }
-    startActivity(intent)
+    return Intent(Intent.ACTION_VIEW).apply {
+        setDataAndType(apkUri, "application/vnd.android.package-archive")
+        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    }
+}
+
+fun Context.installApk(apkFile: File) {
+    startActivity(apkInstallIntent(apkFile))
 }
 
 fun Context.launchPlayStoreListing(): Result<Unit> = runCatching {
@@ -192,13 +196,6 @@ fun Context.launchPlayStoreReview(): Result<Unit> = runCatching {
 
 fun Activity.setScreenBrightness(brightness: Float) {
     window.attributes = window.attributes.apply { screenBrightness = brightness }
-}
-
-fun MainActivity.restartApp() {
-    Intent(this, MainActivity::class.java).also {
-        startActivity(it)
-        exitProcess(0)
-    }
 }
 
 fun PackageManager.getFriendlyAppName(packageName: String, appInfo: ApplicationInfo): String {

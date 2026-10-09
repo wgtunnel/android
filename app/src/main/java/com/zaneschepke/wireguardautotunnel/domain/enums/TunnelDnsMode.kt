@@ -27,6 +27,8 @@ enum class TunnelDnsMode(val value: Int) {
         }
     }
 
+    fun isSplitMode(): Boolean = this == Split
+
     companion object {
         fun fromValue(value: Int): TunnelDnsMode = entries.find { it.value == value } ?: Off
     }

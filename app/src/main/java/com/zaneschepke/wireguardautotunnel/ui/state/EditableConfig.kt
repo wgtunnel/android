@@ -29,7 +29,6 @@ data class EditableConfig(
                 jMax = `interface`.junkPacketMaxSize.toIntOrNull(),
                 s1 = `interface`.initPacketJunkSize.toIntOrNull(),
                 s2 = `interface`.responsePacketJunkSize.toIntOrNull(),
-                // S3 = cookie reply padding, S4 = transport padding
                 s3 = `interface`.cookiePacketJunkSize.toIntOrNull(),
                 s4 = `interface`.transportPacketJunkSize.toIntOrNull(),
                 h1 = `interface`.initPacketMagicHeader.ifBlank { null },
@@ -48,6 +47,8 @@ data class EditableConfig(
                 rejectAfterTime = `interface`.rejectAfterTime.ifBlank { null },
                 keepaliveTimeout = `interface`.keepaliveTimeout.ifBlank { null },
                 maxHandshakeAttempts = `interface`.maxHandshakeAttempts.ifBlank { null },
+                randomTrailers = `interface`.randomTrailers.ifBlank { null },
+                disableCookies = `interface`.disableCookies.ifBlank { null },
             )
 
         val peerSections = peers.map { it.toPeerSection() }

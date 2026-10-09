@@ -2,10 +2,14 @@ package com.zaneschepke.wireguardautotunnel.viewmodel
 
 import androidx.lifecycle.ViewModel
 import com.dokar.sonner.ToastType
+import com.wgtunnel.backend.model.dns.DnsValidator
 import com.zaneschepke.networkmonitor.NetworkMonitor
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.core.orchestration.DnsSettingsCoordinator
+import com.zaneschepke.wireguardautotunnel.core.orchestration.TunnelCoordinator
 import com.zaneschepke.wireguardautotunnel.domain.enums.BootstrapDnsProtocol
+import com.zaneschepke.wireguardautotunnel.domain.enums.ForeignDnsPolicy
+import com.zaneschepke.wireguardautotunnel.domain.enums.SplitDnsSuffixTarget
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelDnsMode
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelDnsProtocol
 import com.zaneschepke.wireguardautotunnel.domain.repository.DnsSettingsRepository
@@ -13,7 +17,6 @@ import com.zaneschepke.wireguardautotunnel.domain.repository.GlobalEffectReposit
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.domain.sideeffect.GlobalSideEffect
 import com.zaneschepke.wireguardautotunnel.ui.state.DnsUiState
-import com.zaneschepke.wireguardautotunnel.util.DnsValidator
 import com.zaneschepke.wireguardautotunnel.util.StringValue
 import com.zaneschepke.wireguardautotunnel.util.extensions.labelRes
 import kotlinx.coroutines.flow.combine
@@ -26,6 +29,7 @@ class DnsViewModel(
     private val networkMonitor: NetworkMonitor,
     private val globalEffectRepository: GlobalEffectRepository,
     private val dnsSettingsCoordinator: DnsSettingsCoordinator,
+    private val tunnelCoordinator: TunnelCoordinator,
 ) : OrbitContainerHost<DnsUiState, DnsUiState, Nothing>, ViewModel() {
 
     override val container =
@@ -37,16 +41,21 @@ class DnsViewModel(
                     dnsSettingsRepository.flow,
                     tunnelRepository.globalTunnelFlow,
                     networkMonitor.connectivityStateFlow,
-                ) { dnsSettings, globalTunnelConfig, connectivity ->
+                    tunnelCoordinator.backendStatus,
+                ) { dnsSettings, globalTunnelConfig, connectivity, backendStatus ->
                     if (state.isLoading) {
                         state.copy(
                             dnsSettings = dnsSettings,
                             globalTunnelConfig = globalTunnelConfig,
                             systemDnsInfo = connectivity?.underlyingDnsInfo,
                             isLoading = false,
+                            hasActiveTunnel = backendStatus.activeTunnels.isNotEmpty(),
                         )
                     } else {
-                        state.copy(systemDnsInfo = connectivity?.underlyingDnsInfo)
+                        state.copy(
+                            systemDnsInfo = connectivity?.underlyingDnsInfo,
+                            hasActiveTunnel = backendStatus.activeTunnels.isNotEmpty(),
+                        )
                     }
                 }
                 .collect { newState -> reduce { newState } }
@@ -71,12 +80,15 @@ class DnsViewModel(
         }
     }
 
-    fun save() = intent {
+    fun save(restart: Boolean = false) = intent {
         val settings = state.dnsSettings
 
         when (
             val r =
-                DnsValidator.validate(settings.bootstrapDnsProtocol, settings.bootstrapDnsEndpoint)
+                DnsValidator.validateEndpoint(
+                    settings.bootstrapDnsProtocol.toCore(),
+                    settings.bootstrapDnsEndpoint,
+                )
         ) {
             is DnsValidator.Result.Invalid -> {
                 reduce { state.copy(bootstrapEndpointError = r.error) }
@@ -92,19 +104,19 @@ class DnsViewModel(
         }
 
         val usesTunnelDns =
-            settings.tunnelDnsMode == TunnelDnsMode.Split &&
+            settings.tunnelDnsMode.isSplitMode() &&
                 settings.tunnelDnsProtocol == TunnelDnsProtocol.Plain &&
                 settings.useTunnelDnsServersInSplit
 
         if (
             settings.tunnelDnsMode == TunnelDnsMode.Encrypted ||
-                settings.tunnelDnsMode == TunnelDnsMode.Split
+                settings.tunnelDnsMode.isSplitMode()
         ) {
             if (!usesTunnelDns) {
                 when (
                     val r =
-                        DnsValidator.validateTunnelEndpoint(
-                            settings.tunnelDnsProtocol,
+                        DnsValidator.validateEndpoint(
+                            settings.tunnelDnsProtocol.toCore(),
                             settings.tunnelDnsEndpoint,
                         )
                 ) {
@@ -123,12 +135,12 @@ class DnsViewModel(
             }
         }
 
-        if (settings.tunnelDnsMode == TunnelDnsMode.Split) {
+        if (settings.tunnelDnsMode.isSplitMode()) {
             when (
                 val r =
                     DnsValidator.validateLocalSuffixes(
-                        settings.tunnelDnsMode,
-                        settings.localSuffixes,
+                        requiresSuffixes = true,
+                        input = settings.localSuffixes,
                     )
             ) {
                 is DnsValidator.Result.Invalid -> {
@@ -148,8 +160,8 @@ class DnsViewModel(
         val updated =
             settings.copy(
                 bootstrapDnsEndpoint =
-                    DnsValidator.normalize(
-                            settings.bootstrapDnsProtocol,
+                    DnsValidator.normalizeEndpoint(
+                            settings.bootstrapDnsProtocol.toCore(),
                             settings.bootstrapDnsEndpoint,
                         )
                         .ifEmpty { null },
@@ -158,8 +170,8 @@ class DnsViewModel(
                         TunnelDnsMode.Encrypted,
                         TunnelDnsMode.Split ->
                             if (!usesTunnelDns) {
-                                DnsValidator.normalizeTunnelEndpoint(
-                                    settings.tunnelDnsProtocol,
+                                DnsValidator.normalizeEndpoint(
+                                    settings.tunnelDnsProtocol.toCore(),
                                     settings.tunnelDnsEndpoint,
                                 )
                             } else {
@@ -168,8 +180,8 @@ class DnsViewModel(
                         else -> null
                     },
                 localSuffixes =
-                    when (settings.tunnelDnsMode) {
-                        TunnelDnsMode.Split ->
+                    when {
+                        settings.tunnelDnsMode.isSplitMode() ->
                             DnsValidator.normalizeLocalSuffixes(settings.localSuffixes).ifEmpty {
                                 null
                             }
@@ -179,6 +191,7 @@ class DnsViewModel(
 
         dnsSettingsRepository.upsert(updated)
         dnsSettingsCoordinator.appyDnsSettings(updated)
+        if (restart) tunnelCoordinator.restartActiveTunnels()
         postSideEffect(GlobalSideEffect.PopBackStack)
         postSideEffect(
             GlobalSideEffect.Snackbar(
@@ -240,6 +253,14 @@ class DnsViewModel(
 
     fun setUseTunnelDnsServersInSplit(to: Boolean) = intent {
         reduce { state.copy(dnsSettings = state.dnsSettings.copy(useTunnelDnsServersInSplit = to)) }
+    }
+
+    fun setForeignDnsPolicy(policy: ForeignDnsPolicy) = intent {
+        reduce { state.copy(dnsSettings = state.dnsSettings.copy(foreignDnsPolicy = policy)) }
+    }
+
+    fun setSplitSuffixTarget(target: SplitDnsSuffixTarget) = intent {
+        reduce { state.copy(dnsSettings = state.dnsSettings.copy(splitSuffixTarget = target)) }
     }
 
     suspend fun postSideEffect(globalSideEffect: GlobalSideEffect) {

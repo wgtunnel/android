@@ -14,6 +14,8 @@ fun Entity.toDomain(): Domain =
         tunnelDnsEndpoint = tunnelDnsEndpoint,
         useTunnelDnsServersInSplit = useTunnelDnsServersInSplit,
         localSuffixes = localSuffixes,
+        foreignDnsPolicy = foreignDnsPolicy,
+        splitSuffixTarget = splitSuffixTarget,
     )
 
 fun Domain.toEntity(): Entity =
@@ -27,4 +29,6 @@ fun Domain.toEntity(): Entity =
         useTunnelDnsServersInSplit = useTunnelDnsServersInSplit,
         tunnelDnsEndpoint = tunnelDnsEndpoint,
         localSuffixes = localSuffixes,
+        foreignDnsPolicy = foreignDnsPolicy,
+        splitSuffixTarget = splitSuffixTarget,
     )

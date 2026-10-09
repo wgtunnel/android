@@ -96,4 +96,8 @@
     <!-- Notification formatting -->
     <!-- Informational notifications -->
     <!-- Errors -->
+    <string name="live_updates">Live-päivitykset</string>
+    <string name="live_updates_desc">Näyttää aktiivisen tunnelin yhteyden edistymisen ja tilan tilarivillä ja lukitusnäytöllä. Voimassa, kun käynnissä on vain yksi tunneli</string>
+    <string name="notification_connection_manual">Manuaalinen yhteys</string>
+    <string name="notification_connection_auto">Automaattinen tunneli</string>
 </resources>

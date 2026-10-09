@@ -1,5 +1,6 @@
 package com.zaneschepke.wireguardautotunnel.ui.screens.settings.appearance.language
 
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -10,7 +11,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.stringResource
@@ -21,12 +21,9 @@ import com.zaneschepke.wireguardautotunnel.util.LocaleUtil
 import com.zaneschepke.wireguardautotunnel.viewmodel.SharedAppViewModel
 import java.text.Collator
 import org.koin.compose.viewmodel.koinActivityViewModel
-import org.orbitmvi.orbit.compose.collectAsState
 
 @Composable
 fun LanguageScreen(sharedViewModel: SharedAppViewModel = koinActivityViewModel()) {
-
-    val appState by sharedViewModel.collectAsState()
 
     val collator = Collator.getInstance(Locale.current.platformLocale)
     val locales =
@@ -42,15 +39,21 @@ fun LanguageScreen(sharedViewModel: SharedAppViewModel = koinActivityViewModel()
 
     val lazyListState = rememberLazyListState()
 
-    val selectedIndex =
-        remember(appState.locale, sortedLocales) {
-            if (appState.locale == LocaleUtil.OPTION_PHONE_LANGUAGE) 0
-            else {
-                val selectedLocale = java.util.Locale.forLanguageTag(appState.locale)
-                sortedLocales.indexOfFirst {
-                    it.toLanguageTag() == selectedLocale.toLanguageTag()
-                } + 1
+    val currentLocale = AppCompatDelegate.getApplicationLocales().get(0)
+
+    val selectedTag =
+        remember(currentLocale, sortedLocales) {
+            currentLocale?.let { current ->
+                (sortedLocales.firstOrNull { it.toLanguageTag() == current.toLanguageTag() }
+                        ?: sortedLocales.firstOrNull { it.language == current.language })
+                    ?.toLanguageTag()
             }
+        }
+
+    val selectedIndex =
+        remember(selectedTag, sortedLocales) {
+            if (selectedTag == null) 0
+            else sortedLocales.indexOfFirst { it.toLanguageTag() == selectedTag } + 1
         }
 
     LaunchedEffect(selectedIndex) {
@@ -68,7 +71,7 @@ fun LanguageScreen(sharedViewModel: SharedAppViewModel = koinActivityViewModel()
             SurfaceRow(
                 title = stringResource(R.string.automatic),
                 trailing =
-                    if (appState.locale == LocaleUtil.OPTION_PHONE_LANGUAGE) {
+                    if (currentLocale == null) {
                         {
                             Icon(
                                 Icons.Outlined.Check,
@@ -88,7 +91,7 @@ fun LanguageScreen(sharedViewModel: SharedAppViewModel = koinActivityViewModel()
             SurfaceRow(
                 title = buttonText,
                 trailing =
-                    if (appState.locale == locale.toLanguageTag()) {
+                    if (selectedTag == locale.toLanguageTag()) {
                         {
                             Icon(
                                 Icons.Outlined.Check,

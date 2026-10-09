@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -15,6 +17,7 @@ import com.zaneschepke.wireguardautotunnel.ui.common.button.IconSurfaceButton
 import com.zaneschepke.wireguardautotunnel.util.extensions.asDescriptionString
 import com.zaneschepke.wireguardautotunnel.util.extensions.asTitleString
 import com.zaneschepke.wireguardautotunnel.viewmodel.AutoTunnelViewModel
+import kotlin.enums.enumEntries
 import org.koin.androidx.compose.koinViewModel
 import org.orbitmvi.orbit.compose.collectAsState
 
@@ -27,9 +30,12 @@ fun WifiDetectionMethodScreen(viewModel: AutoTunnelViewModel = koinViewModel()) 
     Column(
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.spacedBy(24.dp, Alignment.Top),
-        modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+        modifier =
+            Modifier.fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 16.dp),
     ) {
-        enumValues<WifiDetectionMethod>().forEach {
+        enumEntries<WifiDetectionMethod>().forEach {
             val title = it.asTitleString(context)
             val description = it.asDescriptionString(context)
             IconSurfaceButton(

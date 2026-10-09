@@ -1,6 +1,5 @@
 package com.zaneschepke.wireguardautotunnel
 
-import ProxySettingsScreen
 import android.Manifest
 import android.content.Intent
 import android.graphics.Color
@@ -86,6 +85,12 @@ import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppStateRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.domain.sideeffect.GlobalSideEffect
+import com.zaneschepke.wireguardautotunnel.domain.sideeffect.NotificationPendingAction
+import com.zaneschepke.wireguardautotunnel.notification.NotificationService
+import com.zaneschepke.wireguardautotunnel.notification.NotificationService.Companion.EXTRA_AUTO_UPDATE
+import com.zaneschepke.wireguardautotunnel.notification.NotificationService.Companion.EXTRA_OPEN_SUPPORT
+import com.zaneschepke.wireguardautotunnel.notification.NotificationService.Companion.EXTRA_SHOW_UPDATE
+import com.zaneschepke.wireguardautotunnel.notification.NotificationService.Companion.UPDATE_AVAILABLE_NOTIFICATION_ID
 import com.zaneschepke.wireguardautotunnel.service.tile.TunnelTileRefresher
 import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
@@ -110,12 +115,15 @@ import com.zaneschepke.wireguardautotunnel.ui.screens.settings.SettingsScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.appearance.AppearanceScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.appearance.display.DisplayScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.appearance.language.LanguageScreen
+import com.zaneschepke.wireguardautotunnel.ui.screens.settings.appearance.notifications.NotificationsScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.dns.DnsSettingsScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.globals.TunnelGlobalsScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.integrations.AndroidIntegrationsScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.lockdown.LockdownSettingsScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.logs.LogsScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.monitoring.MonitoringScreen
+import com.zaneschepke.wireguardautotunnel.ui.screens.settings.proxy.ProxySettingsScreen
+import com.zaneschepke.wireguardautotunnel.ui.screens.settings.recovery.TunnelRecoveryScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.security.SecurityScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.support.SupportScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.support.donate.DonateScreen
@@ -125,8 +133,8 @@ import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.TunnelsScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.settings.TunnelSettingsScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.settings.config.ConfigScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.settings.config.edit.ConfigEditScreen
+import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.settings.entry.EntryTunnelScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.settings.ipv6.IPv6Screen
-import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.sort.SortScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.splittunnel.SplitTunnelScreen
 import com.zaneschepke.wireguardautotunnel.ui.theme.AlertRed
 import com.zaneschepke.wireguardautotunnel.ui.theme.Heart
@@ -135,12 +143,10 @@ import com.zaneschepke.wireguardautotunnel.ui.theme.SilverTree
 import com.zaneschepke.wireguardautotunnel.ui.theme.Straw
 import com.zaneschepke.wireguardautotunnel.ui.theme.WireguardAutoTunnelTheme
 import com.zaneschepke.wireguardautotunnel.util.FileUtils
-import com.zaneschepke.wireguardautotunnel.util.LocaleUtil
 import com.zaneschepke.wireguardautotunnel.util.StringValue
 import com.zaneschepke.wireguardautotunnel.util.extensions.installApk
 import com.zaneschepke.wireguardautotunnel.util.extensions.isRunningOnTv
 import com.zaneschepke.wireguardautotunnel.util.extensions.openWebUrl
-import com.zaneschepke.wireguardautotunnel.util.extensions.restartApp
 import com.zaneschepke.wireguardautotunnel.util.permission.LocalNetworkPermissionHelper
 import com.zaneschepke.wireguardautotunnel.viewmodel.ConfigEditViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.SharedAppViewModel
@@ -172,11 +178,14 @@ class MainActivity : AppCompatActivity() {
     private val appDatabase: AppDatabase by inject()
     private val networkMonitor: NetworkMonitor by inject()
     private val fileExportCoordinator: FileExportCoordinator by inject()
+    private val notificationService: NotificationService by inject()
 
     val viewModel by viewModel<SharedAppViewModel>()
     private lateinit var roomBackup: RoomBackup
 
     private val snackbarChannel = Channel<GlobalSideEffect.Snackbar>(Channel.UNLIMITED)
+    private val supportDeepLinkChannel = Channel<Boolean>(Channel.BUFFERED)
+    private val showUpdateChannel = Channel<Unit>(Channel.BUFFERED)
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -206,15 +215,24 @@ class MainActivity : AppCompatActivity() {
 
             LaunchedEffect(uiState.isAppLoaded) {
                 if (uiState.isAppLoaded) {
-                    uiState.locale.let { LocaleUtil.changeLocale(it) }
+                    viewModel.syncLocale()
                 }
             }
 
             val toaster = rememberToasterState()
             var showVpnPermissionDialog by remember { mutableStateOf(false) }
+            var coldStartAutoUpdate by remember {
+                mutableStateOf(intent?.getBooleanExtra(EXTRA_AUTO_UPDATE, false) == true)
+            }
+            var coldStartShowUpdate by remember {
+                mutableStateOf(intent?.getBooleanExtra(EXTRA_SHOW_UPDATE, false) == true)
+            }
             var vpnPermissionDenied by remember { mutableStateOf(false) }
             var requestingTunnelMode by remember {
                 mutableStateOf<Pair<TunnelMode?, TunnelConfig?>>(Pair(null, null))
+            }
+            var pendingNotificationAction by remember {
+                mutableStateOf<NotificationPendingAction?>(null)
             }
             var showLocalNetworkRationale by remember { mutableStateOf(false) }
             var hasPromptedLocalNetwork by rememberSaveable { mutableStateOf(false) }
@@ -282,6 +300,12 @@ class MainActivity : AppCompatActivity() {
             val startingStack = buildList {
                 add(Route.Tunnels)
                 if (intent?.action == Intent.ACTION_APPLICATION_PREFERENCES) add(Route.Settings)
+                if (
+                    intent?.getBooleanExtra(EXTRA_OPEN_SUPPORT, false) == true ||
+                        intent?.getBooleanExtra(EXTRA_SHOW_UPDATE, false) == true
+                ) {
+                    add(Route.Support)
+                }
                 if (uiState.pinLockEnabled) add(Route.Lock)
             }
 
@@ -317,15 +341,65 @@ class MainActivity : AppCompatActivity() {
                     },
                 )
 
+            val notificationPermissionLauncher =
+                rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {
+                    when (val action = pendingNotificationAction) {
+                        is NotificationPendingAction.StartTunnel ->
+                            viewModel.startTunnel(action.config)
+                        NotificationPendingAction.ToggleAutoTunnel -> viewModel.toggleAutoTunnel()
+                        null -> Unit
+                    }
+                    pendingNotificationAction = null
+                }
+
+            LaunchedEffect(uiState.isAppLoaded, coldStartAutoUpdate) {
+                if (!uiState.isAppLoaded || !coldStartAutoUpdate) return@LaunchedEffect
+                coldStartAutoUpdate = false
+                notificationService.remove(UPDATE_AVAILABLE_NOTIFICATION_ID)
+                viewModel.requestSupportAutoUpdate(startDownload = true)
+            }
+
+            LaunchedEffect(uiState.isAppLoaded, coldStartShowUpdate) {
+                if (!uiState.isAppLoaded || !coldStartShowUpdate) return@LaunchedEffect
+                coldStartShowUpdate = false
+                // Kept across recreation otherwise, which would scroll again on rotation
+                intent?.removeExtra(EXTRA_SHOW_UPDATE)
+                viewModel.requestShowUpdateStatus()
+            }
+
+            LaunchedEffect(Unit) {
+                for (unit in showUpdateChannel) {
+                    if (previousRoute !is Route.Support) {
+                        navController.push(Route.Support)
+                    }
+                    viewModel.requestShowUpdateStatus()
+                }
+            }
+
+            LaunchedEffect(Unit) {
+                for (autoUpdate in supportDeepLinkChannel) {
+                    notificationService.remove(UPDATE_AVAILABLE_NOTIFICATION_ID)
+                    if (previousRoute !is Route.Support) {
+                        navController.push(Route.Support)
+                    }
+                    viewModel.requestSupportAutoUpdate(startDownload = autoUpdate)
+                }
+            }
+
             LaunchedEffect(Unit) {
                 viewModel.globalSideEffect.collectLatest { sideEffect ->
                     when (sideEffect) {
-                        GlobalSideEffect.ConfigChanged -> restartApp()
                         GlobalSideEffect.PopBackStack -> navController.pop()
                         is GlobalSideEffect.RequestVpnPermission -> {
                             requestingTunnelMode =
                                 Pair(sideEffect.requestingMode, sideEffect.config)
                             vpnActivity.launch(VpnService.prepare(this@MainActivity))
+                        }
+                        is GlobalSideEffect.RequestNotificationPermission -> {
+                            pendingNotificationAction = sideEffect.pendingAction
+                            notificationPermissionLauncher.launch(
+                                Manifest.permission.POST_NOTIFICATIONS
+                            )
                         }
                         is GlobalSideEffect.Snackbar -> snackbarChannel.send(sideEffect)
                         is GlobalSideEffect.LaunchUrl -> context.openWebUrl(sideEffect.url)
@@ -564,7 +638,6 @@ class MainActivity : AppCompatActivity() {
                                                     PinLockScreen()
                                                 }
                                                 entry<Route.Tunnels> { TunnelsScreen() }
-                                                entry<Route.Sort> { SortScreen() }
                                                 entry<Route.TunnelSettings> { key ->
                                                     val viewModel: TunnelViewModel =
                                                         koinViewModel(
@@ -629,6 +702,13 @@ class MainActivity : AppCompatActivity() {
                                                         )
                                                     IPv6Screen(viewModel)
                                                 }
+                                                entry<Route.EntryTunnel> { key ->
+                                                    val viewModel: TunnelViewModel =
+                                                        koinViewModel(
+                                                            parameters = { parametersOf(key.id) }
+                                                        )
+                                                    EntryTunnelScreen(viewModel)
+                                                }
                                                 entry<Route.LockdownSettings> {
                                                     LockdownSettingsScreen()
                                                 }
@@ -636,6 +716,7 @@ class MainActivity : AppCompatActivity() {
                                                 entry<Route.Appearance> { AppearanceScreen() }
                                                 entry<Route.Language> { LanguageScreen() }
                                                 entry<Route.Display> { DisplayScreen() }
+                                                entry<Route.Notifications> { NotificationsScreen() }
                                                 entry<Route.Logs> { LogsScreen() }
                                                 entry<Route.Support> { SupportScreen() }
                                                 entry<Route.License> { LicenseScreen() }
@@ -647,6 +728,9 @@ class MainActivity : AppCompatActivity() {
                                                 entry<Route.TunnelGlobals> { TunnelGlobalsScreen() }
                                                 entry<Route.Security> { SecurityScreen() }
                                                 entry<Route.Monitoring> { MonitoringScreen() }
+                                                entry<Route.TunnelRecovery> {
+                                                    TunnelRecoveryScreen()
+                                                }
                                             },
                                     )
                                 }
@@ -825,6 +909,19 @@ class MainActivity : AppCompatActivity() {
         setIntent(intent)
         handleConfigFileIntent(intent)
         handleWgDeepLinkIntent(intent)
+        enqueueSupportDeepLink(intent)
+    }
+
+    private fun enqueueSupportDeepLink(intent: Intent?) {
+        if (intent?.getBooleanExtra(EXTRA_SHOW_UPDATE, false) == true) {
+            intent.removeExtra(EXTRA_SHOW_UPDATE)
+            showUpdateChannel.trySend(Unit)
+        }
+        if (intent?.getBooleanExtra(EXTRA_OPEN_SUPPORT, false) != true) return
+        val autoUpdate = intent.getBooleanExtra(EXTRA_AUTO_UPDATE, false)
+        intent.removeExtra(EXTRA_OPEN_SUPPORT)
+        intent.removeExtra(EXTRA_AUTO_UPDATE)
+        supportDeepLinkChannel.trySend(autoUpdate)
     }
 
     private fun handleConfigFileIntent(intent: Intent?) {

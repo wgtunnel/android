@@ -264,4 +264,8 @@
     <!-- Notification formatting -->
     <!-- Informational notifications -->
     <!-- Errors -->
+    <string name="live_updates">Live-updates</string>
+    <string name="live_updates_desc">Toont de verbindingsvoortgang en status van de actieve tunnel in de statusbalk en op het vergrendelscherm. Geldt wanneer er één tunnel actief is</string>
+    <string name="notification_connection_manual">Handmatige verbinding</string>
+    <string name="notification_connection_auto">Automatische tunnel</string>
 </resources>

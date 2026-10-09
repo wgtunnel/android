@@ -171,7 +171,7 @@ fun SurfaceRow(
     onClick: (() -> Unit)? = null,
     description: @Composable (() -> Unit)? = null,
     expandedContent: @Composable (() -> Unit)? = null,
-    onLongClick: () -> Unit = {},
+    onLongClick: (() -> Unit)? = null,
     enabled: Boolean = true,
     selected: Boolean = false,
     leading: @Composable (() -> Unit)? = null,

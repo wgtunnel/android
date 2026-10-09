@@ -1,0 +1,6 @@
+What's new:
+- Seamless recovery configurable delay and stats
+- Tunnel recovery features can now be applied while a tunnel is active
+- Bugfixes for peer endpoints resolution of IPv6 only endpoints
+- Bugfixes for failed parsing of valid Amnezia packet signatures
+- Various other fixes and improvements

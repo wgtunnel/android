@@ -294,4 +294,8 @@
     <!-- Notification formatting -->
     <!-- Informational notifications -->
     <!-- Errors -->
+    <string name="live_updates">即時更新</string>
+    <string name="live_updates_desc">在狀態列和鎖定畫面上顯示使用中隧道的連線進度和狀態。僅在執行單一隧道時適用</string>
+    <string name="notification_connection_manual">手動連線</string>
+    <string name="notification_connection_auto">自動隧道管理</string>
 </resources>

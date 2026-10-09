@@ -338,5 +338,19 @@ fun AmneziaSection(
             hint = stringResource(R.string.hint_template, "18"),
             modifier = Modifier.fillMaxWidth(),
         )
+        ConfigurationTextBox(
+            value = interfaceState.randomTrailers,
+            onValueChange = { onInterfaceChange(interfaceState.copy(randomTrailers = it)) },
+            label = stringResource(R.string.random_trailers),
+            hint = stringResource(R.string.hint_template, "on, off"),
+            modifier = Modifier.fillMaxWidth(),
+        )
+        ConfigurationTextBox(
+            value = interfaceState.disableCookies,
+            onValueChange = { onInterfaceChange(interfaceState.copy(disableCookies = it)) },
+            label = stringResource(R.string.disable_cookies),
+            hint = stringResource(R.string.hint_template, "on, off"),
+            modifier = Modifier.fillMaxWidth(),
+        )
     }
 }

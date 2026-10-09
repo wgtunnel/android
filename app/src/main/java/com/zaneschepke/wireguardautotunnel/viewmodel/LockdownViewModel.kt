@@ -3,18 +3,20 @@ package com.zaneschepke.wireguardautotunnel.viewmodel
 import androidx.lifecycle.ViewModel
 import com.dokar.sonner.ToastType
 import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelProvider
+import com.zaneschepke.wireguardautotunnel.core.orchestration.TunnelCoordinator
 import com.zaneschepke.wireguardautotunnel.domain.repository.GlobalEffectRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.LockdownSettingsRepository
 import com.zaneschepke.wireguardautotunnel.domain.sideeffect.GlobalSideEffect
 import com.zaneschepke.wireguardautotunnel.ui.state.LockdownSettingsUiState
 import com.zaneschepke.wireguardautotunnel.util.StringValue
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.orbitmvi.orbit.OrbitContainerHost
 import org.orbitmvi.orbit.viewmodel.orbitContainer
 
 class LockdownViewModel(
     private val lockdownSettingsRepository: LockdownSettingsRepository,
-    private val tunnelProvider: TunnelProvider,
+    private val tunnelCoordinator: TunnelCoordinator,
     private val globalEffectRepository: GlobalEffectRepository,
 ) : OrbitContainerHost<LockdownSettingsUiState, LockdownSettingsUiState, Nothing>, ViewModel() {
 
@@ -47,9 +49,7 @@ class LockdownViewModel(
             )
 
         lockdownSettingsRepository.upsert(updated)
-
-        tunnelProvider.disableLockDown()
-        tunnelProvider.setLockDown(updated)
+        withContext(Dispatchers.IO) { tunnelCoordinator.applyLockdownSettings(updated) }
 
         postSideEffect(GlobalSideEffect.PopBackStack)
         postSideEffect(

@@ -7,4 +7,5 @@ import kotlinx.serialization.Serializable
 data class Asset(
     val name: String,
     @SerialName("browser_download_url") val browserDownloadUrl: String,
+    val size: Long = 0L,
 )

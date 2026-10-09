@@ -105,6 +105,8 @@ jobs:
         id: create_release
         uses: softprops/action-gh-release@v3
         with:
+          # Must be a PAT because bot creates release
+          token: ${{ secrets.PAT }}
           body: |
             ${{ env.RELEASE_NOTES }}
 
@@ -127,5 +129,15 @@ jobs:
           make_latest: false
           files: |
             ${{ github.workspace }}/temp/**/*.apk
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT }}
+
+  publish-fdroid-public:
+    runs-on: ubuntu-latest
+    needs:
+      - publish
+    steps:
+      - name: Dispatch update for fdroid repo
+        uses: peter-evans/repository-dispatch@v4
+        with:
+          token: ${{ secrets.PAT }}
+          repository: wgtunnel/fdroid
+          event-type: fdroid-update

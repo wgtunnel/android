@@ -14,7 +14,7 @@ import com.zaneschepke.wireguardautotunnel.util.extensions.abbreviateKey
 import com.zaneschepke.wireguardautotunnel.util.extensions.toAgoDisplay
 
 @Composable
-fun PeerStatisticsSection(peer: ActivePeer) {
+fun PeerStatisticsSection(peer: ActivePeer, now: Long) {
     val context = LocalContext.current
     val style = MaterialTheme.typography.bodySmall
     val color = MaterialTheme.colorScheme.outline
@@ -36,7 +36,7 @@ fun PeerStatisticsSection(peer: ActivePeer) {
             text =
                 stringResource(
                     R.string.handshake_template,
-                    peer.lastHandshakeSeconds?.toAgoDisplay()
+                    peer.lastHandshakeSeconds?.toAgoDisplay(now)
                         ?: stringResource(R.string.never).lowercase(),
                 ),
             style = style,

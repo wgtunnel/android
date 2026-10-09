@@ -174,4 +174,8 @@
     <!-- Notification formatting -->
     <!-- Informational notifications -->
     <!-- Errors -->
+    <string name="live_updates">நேரலை புதுப்பிப்புகள்</string>
+    <string name="live_updates_desc">செயலில் உள்ள சுரங்கத்தின் இணைப்பு முன்னேற்றத்தையும் நிலையையும் நிலைப்பட்டையிலும் பூட்டுத் திரையிலும் காட்டுகிறது. ஒரே ஒரு சுரங்கம் இயங்கும்போது பொருந்தும்</string>
+    <string name="notification_connection_manual">கைமுறை இணைப்பு</string>
+    <string name="notification_connection_auto">ஆட்டோ-டன்ரல்</string>
 </resources>

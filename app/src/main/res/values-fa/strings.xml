@@ -303,4 +303,8 @@
     <string name="tunnel_dns">تونل DNS</string>
     <string name="use_tunnel_dns_servers">از سرورهای DNS تونلی استفاده کنید</string>
     <string name="error_config_missing_dns">تونل %1$s فاقد سرورهای DNS مورد نیاز برای تنظیمات برنامه فعلی شما است.</string>
+    <string name="live_updates">به‌روزرسانی‌های زنده</string>
+    <string name="live_updates_desc">پیشرفت و وضعیت اتصال تونل فعال را در نوار وضعیت و صفحه قفل نمایش می‌دهد. فقط زمانی اعمال می‌شود که یک تونل در حال اجرا باشد</string>
+    <string name="notification_connection_manual">اتصال دستی</string>
+    <string name="notification_connection_auto">تونل خودرو </string>
 </resources>

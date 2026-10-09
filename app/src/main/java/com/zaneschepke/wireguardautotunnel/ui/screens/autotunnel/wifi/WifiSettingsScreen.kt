@@ -14,14 +14,10 @@ import androidx.compose.material.icons.outlined.PublicOff
 import androidx.compose.material.icons.outlined.WifiFind
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -35,10 +31,8 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
-import com.zaneschepke.wireguardautotunnel.ui.common.banner.WarningBanner
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ThemedSwitch
-import com.zaneschepke.wireguardautotunnel.ui.common.dialog.InfoDialog
 import com.zaneschepke.wireguardautotunnel.ui.common.functions.rememberRotatingHint
 import com.zaneschepke.wireguardautotunnel.ui.common.label.GroupLabel
 import com.zaneschepke.wireguardautotunnel.ui.common.text.DescriptionText
@@ -47,8 +41,6 @@ import com.zaneschepke.wireguardautotunnel.ui.navigation.TunnelNetwork
 import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.AutoTunnelScreenSideEffect
 import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.wifi.components.NetworkRuleInput
 import com.zaneschepke.wireguardautotunnel.util.extensions.asTitleString
-import com.zaneschepke.wireguardautotunnel.util.extensions.launchAppSettings
-import com.zaneschepke.wireguardautotunnel.util.extensions.launchLocationServicesSettings
 import com.zaneschepke.wireguardautotunnel.viewmodel.AutoTunnelViewModel
 import org.koin.androidx.compose.koinViewModel
 import org.orbitmvi.orbit.compose.collectAsState
@@ -69,7 +61,6 @@ fun WifiSettingsScreen(viewModel: AutoTunnelViewModel = koinViewModel()) {
     val ssidHint = rememberRotatingHint(viewModel.ssidHints, wildcardEnabled)
     val bssidHint = rememberRotatingHint(viewModel.bssidHints, wildcardEnabled)
 
-    var showLocationDialog by remember { mutableStateOf(false) }
     var currentSsidText by rememberSaveable { mutableStateOf("") }
     var currentBssidText by rememberSaveable { mutableStateOf("") }
 
@@ -85,81 +76,11 @@ fun WifiSettingsScreen(viewModel: AutoTunnelViewModel = koinViewModel()) {
 
     val bssidFormatError = stringResource(R.string.invalid_bssid_format)
 
-    val warnings by
-        remember(
-            uiState.connectivityState,
-            uiState.autoTunnelSettings.trustedNetworkSSIDs,
-            uiState.autoTunnelSettings.wifiDetectionMethod,
-            uiState.tunnels,
-        ) {
-            derivedStateOf {
-                val needsLocation =
-                    uiState.autoTunnelSettings.wifiDetectionMethod.needsLocationPermissions()
-                val hasConfigs =
-                    uiState.autoTunnelSettings.trustedNetworkSSIDs.isNotEmpty() ||
-                        uiState.tunnels.any { it.tunnelNetworks.isNotEmpty() }
-
-                val showServicesWarning =
-                    (uiState.connectivityState?.locationServicesEnabled == false) &&
-                        needsLocation &&
-                        hasConfigs
-                val showPermissionsWarning =
-                    (uiState.connectivityState?.locationPermissionsGranted == false) &&
-                        needsLocation &&
-                        hasConfigs
-
-                showServicesWarning to showPermissionsWarning
-            }
-        }
-
-    if (showLocationDialog) {
-        InfoDialog(
-            onAttest = {
-                context.launchAppSettings()
-                showLocationDialog = false
-            },
-            onDismiss = { showLocationDialog = false },
-            title = stringResource(R.string.location_permissions),
-            body = { Text(stringResource(R.string.location_justification)) },
-            confirmText = stringResource(R.string.open_settings),
-        )
-    }
-
     Column(
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.Top),
         modifier = Modifier.fillMaxSize().imePadding().verticalScroll(rememberScrollState()),
     ) {
-        Column {
-            WarningBanner(
-                stringResource(R.string.location_services_not_detected),
-                warnings.first,
-                trailing = {
-                    TextButton({ context.launchLocationServicesSettings() }) {
-                        Text(
-                            stringResource(R.string.fix),
-                            color = MaterialTheme.colorScheme.primary,
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                    }
-                },
-                onClick = { context.launchLocationServicesSettings() },
-            )
-            WarningBanner(
-                stringResource(R.string.location_permissions_missing),
-                warnings.second,
-                trailing = {
-                    TextButton({ showLocationDialog = true }) {
-                        Text(
-                            stringResource(R.string.fix),
-                            color = MaterialTheme.colorScheme.primary,
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                    }
-                },
-                onClick = { showLocationDialog = true },
-            )
-        }
         Column {
             GroupLabel(stringResource(R.string.general), Modifier.padding(horizontal = 16.dp))
             SurfaceRow(

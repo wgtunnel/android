@@ -33,6 +33,12 @@ interface TunnelConfigDao {
 
     @Delete suspend fun delete(t: List<TunnelConfig>)
 
+    @Query("UPDATE tunnel_config SET entry_tunnel_id = NULL WHERE entry_tunnel_id = :id")
+    suspend fun clearEntryRefsTo(id: Int)
+
+    @Query("UPDATE tunnel_config SET entry_tunnel_id = NULL WHERE entry_tunnel_id IN (:ids)")
+    suspend fun clearEntryRefsTo(ids: List<Int>)
+
     @Query("SELECT COUNT('id') FROM tunnel_config") suspend fun count(): Long
 
     @Query("SELECT * FROM tunnel_config WHERE tunnel_networks LIKE '%' || :name || '%'")

@@ -15,6 +15,8 @@ import androidx.compose.material.icons.outlined.Wifi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
+import com.wgtunnel.backend.model.BackendMode
+import com.wgtunnel.backend.model.dns.DnsValidationError
 import com.wgtunnel.backend.state.ActiveTunnel
 import com.zaneschepke.networkmonitor.AndroidNetworkMonitor
 import com.zaneschepke.wireguardautotunnel.R
@@ -22,8 +24,8 @@ import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelDnsMode
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelMode
 import com.zaneschepke.wireguardautotunnel.domain.enums.WifiDetectionMethod
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
+import com.zaneschepke.wireguardautotunnel.domain.model.TunnelGroup
 import com.zaneschepke.wireguardautotunnel.ui.state.DisplayTunnelState
-import com.zaneschepke.wireguardautotunnel.util.DnsError
 import com.zaneschepke.wireguardautotunnel.util.FileUtils
 import java.time.Instant
 import java.util.Locale
@@ -128,14 +130,14 @@ fun Long.toUptimeDisplay(currentTimeMillis: Long = System.currentTimeMillis()): 
 }
 
 @StringRes
-fun DnsError.labelRes(): Int {
+fun DnsValidationError.labelRes(): Int {
     return when (this) {
-        DnsError.Empty -> R.string.dns_error_empty
-        DnsError.InvalidUrl -> R.string.dns_error_invalid_url
-        DnsError.InvalidScheme -> R.string.dns_error_invalid_scheme
-        DnsError.InvalidHost -> R.string.dns_error_invalid_host
-        DnsError.InvalidPort -> R.string.dns_error_invalid_port
-        DnsError.InvalidIpOrHost -> R.string.dns_error_invalid_ip_or_host
+        DnsValidationError.Empty -> R.string.dns_error_empty
+        DnsValidationError.InvalidUrl -> R.string.dns_error_invalid_url
+        DnsValidationError.InvalidScheme -> R.string.dns_error_invalid_scheme
+        DnsValidationError.InvalidHost -> R.string.dns_error_invalid_host
+        DnsValidationError.InvalidPort -> R.string.dns_error_invalid_port
+        DnsValidationError.InvalidIpOrHost -> R.string.dns_error_invalid_ip_or_host
     }
 }
 
@@ -155,6 +157,32 @@ fun ActiveTunnel.uptimeText(context: Context, now: Long): String? {
     return context.getString(R.string.uptime_template, uptimeDisplay)
 }
 
+fun ActiveTunnel.proxyStatusTexts(context: Context): List<String> {
+    val proxyConfig = (mode as? BackendMode.Proxy.Standard)?.proxyConfig ?: return emptyList()
+    return buildList {
+        proxyConfig.socks5?.let { socks5 ->
+            val protected = !socks5.username.isNullOrBlank() || !socks5.password.isNullOrBlank()
+            add(
+                context.getString(
+                    if (protected) R.string.socks5_proxy_protected_template
+                    else R.string.socks5_proxy_template,
+                    "${socks5.host}:${socks5.port}",
+                )
+            )
+        }
+        proxyConfig.http?.let { http ->
+            val protected = !http.username.isNullOrBlank() || !http.password.isNullOrBlank()
+            add(
+                context.getString(
+                    if (protected) R.string.http_proxy_protected_template
+                    else R.string.http_proxy_template,
+                    "${http.host}:${http.port}",
+                )
+            )
+        }
+    }
+}
+
 fun List<TunnelConfig>.asFileExportName(): Pair<String, String> {
     return if (size == 1) {
         val tunnel = first()
@@ -164,3 +192,7 @@ fun List<TunnelConfig>.asFileExportName(): Pair<String, String> {
             FileUtils.ZIP_FILE_MIME_TYPE
     }
 }
+
+// Always a zip, even with a single tunnel inside, and named for the group rather than the tunnel
+fun TunnelGroup.asExportFileName(): Pair<String, String> =
+    "$name.zip" to FileUtils.ZIP_FILE_MIME_TYPE

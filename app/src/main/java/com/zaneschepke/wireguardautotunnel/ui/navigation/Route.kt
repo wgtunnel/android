@@ -42,6 +42,8 @@ sealed class Route : NavKey {
 
     @Keep @Serializable data object Display : Route()
 
+    @Keep @Serializable data object Notifications : Route()
+
     @Keep
     @Serializable
     data object Tunnels : Route(), SecureRoute {
@@ -59,6 +61,8 @@ sealed class Route : NavKey {
     }
 
     @Keep @Serializable data class IPv6(val id: Int) : Route()
+
+    @Keep @Serializable data class EntryTunnel(val id: Int) : Route()
 
     @Keep
     @Serializable
@@ -87,8 +91,6 @@ sealed class Route : NavKey {
         override val requiresProtection: Boolean
             get() = true
     }
-
-    @Keep @Serializable data object Sort : Route()
 
     @Keep @Serializable data object Settings : Route()
 
@@ -154,6 +156,8 @@ sealed class Route : NavKey {
     @Keep @Serializable data object Security : Route()
 
     @Keep @Serializable data object Monitoring : Route()
+
+    @Keep @Serializable data object TunnelRecovery : Route()
 }
 
 @Serializable
@@ -185,12 +189,12 @@ enum class Tab(
         fun fromRoute(route: Route): Tab =
             when (route) {
                 is Route.Tunnels,
-                Route.Sort,
                 is Route.TunnelSettings,
                 is Route.ConfigEdit,
                 is Route.Lock,
                 is Route.Config,
                 is Route.IPv6,
+                is Route.EntryTunnel,
                 is Route.SplitTunnel -> TUNNELS
                 is Route.AutoTunnel,
                 Route.WifiDetectionMethod,
@@ -206,10 +210,12 @@ enum class Tab(
                 Route.Appearance,
                 Route.Language,
                 Route.Display,
+                Route.Notifications,
                 is Route.ConfigGlobal,
                 Route.TunnelGlobals,
                 Route.Security,
                 Route.Monitoring,
+                Route.TunnelRecovery,
                 Route.Logs -> SETTINGS
                 is Route.Support,
                 Route.License,

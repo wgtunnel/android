@@ -18,6 +18,11 @@ data class Address(
                     icon = R.drawable.btc,
                 ),
                 Address(
+                    name = R.string.bitcoin_lightning,
+                    address = R.string.bitcoin_lightning_address,
+                    icon = R.drawable.btc_lightning,
+                ),
+                Address(
                     name = R.string.monero,
                     address = R.string.monero_address,
                     icon = R.drawable.xmr,

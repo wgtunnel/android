@@ -64,9 +64,41 @@ fun DnsSettings.toTunnelDnsConfigOrNull(config: Config): TunnelDnsConfig? {
             ?.first
             ?: runCatching { URI(endpoint).host }.getOrNull()
             ?: endpoint.substringBefore(':')
+
+    fun splitUpstream(): Triple<String, String?, List<String>> {
+        return if (tunnelDnsProtocol == TunnelDnsProtocol.Plain && useTunnelDnsServersInSplit) {
+            val endpoints = config.parseDnsServersOnly().map { DnsHostUtils.ensurePort53(it) }
+            if (endpoints.isEmpty()) {
+                throw BackendException.ConfigMissingDNS(
+                    "Split with tunnel DNS requires DNS servers in the tunnel config"
+                )
+            }
+            Triple("plain", null, endpoints)
+        } else {
+            val endpoint =
+                tunnelDnsEndpoint
+                    ?: throw BackendException.ConfigMissingDNS(
+                        "Endpoint missing for split DNS mode"
+                    )
+            when (tunnelDnsProtocol) {
+                TunnelDnsProtocol.Doh -> Triple("doh", getHost(endpoint), listOf(endpoint))
+                TunnelDnsProtocol.Dot -> Triple("dot", getHost(endpoint), listOf(endpoint))
+                TunnelDnsProtocol.Plain ->
+                    Triple("plain", null, listOf(DnsHostUtils.ensurePort53(endpoint)))
+            }
+        }
+    }
+
+    fun parseSuffixes(): List<String> =
+        localSuffixes?.split(',')?.map { it.trim() }?.filter { it.isNotEmpty() }.orEmpty()
+
     return when (tunnelDnsMode) {
         TunnelDnsMode.Off -> null
-        TunnelDnsMode.AllLocal -> TunnelDnsConfig(defaultTransport = "local")
+        TunnelDnsMode.AllLocal ->
+            TunnelDnsConfig(
+                defaultTransport = "local",
+                foreignDnsPolicy = foreignDnsPolicy.toCore(),
+            )
 
         TunnelDnsMode.Encrypted -> {
             val endpoint =
@@ -76,70 +108,30 @@ fun DnsSettings.toTunnelDnsConfigOrNull(config: Config): TunnelDnsConfig? {
                     )
             val (transport, host) =
                 when (tunnelDnsProtocol) {
-                    TunnelDnsProtocol.Doh -> {
-                        "doh" to getHost(endpoint)
-                    }
-
-                    TunnelDnsProtocol.Dot -> {
-                        "dot" to getHost(endpoint)
-                    }
-
-                    TunnelDnsProtocol.Plain -> {
-                        // should never hit this
+                    TunnelDnsProtocol.Doh -> "doh" to getHost(endpoint)
+                    TunnelDnsProtocol.Dot -> "dot" to getHost(endpoint)
+                    TunnelDnsProtocol.Plain ->
                         throw BackendException.ConfigMissingDNS(
                             "Plain is invalid for encrypted mode"
                         )
-                    }
                 }
             TunnelDnsConfig(
                 defaultTransport = transport,
                 upstream = listOf(endpoint),
                 serverName = host,
+                foreignDnsPolicy = foreignDnsPolicy.toCore(),
             )
         }
 
         TunnelDnsMode.Split -> {
-            val (transport, host, endpoints) =
-                if (tunnelDnsProtocol == TunnelDnsProtocol.Plain && useTunnelDnsServersInSplit) {
-                    val endpoints =
-                        config.parseDnsServersOnly().map { DnsHostUtils.ensurePort53(it) }
-                    if (endpoints.isEmpty()) {
-                        throw BackendException.ConfigMissingDNS(
-                            "Split with tunnel DNS requires DNS servers in the tunnel config"
-                        )
-                    }
-                    Triple("plain", null, endpoints)
-                } else {
-                    val endpoint =
-                        tunnelDnsEndpoint
-                            ?: throw BackendException.ConfigMissingDNS(
-                                "Endpoint missing for split DNS mode"
-                            )
-                    when (tunnelDnsProtocol) {
-                        TunnelDnsProtocol.Doh -> {
-                            Triple("doh", getHost(endpoint), listOf(endpoint))
-                        }
-
-                        TunnelDnsProtocol.Dot -> {
-                            Triple("dot", getHost(endpoint), listOf(endpoint))
-                        }
-
-                        TunnelDnsProtocol.Plain -> {
-                            Triple("plain", null, listOf(DnsHostUtils.ensurePort53(endpoint)))
-                        }
-                    }
-                }
-
+            val (transport, host, endpoints) = splitUpstream()
             TunnelDnsConfig(
-                transport,
-                localSuffixes =
-                    localSuffixes
-                        ?.split(',')
-                        ?.map { it.trim() }
-                        ?.filter { it.isNotEmpty() }
-                        .orEmpty(),
+                defaultTransport = transport,
+                localSuffixes = parseSuffixes(),
                 upstream = endpoints,
                 serverName = host,
+                foreignDnsPolicy = foreignDnsPolicy.toCore(),
+                splitMode = splitSuffixTarget.toCore(),
             )
         }
     }

@@ -31,6 +31,7 @@ val coordinatorModule = module {
             get(),
             get(),
             get(),
+            get(),
             get(named(Scope.APPLICATION)),
         )
     }

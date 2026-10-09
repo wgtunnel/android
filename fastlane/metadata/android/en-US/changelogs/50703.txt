@@ -1,0 +1,6 @@
+What's new:
+- Auto-tunnel stability issue fixes
+- Stop on no network causing flapping in certain scenarios
+- Samsung network detection issues of underlay network while VPN active
+- Tunnel DNS DoH and DoT bugfixes that were causing DNS timeouts
+- System kill of Auto-tunnel service restart storm bugfix

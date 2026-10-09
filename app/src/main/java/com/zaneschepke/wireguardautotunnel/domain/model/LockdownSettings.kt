@@ -1,7 +1,7 @@
 package com.zaneschepke.wireguardautotunnel.domain.model
 
-import AllowedIpsCalculator
 import com.wgtunnel.backend.model.KillSwitchConfig
+import com.wgtunnel.parser.util.AllowedIpsCalculator
 
 data class LockdownSettings(
     val id: Long = 0L,

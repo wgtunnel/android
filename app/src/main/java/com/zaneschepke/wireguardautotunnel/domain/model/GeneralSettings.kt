@@ -22,4 +22,10 @@ data class GeneralSettings(
     val isGlobalAmneziaEnabled: Boolean = false,
     val tunnelScriptingEnabled: Boolean = false,
     val seamlessRecoveryEnabled: Boolean = true,
+    val seamlessRecoveryBounceDelaySec: Int = 30,
+    val isLiveUpdatesEnabled: Boolean = false,
+    val isNotificationOriginEnabled: Boolean = false,
+    val isNotificationTransferEnabled: Boolean = false,
+    val isNotificationRecoveryEnabled: Boolean = false,
+    val isNotificationFailureTintEnabled: Boolean = false,
 )

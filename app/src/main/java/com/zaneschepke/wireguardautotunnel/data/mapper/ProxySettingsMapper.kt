@@ -12,6 +12,7 @@ fun Entity.toDomain(): Domain =
         httpProxyBindAddress = httpProxyBindAddress,
         proxyUsername = proxyUsername,
         proxyPassword = proxyPassword,
+        allowSocks4 = allowSocks4,
     )
 
 fun Domain.toEntity(): Entity =
@@ -23,4 +24,5 @@ fun Domain.toEntity(): Entity =
         httpProxyBindAddress = httpProxyBindAddress,
         proxyUsername = proxyUsername,
         proxyPassword = proxyPassword,
+        allowSocks4 = allowSocks4,
     )

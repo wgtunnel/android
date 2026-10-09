@@ -5,14 +5,14 @@ import android.content.Context
 import androidx.core.app.NotificationCompat
 import com.zaneschepke.wireguardautotunnel.domain.enums.NotificationAction
 import com.zaneschepke.wireguardautotunnel.notification.AndroidNotificationService.NotificationChannels
-import com.zaneschepke.wireguardautotunnel.util.StringValue
+import java.io.File
 
 interface NotificationService {
     val context: Context
 
     fun createNotification(
         channel: NotificationChannels,
-        title: String = "",
+        title: CharSequence = "",
         subText: String? = null,
         actions: Collection<NotificationCompat.Action> = emptyList(),
         description: String = "",
@@ -22,20 +22,10 @@ interface NotificationService {
         groupKey: String? = null,
         isGroupSummary: Boolean = false,
         style: NotificationCompat.Style? = null,
-    ): Notification
-
-    fun createNotification(
-        channel: NotificationChannels,
-        title: StringValue,
-        subText: String? = null,
-        actions: Collection<NotificationCompat.Action> = emptyList(),
-        description: StringValue,
-        showTimestamp: Boolean = true,
-        onGoing: Boolean = false,
-        onlyAlertOnce: Boolean = true,
-        groupKey: String? = null,
-        isGroupSummary: Boolean = false,
-        style: NotificationCompat.Style? = null,
+        requestPromotedOngoing: Boolean = false,
+        shortCriticalText: String? = null,
+        chronometerBaseMillis: Long? = null,
+        color: Int? = null,
     ): Notification
 
     fun createAllChannels()
@@ -43,15 +33,20 @@ interface NotificationService {
     fun createNotificationAction(
         notificationAction: NotificationAction,
         extraId: Int? = null,
+        authenticationRequired: Boolean = false,
     ): NotificationCompat.Action
 
     fun remove(notificationId: Int)
 
     fun show(notificationId: Int, notification: Notification)
 
+    fun showUpdateAvailable(version: String)
+
+    fun showUpdateReadyToInstall(apk: File)
+
+    fun showUpdateDownloadFailed()
+
     companion object {
-        const val VPN_GROUP_KEY = "VPN_GROUP"
-        const val PROXY_GROUP_KEY = "PROXY_GROUP"
         const val AUTO_TUNNEL_GROUP_KEY = "AUTO_TUNNEL_GROUP"
         const val AUTO_TUNNEL_LOCATION_PERMISSION_ID = 123
         const val AUTO_TUNNEL_LOCATION_SERVICES_ID = 124
@@ -62,6 +57,13 @@ interface NotificationService {
         const val PROXY_NOTIFICATION_ID = 103
         const val TUNNEL_ERROR_NOTIFICATION_ID = 101
         const val TUNNEL_MESSAGES_NOTIFICATION_ID = 102
+        const val UPDATE_AVAILABLE_NOTIFICATION_ID = 125
+        const val UPDATE_READY_NOTIFICATION_ID = 126
+        const val UPDATE_FAILED_NOTIFICATION_ID = 127
         const val EXTRA_ID = "id"
+        const val EXTRA_OPEN_SUPPORT = "open_support"
+        // Open Support and scroll to the update row, without checking for an update
+        const val EXTRA_SHOW_UPDATE = "show_update"
+        const val EXTRA_AUTO_UPDATE = "auto_update"
     }
 }

@@ -1,6 +1,11 @@
 package com.zaneschepke.wireguardautotunnel.core.orchestration
 
+import com.dokar.sonner.ToastType
 import com.wgtunnel.backend.model.BackendMode
+import com.wgtunnel.parser.AmneziaConfigNormalizer
+import com.wgtunnel.parser.Config
+import com.wgtunnel.parser.ConfigReconciler
+import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.core.event.TunnelErrorEvent
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelProvider
 import com.zaneschepke.wireguardautotunnel.data.repository.RoomDnsSettingsRepository
@@ -15,21 +20,27 @@ import com.zaneschepke.wireguardautotunnel.domain.model.ProxySettings
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppStateRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
+import com.zaneschepke.wireguardautotunnel.domain.repository.GlobalEffectRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.LockdownSettingsRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.MonitoringSettingsRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.ProxySettingsRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
+import com.zaneschepke.wireguardautotunnel.domain.sideeffect.GlobalSideEffect
 import com.zaneschepke.wireguardautotunnel.service.ServiceManager
+import com.zaneschepke.wireguardautotunnel.util.StringValue
 import com.zaneschepke.wireguardautotunnel.util.extensions.toTunnelDnsConfigOrNull
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChangedBy
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import timber.log.Timber
@@ -42,14 +53,20 @@ class TunnelCoordinator(
     private val tunnelRepository: TunnelRepository,
     dnsSettingsRepository: RoomDnsSettingsRepository,
     monitoringSettingsRepository: MonitoringSettingsRepository,
+    globalEffectRepository: GlobalEffectRepository,
     proxyRepository: ProxySettingsRepository,
     lockdownModeRepository: LockdownSettingsRepository,
     private val appStateRepository: AppStateRepository,
     scope: CoroutineScope,
 ) {
 
-    private val _userOverrideFlow = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
-    val userOverrideFlow = _userOverrideFlow.asSharedFlow()
+    // Invoked synchronously inside the user action's lock, so an auto tunnel action queued behind
+    // it already sees the override when it checks its guard
+    @Volatile var userOverrideListener: (() -> Unit)? = null
+
+    private fun markUserOverride() {
+        userOverrideListener?.invoke()
+    }
 
     data class RuntimeSettingsSnapshot(
         val general: GeneralSettings,
@@ -76,7 +93,7 @@ class TunnelCoordinator(
             )
         }
 
-    private val _actions = MutableSharedFlow<TunnelActionEvent>()
+    private val _actions = MutableSharedFlow<TunnelActionEvent>(extraBufferCapacity = 8)
     val actions = _actions.asSharedFlow()
 
     private val runtimeSettingsSnapshotState =
@@ -85,6 +102,85 @@ class TunnelCoordinator(
             started = SharingStarted.Eagerly,
             initialValue = null,
         )
+
+    val backendStatus = tunnelProvider.backendStatus
+
+    init {
+        scope.launch {
+            combine(
+                    runtimeSettingsSnapshot,
+                    tunnelRepository.userTunnelsFlow,
+                    backendStatus,
+                ) { snapshot, tunnels, status ->
+                    val activeIds = status.activeTunnels.keys
+                    LiveTunnelFeatureKey(
+                        statsEnabled = snapshot.monitoring.tunnelStatisticsEnabled,
+                        statsInterval = snapshot.monitoring.tunnelStatisticsPollInterval,
+                        seamlessRecovery = snapshot.general.seamlessRecoveryEnabled,
+                        bounceDelaySec = snapshot.general.seamlessRecoveryBounceDelaySec,
+                        perTunnel =
+                            tunnels.associate { tun ->
+                                tun.id to
+                                    Triple(
+                                        tun.isDDNSTunnel,
+                                        tun.isIpv6Preferred,
+                                        tun.ipv6RestoreEnabled,
+                                    )
+                            },
+                    ) to
+                        LiveTunnelFeaturePayload(
+                            general = snapshot.general,
+                            monitoring = snapshot.monitoring,
+                            tunnels = tunnels.filter { it.id in activeIds },
+                        )
+                }
+                .distinctUntilChangedBy { it.first }
+                .drop(1)
+                .collect { (_, payload) ->
+                    payload.tunnels.forEach { config ->
+                        tunnelProvider
+                            .updateTunnel(
+                                config.toBackendTunnel(
+                                    payload.monitoring,
+                                    payload.general.tunnelScriptingEnabled,
+                                    payload.general,
+                                )
+                            )
+                            .onFailure {
+                                Timber.e(
+                                    it,
+                                    "Failed to apply live tunnel features to tunnel ${config.id}",
+                                )
+                            }
+                            .onSuccess {
+                                globalEffectRepository.post(
+                                    GlobalSideEffect.Snackbar(
+                                        message =
+                                            StringValue.StringResource(
+                                                R.string.active_tunnel_updated
+                                            ),
+                                        ToastType.Success,
+                                    )
+                                )
+                            }
+                    }
+                }
+        }
+    }
+
+    private data class LiveTunnelFeatureKey(
+        val statsEnabled: Boolean,
+        val statsInterval: Int,
+        val seamlessRecovery: Boolean,
+        val bounceDelaySec: Int,
+        val perTunnel: Map<Int, Triple<Boolean, Boolean, Boolean>>,
+    )
+
+    private data class LiveTunnelFeaturePayload(
+        val general: GeneralSettings,
+        val monitoring: MonitoringSettings,
+        val tunnels: List<TunnelConfig>,
+    )
 
     private suspend fun getSnapshot(): RuntimeSettingsSnapshot {
         return runtimeSettingsSnapshotState.filterNotNull().first()
@@ -95,7 +191,9 @@ class TunnelCoordinator(
     private val _errors = MutableSharedFlow<TunnelErrorEvent>()
     val errors = _errors.asSharedFlow()
 
-    val backendStatus = tunnelProvider.backendStatus
+    suspend fun awaitReady() {
+        bootstrapCoordinator.isReady.first { it }
+    }
 
     suspend fun startTunnel(
         config: TunnelConfig,
@@ -105,10 +203,15 @@ class TunnelCoordinator(
         bootstrapCoordinator.isReady.first { it }
 
         if (source == TunnelActionSource.USER) {
-            _userOverrideFlow.tryEmit(Unit)
+            markUserOverride()
         }
 
-        // enforce single tunnel, for now — do not clear last-active here; start success replaces it
+        startExclusive(config, source)
+    }
+
+    // enforce single tunnel, for now. We do not clear the last active here as start success
+    // replaces it
+    private suspend fun startExclusive(config: TunnelConfig, source: TunnelActionSource) {
         if (backendStatus.value.activeTunnels.isNotEmpty()) {
             stopActiveTunnelsInternal(source, persistLastActive = false)
         }
@@ -119,15 +222,33 @@ class TunnelCoordinator(
     suspend fun stopTunnel(id: Int, source: TunnelActionSource = TunnelActionSource.USER) =
         tunnelMutex.withLock {
             if (source == TunnelActionSource.USER) {
-                _userOverrideFlow.tryEmit(Unit)
+                markUserOverride()
             }
             stopTunnelInternal(id, source)
         }
 
+    /** Start/stop without taking [tunnelMutex], only reachable through [exclusively]. */
+    inner class Exclusive internal constructor() {
+        suspend fun start(config: TunnelConfig, source: TunnelActionSource) =
+            startExclusive(config, source)
+
+        suspend fun stop(id: Int, source: TunnelActionSource) = stopTunnelInternal(id, source)
+    }
+
+    private val exclusive = Exclusive()
+
+    /**
+     * Runs [block] holding the lock every start/stop holds, so a caller can decide and act without
+     * anything changing in between.
+     */
+    suspend fun <T> exclusively(block: suspend (Exclusive) -> T): T = tunnelMutex.withLock {
+        block(exclusive)
+    }
+
     suspend fun stopActiveTunnels(source: TunnelActionSource = TunnelActionSource.USER) =
         tunnelMutex.withLock {
             if (source == TunnelActionSource.USER) {
-                _userOverrideFlow.tryEmit(Unit)
+                markUserOverride()
             }
             stopActiveTunnelsInternal(source, persistLastActive = true)
         }
@@ -156,13 +277,20 @@ class TunnelCoordinator(
                 settings.isGlobalAmneziaEnabled,
             )
 
+        val globalConfig =
+            if (policy.hasAnyOverrides) {
+                tunnelRepository.globalTunnelFlow.firstOrNull()?.getConfig()
+            } else {
+                null
+            }
+
         val runConfig =
             if (policy.hasAnyOverrides) {
-                val globalConfig = tunnelRepository.globalTunnelFlow.firstOrNull()?.getConfig()
                 ConfigReconciler.reconcileConfig(config, globalConfig, policy)
             } else config
 
         val tunnelDnsConfig = dnsSettings.toTunnelDnsConfigOrNull(runConfig)
+        val outerConfig = resolveOuterConfig(tunnelConfig, globalConfig, policy)
 
         val backendMode =
             when (settings.tunnelMode) {
@@ -200,7 +328,8 @@ class TunnelCoordinator(
                         settings,
                     ),
                 mode = backendMode,
-                tunnelDnsConfig,
+                tunnelDnsConfig = tunnelDnsConfig,
+                outerConfig = outerConfig,
             )
             .onSuccess {
                 _actions.emit(
@@ -216,8 +345,64 @@ class TunnelCoordinator(
             }
     }
 
+    private suspend fun resolveOuterConfig(
+        exit: TunnelConfig,
+        globalConfig: Config?,
+        policy: ConfigReconciler.ConfigReconcilePolicy,
+    ): Config? {
+        val entryId = exit.entryTunnelId ?: return null
+        if (entryId == exit.id) {
+            Timber.w("Ignoring self-referential entry tunnel on ${exit.name}")
+            return null
+        }
+        val entry = tunnelRepository.getById(entryId)
+        if (entry == null) {
+            Timber.w("Entry tunnel id=$entryId missing for ${exit.name}; starting one-hop")
+            return null
+        }
+        return runCatching {
+            var outer = AmneziaConfigNormalizer.ensureAmneziaCompatibility(entry.getConfig())
+            if (policy.amnezia) {
+                outer =
+                    ConfigReconciler.reconcileConfig(
+                        outer,
+                        globalConfig,
+                        ConfigReconciler.ConfigReconcilePolicy(
+                            dns = false,
+                            splitTunnel = false,
+                            amnezia = true,
+                        ),
+                    )
+            }
+            outer
+        }
+            .onFailure {
+                Timber.e(it, "Failed to load entry tunnel ${entry.name} for ${exit.name}")
+            }
+            .getOrNull()
+    }
+
     suspend fun startDefault() {
         tunnelRepository.getDefaultTunnel()?.let { tunnel -> startTunnel(tunnel) }
+    }
+
+    suspend fun restartActiveTunnels() = tunnelMutex.withLock {
+        val configs =
+            backendStatus.value.activeTunnels.keys.mapNotNull { tunnelRepository.getById(it) }
+        if (configs.isEmpty()) return@withLock
+        stopActiveTunnelsInternal(TunnelActionSource.USER, persistLastActive = true)
+        configs.forEach { startTunnelInternal(it, TunnelActionSource.USER) }
+    }
+
+    /**
+     * Rebuild the kill-switch TUN in place. HEV is rebound to the new fd by VpnService using the
+     * still-running SOCKS listener
+     */
+    suspend fun applyLockdownSettings(settings: LockdownSettings) = tunnelMutex.withLock {
+        tunnelProvider
+            .setLockDown(settings)
+            .onFailure { Timber.e(it, "Failed to apply lockdown/kill-switch settings") }
+            .getOrThrow()
     }
 
     suspend fun toggleTunnel(
@@ -225,7 +410,7 @@ class TunnelCoordinator(
         source: TunnelActionSource = TunnelActionSource.USER,
     ) = tunnelMutex.withLock {
         if (source == TunnelActionSource.USER) {
-            _userOverrideFlow.tryEmit(Unit)
+            markUserOverride()
         }
 
         val isActive =
@@ -241,7 +426,7 @@ class TunnelCoordinator(
     suspend fun toggleActiveTunnels(source: TunnelActionSource = TunnelActionSource.USER) =
         tunnelMutex.withLock {
             if (source == TunnelActionSource.USER) {
-                _userOverrideFlow.tryEmit(Unit)
+                markUserOverride()
             }
 
             val active = tunnelProvider.backendStatus.value.activeTunnels

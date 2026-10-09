@@ -6,11 +6,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material3.scrollbar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.zaneschepke.logcatter.model.LogMessage
+import com.zaneschepke.wireguardautotunnel.ui.common.scroll.appScrollbar
 
 @Composable
 fun LogList(
@@ -23,7 +23,7 @@ fun LogList(
         modifier =
             modifier
                 .padding(horizontal = 12.dp)
-                .scrollbar(
+                .appScrollbar(
                     state = lazyColumnListState.scrollIndicatorState,
                     orientation = Orientation.Vertical,
                 ),

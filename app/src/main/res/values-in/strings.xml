@@ -292,4 +292,8 @@
     <!-- Notification formatting -->
     <!-- Informational notifications -->
     <!-- Errors -->
+    <string name="live_updates">Pembaruan langsung</string>
+    <string name="live_updates_desc">Menampilkan progres dan status koneksi terowongan aktif di bilah status dan layar kunci. Berlaku saat hanya satu terowongan yang berjalan</string>
+    <string name="notification_connection_manual">Koneksi manual</string>
+    <string name="notification_connection_auto">Terowongan otomatis</string>
 </resources>

@@ -3,6 +3,9 @@ package com.zaneschepke.wireguardautotunnel.ui.common
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.indication
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,7 +15,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,7 +34,9 @@ fun ExpandingRowListItem(
     isSelected: Boolean,
     expanded: @Composable () -> Unit,
     modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null,
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
     Box(
         modifier =
             modifier
@@ -38,6 +45,19 @@ fun ExpandingRowListItem(
                     if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
                     else Color.Transparent
                 )
+                .then(
+                    if (onClick != null) {
+                        // Ripple applied manually so it covers the whole row
+                        Modifier.clickable(
+                            interactionSource = interactionSource,
+                            indication = null,
+                            onClick = onClick,
+                        )
+                    } else {
+                        Modifier
+                    }
+                )
+                .indication(interactionSource, ripple())
     ) {
         Column(Modifier.padding(horizontal = 16.dp)) {
             Row(

@@ -43,11 +43,11 @@ fun LockdownSettingsScreen(
 
     val uiState by viewModel.collectAsState()
 
-    if (uiState.isLoading) return
-
     sharedViewModel.collectSideEffect {
         if (it is LocalSideEffect.SaveChanges) viewModel.setShowSaveModal(true)
     }
+
+    if (uiState.isLoading) return
 
     if (uiState.showSaveModal) {
         InfoDialog(

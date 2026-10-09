@@ -1,0 +1,5 @@
+What's new:
+- User configurable transit DNS handling feature
+- Split DNS suffixes to tunnel or local feature
+- Bugfix for work profile crash on some devices
+- File import bug on some Android TV versions

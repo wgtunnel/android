@@ -1,0 +1,4 @@
+What's new:
+- AmneziaWG 3.1 support
+- GrapheneOS MTE crash with custom DNS
+- Config importer/parser fixes

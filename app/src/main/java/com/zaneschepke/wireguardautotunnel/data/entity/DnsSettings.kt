@@ -4,6 +4,8 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.zaneschepke.wireguardautotunnel.domain.enums.BootstrapDnsProtocol
+import com.zaneschepke.wireguardautotunnel.domain.enums.ForeignDnsPolicy
+import com.zaneschepke.wireguardautotunnel.domain.enums.SplitDnsSuffixTarget
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelDnsMode
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelDnsProtocol
 
@@ -23,4 +25,9 @@ data class DnsSettings(
     val useTunnelDnsServersInSplit: Boolean = true,
     @ColumnInfo(name = "tunnel_dns_endpoint") val tunnelDnsEndpoint: String? = null,
     @ColumnInfo(name = "local_suffixes") val localSuffixes: String? = null,
+    @ColumnInfo(name = "foreign_dns_policy", defaultValue = "0")
+    val foreignDnsPolicy: ForeignDnsPolicy = ForeignDnsPolicy.Redirect,
+    // Where split-mode suffixes resolve, system (0) or tunnel (1)
+    @ColumnInfo(name = "split_suffix_target", defaultValue = "0")
+    val splitSuffixTarget: SplitDnsSuffixTarget = SplitDnsSuffixTarget.System,
 )

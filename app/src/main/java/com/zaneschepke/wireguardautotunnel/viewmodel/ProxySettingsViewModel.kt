@@ -2,6 +2,8 @@ package com.zaneschepke.wireguardautotunnel.viewmodel
 
 import androidx.lifecycle.ViewModel
 import com.dokar.sonner.ToastType
+import com.wgtunnel.backend.model.isValidProxyBindAddress
+import com.wgtunnel.backend.model.parseProxyBindAddress
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.core.orchestration.TunnelCoordinator
 import com.zaneschepke.wireguardautotunnel.domain.repository.GlobalEffectRepository
@@ -9,7 +11,6 @@ import com.zaneschepke.wireguardautotunnel.domain.repository.ProxySettingsReposi
 import com.zaneschepke.wireguardautotunnel.domain.sideeffect.GlobalSideEffect
 import com.zaneschepke.wireguardautotunnel.ui.state.ProxySettingsUiState
 import com.zaneschepke.wireguardautotunnel.util.StringValue
-import com.zaneschepke.wireguardautotunnel.util.extensions.isValidAndroidProxyBindAddress
 import kotlinx.coroutines.flow.combine
 import org.orbitmvi.orbit.OrbitContainerHost
 import org.orbitmvi.orbit.viewmodel.orbitContainer
@@ -35,6 +36,7 @@ class ProxySettingsViewModel(
                             isLoading = false,
                             socks5Enabled = settings.socks5ProxyEnabled,
                             httpEnabled = settings.httpProxyEnabled,
+                            allowSocks4 = settings.allowSocks4,
                             socksBindAddress = settings.socks5ProxyBindAddress ?: "",
                             httpBindAddress = settings.httpProxyBindAddress ?: "",
                             proxyUsername = settings.proxyUsername ?: "",
@@ -47,36 +49,36 @@ class ProxySettingsViewModel(
                 .collect { reduce { it } }
         }
 
-    // TODO add a dialog requesting restart if any tunnels active
-    fun save() = intent {
-        reduce { state.copy(showSaveModal = false) }
-
+    fun save(restart: Boolean = false) = intent {
         val current = state
 
         val updated =
-            current.proxySettings.copy(
-                socks5ProxyEnabled = current.socks5Enabled,
-                httpProxyEnabled = current.httpEnabled,
-                socks5ProxyBindAddress = current.socksBindAddress.ifBlank { null },
-                httpProxyBindAddress = current.httpBindAddress.ifBlank { null },
-                proxyUsername = current.proxyUsername.ifBlank { null },
-                proxyPassword = current.proxyPassword.ifBlank { null },
-            )
+            current.proxySettings
+                .copy(
+                    socks5ProxyEnabled = current.socks5Enabled,
+                    httpProxyEnabled = current.httpEnabled,
+                    allowSocks4 = current.allowSocks4,
+                    socks5ProxyBindAddress = current.socksBindAddress.ifBlank { null },
+                    httpProxyBindAddress = current.httpBindAddress.ifBlank { null },
+                    proxyUsername = current.proxyUsername.ifBlank { null },
+                    proxyPassword = current.proxyPassword.ifBlank { null },
+                )
+                .let { if (it.canAllowSocks4) it else it.copy(allowSocks4 = false) }
 
         val isHttpDefault = updated.httpProxyBindAddress == null
         val isSocks5Default = updated.socks5ProxyBindAddress == null
 
         // Validate bind addresses
-        if (!isSocks5Default && !updated.socks5ProxyBindAddress.isValidAndroidProxyBindAddress()) {
+        if (!isSocks5Default && !updated.socks5ProxyBindAddress.isValidProxyBindAddress()) {
             return@intent reduce { state.copy(isSocks5BindAddressError = true) }
         }
-        if (!isHttpDefault && !updated.httpProxyBindAddress.isValidAndroidProxyBindAddress()) {
+        if (!isHttpDefault && !updated.httpProxyBindAddress.isValidProxyBindAddress()) {
             return@intent reduce { state.copy(isHttpBindAddressError = true) }
         }
         // Validate different ports
         if (!isHttpDefault && !isSocks5Default) {
-            val socksPort = updated.socks5ProxyBindAddress.split(":").last().toIntOrNull()
-            val httpPort = updated.httpProxyBindAddress.split(":").last().toIntOrNull()
+            val socksPort = updated.socks5ProxyBindAddress.parseProxyBindAddress()?.second
+            val httpPort = updated.httpProxyBindAddress.parseProxyBindAddress()?.second
             if (socksPort == null || httpPort == null || socksPort == httpPort) {
                 return@intent postSideEffect(
                     GlobalSideEffect.Snackbar(
@@ -107,6 +109,7 @@ class ProxySettingsViewModel(
         }
 
         proxySettingsRepository.upsert(updated)
+        if (restart) tunnelCoordinator.restartActiveTunnels()
 
         postSideEffect(
             GlobalSideEffect.Snackbar(
@@ -124,10 +127,6 @@ class ProxySettingsViewModel(
     fun clearUsernameError() = intent { reduce { state.copy(isPasswordError = false) } }
 
     fun clearPasswordError() = intent { reduce { state.copy(isPasswordError = false) } }
-
-    fun setShowSaveModal(showSaveModal: Boolean) = intent {
-        reduce { state.copy(showSaveModal = showSaveModal) }
-    }
 
     suspend fun postSideEffect(globalSideEffect: GlobalSideEffect) {
         globalEffectRepository.post(globalSideEffect)
@@ -152,7 +151,19 @@ class ProxySettingsViewModel(
     }
 
     fun onUsernameChanged(value: String) = intent {
-        reduce { state.copy(proxyUsername = value, isUserNameError = false) }
+        reduce {
+            state.copy(
+                proxyUsername = value,
+                isUserNameError = false,
+                // SOCKS4 has no auth - turn the toggle off rather than leave it silently
+                // ignored once credentials are configured.
+                allowSocks4 = if (value.isBlank()) state.allowSocks4 else false,
+            )
+        }
+    }
+
+    fun onAllowSocks4Changed(allowed: Boolean) = intent {
+        reduce { state.copy(allowSocks4 = allowed) }
     }
 
     fun onPasswordChanged(value: String) = intent {

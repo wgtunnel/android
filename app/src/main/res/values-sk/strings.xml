@@ -84,4 +84,8 @@
     <!-- Notification formatting -->
     <!-- Informational notifications -->
     <!-- Errors -->
+    <string name="live_updates">Živé aktualizácie</string>
+    <string name="live_updates_desc">Zobrazuje priebeh a stav pripojenia aktívneho tunela v stavovom riadku a na uzamknutej obrazovke. Platí, keď beží iba jeden tunel</string>
+    <string name="notification_connection_manual">Manuálne pripojenie</string>
+    <string name="notification_connection_auto">Automatický tunel</string>
 </resources>
