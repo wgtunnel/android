@@ -156,7 +156,6 @@
     <string name="camera_permission_required">Wymagane zezwolenie na dostęp do aparatu</string>
     <string name="export_failed">Eksport nie powiódł się</string>
     <string name="version_template">Wersja: %1$s</string>
-    <string name="current_template">Bieżące: %1$s</string>
     <string name="flavor_template">Wariant: %1$s</string>
     <string name="root_required_template">%1$s (wymagany root)</string>
     <string name="recommended_template">%1$s (zalecane)</string>
