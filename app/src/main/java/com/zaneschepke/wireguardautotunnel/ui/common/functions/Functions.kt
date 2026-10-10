@@ -24,12 +24,13 @@ fun rememberFileImportLauncherForResult(
             override fun createIntent(context: Context, input: String): Intent {
                 val intent =
                     super.createIntent(context, input).apply {
-                        type =
-                            if (isTv) {
-                                FileUtils.ALLOWED_TV_FILE_TYPES
-                            } else {
-                                FileUtils.ALL_FILE_TYPES
-                            }
+                        type = FileUtils.ALL_FILE_TYPES
+                        if (isTv) {
+                            putExtra(
+                                Intent.EXTRA_MIME_TYPES,
+                                arrayOf(FileUtils.TEXT_MIME_TYPE, FileUtils.ZIP_FILE_MIME_TYPE),
+                            )
+                        }
                     }
 
                 /* AndroidTV now comes with stubs that do nothing but display a Toast less helpful than
