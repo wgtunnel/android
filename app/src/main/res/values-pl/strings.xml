@@ -254,6 +254,8 @@
     <string name="locked_down">Zablokowane</string>
     <string name="system">Systemowy</string>
     <string name="doh">DNS poprzez HTTPS (DoH)</string>
+    <string name="doh_desc">Rozwiązuj za pomocą DNS-poprzez-HTTPS</string>
+    <string name="bootstrap_system_dns_desc">Rozwiązuj za pomocą skonfigurowanego DNS urządzenia</string>
     <string name="comma_separated">Oddzielone przecinkiem</string>
     <string name="server_port">Serwer:Port</string>
     <string name="new_tunnel">Nowy tunel</string>
@@ -357,8 +359,11 @@
     <string name="automation">Automatyzacja</string>
     <string name="peer_resolution">Rozwiązanie peerów</string>
     <string name="resolution_method">Metoda rozwiązania</string>
+    <string name="resolution_method_desc">Sposób rozwiązywania nazw hostów niezbędnych do ustanowienia tunelu</string>
     <string name="dot">DNS poprzez TLS (DoT)</string>
+    <string name="dot_desc">Rozwiązuj za pomocą DNS-poprzez-TLS</string>
     <string name="plain_dns">Zwykły DNS (port 53)</string>
+    <string name="plain_dns_desc">Rozwiązuj za pomocą nieszyfrowanego DNS</string>
     <string name="current_system_dns">Bieżący system DNS</string>
     <string name="dns_error_empty">Punkt końcowy nie może być pusty</string>
     <string name="dns_error_invalid_url">Nieprawidłowy format adresu URL</string>
@@ -407,9 +412,13 @@
     <string name="statistics">Statystyka</string>
     <string name="tunnel_statistics">Statystyka aktywnego tunelu</string>
     <string name="refresh_rate">Częstotliwość odświeżania statystyki</string>
+    <string name="refresh_rate_desc">Jak często aktualizowane są statystyki tunelu w czasie rzeczywistym</string>
     <string name="balanced">Zrównoważona (3 s)</string>
+    <string name="statistic_refresh_balanced_desc">Dobry balans między świeżością a zużyciem baterii</string>
     <string name="live">Czasu rzeczywistego (1 s)</string>
+    <string name="statistic_refresh_live_desc">Aktualizuje się co sekundę, zużywa więcej energii baterii</string>
     <string name="balance_saver">Oszczędzanie baterii (10 s)</string>
+    <string name="statistic_refresh_battery_saver_desc">Rzadsze aktualizacje w celu oszczędzania baterii</string>
     <string name="tunnel_scripting">Obsługa skryptu przed/po</string>
     <string name="name_error_empty">Nazwa tunelu nie może być pusta</string>
     <string name="more_options">Więcej opcji</string>
@@ -506,20 +515,26 @@
     <string name="split_dns_desc">Podział rozpoznawania według sufiksu domeny pomiędzy systemowym DNS i tunelowym DNS</string>
     <string name="system_dns_only_desc">Wszystkie zapytania DNS są wysyłane do serwerów systemowych DNS i omijają tunel</string>
     <string name="protocol">Protokół</string>
+    <string name="protocol_desc">Transport używany do przesyłania żądań DNS przez tunel</string>
     <string name="tunnel_dns_mode">Tryb tunelowego DNS</string>
+    <string name="tunnel_dns_mode_desc">Jak odbywa się rozwiązywanie nazw DNS przy aktywnym tunelu</string>
     <string name="tunnel_dns">Tunelowy DNS</string>
     <string name="use_tunnel_dns_servers">Użyj serwerów tunelowych DNS</string>
     <string name="split_suffix_target">Przyrostki trasy przez</string>
+    <string name="split_suffix_target_sheet_desc">Który serwer nazw obsługuje powyższe sufiksy domenowe</string>
     <string name="split_suffix_target_system">Systemowy DNS</string>
     <string name="split_suffix_target_tunnel">Tunelowy DNS</string>
     <string name="split_suffix_target_desc_system">Sufiksy domen kierowane są do systemowego DNS. Wszystkie inne zapytania korzystają z tunelowego DNS.</string>
     <string name="split_suffix_target_desc_tunnel">Sufiksy domen kierowane są do tunelowego DNS. Wszystkie inne zapytania korzystają z systemowego DNS.</string>
     <string name="private_dns_enabled_warning">Prywatny DNS jest włączony. Wyłącz go, aby tunelowy DNS działał poprawnie.</string>
     <string name="transit_dns_policy">Żądania tranzytowe DNS</string>
-    <string name="transit_dns_policy_desc">Jak obsługiwać zwykłe żądanie DNS wysyłane do innego serwera niż serwery tunelowego DNS</string>
+    <string name="transit_dns_policy_desc">Jak obsługiwać zwykłe zapytania DNS wysyłane do serwera innego niż serwery DNS tunelu</string>
     <string name="transit_dns_redirect">Przekieruj</string>
+    <string name="transit_dns_redirect_desc">Przechwytuje i przekierowuje te żądania do skonfigurowanych serwerów DNS tunelu i protokołu</string>
     <string name="transit_dns_block">Zablokuj</string>
+    <string name="transit_dns_block_desc">Odrzuć żądanie</string>
     <string name="transit_dns_allow">Zezwól</string>
+    <string name="transit_dns_allow_desc">Przepuść żądanie bez zmian</string>
     <string name="error_config_missing_dns">Tunnel %1$s nie ma serwerów DNS, które są wymagane przez aktualną aplikację</string>
     <string name="active_tunnel_updated">Aktywny tunel zaktualizowany</string>
     <string name="display">Widok</string>
@@ -554,7 +569,6 @@
     <string name="collapse_group">Zwiń grupę</string>
     <string name="group_with_count">%1$s (%2$d)</string>
     <string name="group_active_count">Aktywne: %1$d</string>
-    <string name="add_group_ellipsis">Dodaj grupę…</string>
     <string name="no_tunnels_in_group">Ta grupa nie ma tuneli do eksportu</string>
     <string name="n_selected">Wybrano: %d</string>
     <plurals name="group_tunnel_count">
@@ -562,5 +576,26 @@
         <item quantity="few">%d tunele</item>
         <item quantity="many">%d tuneli</item>
         <item quantity="other">%d tuneli</item>
+    </plurals>
+    <string name="create">Utwórz</string>
+    <string name="move">Przenieś</string>
+    <string name="create_group">Utwórz grupę</string>
+    <plurals name="tunnels_will_move_to_group">
+        <item quantity="one">%d tunel zostanie przeniesiony do tej grupy</item>
+        <item quantity="few">%d tunele zostaną przeniesione do tej grupy</item>
+        <item quantity="many">%d tuneli zostanie przeniesionych do tej grupy</item>
+        <item quantity="other">%d tuneli zostanie przeniesionych do tej grupy</item>
+    </plurals>
+    <plurals name="move_n_tunnels_to">
+        <item quantity="one">Przenieś %d tunel do</item>
+        <item quantity="few">Przenieś %d tunele do</item>
+        <item quantity="many">Przenieś %d tuneli do</item>
+        <item quantity="other">Przenieś %d tuneli do</item>
+    </plurals>
+    <plurals name="move_n_tunnels">
+        <item quantity="one">Przenieś %d tunel</item>
+        <item quantity="few">Przenieś %d tunele</item>
+        <item quantity="many">Przenieś %d tuneli</item>
+        <item quantity="other">Przenieś %d tuneli</item>
     </plurals>
 </resources>
