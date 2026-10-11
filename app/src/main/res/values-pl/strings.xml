@@ -338,6 +338,8 @@
     <string name="donation_prompt_prefix">Dziękujemy za korzystanie z WG Tunnel! Jeśli możesz, rozważ</string>
     <string name="donation_prompt_link">wspieranie projektu,</string>
     <string name="donation_prompt_suffix">aby utrzymać ją wolną i stale udoskonalaną.</string>
+    <string name="desktop_prompt_message">Tunel WG jest teraz dostępny na komputerze!</string>
+    <string name="desktop_app">Aplikacja komputerowa</string>
     <string name="cookie_packet_junk_size">Rozmiar śmieciowego pakietu ciasteczka</string>
     <string name="transport_packet_junk_size">Rozmiar śmieciowego pakietu transportu</string>
     <string name="special_junk_packet">Specjalny pakiet śmieciowy</string>
