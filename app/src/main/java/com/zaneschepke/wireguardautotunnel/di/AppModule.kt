@@ -73,7 +73,7 @@ val appModule = module {
     singleOf(::GlobalEffectRepository)
 
     single { FileUtils(androidContext(), get(named(Dispatcher.IO))) }
-    single<ShortcutManager> { DynamicShortcutManager(androidContext(), get(named(Dispatcher.IO))) }
+    single<ShortcutManager> { DynamicShortcutManager(androidContext(), get(named(Dispatcher.IO)), get()) }
     singleOf(::SelectedTunnelsRepository)
 
     single { NetworkUtils(get(named(Dispatcher.IO))) }
