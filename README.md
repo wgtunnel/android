@@ -154,6 +154,155 @@ Do not commit those Gradle edits. Restore the commented `includeBuild` and Maven
 Help translate WG Tunnel on [Crowdin](https://translate.wgtunnel.com/project/wgtunnel/invite?h=11b5b7bf2099293095775d4477320c772818907).
 
 <!-- CROWDIN-CONTRIBUTORS-START -->
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="top">
+        <a href="https://crowdin.com/profile/zaneschepke"><img alt="logo" style="width: 100px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/16294570/medium/965e75d46c8e69124d9ad93b6648d70a.jpg" />
+          <br />
+          <sub><b>Zane Schepke</b></sub>
+          <br />
+          <sub><b>(zaneschepke)</b></sub></a>
+        <br />
+        <sub><b>249913 words</b></sub>
+      </td>
+      <td align="center" valign="top">
+        <a href="https://crowdin.com/profile/martinellimarco"><img alt="logo" style="width: 100px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/17936585/medium/3e4a64d969fa19dca9cda5134eb75ace.png" />
+          <br />
+          <sub><b>Marco Martinelli</b></sub>
+          <br />
+          <sub><b>(martinellimarco)</b></sub></a>
+        <br />
+        <sub><b>4661 words</b></sub>
+      </td>
+      <td align="center" valign="top">
+        <a href="https://crowdin.com/profile/Pida88"><img alt="logo" style="width: 100px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/17799913/medium/ac2cec66927300857724bef7bd432cd3.jpg" />
+          <br />
+          <sub><b>Petr Sedl</b></sub>
+          <br />
+          <sub><b>(Pida88)</b></sub></a>
+        <br />
+        <sub><b>2211 words</b></sub>
+      </td>
+      <td align="center" valign="top">
+        <a href="https://crowdin.com/profile/Surfoo"><img alt="logo" style="width: 100px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/12385147/medium/2d69c468ab233ce1d371a4323309190e_default.png" />
+          <br />
+          <sub><b>Surfoo</b></sub></a>
+        <br />
+        <sub><b>1984 words</b></sub>
+      </td>
+      <td align="center" valign="top">
+        <a href="https://crowdin.com/profile/Matthaiks"><img alt="logo" style="width: 100px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/13139078/medium/27126ff13e6785d239e4cf1d47016adc.png" />
+          <br />
+          <sub><b>Matthaiks</b></sub></a>
+        <br />
+        <sub><b>1849 words</b></sub>
+      </td>
+      <td align="center" valign="top">
+        <a href="https://crowdin.com/profile/solokot"><img alt="logo" style="width: 100px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/12939368/medium/23417b511371f5884018368baa1de8f3.jpg" />
+          <br />
+          <sub><b>solokot</b></sub></a>
+        <br />
+        <sub><b>1107 words</b></sub>
+      </td>
+      <td align="center" valign="top">
+        <a href="https://crowdin.com/profile/alis36"><img alt="logo" style="width: 100px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/17816977/medium/be84bd9763853d31c10c09f3708fb72b.jpeg" />
+          <br />
+          <sub><b>Ali Saeedi</b></sub>
+          <br />
+          <sub><b>(alis36)</b></sub></a>
+        <br />
+        <sub><b>1050 words</b></sub>
+      </td>
+    </tr>
+    <tr>
+      <td align="center" valign="top">
+        <a href="https://crowdin.com/profile/justcontributor"><img alt="logo" style="width: 100px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/13442389/medium/a6e71d4e535abf3b6d5c954658a93c70.jpg" />
+          <br />
+          <sub><b>그냥기여자</b></sub>
+          <br />
+          <sub><b>(justcontributor)</b></sub></a>
+        <br />
+        <sub><b>965 words</b></sub>
+      </td>
+      <td align="center" valign="top">
+        <a href="https://crowdin.com/profile/LEDPixel"><img alt="logo" style="width: 100px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/17784119/medium/fb3350aedffaf9c73b3f9de283b92b3e_default.png" />
+          <br />
+          <sub><b>LEDPixel</b></sub></a>
+        <br />
+        <sub><b>950 words</b></sub>
+      </td>
+      <td align="center" valign="top">
+        <a href="https://crowdin.com/profile/cyanwolfg"><img alt="logo" style="width: 100px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/15465504/medium/c294e2b66970ece817e0639c12319b48.png" />
+          <br />
+          <sub><b>CyanWolf</b></sub>
+          <br />
+          <sub><b>(cyanwolfg)</b></sub></a>
+        <br />
+        <sub><b>891 words</b></sub>
+      </td>
+      <td align="center" valign="top">
+        <a href="https://crowdin.com/profile/EvanTechDev"><img alt="logo" style="width: 100px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/17786633/medium/75db2d8a253d39f149683c270378d8c0.jpeg" />
+          <br />
+          <sub><b>Evan Huang</b></sub>
+          <br />
+          <sub><b>(EvanTechDev)</b></sub></a>
+        <br />
+        <sub><b>751 words</b></sub>
+      </td>
+      <td align="center" valign="top">
+        <a href="https://crowdin.com/profile/pixnet"><img alt="logo" style="width: 100px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/17785035/medium/ba0625fb3822f186f2a2892f443d5af9_default.png" />
+          <br />
+          <sub><b>pixnet</b></sub></a>
+        <br />
+        <sub><b>378 words</b></sub>
+      </td>
+      <td align="center" valign="top">
+        <a href="https://crowdin.com/profile/zlronron159"><img alt="logo" style="width: 100px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/13014680/medium/54f9e03c69b4f779ba7ef0f6e2ea70c7.jpg" />
+          <br />
+          <sub><b>ron</b></sub>
+          <br />
+          <sub><b>(zlronron159)</b></sub></a>
+        <br />
+        <sub><b>320 words</b></sub>
+      </td>
+      <td align="center" valign="top">
+        <a href="https://crowdin.com/profile/ppac"><img alt="logo" style="width: 100px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/14481388/medium/a640e3856ebc6794ff424b663627bf6f.png" />
+          <br />
+          <sub><b>Philip</b></sub>
+          <br />
+          <sub><b>(ppac)</b></sub></a>
+        <br />
+        <sub><b>273 words</b></sub>
+      </td>
+    </tr>
+    <tr>
+      <td align="center" valign="top">
+        <a href="https://crowdin.com/profile/YuryKomar"><img alt="logo" style="width: 100px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/17782179/medium/687a5b3ebd16654bef045ab89c24d237_default.png" />
+          <br />
+          <sub><b>YuryKomar</b></sub></a>
+        <br />
+        <sub><b>271 words</b></sub>
+      </td>
+      <td align="center" valign="top">
+        <a href="https://crowdin.com/profile/georgybog"><img alt="logo" style="width: 100px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/14779108/medium/da357a1603284460ec743f3c8cb51ba5.png" />
+          <br />
+          <sub><b>georgybog</b></sub></a>
+        <br />
+        <sub><b>257 words</b></sub>
+      </td>
+      <td align="center" valign="top">
+        <a href="https://crowdin.com/profile/darbrzozo"><img alt="logo" style="width: 100px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/17844297/medium/80791831ba4d2a563c6044832cd1a9e7.png" />
+          <br />
+          <sub><b>Dariusz</b></sub>
+          <br />
+          <sub><b>(darbrzozo)</b></sub></a>
+        <br />
+        <sub><b>125 words</b></sub>
+      </td>
+    </tr>
+  </tbody>
+</table>
 <!-- CROWDIN-CONTRIBUTORS-END -->
 
 ## Acknowledgements
