@@ -153,6 +153,9 @@ Do not commit those Gradle edits. Restore the commented `includeBuild` and Maven
 
 Help translate WG Tunnel on [Crowdin](https://translate.wgtunnel.com/project/wgtunnel/invite?h=11b5b7bf2099293095775d4477320c772818907).
 
+<!-- CROWDIN-CONTRIBUTORS-START -->
+<!-- CROWDIN-CONTRIBUTORS-END -->
+
 ## Acknowledgements
 
 Thank you to the following:
