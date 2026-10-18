@@ -93,6 +93,7 @@
     <string name="language">Język</string>
     <string name="display_theme">Motyw wyświetlania</string>
     <string name="trusted_wifi_names">Zaufane nazwy sieci Wi-Fi</string>
+    <string name="trusted_wifi_desc">Sieci Wi-Fi, które wyłączają tunel</string>
     <string name="add_wifi_name">Dodaj nazwę sieci Wi-Fi</string>
     <string name="primary_tunnel">Tunel domyślny</string>
     <string name="entry_tunnel">Tunel wejściowy</string>
@@ -206,7 +207,9 @@
     <string name="release_notes">Informacje o wydaniu</string>
     <string name="shizuku_not_detected">Nie wykryto Shizuku</string>
     <string name="sort">Sortuj</string>
+    <string name="sort_by_name">Sortuj według nazwy</string>
     <string name="sort_by_latency">Sortuj według opóźnienia</string>
+    <string name="ping_servers">Pingowanie serwerów</string>
     <string name="pinging_servers">Pingowanie serwerów…</string>
     <string name="ping_unreachable">nieosiągalny</string>
     <string name="drag_handle">Uchwyt do przeciągania</string>
@@ -312,6 +315,8 @@
     <string name="aovpn_description">Umożliwia systemowi Android uruchamianie tuneli</string>
     <string name="tunnel_boot_description">Uruchom domyślny tunel przy rozruchu</string>
     <string name="remote_key">Klucz zdalny</string>
+    <string name="rotate_remote_key">Rotuj klucz</string>
+    <string name="remote_key_rotated">Zdalny klucz zrotowany</string>
     <string name="tunnel_mapping_description">Mapuj tunele zgodnie preferencjami wg nazwy sieci Wi-Fi</string>
     <string name="monitoring">Monitorowanie</string>
     <string name="tunnel_running_name_message">Nazwy nie można zmienić, gdy tunel jest aktywny.</string>
@@ -515,6 +520,7 @@
     <string name="wildcard_wifi_desc">Obsługuje *, ? i ! w celu umieszczenia na czarnej liście</string>
     <string name="invalid_bssid_format">Nieprawidłowy format BSSID</string>
     <string name="trusted_bssid">Zaufany BSSID</string>
+    <string name="trusted_bssid_desc">Punkty dostępu, które wyłączają tunel</string>
     <string name="wildcard_bssid_desc">Obsługuje * i ! w celu umieszczania na czarnej liście</string>
     <string name="captive_portal_desc">Utrzymuje tunele wyłączone do czasu ukończenia wewnętrznego portalu</string>
     <string name="add_bssid">Dodaj BSSID</string>
