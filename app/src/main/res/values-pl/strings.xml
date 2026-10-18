@@ -342,8 +342,12 @@
     <string name="special_junk_packet">Specjalny pakiet śmieciowy</string>
     <!-- AmneziaWG 3.0 -->
     <string name="copy_from">Skopiuj z</string>
+    <string name="show_system_apps">Pokaż aplikacje systemowe</string>
+    <string name="hide_system_apps">Ukryj aplikacje systemowe</string>
     <string name="split_tunneling">Dzielone tunelowanie</string>
     <string name="split_tunneling_desc">Przekieruj określone aplikacje przez ten tunel lub wokół niego</string>
+    <string name="split_tunnel_all_label">Tuneluj wszystko</string>
+    <string name="split_tunnel_all_desc">Każda aplikacja używa tego tunelu</string>
     <string name="split_tunnel_include_label">Tunel</string>
     <string name="split_tunnel_include_desc">Wybrane aplikacje będą tunelowane, podczas gdy wszystkie inne aplikacje będą go pomijać</string>
     <string name="split_tunnel_exclude_label">Pomijaj</string>
@@ -351,7 +355,9 @@
     <string name="select_apps_to_include">Wybierz aplikacje do dołączenia</string>
     <string name="select_apps_to_exclude">Wybierz aplikacje do wykluczenia</string>
     <string name="split_mode">Tryb dzielony</string>
-    <string name="split_mode_desc">Czy wybrane aplikacje używają tego tunelu lub omijają go</string>
+    <string name="split_mode_desc">Tuneluj każdą aplikację lub wybierz aplikacje do tunelu lub obejścia</string>
+    <string name="global_split_off">Każdy tunel używa własnej listy aplikacji</string>
+    <string name="global_split_applies">Dotyczy każdego tunelu</string>
     <string name="import_url_description">Adres URL musi być bezpieczny i obsługiwać plik .conf.</string>
     <string name="export_unsupported">Eksport nie jest obsługiwany na tym urządzeniu</string>
     <string name="export_canceled">Eksport anulowano</string>
@@ -410,6 +416,24 @@
     <string name="vpn_permission_required">Wymagane zezwolenie VPN</string>
     <string name="included_apps">Uwzględnione aplikacje: %1$s</string>
     <string name="excluded_apps">Wykluczone aplikacje: %1$s</string>
+    <plurals name="apps_tunneled">
+        <item quantity="one">%d aplikacja tunelowana</item>
+        <item quantity="few">%d aplikacje tunelowane</item>
+        <item quantity="many">%d aplikacji tunelowanych</item>
+        <item quantity="other">%d aplikacji tunelowanych</item>
+    </plurals>
+    <plurals name="apps_bypassed">
+        <item quantity="one">%d aplikacja pominięta</item>
+        <item quantity="few">%d aplikacje pominięte</item>
+        <item quantity="many">%d aplikacji pominiętych</item>
+        <item quantity="other">%d aplikacji pominiętych</item>
+    </plurals>
+    <string name="all_apps_tunneled">Wszystkie aplikacje tunelowane</string>
+    <string name="managed_globally_detail">%1$s · Zarządzanie globalnie</string>
+    <string name="managed_globally">Zarządzane globalnie</string>
+    <string name="split_override_notice">Ta lista jest zapisywana i nieużywana, dopóki globalne dzielone tunele nie będą wyłączone.</string>
+    <string name="global_override_notice">Niektóre wartości są zapisywane tutaj i nieużywane dopóki ich ustawienia globalne nie zostaną wyłączone.</string>
+    <string name="none">Brak</string>
     <string name="error">Błąd</string>
     <string name="tunnel_globals">Globalne zmienne tunelu</string>
     <string name="screen_recording_protection">Ochrona przed nagrywaniem ekranu</string>
