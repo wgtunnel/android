@@ -10,6 +10,7 @@ import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.data.network.StreamingFileDownloader
 import com.zaneschepke.wireguardautotunnel.domain.model.AppUpdate
 import com.zaneschepke.wireguardautotunnel.domain.model.DownloadPause
+import com.zaneschepke.wireguardautotunnel.domain.model.UPDATE_PROGRESS_SETTLE_MS
 import com.zaneschepke.wireguardautotunnel.domain.model.UpdateDownloadState
 import com.zaneschepke.wireguardautotunnel.domain.repository.GlobalEffectRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.UpdateDownloader
@@ -18,7 +19,6 @@ import com.zaneschepke.wireguardautotunnel.lifecyle.AppVisibilityObserver
 import com.zaneschepke.wireguardautotunnel.notification.NotificationService
 import java.io.File
 import java.io.IOException
-import kotlin.coroutines.coroutineContext
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
@@ -217,6 +217,13 @@ class DownloadManagerUpdateDownloader(
     }
 
     private suspend fun deliver(file: File) {
+        if (!isUiListening()) {
+            notificationService.showUpdateReadyToInstall(file)
+            return
+        }
+        // Same duration as the progress fill. Opening the installer immediately hides that fill.
+        delay(UPDATE_PROGRESS_SETTLE_MS.milliseconds)
+        if (!file.exists()) return
         if (isUiListening()) {
             globalEffectRepository.post(GlobalSideEffect.InstallApk(file))
         } else {

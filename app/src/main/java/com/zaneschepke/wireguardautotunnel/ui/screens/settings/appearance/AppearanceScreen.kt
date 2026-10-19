@@ -44,8 +44,6 @@ fun AppearanceScreen() {
                 title = stringResource(R.string.display_theme),
                 onClick = { navController.push(Route.Display) },
             )
-        }
-        Column {
             SurfaceRow(
                 leading = { Icon(Icons.Outlined.Notifications, contentDescription = null) },
                 title = stringResource(R.string.notifications),

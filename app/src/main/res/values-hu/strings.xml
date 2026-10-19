@@ -15,8 +15,6 @@
     <string name="add_tunnels_text">Hozzáadás fájlból vagy zip-ből</string>
     <string name="add_from_qr">Hozzáadás QR-kódból</string>
     <string name="tunnel_name">Alagút neve</string>
-    <string name="exclude">Kizárás</string>
-    <string name="include">Belefoglalás</string>
     <string name="config_changes_saved">Konfigurációs módosítások mentve.</string>
     <string name="public_key">Publikus kulcs</string>
     <string name="addresses">Címek</string>
@@ -56,7 +54,6 @@
     <string name="delete_tunnel">Alagút törlése</string>
     <string name="delete_tunnel_message">Biztosan törölni szeretné a kijelölt alagutakat?</string>
     <string name="yes">Igen</string>
-    <string name="all">Mind</string>
     <string name="no_email_detected">Nem található e-mail alkalmazás</string>
     <string name="no_browser_detected">Nem található böngésző</string>
     <string name="open_issue">Hiba jelentése (Issue nyitása)</string>

@@ -24,7 +24,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -52,7 +51,7 @@ import com.zaneschepke.networkmonitor.AndroidNetworkMonitor
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
-import com.zaneschepke.wireguardautotunnel.ui.common.banner.WarningBanner
+import com.zaneschepke.wireguardautotunnel.ui.common.banner.InfoNotice
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SwitchWithDivider
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ThemedSwitch
@@ -142,33 +141,17 @@ fun AutoTunnelScreen(
         modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
     ) {
         Column {
-            WarningBanner(
-                stringResource(R.string.location_services_not_detected),
-                showServicesWarning,
-                trailing = {
-                    TextButton({ context.launchLocationServicesSettings() }) {
-                        Text(
-                            stringResource(R.string.fix),
-                            color = MaterialTheme.colorScheme.primary,
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                    }
-                },
+            InfoNotice(
+                title = stringResource(R.string.location_services_not_detected),
+                actionLabel = stringResource(R.string.fix),
                 onClick = { context.launchLocationServicesSettings() },
+                visible = showServicesWarning,
             )
-            WarningBanner(
-                stringResource(R.string.location_permissions_missing),
-                showPermissionsWarning,
-                trailing = {
-                    TextButton({ showLocationDialog = true }) {
-                        Text(
-                            stringResource(R.string.fix),
-                            color = MaterialTheme.colorScheme.primary,
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                    }
-                },
+            InfoNotice(
+                title = stringResource(R.string.location_permissions_missing),
+                actionLabel = stringResource(R.string.fix),
                 onClick = { showLocationDialog = true },
+                visible = showPermissionsWarning,
             )
         }
         Column {

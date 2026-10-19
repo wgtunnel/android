@@ -14,8 +14,6 @@
     <string name="add_tunnels_text">Toevoegen uit bestand of zip</string>
     <string name="add_from_qr">Toevoegen met QR code</string>
     <string name="tunnel_name">Tunnelnaam</string>
-    <string name="exclude">Uitsluiten</string>
-    <string name="include">Meenemen</string>
     <string name="config_changes_saved">Configuratiewijzigingen opgeslagen.</string>
     <string name="public_key">Publieke sleutel</string>
     <string name="addresses">Adres</string>
@@ -48,7 +46,6 @@
     <string name="delete_tunnel">Tunnel verwijderen</string>
     <string name="delete_tunnel_message">Weet u zeker dat u de geselecteerde tunnels wilt verwijderen?</string>
     <string name="yes">Ja</string>
-    <string name="all">Alle</string>
     <string name="no_email_detected">Geen email app gevonden</string>
     <string name="no_browser_detected">Geen browser gevonden</string>
     <string name="open_issue">Open een melding</string>

@@ -12,6 +12,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -23,6 +24,8 @@ import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SwitchWithDivider
 import com.zaneschepke.wireguardautotunnel.ui.common.text.DescriptionText
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
+import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.splittunnel.components.splitAppsLabel
+import com.zaneschepke.wireguardautotunnel.ui.state.splitAppListSummary
 import com.zaneschepke.wireguardautotunnel.ui.theme.Disabled
 import com.zaneschepke.wireguardautotunnel.viewmodel.SettingsViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.SharedAppViewModel
@@ -39,6 +42,16 @@ fun TunnelGlobalsScreen(
     val sharedUiState by sharedViewModel.collectAsState()
     val uiState by viewModel.collectAsState()
     if (uiState.isLoading) return
+    val globalQuickConfig = uiState.globalTunnelConfig?.quickConfig
+    val globalSummary =
+        remember(globalQuickConfig) {
+            val iface = uiState.globalTunnelConfig?.getConfig()?.`interface`
+            splitAppListSummary(
+                includedCount = iface?.allIncludedApps?.size ?: 0,
+                excludedCount = iface?.allExcludedApps?.size ?: 0,
+                emptyMeansAllTunneled = true,
+            )
+        }
 
     Column(
         horizontalAlignment = Alignment.Start,
@@ -65,15 +78,16 @@ fun TunnelGlobalsScreen(
                     enabled = sharedUiState.tunnelMode != TunnelMode.PROXY,
                 )
             },
-            description =
+            description = {
                 if (sharedUiState.tunnelMode == TunnelMode.PROXY) {
-                    {
-                        DescriptionText(
-                            stringResource(R.string.unavailable_in_mode),
-                            disabled = true,
-                        )
-                    }
-                } else null,
+                    DescriptionText(stringResource(R.string.unavailable_in_mode), disabled = true)
+                } else if (!uiState.settings.isGlobalSplitTunnelEnabled) {
+                    DescriptionText(stringResource(R.string.global_split_off))
+                } else {
+                    globalSummary?.let { DescriptionText(splitAppsLabel(it)) }
+                    DescriptionText(stringResource(R.string.global_split_applies))
+                }
+            },
             onClick = {
                 uiState.globalTunnelConfig?.let {
                     navController.push(Route.SplitTunnelGlobal(id = it.id))

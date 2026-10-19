@@ -11,9 +11,10 @@
     <string name="liberapay_url" translatable="false">https://liberapay.com/zaneschepke</string>
     <string name="docs_url" translatable="false">https://wgtunnel.com/docs/getting-started</string>
     <string name="website_url" translatable="false">https://wgtunnel.com</string>
-    <string name="translation_url" translatable="false">https://translate.android.wgtunnel.com/project/wgtunnel/invite?h=11b5b7bf2099293095775d4477320c772818907</string>
+    <string name="translation_url" translatable="false">https://translate.wgtunnel.com/project/wgtunnel/invite?h=11b5b7bf2099293095775d4477320c772818907</string>
     <string name="privacy_policy_url" translatable="false">https://wgtunnel.com/privacy-policy/</string>
     <string name="docs_wildcards" translatable="false">https://wgtunnel.com/docs/auto-tunneling</string>
+    <string name="docs_remote_control" translatable="false">https://wgtunnel.com/docs/android/settings#remote-app-control-with-intents</string>
     <string name="matrix_url" translatable="false">https://matrix.to/#/#wg-tunnel-space:matrix.org</string>
     <string name="telegram_url" translatable="false">https://t.me/wgtunnel</string>
     <string name="desktop_download_url" translatable="false">https://wgtunnel.com/download</string>
@@ -30,8 +31,6 @@
     <string name="add_tunnels_text">Add from file or zip</string>
     <string name="add_from_qr">Add from QR code</string>
     <string name="tunnel_name">Tunnel Name</string>
-    <string name="exclude">Exclude</string>
-    <string name="include">Include</string>
     <string name="config_changes_saved">Configuration changes saved.</string>
     <string name="public_key">Public key</string>
     <string name="addresses">Addresses</string>
@@ -74,7 +73,6 @@
     <string name="delete_tunnel">Delete tunnel</string>
     <string name="delete_tunnel_message">Are you sure you would like to delete the selected tunnels?</string>
     <string name="yes">Yes</string>
-    <string name="all">All</string>
     <string name="no_email_detected">No email app detected</string>
     <string name="no_browser_detected">No browser detected</string>
     <string name="open_issue">Open an issue</string>
@@ -114,6 +112,7 @@
     <string name="language">Language</string>
     <string name="display_theme">Display theme</string>
     <string name="trusted_wifi_names">Trusted Wi-Fi</string>
+    <string name="trusted_wifi_desc">Wi-Fi networks that disable the tunnel</string>
     <string name="add_wifi_name">Add Wi-Fi name</string>
     <string name="primary_tunnel">Default tunnel</string>
     <string name="entry_tunnel">Entry tunnel</string>
@@ -218,6 +217,7 @@
     <string name="update_check_unsupported">Update check is not supported for this build type.</string>
     <string name="darker">Darker</string>
     <string name="amoled" translatable="false">AMOLED</string>
+    <string name="amoled_dynamic" translatable="false">AMOLED Dynamic</string>
     <string name="show_qr">Show QR</string>
     <string name="done">Done</string>
     <string name="wifi_detection_method">Wi-Fi detection method</string>
@@ -237,7 +237,9 @@
     <string name="release_notes">Release notes</string>
     <string name="shizuku_not_detected">Shizuku not detected</string>
     <string name="sort">Sort</string>
+    <string name="sort_by_name">Sort by name</string>
     <string name="sort_by_latency">Sort by latency</string>
+    <string name="ping_servers">Ping servers</string>
     <string name="pinging_servers">Pinging servers…</string>
     <string name="ping_unreachable">unreachable</string>
     <string name="drag_handle">Drag Handle</string>
@@ -379,6 +381,8 @@
     <string name="aovpn_description">Allows Android to start tunnels</string>
     <string name="tunnel_boot_description">Start the default tunnel on boot</string>
     <string name="remote_key">Remote key</string>
+    <string name="rotate_remote_key">Rotate key</string>
+    <string name="remote_key_rotated">Remote key rotated</string>
     <string name="tunnel_mapping_description">Map tunnels as preferred by Wi-Fi name and BSSID</string>
     <string name="monitoring">Monitoring</string>
     <string name="tunnel_running_name_message">Name unchangeable while tunnel is active.</string>
@@ -434,8 +438,22 @@
     <string name="random_trailers" translatable="false">RandomTrailers</string>
     <string name="disable_cookies" translatable="false">DisableCookies</string>
     <string name="copy_from">Copy from</string>
-    <string name="mode">Mode</string>
-    <string name="app_selection">App selection</string>
+    <string name="show_system_apps">Show system apps</string>
+    <string name="hide_system_apps">Hide system apps</string>
+    <string name="split_tunneling">Split Tunneling</string>
+    <string name="split_tunneling_desc">Route specific apps through or around this tunnel</string>
+    <string name="split_tunnel_all_label">Tunnel all</string>
+    <string name="split_tunnel_all_desc">Every app uses this tunnel</string>
+    <string name="split_tunnel_include_label">Tunnel</string>
+    <string name="split_tunnel_include_desc">Selected apps will be tunneled while all other apps will bypass it</string>
+    <string name="split_tunnel_exclude_label">Bypass</string>
+    <string name="split_tunnel_exclude_desc">Selected apps will be bypassed while all other apps are tunneled</string>
+    <string name="select_apps_to_include">Select apps to include</string>
+    <string name="select_apps_to_exclude">Select apps to exclude</string>
+    <string name="split_mode">Split mode</string>
+    <string name="split_mode_desc">Tunnel every app, or choose which apps to tunnel or bypass</string>
+    <string name="global_split_off">Each tunnel uses its own app list</string>
+    <string name="global_split_applies">Applies to every tunnel</string>
     <string name="example_import_url" translatable="false">https://123.com/tun.conf</string>
     <string name="fdroid_url" translatable="false">https://apt.izzysoft.de/fdroid/index/apk/com.zaneschepke.wireguardautotunnel</string>
     <string name="import_url_description">The URL must be secure and serve a .conf file.</string>
@@ -519,6 +537,21 @@
         %1$s apps excluded
     </string>
 
+    <plurals name="apps_tunneled">
+        <item quantity="one">%d app tunneled</item>
+        <item quantity="other">%d apps tunneled</item>
+    </plurals>
+    <plurals name="apps_bypassed">
+        <item quantity="one">%d app bypassed</item>
+        <item quantity="other">%d apps bypassed</item>
+    </plurals>
+    <string name="all_apps_tunneled">All apps tunneled</string>
+    <string name="managed_globally_detail">%1$s · Managed globally</string>
+    <string name="managed_globally">Managed globally</string>
+    <string name="split_override_notice">This list is saved and unused until global split tunneling is off.</string>
+    <string name="global_override_notice">Some values are saved here and unused until their global settings are off.</string>
+    <string name="none">None</string>
+
     <string name="error">Error</string>
     <string name="tunnel_globals">Tunnel globals</string>
     <string name="screen_recording_protection">Screen recording protection</string>
@@ -588,7 +621,9 @@
     <string name="restore">Restore</string>
     <string name="hide_password">Hide password</string>
     <string name="restore_failed_wrong_password">Restore failed. Wrong password</string>
-    <string name="restore_failed_invalid_file">Restore failed. Select a valid backup file (.sqlite3 or .sqlite3.aes)</string>
+    <string name="restore_failed_invalid_file">Restore failed. Select a valid backup file (.zip, .sqlite3, or .sqlite3.aes)</string>
+    <string name="restore_failed_newer_version">Restore failed. This backup is from a newer version of the app</string>
+    <string name="backup_saved_downloads">Backup saved to Downloads as %1$s</string>
     <string name="error_invalid_config_url">This link returned an invalid config file. Make sure you are using a direct download link</string>
 
     <string name="local_network_permission_title">Local Network Access Needed</string>
@@ -614,6 +649,7 @@
     <string name="wildcard_wifi_desc">Supports *, ?, and ! for blacklisting</string>
     <string name="invalid_bssid_format">Invalid BSSID format</string>
     <string name="trusted_bssid">Trusted BSSID</string>
+    <string name="trusted_bssid_desc">Access points that disable the tunnel</string>
     <string name="wildcard_bssid_desc">Supports * and ! for blacklisting</string>
     <string name="captive_portal_desc">Keeps tunnels disabled until captive portal is completed</string>
     <string name="add_bssid">Add BSSID</string>

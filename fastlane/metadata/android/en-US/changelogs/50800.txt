@@ -1,0 +1,7 @@
+What's new:
+- Multihop tunnel in a tunnel support
+- Tunnel groups
+- Bugfixes for IPv6 local proxy
+- Bugfixes for auto tunnel (no location permissions, Android Auto, OEM specific quirks)
+- Split tunnel and DNS settings UX improvements
+- Various other improvements and fixes

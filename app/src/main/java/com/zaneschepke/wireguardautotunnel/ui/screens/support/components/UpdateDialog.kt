@@ -38,6 +38,7 @@ import org.orbitmvi.orbit.compose.collectAsState
 fun UpdateDialog(viewModel: SupportViewModel, context: Context, onPermissionNeeded: () -> Unit) {
     val supportState by viewModel.collectAsState()
     val download = supportState.download
+    val presentation = rememberUpdateDownloadPresentation(download)
     val downloading = download as? UpdateDownloadState.Downloading
     val downloadedFile =
         (download as? UpdateDownloadState.Completed)?.file?.takeIf {
@@ -48,7 +49,7 @@ fun UpdateDialog(viewModel: SupportViewModel, context: Context, onPermissionNeed
     InfoDialog(
         // Closing the dialog leaves a running download alone, the cancel button stops it
         onDismiss = { viewModel.dismissUpdate() },
-        confirmEnabled = downloading == null,
+        confirmEnabled = !presentation.showProgress,
         dismissText =
             stringResource(if (downloading != null) R.string.cancel_download else R.string.cancel),
         onDismissButton = {
@@ -60,7 +61,7 @@ fun UpdateDialog(viewModel: SupportViewModel, context: Context, onPermissionNeed
                 supportState.appUpdate?.apkUrl?.let { context.openWebUrl(it) }
                 return@InfoDialog
             }
-            if (downloading != null) return@InfoDialog
+            if (presentation.showProgress) return@InfoDialog
             if (context.canInstallPackages()) {
                 viewModel.downloadAndInstall()
             } else {
@@ -97,13 +98,12 @@ fun UpdateDialog(viewModel: SupportViewModel, context: Context, onPermissionNeed
                 }
 
                 Text(text = annotatedString)
-                if (downloading != null) {
+                if (presentation.showProgress) {
                     val stroke = Stroke(cap = StrokeCap.Round, width = 4.0f)
-                    val progress = downloading.progress
-                    if (progress != null) {
+                    val indicatorModifier = Modifier.fillMaxWidth().padding(top = 16.dp)
+                    if (presentation.indeterminate) {
                         LinearWavyProgressIndicator(
-                            progress = { progress },
-                            modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+                            modifier = indicatorModifier,
                             color = MaterialTheme.colorScheme.primary,
                             trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
                             stroke = stroke,
@@ -111,7 +111,8 @@ fun UpdateDialog(viewModel: SupportViewModel, context: Context, onPermissionNeed
                         )
                     } else {
                         LinearWavyProgressIndicator(
-                            modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+                            progress = { presentation.fraction },
+                            modifier = indicatorModifier,
                             color = MaterialTheme.colorScheme.primary,
                             trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
                             stroke = stroke,
@@ -119,14 +120,16 @@ fun UpdateDialog(viewModel: SupportViewModel, context: Context, onPermissionNeed
                         )
                     }
                     Text(
-                        text = downloadStatusText(downloading),
+                        text = downloadStatusText(presentation.asDownloading()),
                         style = MaterialTheme.typography.bodySmall,
                     )
-                    Text(
-                        text = stringResource(R.string.update_download_background_hint),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
+                    if (downloading != null) {
+                        Text(
+                            text = stringResource(R.string.update_download_background_hint),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
                 }
             }
         },
@@ -134,7 +137,7 @@ fun UpdateDialog(viewModel: SupportViewModel, context: Context, onPermissionNeed
             stringResource(
                 when {
                     !isStandalone -> R.string.download
-                    downloading != null -> R.string.downloading
+                    presentation.showProgress -> R.string.downloading
                     downloadedFile != null -> R.string.install
                     else -> R.string.download_and_install
                 }

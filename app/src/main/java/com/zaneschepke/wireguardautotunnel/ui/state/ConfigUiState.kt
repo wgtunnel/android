@@ -17,6 +17,7 @@ data class ConfigUiState(
 
     // persisted settings
     val globalSettings: GlobalSettingsState = GlobalSettingsState(),
+    val globalInterface: EditableInterface? = null,
 
     // ui
     val ui: ConfigEditUiState = ConfigEditUiState(),

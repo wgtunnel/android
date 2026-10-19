@@ -146,8 +146,12 @@ fun WifiSettingsScreen(viewModel: AutoTunnelViewModel = koinViewModel()) {
                 onValueChange = { currentSsidText = it },
                 onSave = { ssid -> viewModel.saveTrustedNetworkName(ssid) },
                 supportingContent = {
-                    if (uiState.autoTunnelSettings.isWildcardsEnabled)
-                        DescriptionText(stringResource(R.string.wildcard_wifi_desc))
+                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        DescriptionText(stringResource(R.string.trusted_wifi_desc))
+                        if (uiState.autoTunnelSettings.isWildcardsEnabled) {
+                            DescriptionText(stringResource(R.string.wildcard_wifi_desc))
+                        }
+                    }
                 },
             )
 
@@ -159,8 +163,12 @@ fun WifiSettingsScreen(viewModel: AutoTunnelViewModel = koinViewModel()) {
                 onValueChange = { currentBssidText = it },
                 onSave = { bssid -> viewModel.saveTrustedBssid(bssid) },
                 supportingContent = {
-                    if (uiState.autoTunnelSettings.isWildcardsEnabled)
-                        DescriptionText(stringResource(R.string.wildcard_bssid_desc))
+                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        DescriptionText(stringResource(R.string.trusted_bssid_desc))
+                        if (uiState.autoTunnelSettings.isWildcardsEnabled) {
+                            DescriptionText(stringResource(R.string.wildcard_bssid_desc))
+                        }
+                    }
                 },
                 placeholder = bssidHint,
             )

@@ -53,6 +53,7 @@ enum class Theme {
     DARKER,
     AMOLED,
     DYNAMIC,
+    AMOLED_DYNAMIC,
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -94,6 +95,22 @@ fun WireguardAutoTunnelTheme(theme: Theme = Theme.AUTOMATIC, content: @Composabl
                     }
                 } else {
                     autoTheme
+                }
+            }
+            Theme.AMOLED_DYNAMIC -> {
+                isDark = true
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    dynamicDarkColorScheme(context)
+                        .copy(
+                            surface = Color.Black,
+                            background = Color.Black,
+                        )
+                } else {
+                    DarkColorScheme.copy(
+                        surface = Color.Black,
+                        background = Color.Black,
+                        primary = ElectricTeal,
+                    )
                 }
             }
         }

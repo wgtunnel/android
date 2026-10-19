@@ -55,6 +55,7 @@ import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
 import com.zaneschepke.wireguardautotunnel.ui.screens.support.components.PermissionDialog
 import com.zaneschepke.wireguardautotunnel.ui.screens.support.components.UpdateDialog
 import com.zaneschepke.wireguardautotunnel.ui.screens.support.components.UpdateDownloadProgress
+import com.zaneschepke.wireguardautotunnel.ui.screens.support.components.rememberUpdateDownloadPresentation
 import com.zaneschepke.wireguardautotunnel.util.Constants
 import com.zaneschepke.wireguardautotunnel.util.StringValue
 import com.zaneschepke.wireguardautotunnel.util.extensions.canInstallPackages
@@ -305,7 +306,7 @@ fun SupportScreen(
                 onClick = { clipboardManager.copy(version) },
             )
             val download = supportState.download
-            val downloading = download as? UpdateDownloadState.Downloading
+            val presentation = rememberUpdateDownloadPresentation(download)
             val downloadReady = download is UpdateDownloadState.Completed
             val downloadFailed = download is UpdateDownloadState.Failed
             SurfaceRow(
@@ -313,7 +314,7 @@ fun SupportScreen(
                 title =
                     stringResource(
                         when {
-                            downloading != null -> R.string.downloading_update
+                            presentation.showProgress -> R.string.downloading_update
                             downloadReady -> R.string.update_ready_to_install
                             downloadFailed -> R.string.update_download_failed_title
                             else -> R.string.check_for_update
@@ -321,8 +322,8 @@ fun SupportScreen(
                     ),
                 description =
                     when {
-                        downloading != null -> {
-                            { UpdateDownloadProgress(downloading) }
+                        presentation.showProgress -> {
+                            { UpdateDownloadProgress(presentation) }
                         }
                         downloadReady -> {
                             { DescriptionText(stringResource(R.string.update_tap_to_install)) }
@@ -350,7 +351,7 @@ fun SupportScreen(
                         Constants.FDROID_FLAVOR -> openWebUrl(izzyUrl)
                         // A running or finished download reopens the dialog, no new check
                         else ->
-                            if (downloading != null || downloadReady) {
+                            if (download is UpdateDownloadState.Downloading || downloadReady) {
                                 viewModel.showActiveDownload()
                             } else {
                                 viewModel.checkForStandaloneUpdate()

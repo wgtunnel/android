@@ -1,0 +1,2 @@
+What's new:
+- Bugfix for SOCKS5 proxy and Lockdown DNS resolution issues introduced in 5.8.0

@@ -1,86 +1,107 @@
 package com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.splittunnel.components
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Check
+import androidx.compose.material.icons.outlined.Apps
+import androidx.compose.material.icons.outlined.ExpandMore
+import androidx.compose.material.icons.outlined.LockOpen
+import androidx.compose.material.icons.outlined.VpnKey
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MultiChoiceSegmentedButtonRow
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.Text
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.intl.Locale
-import androidx.compose.ui.unit.dp
 import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.splittunnel.state.SplitOption
+import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
+import com.zaneschepke.wireguardautotunnel.ui.common.sheet.CustomBottomSheet
+import com.zaneschepke.wireguardautotunnel.ui.common.sheet.SheetOption
+import com.zaneschepke.wireguardautotunnel.ui.common.text.DescriptionText
+import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.splittunnel.state.SplitBehavior
 
 @Composable
-fun SplitOptionSelector(selectedOption: SplitOption, onOptionChange: (SplitOption) -> Unit) {
-    val context = LocalContext.current
-    val locale = Locale.current.platformLocale
-    val inputHeight = 45.dp
-
-    MultiChoiceSegmentedButtonRow(
-        modifier =
-            Modifier.background(color = MaterialTheme.colorScheme.surface)
-                .fillMaxWidth()
-                .height(inputHeight)
-                .padding(horizontal = 16.dp)
-    ) {
-        SplitOption.entries.forEachIndexed { index, entry ->
-            val active = selectedOption == entry
-            SegmentedButton(
-                shape =
-                    SegmentedButtonDefaults.itemShape(
-                        index = index,
-                        count = SplitOption.entries.size,
-                        baseShape = RoundedCornerShape(8.dp),
-                    ),
-                icon = {
-                    SegmentedButtonDefaults.Icon(
-                        active = active,
-                        activeContent = {
-                            Icon(
-                                imageVector = Icons.Outlined.Check,
-                                contentDescription = stringResource(R.string.select),
-                                tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(SegmentedButtonDefaults.IconSize),
-                            )
-                        },
-                    ) {
-                        Icon(
-                            imageVector = entry.icon(),
-                            contentDescription = entry.icon().name,
-                            modifier = Modifier.size(SegmentedButtonDefaults.IconSize),
-                        )
-                    }
-                },
-                colors =
-                    SegmentedButtonDefaults.colors()
-                        .copy(
-                            activeContainerColor = MaterialTheme.colorScheme.surface,
-                            inactiveContainerColor = MaterialTheme.colorScheme.surface,
-                        ),
-                onCheckedChange = { onOptionChange(entry) },
-                checked = active,
-            ) {
-                Text(
-                    entry.text().asString(context).replaceFirstChar {
-                        if (it.isLowerCase()) it.titlecase(locale) else it.toString()
-                    },
-                    color = MaterialTheme.colorScheme.onBackground,
-                    style = MaterialTheme.typography.labelMedium,
+fun SplitBehaviorOptions(
+    activeBehavior: SplitBehavior,
+    onBehaviorChange: (SplitBehavior) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    var showSheet by rememberSaveable { mutableStateOf(false) }
+    if (showSheet) {
+        SplitBehaviorBottomSheet(
+            activeBehavior = activeBehavior,
+            onBehaviorChange = onBehaviorChange,
+            onDismiss = { showSheet = false },
+        )
+    }
+    SurfaceRow(
+        leading = { Icon(activeBehavior.icon(), contentDescription = null) },
+        trailing = { modifier ->
+            IconButton(onClick = { showSheet = true }, modifier) {
+                Icon(
+                    Icons.Outlined.ExpandMore,
+                    contentDescription = stringResource(R.string.select),
                 )
             }
-        }
+        },
+        title = stringResource(R.string.split_mode),
+        description = { DescriptionText(activeBehavior.label()) },
+        onClick = { showSheet = true },
+        modifier = modifier,
+    )
+}
+
+@Composable
+private fun SplitBehaviorBottomSheet(
+    activeBehavior: SplitBehavior,
+    onBehaviorChange: (SplitBehavior) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    CustomBottomSheet(
+        SplitBehavior.entries.map { behavior ->
+            SheetOption(
+                leadingIcon = behavior.icon(),
+                label = behavior.label(),
+                onClick = {
+                    onDismiss()
+                    onBehaviorChange(behavior)
+                },
+                description = behavior.description(),
+                selected = activeBehavior == behavior,
+            )
+        },
+        title = stringResource(R.string.split_mode),
+        description = stringResource(R.string.split_mode_desc),
+    ) {
+        onDismiss()
     }
 }
+
+@Composable
+private fun SplitBehavior.label(): String =
+    stringResource(
+        when (this) {
+            SplitBehavior.ALL -> R.string.split_tunnel_all_label
+            SplitBehavior.INCLUDE -> R.string.split_tunnel_include_label
+            SplitBehavior.EXCLUDE -> R.string.split_tunnel_exclude_label
+        }
+    )
+
+@Composable
+private fun SplitBehavior.description(): String =
+    stringResource(
+        when (this) {
+            SplitBehavior.ALL -> R.string.split_tunnel_all_desc
+            SplitBehavior.INCLUDE -> R.string.split_tunnel_include_desc
+            SplitBehavior.EXCLUDE -> R.string.split_tunnel_exclude_desc
+        }
+    )
+
+private fun SplitBehavior.icon(): ImageVector =
+    when (this) {
+        SplitBehavior.ALL -> Icons.Outlined.Apps
+        SplitBehavior.INCLUDE -> Icons.Outlined.VpnKey
+        SplitBehavior.EXCLUDE -> Icons.Outlined.LockOpen
+    }

@@ -3,8 +3,8 @@
 compileSdk = "37"
 minSdk = "26"
 targetSdk = "37"
-versionCode = "50705"
-versionName = "5.7.5"
+versionCode = "50801"
+versionName = "5.8.1"
 jdk = "21"
 accompanist = "0.37.3"
 activityCompose = "1.13.0"
@@ -16,7 +16,6 @@ kotlinxCoroutinesAndroid = "1.11.0"
 leakcanaryAndroid = "3.0-alpha-9"
 lottieCompose = "6.7.1"
 orbitCompose = "12.0.1"
-roomdatabasebackup = "1.1.0"
 shizuku = "13.1.5"
 appcompat = "1.8.0"
 coreKtx = "1.19.1"
@@ -52,8 +51,8 @@ ktfmt = "0.27.0"
 licensee = "1.14.1"
 lifecycleViewmodelNavigation3 = "2.11.0"
 sonner = "0.4.0"
-core = "1.9.4"
-aboutlibraries = "15.2.0"
+core = "1.9.9"
+aboutlibraries = "15.3.0"
 
 [bundles]
 # Core AndroidX foundations
@@ -189,7 +188,6 @@ orbit-viewmodel = { module = "org.orbit-mvi:orbit-viewmodel", version.ref = "orb
 
 # misc
 pin-lock-compose = { module = "com.zaneschepke:pin_lock_compose", version.ref = "pinLockCompose" }
-roomdatabasebackup = { module = "de.raphaelebner:roomdatabasebackup", version.ref = "roomdatabasebackup" }
 qrose = { module = "io.github.alexzhirkevich:qrose", version.ref = "qrose" }
 semver4j = { module = "com.vdurmont:semver4j", version.ref = "semver4j" }
 slf4j-android = { module = "org.slf4j:slf4j-android", version.ref = "slf4jAndroid" }

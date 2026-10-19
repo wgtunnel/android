@@ -15,8 +15,6 @@
     <string name="add_tunnels_text">Dosyadan veya zip’ten ekle</string>
     <string name="add_from_qr">QR kodundan ekle</string>
     <string name="tunnel_name">Tünel Adı</string>
-    <string name="exclude">Hariç Tut</string>
-    <string name="include">Dahil Et</string>
     <string name="config_changes_saved">Yapılandırma değişiklikleri kaydedildi.</string>
     <string name="public_key">Genel anahtar</string>
     <string name="addresses">Adresler</string>
@@ -56,7 +54,6 @@
     <string name="delete_tunnel">Tüneli sil</string>
     <string name="delete_tunnel_message">Bu tüneli silmek istediğinizden emin misiniz?</string>
     <string name="yes">Evet</string>
-    <string name="all">Tümü</string>
     <string name="no_email_detected">E-posta uygulaması algılanmadı</string>
     <string name="no_browser_detected">Tarayıcı algılanmadı</string>
     <string name="open_issue">Bir sorun aç</string>

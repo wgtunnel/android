@@ -1,0 +1,24 @@
+name: crowdin-contributors
+
+permissions:
+  contents: write
+  pull-requests: write
+
+on:
+  schedule:
+    - cron: '0 0 * * 0'
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: andrii-bodnar/action-crowdin-contributors@ef1aebb96d8a0e60faf8f85376f52f1898b66c83 # v3.3.1
+        env:
+          CROWDIN_PROJECT_ID: 911151
+          CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_CI_TOKEN }}
+      - uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
+        with:
+          commit-message: 'docs: update Crowdin translators'
+          title: 'docs: update Crowdin translators'

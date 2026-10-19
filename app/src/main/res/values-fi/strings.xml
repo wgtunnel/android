@@ -10,8 +10,6 @@
     <string name="add_tunnels_text">Lisää tiedostosta tai zip-arkistosta</string>
     <string name="add_from_qr">Lisää QR-koodilla</string>
     <string name="tunnel_name">Tunnelin nimi</string>
-    <string name="exclude">Poissulje</string>
-    <string name="include">Sisällytä</string>
     <string name="config_changes_saved">Asetusten muutokset tallennettu.</string>
     <string name="public_key">Julkinen avain</string>
     <string name="addresses">Osoitteet</string>
@@ -43,7 +41,6 @@
     <string name="delete_tunnel">Poista tunneli</string>
     <string name="delete_tunnel_message">Haluatko varmasti poistaa tämän tunnelin?</string>
     <string name="yes">Kyllä</string>
-    <string name="all">kaikki</string>
     <string name="no_email_detected">Sähköpostisovellusta ei tunnistettu</string>
     <string name="no_browser_detected">Selainta ei tunnistettu</string>
     <string name="open_issue">Raportoi ongelmasta</string>

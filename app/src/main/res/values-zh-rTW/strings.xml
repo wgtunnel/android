@@ -15,8 +15,6 @@
     <string name="add_tunnels_text">從檔案或 zip 壓縮檔新增</string>
     <string name="add_from_qr">從 QR code 新增</string>
     <string name="tunnel_name">隧道名稱</string>
-    <string name="exclude">排除</string>
-    <string name="include">包含</string>
     <string name="config_changes_saved">組態變更已儲存。</string>
     <string name="public_key">公鑰</string>
     <string name="addresses">位址</string>
@@ -56,7 +54,6 @@
     <string name="delete_tunnel">刪除隧道</string>
     <string name="delete_tunnel_message">您確定要刪除所選的隧道？</string>
     <string name="yes">是</string>
-    <string name="all">全部</string>
     <string name="no_email_detected">找不到電子郵件應用程式</string>
     <string name="no_browser_detected">找不到瀏覽器</string>
     <string name="open_issue">建立新的問題</string>

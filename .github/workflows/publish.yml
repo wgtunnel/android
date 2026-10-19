@@ -246,7 +246,9 @@ jobs:
             package_name:"com.zaneschepke.wireguardautotunnel"
 
   publish-listing:
-    if: ${{ github.event_name == 'push' || inputs.track != 'none' }}
+    # A duplicate version code must not block the store listing. always()
+    # lets this run when the binary upload failed; track "none" still skips it.
+    if: ${{ always() && (github.event_name == 'push' || inputs.track != 'none') }}
     name: Publish Play Store listing
     needs: publish-play
     uses: ./.github/workflows/publish-play-listing.yml

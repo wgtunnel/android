@@ -116,10 +116,17 @@ class SettingsViewModel(
     }
 
     fun setRemoteEnabled(to: Boolean) = intent {
-        settingsRepository.upsert(
-            state.settings.copy(
-                isRemoteControlEnabled = to,
-                remoteKey = UUID.randomUUID().toString(),
+        val key =
+            state.settings.remoteKey?.takeIf { it.isNotBlank() } ?: UUID.randomUUID().toString()
+        settingsRepository.upsert(state.settings.copy(isRemoteControlEnabled = to, remoteKey = key))
+    }
+
+    fun rotateRemoteKey() = intent {
+        settingsRepository.upsert(state.settings.copy(remoteKey = UUID.randomUUID().toString()))
+        postSideEffect(
+            GlobalSideEffect.Snackbar(
+                StringValue.StringResource(R.string.remote_key_rotated),
+                ToastType.Success,
             )
         )
     }

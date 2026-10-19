@@ -7,6 +7,7 @@ import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.data.AppDatabase
 import com.zaneschepke.wireguardautotunnel.data.DataStoreManager
 import com.zaneschepke.wireguardautotunnel.data.DatabaseCallback
+import com.zaneschepke.wireguardautotunnel.data.backup.DatabaseBackup
 import com.zaneschepke.wireguardautotunnel.data.migrations.MIGRATION_23_24
 import com.zaneschepke.wireguardautotunnel.data.migrations.MIGRATION_25_26
 import com.zaneschepke.wireguardautotunnel.data.migrations.MIGRATION_28_29
@@ -82,6 +83,17 @@ val databaseModule = module {
     singleOf(::RoomSettingsRepository) bind GeneralSettingRepository::class
     singleOf(::RoomTunnelRepository) bind TunnelRepository::class
     singleOf(::RoomTunnelGroupRepository) bind TunnelGroupRepository::class
+    single {
+        DatabaseBackup(
+            androidContext(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(named(Dispatcher.IO)),
+        )
+    }
     viewModelScope {
         scoped<InstalledPackageRepository> {
             InstalledAndroidPackageRepository(androidContext(), get(named(Dispatcher.IO)))

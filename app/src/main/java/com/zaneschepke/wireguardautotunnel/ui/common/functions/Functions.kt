@@ -1,14 +1,18 @@
 package com.zaneschepke.wireguardautotunnel.ui.common.functions
 
+import android.app.Activity
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.pm.ResolveInfo
 import android.net.Uri
 import android.os.Build
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
 import com.zaneschepke.wireguardautotunnel.util.FileUtils
 import timber.log.Timber
@@ -17,55 +21,76 @@ import timber.log.Timber
 fun rememberFileImportLauncherForResult(
     onNoFileExplorer: () -> Unit,
     onData: (data: Uri) -> Unit,
-): ManagedActivityResultLauncher<String, Uri?> {
+    onCancel: () -> Unit = {},
+): () -> Unit {
+    val context = LocalContext.current
     val isTv = LocalIsAndroidTV.current
-    return rememberLauncherForActivityResult(
-        object : ActivityResultContracts.GetContent() {
-            override fun createIntent(context: Context, input: String): Intent {
-                val intent =
-                    super.createIntent(context, input).apply {
-                        type = FileUtils.ALL_FILE_TYPES
-                        if (isTv) {
-                            putExtra(
-                                Intent.EXTRA_MIME_TYPES,
-                                arrayOf(FileUtils.TEXT_MIME_TYPE, FileUtils.ZIP_FILE_MIME_TYPE),
-                            )
-                        }
-                    }
-
-                /* AndroidTV now comes with stubs that do nothing but display a Toast less helpful than
-                 * what we can do, so detect this and throw an exception that we can catch later. */
-                val activitiesToResolveIntent =
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        context.packageManager.queryIntentActivities(
-                            intent,
-                            PackageManager.ResolveInfoFlags.of(
-                                PackageManager.MATCH_DEFAULT_ONLY.toLong()
-                            ),
-                        )
-                    } else {
-                        context.packageManager.queryIntentActivities(
-                            intent,
-                            PackageManager.MATCH_DEFAULT_ONLY,
-                        )
-                    }
-                if (
-                    activitiesToResolveIntent.all {
-                        val name = it.activityInfo.packageName
-                        name.startsWith(FileUtils.GOOGLE_TV_EXPLORER_STUB) ||
-                            name.startsWith(FileUtils.ANDROID_TV_EXPLORER_STUB)
-                    }
-                ) {
-                    onNoFileExplorer()
-                }
-                return intent
-            }
+    val launcher =
+        rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result
+            ->
+            val uri = result.data?.data
+            if (result.resultCode == Activity.RESULT_OK && uri != null) onData(uri) else onCancel()
         }
-    ) { data ->
-        if (data == null) return@rememberLauncherForActivityResult
-        onData(data)
+    return {
+        val intent = if (isTv) context.createTvImportIntent() else context.phoneImportIntent()
+        if (intent == null) onNoFileExplorer() else launcher.launch(intent)
     }
 }
+
+private fun Context.phoneImportIntent(): Intent =
+    Intent(Intent.ACTION_GET_CONTENT).apply {
+        addCategory(Intent.CATEGORY_OPENABLE)
+        type = FileUtils.ALL_FILE_TYPES
+    }
+
+// An implicit */* GET_CONTENT is redirected to the photo picker, which loops on Android TV.
+private fun Context.createTvImportIntent(): Intent? {
+    val launch =
+        phoneImportIntent().apply {
+            putExtra(Intent.EXTRA_MIME_TYPES, FileUtils.TV_IMPORT_MIME_TYPES)
+        }
+    val probe = Intent(launch).apply { type = FileUtils.TEXT_MIME_TYPE }
+    val real = queryImportActivities(probe).filterNot { it.isBlockedImportHandler() }
+    if (real.isEmpty()) return null
+    val preferred =
+        resolveImportActivity(probe)?.takeUnless { it.isBlockedImportHandler() }?.componentName()
+    val chosen = real.firstOrNull { it.componentName() == preferred } ?: real.first()
+    return launch.apply { component = chosen.componentName() }
+}
+
+private fun Context.queryImportActivities(intent: Intent): List<ResolveInfo> =
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        packageManager.queryIntentActivities(
+            intent,
+            PackageManager.ResolveInfoFlags.of(PackageManager.MATCH_ALL.toLong()),
+        )
+    } else {
+        packageManager.queryIntentActivities(intent, PackageManager.MATCH_ALL)
+    }
+
+private fun Context.resolveImportActivity(intent: Intent): ResolveInfo? =
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        packageManager.resolveActivity(
+            intent,
+            PackageManager.ResolveInfoFlags.of(PackageManager.MATCH_DEFAULT_ONLY.toLong()),
+        )
+    } else {
+        packageManager.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY)
+    }
+
+private fun ResolveInfo.isBlockedImportHandler(): Boolean {
+    val name = activityInfo.packageName
+    return name.startsWith(FileUtils.GOOGLE_TV_EXPLORER_STUB) ||
+        name.startsWith(FileUtils.ANDROID_TV_EXPLORER_STUB) ||
+        name == PHOTO_PICKER_PACKAGE ||
+        name == PHOTO_PICKER_PACKAGE_ALT
+}
+
+private const val PHOTO_PICKER_PACKAGE = "com.google.android.providers.media.module"
+private const val PHOTO_PICKER_PACKAGE_ALT = "com.android.providers.media.module"
+
+private fun ResolveInfo.componentName(): ComponentName =
+    ComponentName(activityInfo.packageName, activityInfo.name)
 
 @Composable
 fun rememberFileExportLauncherForResult(

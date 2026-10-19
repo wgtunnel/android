@@ -63,14 +63,14 @@ fun shiftRootPositionsBy(
     tunnels: List<TunnelConfig>,
     count: Int,
 ): Pair<List<TunnelGroup>, List<TunnelConfig>> {
-    if (count <= 0) return groups to tunnels
+    if (count <= 0) return emptyList<TunnelGroup>() to emptyList()
     val shiftedGroups = groups.map { it.copy(position = it.position + count) }
-    val shiftedTunnels = tunnels.map {
-        if (it.groupId == null) it.copy(position = it.position + count) else it
-    }
+    val shiftedTunnels =
+        tunnels.filter { it.groupId == null }.map { it.copy(position = it.position + count) }
     return shiftedGroups to shiftedTunnels
 }
 
+// Returns only the groups/tunnels whose position actually changes - see shiftRootPositionsBy.
 fun shiftForInsertAfter(
     groups: List<TunnelGroup>,
     tunnels: List<TunnelConfig>,
@@ -79,20 +79,18 @@ fun shiftForInsertAfter(
 ): Pair<List<TunnelGroup>, List<TunnelConfig>> {
     val insertAt = afterPosition + 1
     if (groupId != null) {
-        val shiftedTunnels = tunnels.map {
-            if (it.groupId == groupId && it.position >= insertAt) {
-                it.copy(position = it.position + 1)
-            } else it
-        }
-        return groups to shiftedTunnels
+        val shiftedTunnels =
+            tunnels
+                .filter { it.groupId == groupId && it.position >= insertAt }
+                .map { it.copy(position = it.position + 1) }
+        return emptyList<TunnelGroup>() to shiftedTunnels
     }
-    val shiftedGroups = groups.map {
-        if (it.position >= insertAt) it.copy(position = it.position + 1) else it
-    }
-    val shiftedTunnels = tunnels.map {
-        if (it.groupId == null && it.position >= insertAt) it.copy(position = it.position + 1)
-        else it
-    }
+    val shiftedGroups =
+        groups.filter { it.position >= insertAt }.map { it.copy(position = it.position + 1) }
+    val shiftedTunnels =
+        tunnels
+            .filter { it.groupId == null && it.position >= insertAt }
+            .map { it.copy(position = it.position + 1) }
     return shiftedGroups to shiftedTunnels
 }
 

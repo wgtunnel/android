@@ -37,7 +37,6 @@ import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.components.TunnelI
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.components.TunnelList
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.components.UrlImportDialog
 import com.zaneschepke.wireguardautotunnel.ui.sideeffect.LocalSideEffect
-import com.zaneschepke.wireguardautotunnel.util.FileUtils
 import com.zaneschepke.wireguardautotunnel.util.StringValue
 import com.zaneschepke.wireguardautotunnel.util.extensions.asExportFileName
 import com.zaneschepke.wireguardautotunnel.util.extensions.asFileExportName
@@ -212,7 +211,7 @@ fun TunnelsScreen(sharedViewModel: SharedAppViewModel = koinActivityViewModel())
     if (showImportSheet) {
         TunnelImportSheet(
             onDismiss = { showImportSheet = false },
-            onFileClick = { tunnelFileImportResultLauncher.launch(FileUtils.ALL_FILE_TYPES) },
+            onFileClick = { tunnelFileImportResultLauncher() },
             onQrClick = { requestPermissionLauncher.launch(android.Manifest.permission.CAMERA) },
             onClipboardClick = {
                 clipboard.paste { result ->
@@ -284,7 +283,7 @@ fun TunnelsScreen(sharedViewModel: SharedAppViewModel = koinActivityViewModel())
             listOf(
                 SheetOption(
                     Icons.Rounded.SortByAlpha,
-                    stringResource(R.string.sort),
+                    stringResource(R.string.sort_by_name),
                     onClick = {
                         showReorderActions = false
                         sharedViewModel.sortReorderByName()

@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.content.ContextCompat
@@ -115,6 +116,7 @@ class InstalledAndroidPackageRepository(
                             ),
                         packageName = packageInfo.packageName,
                         uId = appInfo.uid,
+                        isSystem = (appInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0,
                     )
                 } catch (e: PackageManager.NameNotFoundException) {
                     Timber.e(e)

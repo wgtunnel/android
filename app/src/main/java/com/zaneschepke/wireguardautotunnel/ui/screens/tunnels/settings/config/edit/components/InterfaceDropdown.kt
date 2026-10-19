@@ -52,7 +52,7 @@ fun InterfaceDropdown(
                         onToggleScripts()
                     },
                 )
-            if (!uiState.isGlobalConfig)
+            if (!uiState.isGlobalConfig && !uiState.globalSettings.amneziaEnabled)
                 DropdownMenuItem(
                     text = {
                         Text(

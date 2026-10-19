@@ -1,10 +1,16 @@
 package com.zaneschepke.wireguardautotunnel.viewmodel
 
 import androidx.lifecycle.ViewModel
+import com.wgtunnel.backend.state.ActiveTunnel
 import com.zaneschepke.wireguardautotunnel.core.orchestration.TunnelCoordinator
+import com.zaneschepke.wireguardautotunnel.domain.model.GeneralSettings
+import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
+import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.settings.ipv6.IPv6Intent
+import com.zaneschepke.wireguardautotunnel.ui.state.AppliedSplitApps
 import com.zaneschepke.wireguardautotunnel.ui.state.TunnelUiState
+import com.zaneschepke.wireguardautotunnel.ui.state.splitAppListSummary
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import org.orbitmvi.orbit.OrbitContainerHost
@@ -13,6 +19,7 @@ import org.orbitmvi.orbit.viewmodel.orbitContainer
 class TunnelViewModel(
     private val tunnelRepository: TunnelRepository,
     private val tunnelCoordinator: TunnelCoordinator,
+    private val settingsRepository: GeneralSettingRepository,
     val tunnelId: Int,
 ) : OrbitContainerHost<TunnelUiState, TunnelUiState, Nothing>, ViewModel() {
 
@@ -23,28 +30,51 @@ class TunnelViewModel(
         ) {
             combine(
                     tunnelRepository.userTunnelsFlow,
+                    tunnelRepository.globalTunnelFlow,
+                    settingsRepository.flow,
                     tunnelCoordinator.backendStatus.map { it.activeTunnels[tunnelId] },
-                ) { tunnels, active ->
-                    val tunnel = tunnels.firstOrNull { tun -> tun.id == tunnelId }
-                    val config = tunnel?.getConfig()
-                    val includedAppCount =
-                        config?.`interface`?.includedApplications?.takeIf { it.isNotEmpty() }?.size
-
-                    val excludedAppCount =
-                        config?.`interface`?.excludedApplications?.takeIf { it.isNotEmpty() }?.size
-
-                    state.copy(
-                        tunnel = tunnel,
-                        userTunnels = tunnels,
-                        excludedAppsCount = excludedAppCount,
-                        includedAppsCount = includedAppCount,
-                        activeConfig = active?.activeConfig,
-                        lastStatsAtMs = active?.lastStatsAtMs ?: 0L,
-                        isLoading = false,
-                    )
+                ) { tunnels, global, settings, active ->
+                    TunnelSplitSnapshot(tunnels, global, settings, active)
                 }
-                .collect { reduce { it } }
+                .collect { snapshot ->
+                    reduce {
+                        val tunnel = snapshot.tunnels.firstOrNull { tun -> tun.id == tunnelId }
+                        state.copy(
+                            tunnel = tunnel,
+                            userTunnels = snapshot.tunnels,
+                            appliedSplit = appliedSplit(tunnel, snapshot.global, snapshot.settings),
+                            activeConfig = snapshot.active?.activeConfig,
+                            lastStatsAtMs = snapshot.active?.lastStatsAtMs ?: 0L,
+                            isLoading = false,
+                        )
+                    }
+                }
         }
+
+    private fun appliedSplit(
+        tunnel: TunnelConfig?,
+        global: TunnelConfig?,
+        settings: GeneralSettings,
+    ): AppliedSplitApps? {
+        // A missing global tunnel leaves this tunnel's own lists in effect.
+        val managedGlobally = settings.isGlobalSplitTunnelEnabled && global != null
+        val source = if (managedGlobally) global else tunnel
+        val iface = source?.getConfig()?.`interface`
+        val summary =
+            splitAppListSummary(
+                includedCount = iface?.allIncludedApps?.size ?: 0,
+                excludedCount = iface?.allExcludedApps?.size ?: 0,
+                emptyMeansAllTunneled = managedGlobally,
+            ) ?: return null
+        return AppliedSplitApps(summary = summary, managedGlobally = managedGlobally)
+    }
+
+    private data class TunnelSplitSnapshot(
+        val tunnels: List<TunnelConfig>,
+        val global: TunnelConfig?,
+        val settings: GeneralSettings,
+        val active: ActiveTunnel?,
+    )
 
     fun togglePrimaryTunnel() = intent {
         val tunnel = state.tunnel ?: return@intent

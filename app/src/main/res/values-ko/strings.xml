@@ -15,8 +15,6 @@
     <string name="add_tunnels_text">파일이나 압축 파일에서 추가하기</string>
     <string name="add_from_qr">QR 코드에서 추가하기</string>
     <string name="tunnel_name">터널 이름</string>
-    <string name="exclude">제외</string>
-    <string name="include">포함</string>
     <string name="config_changes_saved">변경한 설정이 저장되었습니다.</string>
     <string name="public_key">공개 키</string>
     <string name="addresses">주소</string>
@@ -56,7 +54,6 @@
     <string name="delete_tunnel">터널 삭제</string>
     <string name="delete_tunnel_message">정말로 선택한 터널을 삭제하시겠습니까?</string>
     <string name="yes">네</string>
-    <string name="all">모두</string>
     <string name="no_email_detected">감지된 이메일 앱 없음</string>
     <string name="no_browser_detected">감지된 브라우저 없음</string>
     <string name="open_issue">이슈 열기</string>
@@ -313,8 +310,6 @@
     <string name="special_junk_packet">특수 정크 패킷</string>
     <!-- AmneziaWG 3.0 -->
     <string name="copy_from">항목에서 복사하기</string>
-    <string name="mode">모드</string>
-    <string name="app_selection">앱 선택</string>
     <string name="import_url_description">URL은 보안을 유지해야 하며 .conf 파일을 제공해야 합니다.</string>
     <string name="export_unsupported">이 기기에서는 내보내기를 지원하지 않습니다</string>
     <string name="export_canceled">내보내기 취소됨</string>

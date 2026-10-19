@@ -2,6 +2,9 @@ package com.zaneschepke.wireguardautotunnel.domain.model
 
 import java.io.File
 
+// Catch-up time for the download indicator, and for the foreground installer delay.
+const val UPDATE_PROGRESS_SETTLE_MS = 400
+
 enum class DownloadPause {
     WAITING_FOR_NETWORK,
     WAITING_FOR_WIFI,

@@ -10,8 +10,6 @@
     <string name="add_tunnels_text">ファイルまたはzipから追加する</string>
     <string name="add_from_qr">QRコードから追加</string>
     <string name="tunnel_name">VPNトンネル名</string>
-    <string name="exclude">除外</string>
-    <string name="include">含有</string>
     <string name="config_changes_saved">設定変更が保存された。</string>
     <string name="public_key">公開鍵</string>
     <string name="dns_servers">DNSサーバー</string>

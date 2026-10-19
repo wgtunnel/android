@@ -19,8 +19,6 @@ import androidx.compose.material.icons.outlined.Router
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,7 +39,7 @@ import com.zaneschepke.wireguardautotunnel.domain.enums.ForeignDnsPolicy
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelDnsMode
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelDnsProtocol
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelMode
-import com.zaneschepke.wireguardautotunnel.ui.common.banner.WarningBanner
+import com.zaneschepke.wireguardautotunnel.ui.common.banner.InfoNotice
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ThemedSwitch
 import com.zaneschepke.wireguardautotunnel.ui.common.dialog.rememberRestartToApplyChanges
@@ -150,19 +148,11 @@ fun DnsSettingsScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.Top),
         modifier = Modifier.fillMaxSize().imePadding().verticalScroll(rememberScrollState()),
     ) {
-        WarningBanner(
+        InfoNotice(
             title = stringResource(R.string.private_dns_enabled_warning),
-            visible = privateDnsEnabled && tunnelDnsActive,
-            trailing = {
-                TextButton({ context.launchNetworkAndInternetSettings() }) {
-                    Text(
-                        stringResource(R.string.fix),
-                        color = MaterialTheme.colorScheme.primary,
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
-                }
-            },
+            actionLabel = stringResource(R.string.fix),
             onClick = { context.launchNetworkAndInternetSettings() },
+            visible = privateDnsEnabled && tunnelDnsActive,
         )
         Column {
             GroupLabel(stringResource(R.string.system), Modifier.padding(horizontal = 16.dp))

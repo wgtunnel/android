@@ -66,6 +66,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -114,32 +115,64 @@ class SharedAppViewModel(
         _showUpdateStatusRequested.value = false
     }
 
+    private val _showSplitSystemApps = MutableStateFlow(false)
+    val showSplitSystemApps = _showSplitSystemApps.asStateFlow()
+    private var splitSystemAppsTunnelId: Int? = null
+
+    fun prepareSplitSystemApps(tunnelId: Int) {
+        if (splitSystemAppsTunnelId != tunnelId) {
+            splitSystemAppsTunnelId = tunnelId
+            _showSplitSystemApps.value = false
+        }
+    }
+
+    fun setShowSplitSystemApps(show: Boolean) {
+        _showSplitSystemApps.value = show
+    }
+
+    fun clearSplitSystemApps(tunnelId: Int) {
+        if (splitSystemAppsTunnelId == tunnelId) {
+            splitSystemAppsTunnelId = null
+            _showSplitSystemApps.value = false
+        }
+    }
+
     private val reorderDraft = MutableStateFlow<ReorderDraft?>(null)
+    private val pingLatencies = MutableStateFlow<Map<Int, Double>>(emptyMap())
+    private val pingInFlight = MutableStateFlow(false)
 
     val tunnelsUiState =
         combine(
-                tunnelRepository.userTunnelsFlow,
-                tunnelGroupRepository.flow,
-                tunnelCoordinator.backendStatus,
-                selectedTunnelsRepository.flow,
-                reorderDraft,
-            ) { tunnels, groups, backendStatus, selection, draft ->
-                val displayStates =
-                    backendStatus.activeTunnels.mapValues { (_, activeTunnel) ->
-                        DisplayTunnelState.from(activeTunnel)
-                    }
+                combine(
+                    tunnelRepository.userTunnelsFlow,
+                    tunnelGroupRepository.flow,
+                    tunnelCoordinator.backendStatus,
+                    selectedTunnelsRepository.flow,
+                    reorderDraft,
+                ) { tunnels, groups, backendStatus, selection, draft ->
+                    val displayStates =
+                        backendStatus.activeTunnels.mapValues { (_, activeTunnel) ->
+                            DisplayTunnelState.from(activeTunnel)
+                        }
 
-                TunnelsUiState(
-                    tunnels = draft?.tunnels ?: tunnels,
-                    groups = draft?.groups ?: groups,
-                    backendStatus = backendStatus,
-                    displayStates = displayStates,
-                    selectedTunnels = selection.tunnels,
-                    selectedGroups = selection.groups,
-                    isLoading = false,
-                    isReorderMode = draft != null,
-                    reorderScopeGroupId = draft?.scopeGroupId,
-                    reorderLatencies = draft?.latencies.orEmpty(),
+                    TunnelsUiState(
+                        tunnels = draft?.tunnels ?: tunnels,
+                        groups = draft?.groups ?: groups,
+                        backendStatus = backendStatus,
+                        displayStates = displayStates,
+                        selectedTunnels = selection.tunnels,
+                        selectedGroups = selection.groups,
+                        isLoading = false,
+                        isReorderMode = draft != null,
+                        reorderScopeGroupId = draft?.scopeGroupId,
+                        reorderLatencies = draft?.latencies.orEmpty(),
+                    )
+                },
+                pingLatencies,
+            ) { ui, latencies ->
+                ui.copy(
+                    pingLatencies =
+                        if (ui.backendStatus.activeTunnels.isEmpty()) latencies else emptyMap()
                 )
             }
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), TunnelsUiState())
@@ -166,6 +199,7 @@ class SharedAppViewModel(
                                     reorderScopeTitle = it.reorderScopeGroup?.name,
                                     hasGroups = it.groups.isNotEmpty(),
                                     canReorder = it.tunnels.size + it.groups.size > 1,
+                                    hasActiveTunnel = it.hasActiveTunnel,
                                 )
                             }
                             .distinctUntilChanged(),
@@ -187,6 +221,7 @@ class SharedAppViewModel(
                             reorderScopeTitle = chrome.reorderScopeTitle,
                             hasGroups = chrome.hasGroups,
                             canReorder = chrome.canReorder,
+                            hasActiveTunnel = chrome.hasActiveTunnel,
                             pinLockEnabled = settings.isPinLockEnabled,
                             isScreenRecordingProtectionEnabled =
                                 settings.screenRecordingSecurityEnabled,
@@ -325,7 +360,8 @@ class SharedAppViewModel(
     fun saveReorder() = intent {
         val draft = reorderDraft.value ?: return@intent
         tunnelGroupRepository.saveAll(draft.groups)
-        tunnelRepository.saveAll(draft.tunnels)
+        val changedTunnels = changedFrom(draft.originalTunnels, draft.tunnels)
+        if (changedTunnels.isNotEmpty()) tunnelRepository.updateAll(changedTunnels)
         reorderDraft.value = null
         postSideEffect(
             GlobalSideEffect.Snackbar(
@@ -365,38 +401,70 @@ class SharedAppViewModel(
 
     fun sortReorderByLatency() = intent {
         val draft = reorderDraft.value ?: return@intent
+        if (pingInFlight.value) return@intent
+        pingInFlight.value = true
         postSideEffect(
             GlobalSideEffect.Snackbar(
                 StringValue.StringResource(R.string.pinging_servers),
                 ToastType.Info,
             )
         )
-        val scopeId = draft.scopeGroupId
-        val targets =
-            if (scopeId != null) draft.tunnels.filter { it.groupId == scopeId }
-            else draft.tunnels.filter { it.groupId == null }
-        // Skipped for group headers, only leaf tunnels are ever pinged
-        val results = pingSorted(targets)
-        val ordered = results.map { it.first }
-        val tunnels =
-            if (scopeId != null) {
-                val others = draft.tunnels.filter { it.groupId != scopeId }
-                others + ordered.mapIndexed { index, tunnel -> tunnel.copy(position = index) }
-            } else {
-                val grouped = draft.tunnels.filter { it.groupId != null }
-                val slots =
-                    draft.tunnels
-                        .filter { it.groupId == null }
-                        .sortedBy { it.position }
-                        .map { it.position }
-                val rewritten = ordered.mapIndexed { index, tunnel ->
-                    tunnel.copy(position = slots.getOrElse(index) { tunnel.position })
+        try {
+            val scopeId = draft.scopeGroupId
+            val targets =
+                if (scopeId != null) draft.tunnels.filter { it.groupId == scopeId }
+                else draft.tunnels.filter { it.groupId == null }
+            val results = pingSorted(targets)
+            val ordered = results.map { it.first }
+            val tunnels =
+                if (scopeId != null) {
+                    val others = draft.tunnels.filter { it.groupId != scopeId }
+                    others + ordered.mapIndexed { index, tunnel -> tunnel.copy(position = index) }
+                } else {
+                    val grouped = draft.tunnels.filter { it.groupId != null }
+                    val slots =
+                        draft.tunnels
+                            .filter { it.groupId == null }
+                            .sortedBy { it.position }
+                            .map { it.position }
+                    val rewritten = ordered.mapIndexed { index, tunnel ->
+                        tunnel.copy(position = slots.getOrElse(index) { tunnel.position })
+                    }
+                    grouped + rewritten
                 }
-                grouped + rewritten
+            val measured = results.associate { (tunnel, ms) -> tunnel.id to ms }
+            reorderDraft.value =
+                draft.copy(
+                    tunnels = tunnels,
+                    sortAscending = null,
+                    latencies = draft.latencies + measured,
+                )
+            if (tunnelCoordinator.backendStatus.first().activeTunnels.isEmpty()) {
+                pingLatencies.value = pingLatencies.value + measured
             }
-        val latencies = draft.latencies + results.associate { (tunnel, ms) -> tunnel.id to ms }
-        reorderDraft.value =
-            draft.copy(tunnels = tunnels, sortAscending = null, latencies = latencies)
+        } finally {
+            pingInFlight.value = false
+        }
+    }
+
+    fun pingTunnels() = intent {
+        if (pingInFlight.value) return@intent
+        if (tunnelCoordinator.backendStatus.first().activeTunnels.isNotEmpty()) return@intent
+        pingInFlight.value = true
+        postSideEffect(
+            GlobalSideEffect.Snackbar(
+                StringValue.StringResource(R.string.pinging_servers),
+                ToastType.Info,
+            )
+        )
+        try {
+            val results = pingSorted(tunnelRepository.userTunnelsFlow.first())
+            if (tunnelCoordinator.backendStatus.first().activeTunnels.isEmpty()) {
+                pingLatencies.value = results.associate { (tunnel, ms) -> tunnel.id to ms }
+            }
+        } finally {
+            pingInFlight.value = false
+        }
     }
 
     fun createGroupAndMoveSelected(name: String) = intent {
@@ -407,10 +475,10 @@ class SharedAppViewModel(
         // New groups land at the top
         val (shiftedGroups, shiftedTunnels) = shiftRootPositionsBy(ui.groups, ui.tunnels, 1)
         tunnelGroupRepository.saveAll(shiftedGroups)
-        tunnelRepository.saveAll(shiftedTunnels)
+        if (shiftedTunnels.isNotEmpty()) tunnelRepository.updateAll(shiftedTunnels)
         val groupId =
             tunnelGroupRepository.save(TunnelGroup(name = unique, position = 0, expanded = true))
-        moveToGroup(groupId, selected, shiftedTunnels)
+        moveToGroup(groupId, selected, ui.tunnels)
     }
 
     fun renameGroup(group: TunnelGroup, name: String) = intent {
@@ -430,7 +498,8 @@ class SharedAppViewModel(
     fun ungroup(group: TunnelGroup) = intent {
         val ui = tunnelsUiState.value
         val (groups, tunnels) = ungroupKeepingOrder(ui.groups, ui.tunnels, group.id)
-        tunnelRepository.saveAll(tunnels)
+        val changedTunnels = changedFrom(ui.tunnels, tunnels)
+        if (changedTunnels.isNotEmpty()) tunnelRepository.updateAll(changedTunnels)
         tunnelGroupRepository.saveAll(groups)
         tunnelGroupRepository.delete(group)
         selectedTunnelsRepository.clear()
@@ -458,6 +527,17 @@ class SharedAppViewModel(
         moveToGroup(groupId, ui.selectedTunnels, ui.tunnels)
     }
 
+    private fun changedFrom(
+        before: List<TunnelConfig>,
+        after: List<TunnelConfig>,
+    ): List<TunnelConfig> {
+        val beforeById = before.associateBy { it.id }
+        return after.filter { tunnel ->
+            val prior = beforeById[tunnel.id]
+            prior == null || prior.position != tunnel.position || prior.groupId != tunnel.groupId
+        }
+    }
+
     private suspend fun moveToGroup(
         groupId: Int,
         selected: List<TunnelConfig>,
@@ -465,10 +545,8 @@ class SharedAppViewModel(
     ) {
         var next = nextChildPosition(all, groupId)
         val ids = selected.map { it.id }.toSet()
-        tunnelRepository.saveAll(
-            all.map { tunnel ->
-                if (tunnel.id in ids) tunnel.copy(groupId = groupId, position = next++) else tunnel
-            }
+        tunnelRepository.updateAll(
+            all.filter { it.id in ids }.map { it.copy(groupId = groupId, position = next++) }
         )
         clearSelectedTunnels()
     }
@@ -480,10 +558,8 @@ class SharedAppViewModel(
         var next = nextRootPosition(ui.groups, ui.tunnels)
         val ids = ui.selectedTunnels.map { it.id }.toSet()
         val tunnels =
-            ui.tunnels.map { tunnel ->
-                if (tunnel.id in ids) tunnel.copy(groupId = null, position = next++) else tunnel
-            }
-        tunnelRepository.saveAll(tunnels)
+            ui.tunnels.filter { it.id in ids }.map { it.copy(groupId = null, position = next++) }
+        if (tunnels.isNotEmpty()) tunnelRepository.updateAll(tunnels)
         clearSelectedTunnels()
     }
 
@@ -567,7 +643,7 @@ class SharedAppViewModel(
             val (shiftedGroups, shiftedTunnels) =
                 shiftRootPositionsBy(ui.groups, ui.tunnels, tunnelConfigs.size)
             tunnelGroupRepository.saveAll(shiftedGroups)
-            tunnelRepository.saveAll(shiftedTunnels)
+            if (shiftedTunnels.isNotEmpty()) tunnelRepository.updateAll(shiftedTunnels)
             tunnelRepository.saveTunnelsUniquely(tunnelConfigs, state.tunnelNames.map { it.value })
         } catch (e: Exception) {
             if (e is ConfigParseException) {
@@ -706,7 +782,8 @@ class SharedAppViewModel(
             )
         if (selectedTuns.isNotEmpty()) tunnelRepository.delete(selectedTuns)
         var groups = ui.groups
-        var tunnels = ui.tunnels.filter { tun -> selectedTuns.none { it.id == tun.id } }
+        val beforeUngroup = ui.tunnels.filter { tun -> selectedTuns.none { it.id == tun.id } }
+        var tunnels = beforeUngroup
         ui.selectedGroups.forEach { group ->
             val result = ungroupKeepingOrder(groups, tunnels, group.id)
             groups = result.first
@@ -714,7 +791,8 @@ class SharedAppViewModel(
             tunnelGroupRepository.delete(group)
         }
         if (ui.selectedGroups.isNotEmpty()) {
-            tunnelRepository.saveAll(tunnels)
+            val changedTunnels = changedFrom(beforeUngroup, tunnels)
+            if (changedTunnels.isNotEmpty()) tunnelRepository.updateAll(changedTunnels)
             tunnelGroupRepository.saveAll(groups)
         }
         clearSelectedTunnels()
@@ -732,7 +810,7 @@ class SharedAppViewModel(
             TunnelConfig.fromConfig(config, selected.name)
                 .copy(groupId = selected.groupId, position = selected.position + 1)
         tunnelGroupRepository.saveAll(shiftedGroups)
-        tunnelRepository.saveAll(shiftedTunnels)
+        if (shiftedTunnels.isNotEmpty()) tunnelRepository.updateAll(shiftedTunnels)
         tunnelRepository.saveTunnelsUniquely(listOf(copy), state.tunnelNames.map { it.value })
         clearSelectedTunnels()
     }
@@ -804,4 +882,5 @@ private data class TunnelsChrome(
     val reorderScopeTitle: String?,
     val hasGroups: Boolean,
     val canReorder: Boolean,
+    val hasActiveTunnel: Boolean,
 )

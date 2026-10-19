@@ -20,6 +20,7 @@ import com.zaneschepke.wireguardautotunnel.ui.state.EditableConfig
 import com.zaneschepke.wireguardautotunnel.ui.state.EditableInterface
 import com.zaneschepke.wireguardautotunnel.ui.state.EditablePeer
 import com.zaneschepke.wireguardautotunnel.ui.state.GlobalSettingsState
+import com.zaneschepke.wireguardautotunnel.ui.state.TunnelSummary
 import com.zaneschepke.wireguardautotunnel.ui.state.shiftRootPositionsBy
 import com.zaneschepke.wireguardautotunnel.util.StringValue
 import com.zaneschepke.wireguardautotunnel.util.extensions.asStringValue
@@ -51,19 +52,30 @@ class ConfigEditViewModel(
                     settingsRepository.flow.map { it.isGlobalAmneziaEnabled },
                 ) { backendStatus, tunnels, globalDnsEnabled, globalAmneziaEnabled ->
                     val tunnel = tunnels.firstOrNull { it.id == tunnelId }
+                    val globalInterface =
+                        tunnels
+                            .firstOrNull { it.isGlobalConfig }
+                            ?.let { global ->
+                                runCatching {
+                                    EditableInterface.from(global.getConfig().`interface`)
+                                }
+                                    .getOrNull()
+                            }
 
-                    Triple(
-                        tunnel,
-                        tunnels.filterNot { it.isGlobalConfig }.map { it.toSummary() },
-                        backendStatus.activeTunnels.containsKey(tunnelId),
-                    ) to
-                        GlobalSettingsState(
-                            dnsEnabled = globalDnsEnabled,
-                            amneziaEnabled = globalAmneziaEnabled,
-                        )
+                    ConfigEditSnapshot(
+                        tunnel = tunnel,
+                        tunnels = tunnels.filterNot { it.isGlobalConfig }.map { it.toSummary() },
+                        isRunning = backendStatus.activeTunnels.containsKey(tunnelId),
+                        globalSettings =
+                            GlobalSettingsState(
+                                dnsEnabled = globalDnsEnabled,
+                                amneziaEnabled = globalAmneziaEnabled,
+                            ),
+                        globalInterface = globalInterface,
+                    )
                 }
-                .collect { (backendData, globalSettings) ->
-                    val (tunnel, tunnels, isRunning) = backendData
+                .collect { snapshot ->
+                    val tunnel = snapshot.tunnel
 
                     intent {
                         if (!state.initialized && tunnel != null) {
@@ -75,9 +87,10 @@ class ConfigEditViewModel(
                                     initialized = true,
                                     isLoading = false,
                                     tunnel = tunnel,
-                                    tunnels = tunnels,
-                                    isRunning = isRunning,
-                                    globalSettings = globalSettings,
+                                    tunnels = snapshot.tunnels,
+                                    isRunning = snapshot.isRunning,
+                                    globalSettings = snapshot.globalSettings,
+                                    globalInterface = snapshot.globalInterface,
                                     ui =
                                         ConfigEditUiState(
                                             showScripts = config.`interface`.hasScripts(),
@@ -95,8 +108,9 @@ class ConfigEditViewModel(
                             state.copy(
                                 isLoading = false,
                                 tunnel = tunnel,
-                                tunnels = tunnels,
-                                isRunning = isRunning,
+                                tunnels = snapshot.tunnels,
+                                isRunning = snapshot.isRunning,
+                                globalInterface = snapshot.globalInterface,
                             )
                         }
                     }
@@ -139,7 +153,7 @@ class ConfigEditViewModel(
                     val (shiftedGroups, shiftedTunnels) =
                         shiftRootPositionsBy(groups, tunnels, count = 1)
                     tunnelGroupRepository.saveAll(shiftedGroups)
-                    tunnelRepository.saveAll(shiftedTunnels)
+                    if (shiftedTunnels.isNotEmpty()) tunnelRepository.updateAll(shiftedTunnels)
                     TunnelConfig.fromConfig(config, state.draft.tunnelName).copy(position = 0)
                 } else {
                     state.tunnel?.copy(
@@ -337,3 +351,11 @@ class ConfigEditViewModel(
         reduce { state.copy(ui = state.ui.copy(isPeerDropdownExpanded = expanded)) }
     }
 }
+
+private data class ConfigEditSnapshot(
+    val tunnel: TunnelConfig?,
+    val tunnels: List<TunnelSummary>,
+    val isRunning: Boolean,
+    val globalSettings: GlobalSettingsState,
+    val globalInterface: EditableInterface?,
+)

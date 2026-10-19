@@ -15,8 +15,6 @@
     <string name="add_tunnels_text">Додати з файлу або архіву</string>
     <string name="add_from_qr">Додати з QR коду</string>
     <string name="tunnel_name">Ім\'я тунелю</string>
-    <string name="exclude">Виключити</string>
-    <string name="include">Включити</string>
     <string name="config_changes_saved">Зміни налаштувань збережено.</string>
     <string name="public_key">Публічний ключ</string>
     <string name="addresses">Адреса</string>
@@ -56,7 +54,6 @@
     <string name="delete_tunnel">Видалити тунель</string>
     <string name="delete_tunnel_message">Ви дійсно хочете видалити цей тунель?</string>
     <string name="yes">Так</string>
-    <string name="all">Всі</string>
     <string name="no_email_detected">Програми для надсилання email не знайдено</string>
     <string name="no_browser_detected">Веб браузер не знайдено</string>
     <string name="open_issue">Повідомити про проблему</string>
@@ -304,8 +301,6 @@
     <string name="special_junk_packet">Спеціальний пакет мотлоху</string>
     <!-- AmneziaWG 3.0 -->
     <string name="copy_from">Копіювати з</string>
-    <string name="mode">Режим</string>
-    <string name="app_selection">Вибір застосунку</string>
     <string name="import_url_description">URL-адреса має бути захищена та вести на .conf файл.</string>
     <string name="export_unsupported">Експорт не підтримується на цьому пристрої</string>
     <string name="export_canceled">Експорт скасовано</string>

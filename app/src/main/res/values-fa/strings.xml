@@ -15,8 +15,6 @@
     <string name="add_tunnels_text">از فایل یا زیپ اضافه کنید</string>
     <string name="add_from_qr">از کد QR اضافه کنید</string>
     <string name="tunnel_name">نام تونل</string>
-    <string name="exclude">مستثنی کردن</string>
-    <string name="include">شامل کردن</string>
     <string name="config_changes_saved">تغییرات پیکربندی ذخیره شد.</string>
     <string name="public_key">کلید عمومی </string>
     <string name="addresses">آدرس‌ها </string>
@@ -55,7 +53,6 @@
     <string name="delete_tunnel">حذف تونل </string>
     <string name="delete_tunnel_message">آیا مطمئن هستید که می‌خواهید تونل‌های انتخاب‌شده را حذف کنید؟ </string>
     <string name="yes">بله</string>
-    <string name="all">همه</string>
     <string name="no_email_detected">هیچ برنامه ایمیلی شناسایی نشد </string>
     <string name="no_browser_detected">هیچ مرورگری شناسایی نشد </string>
     <string name="open_issue">یک مسئله را باز کنید </string>

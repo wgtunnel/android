@@ -15,8 +15,6 @@
     <string name="add_tunnels_text">从文件或 zip 添加</string>
     <string name="add_from_qr">从二维码添加</string>
     <string name="tunnel_name">隧道名称</string>
-    <string name="exclude">排除</string>
-    <string name="include">包含</string>
     <string name="config_changes_saved">配置更改已保存。</string>
     <string name="public_key">公钥</string>
     <string name="addresses">地址</string>
@@ -55,7 +53,6 @@
     <string name="delete_tunnel">删除隧道</string>
     <string name="delete_tunnel_message">确定删除这个隧道吗？</string>
     <string name="yes">是</string>
-    <string name="all">全部</string>
     <string name="no_email_detected">未安装邮件应用</string>
     <string name="no_browser_detected">没有安装浏览器</string>
     <string name="open_issue">查看问题</string>
@@ -303,8 +300,6 @@
     <string name="special_junk_packet">特殊垃圾数据包</string>
     <!-- AmneziaWG 3.0 -->
     <string name="copy_from">复制从</string>
-    <string name="mode">模式</string>
-    <string name="app_selection">选择应用</string>
     <string name="import_url_description">URL 必须是安全的并提供一个.conf 文件。</string>
     <string name="export_unsupported">此设备不支持导出</string>
     <string name="export_canceled">已取消导出</string>

@@ -10,10 +10,13 @@ import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.RemoveRedEye
+import androidx.compose.material.icons.outlined.Visibility
+import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Menu
+import androidx.compose.material.icons.rounded.NetworkCheck
 import androidx.compose.material.icons.rounded.Reorder
 import androidx.compose.material.icons.rounded.Save
 import androidx.compose.material3.DropdownMenu
@@ -33,6 +36,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.navigation.NavController
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
@@ -271,6 +275,9 @@ fun currentRouteAsNavbarState(
                         topLeading = { TvBackButton { navController.pop() } },
                         topTitle = tunnelName ?: "",
                         topTrailing = {
+                            var showOverflowMenu by remember { mutableStateOf(false) }
+                            val showSystemApps by
+                                sharedViewModel.showSplitSystemApps.collectAsStateWithLifecycle()
                             Row {
                                 IconButton(
                                     onClick = {
@@ -279,16 +286,55 @@ fun currentRouteAsNavbarState(
                                 ) {
                                     Icon(Icons.Rounded.Save, stringResource(R.string.save))
                                 }
-                                IconButton(
-                                    onClick = {
-                                        sharedViewModel.postSideEffect(
-                                            LocalSideEffect.Modal.SelectTunnel
-                                        )
-                                    }
-                                ) {
+                                IconButton(onClick = { showOverflowMenu = true }) {
                                     Icon(
-                                        Icons.Outlined.ContentPasteGo,
-                                        stringResource(R.string.copy_from),
+                                        Icons.Outlined.MoreVert,
+                                        contentDescription = stringResource(R.string.more_options),
+                                    )
+                                }
+                                DropdownMenu(
+                                    expanded = showOverflowMenu,
+                                    onDismissRequest = { showOverflowMenu = false },
+                                    containerColor =
+                                        MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
+                                    tonalElevation = 4.dp,
+                                    shadowElevation = 4.dp,
+                                ) {
+                                    DropdownMenuItem(
+                                        text = { Text(stringResource(R.string.copy_from)) },
+                                        leadingIcon = {
+                                            Icon(
+                                                Icons.Outlined.ContentPasteGo,
+                                                contentDescription = null,
+                                            )
+                                        },
+                                        onClick = {
+                                            showOverflowMenu = false
+                                            sharedViewModel.postSideEffect(
+                                                LocalSideEffect.Modal.SelectTunnel
+                                            )
+                                        },
+                                    )
+                                    DropdownMenuItem(
+                                        text = {
+                                            Text(
+                                                stringResource(
+                                                    if (showSystemApps) R.string.hide_system_apps
+                                                    else R.string.show_system_apps
+                                                )
+                                            )
+                                        },
+                                        leadingIcon = {
+                                            Icon(
+                                                if (showSystemApps) Icons.Outlined.VisibilityOff
+                                                else Icons.Outlined.Visibility,
+                                                contentDescription = null,
+                                            )
+                                        },
+                                        onClick = {
+                                            showOverflowMenu = false
+                                            sharedViewModel.setShowSplitSystemApps(!showSystemApps)
+                                        },
                                     )
                                 }
                             }
@@ -412,7 +458,9 @@ fun currentRouteAsNavbarState(
                                             )
                                         }
                                     }
-                                else ->
+                                else -> {
+                                    var showOverflowMenu by remember { mutableStateOf(false) }
+                                    val showTunnelMenu = globalState.tunnelNames.size > 1
                                     Row {
                                         IconButton(
                                             onClick = {
@@ -426,17 +474,64 @@ fun currentRouteAsNavbarState(
                                                 stringResource(R.string.add_tunnel),
                                             )
                                         }
-                                        if (globalState.canReorder) {
-                                            IconButton(
-                                                onClick = sharedViewModel::enterReorderMode
-                                            ) {
+                                        if (showTunnelMenu) {
+                                            IconButton(onClick = { showOverflowMenu = true }) {
                                                 Icon(
-                                                    Icons.Rounded.Reorder,
-                                                    stringResource(R.string.reorder),
+                                                    Icons.Outlined.MoreVert,
+                                                    contentDescription =
+                                                        stringResource(R.string.more_options),
                                                 )
+                                            }
+                                            DropdownMenu(
+                                                expanded = showOverflowMenu,
+                                                onDismissRequest = { showOverflowMenu = false },
+                                                containerColor =
+                                                    MaterialTheme.colorScheme.surface.copy(
+                                                        alpha = 0.8f
+                                                    ),
+                                                tonalElevation = 4.dp,
+                                                shadowElevation = 4.dp,
+                                            ) {
+                                                DropdownMenuItem(
+                                                    text = {
+                                                        Text(stringResource(R.string.reorder))
+                                                    },
+                                                    leadingIcon = {
+                                                        Icon(
+                                                            Icons.Rounded.Reorder,
+                                                            contentDescription = null,
+                                                        )
+                                                    },
+                                                    onClick = {
+                                                        showOverflowMenu = false
+                                                        sharedViewModel.enterReorderMode()
+                                                    },
+                                                )
+                                                if (!globalState.hasActiveTunnel) {
+                                                    DropdownMenuItem(
+                                                        text = {
+                                                            Text(
+                                                                stringResource(
+                                                                    R.string.ping_servers
+                                                                )
+                                                            )
+                                                        },
+                                                        leadingIcon = {
+                                                            Icon(
+                                                                Icons.Rounded.NetworkCheck,
+                                                                contentDescription = null,
+                                                            )
+                                                        },
+                                                        onClick = {
+                                                            showOverflowMenu = false
+                                                            sharedViewModel.pingTunnels()
+                                                        },
+                                                    )
+                                                }
                                             }
                                         }
                                     }
+                                }
                             }
                         },
                         showBottomItems = true,

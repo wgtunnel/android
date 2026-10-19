@@ -5,10 +5,17 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.style.TextOverflow
 import com.zaneschepke.wireguardautotunnel.ui.theme.Disabled
 
 @Composable
-fun DescriptionText(text: String, modifier: Modifier = Modifier, disabled: Boolean = false) {
+fun DescriptionText(
+    text: String,
+    modifier: Modifier = Modifier,
+    disabled: Boolean = false,
+    maxLines: Int = Int.MAX_VALUE,
+    overflow: TextOverflow = TextOverflow.Clip,
+) {
     Text(
         text = text,
         style =
@@ -16,6 +23,8 @@ fun DescriptionText(text: String, modifier: Modifier = Modifier, disabled: Boole
                 color = if (disabled) Disabled else MaterialTheme.colorScheme.outline
             ),
         modifier = modifier,
+        maxLines = maxLines,
+        overflow = overflow,
     )
 }
 

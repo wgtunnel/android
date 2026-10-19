@@ -13,8 +13,6 @@
     <string name="add_tunnels_text">Thêm từ tệp hoặc tệp zip</string>
     <string name="add_from_qr">Thêm từ mã QR</string>
     <string name="tunnel_name">Tên tunnel</string>
-    <string name="exclude">Loại trừ</string>
-    <string name="include">Bao gồm</string>
     <string name="config_changes_saved">Các thay đổi cấu hình đã được lưu.</string>
     <string name="public_key">Khóa công khai</string>
     <string name="addresses">Địa chỉ IP</string>

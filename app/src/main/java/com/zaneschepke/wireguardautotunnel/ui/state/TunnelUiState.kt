@@ -8,7 +8,6 @@ data class TunnelUiState(
     val userTunnels: List<TunnelConfig> = emptyList(),
     val activeConfig: ActiveConfig? = null,
     val lastStatsAtMs: Long = 0L,
-    val includedAppsCount: Int? = null,
-    val excludedAppsCount: Int? = null,
+    val appliedSplit: AppliedSplitApps? = null,
     val isLoading: Boolean = true,
 )

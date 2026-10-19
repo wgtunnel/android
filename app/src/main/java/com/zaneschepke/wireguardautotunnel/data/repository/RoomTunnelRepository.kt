@@ -42,6 +42,10 @@ class RoomTunnelRepository(private val tunnelConfigDao: TunnelConfigDao) : Tunne
         tunnelConfigDao.saveAll(tunnelConfigList.map { tunnelConfig -> tunnelConfig.toEntity() })
     }
 
+    override suspend fun updateAll(tunnelConfigList: List<Domain>) {
+        tunnelConfigDao.updateAll(tunnelConfigList.map { tunnelConfig -> tunnelConfig.toEntity() })
+    }
+
     override suspend fun updatePrimaryTunnel(tunnelConfig: Domain?) {
         tunnelConfigDao.resetPrimaryTunnel()
         tunnelConfig?.let { save(it.copy(isPrimaryTunnel = true)) }

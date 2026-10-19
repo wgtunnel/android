@@ -14,8 +14,6 @@
     <string name="add_tunnels_text">დაამატეთ ფაილი ან zip არქივი</string>
     <string name="add_from_qr">დაამატე QR კოდის დახმარებით</string>
     <string name="tunnel_name">ტუნელის სახელი</string>
-    <string name="exclude">გამორიცხვა</string>
-    <string name="include">მოიცავს</string>
     <string name="config_changes_saved">კონფიგურაციის ცვლილებები შენახულია.</string>
     <string name="public_key">საჯარო გასაღები</string>
     <string name="addresses">მისამართები</string>
@@ -51,7 +49,6 @@
     <string name="error_ssid_exists">SSID უკვე დამატებულია</string>
     <string name="error_root_denied">ვერ მოვიპოვე Root გარემოცვა</string>
     <string name="yes">დიახ</string>
-    <string name="all">ყველა</string>
     <string name="open_issue">დააფიქსირე ხარვეზი</string>
     <string name="auto">(ავტოამტური)</string>
     <string name="incorrect_pin">პინი არის არასწორი</string>

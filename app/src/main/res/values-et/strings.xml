@@ -15,8 +15,6 @@
     <string name="add_tunnels_text">Lisa conf- või zip-failist</string>
     <string name="add_from_qr">Lisa QR-koodist</string>
     <string name="tunnel_name">Tunneli nimi</string>
-    <string name="exclude">Välista</string>
-    <string name="include">Kaasa</string>
     <string name="config_changes_saved">Seadistuse muudatused on salvestatud.</string>
     <string name="public_key">Avalik võti</string>
     <string name="addresses">Aadressid</string>
@@ -56,7 +54,6 @@
     <string name="delete_tunnel">Kustuta tunnel</string>
     <string name="delete_tunnel_message">Kindel, et valitud tunnelid kustutada?</string>
     <string name="yes">Jah</string>
-    <string name="all">Kõik</string>
     <string name="no_email_detected">E-posti rakendust ei õnnestu tuvastada</string>
     <string name="no_browser_detected">Veebibrauserit ei õnnestu tuvastada</string>
     <string name="open_issue">Alusta vearaporti koostamist</string>

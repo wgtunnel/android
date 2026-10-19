@@ -90,16 +90,25 @@ platform :android do
   # Crowdin locale cannot block the production binary.
   desc "Upload an already-built AAB to Google Play"
   lane :upload_aab do |options|
-    upload_to_play_store(
-      track: options[:track],
-      aab: options[:aab],
-      json_key: options[:json_key],
-      package_name: options[:package_name],
-      skip_upload_apk: true,
-      skip_upload_metadata: true,
-      skip_upload_images: true,
-      skip_upload_screenshots: true,
-    )
+    begin
+      upload_to_play_store(
+        track: options[:track],
+        aab: options[:aab],
+        json_key: options[:json_key],
+        package_name: options[:package_name],
+        skip_upload_apk: true,
+        skip_upload_metadata: true,
+        skip_upload_images: true,
+        skip_upload_screenshots: true,
+      )
+    rescue FastlaneCore::Interface::FastlaneError => error
+      # Play rejects a second upload of a version code that is already on a
+      # track. The binary from the first release stays; listing upload follows.
+      unless error.message.match?(/version code \d+ has already been used/i)
+        raise
+      end
+      UI.important("Version code is already on Google Play. Leaving that release in place.")
+    end
   end
 
   desc "Upload Play Store listing metadata only"

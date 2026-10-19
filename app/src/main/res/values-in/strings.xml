@@ -15,8 +15,6 @@
     <string name="add_tunnels_text">Tambah dari file atau zip</string>
     <string name="add_from_qr">Tambah dari kode QR</string>
     <string name="tunnel_name">Nama Terowongan</string>
-    <string name="exclude">Kecualikan</string>
-    <string name="include">Sertakan</string>
     <string name="config_changes_saved">Perubahan konfigurasi disimpan.</string>
     <string name="public_key">Kunci publik</string>
     <string name="addresses">Alamat</string>
@@ -56,7 +54,6 @@
     <string name="delete_tunnel">Hapus terowongan</string>
     <string name="delete_tunnel_message">Apakah Anda yakin ingin menghapus terowongan yang dipilih?</string>
     <string name="yes">Ya</string>
-    <string name="all">Semua</string>
     <string name="no_email_detected">Tidak ada aplikasi email yang terdeteksi</string>
     <string name="no_browser_detected">Tidak ada browser yang terdeteksi</string>
     <string name="open_issue">Buka laporan masalah</string>

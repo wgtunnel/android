@@ -63,6 +63,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -76,12 +77,15 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.dokar.sonner.TextToastAction
 import com.dokar.sonner.Toast
+import com.dokar.sonner.ToastCloseButton
 import com.dokar.sonner.ToastType
 import com.dokar.sonner.Toaster
 import com.dokar.sonner.rememberToasterState
 import com.zaneschepke.networkmonitor.NetworkMonitor
 import com.zaneschepke.wireguardautotunnel.core.orchestration.FileExportCoordinator
-import com.zaneschepke.wireguardautotunnel.data.AppDatabase
+import com.zaneschepke.wireguardautotunnel.data.backup.BackupWriteResult
+import com.zaneschepke.wireguardautotunnel.data.backup.DatabaseBackup
+import com.zaneschepke.wireguardautotunnel.data.backup.RestoreResult
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelMode
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppStateRepository
@@ -154,11 +158,7 @@ import com.zaneschepke.wireguardautotunnel.viewmodel.ConfigEditViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.SharedAppViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.SplitTunnelViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.TunnelViewModel
-import de.raphaelebner.roomdatabasebackup.core.OnCompleteListener.Companion.EXIT_CODE_ERROR
-import de.raphaelebner.roomdatabasebackup.core.OnCompleteListener.Companion.EXIT_CODE_ERROR_DECRYPTION_ERROR
-import de.raphaelebner.roomdatabasebackup.core.OnCompleteListener.Companion.EXIT_CODE_ERROR_RESTORE_BACKUP_IS_ENCRYPTED
-import de.raphaelebner.roomdatabasebackup.core.OnCompleteListener.Companion.EXIT_CODE_ERROR_WRONG_DECRYPTION_PASSWORD
-import de.raphaelebner.roomdatabasebackup.core.RoomBackup
+import kotlin.system.exitProcess
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.channels.Channel
@@ -177,13 +177,37 @@ class MainActivity : AppCompatActivity() {
 
     private val appStateRepository: AppStateRepository by inject()
     private val tunnelRepository: TunnelRepository by inject()
-    private val appDatabase: AppDatabase by inject()
     private val networkMonitor: NetworkMonitor by inject()
     private val fileExportCoordinator: FileExportCoordinator by inject()
     private val notificationService: NotificationService by inject()
+    private val databaseBackup: DatabaseBackup by inject()
 
     val viewModel by viewModel<SharedAppViewModel>()
-    private lateinit var roomBackup: RoomBackup
+    private var pendingBackupPassword: String? = null
+
+    private val createBackupLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.CreateDocument(FileUtils.ZIP_FILE_MIME_TYPE)
+        ) { uri ->
+            val password = pendingBackupPassword
+            pendingBackupPassword = null
+            if (uri == null) {
+                lifecycleScope.launch { showBackupResult(BackupWriteResult.Failed) }
+                return@registerForActivityResult
+            }
+            lifecycleScope.launch { showBackupResult(databaseBackup.backupTo(uri, password)) }
+        }
+
+    private val openBackupLauncher =
+        registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+            val password = pendingBackupPassword
+            pendingBackupPassword = null
+            if (uri == null) {
+                lifecycleScope.launch { showRestoreResult(RestoreResult.Failed) }
+                return@registerForActivityResult
+            }
+            lifecycleScope.launch { finishRestore(databaseBackup.restore(uri, password)) }
+        }
 
     private val snackbarChannel = Channel<GlobalSideEffect.Snackbar>(Channel.UNLIMITED)
     private val supportDeepLinkChannel = Channel<Boolean>(Channel.BUFFERED)
@@ -199,8 +223,6 @@ class MainActivity : AppCompatActivity() {
             window.isNavigationBarContrastEnforced = false
         }
         super.onCreate(savedInstanceState)
-
-        roomBackup = RoomBackup(this).database(appDatabase).enableLogDebug(true).maxFileCount(5)
 
         handleConfigFileIntent(intent)
         handleWgDeepLinkIntent(intent)
@@ -821,7 +843,13 @@ class MainActivity : AppCompatActivity() {
                                 },
                                 contentColor = { MaterialTheme.colorScheme.onSurface },
                                 shape = { RoundedCornerShape(16.dp) },
-                                showCloseButton = true,
+                                closeButton = { toast ->
+                                    ToastCloseButton(
+                                        onClick = { toaster.dismiss(toast) },
+                                        modifier = Modifier.align(Alignment.TopEnd),
+                                        offset = DpOffset(8.dp, (-8).dp),
+                                    )
+                                },
                             )
                         }
                     }
@@ -845,80 +873,80 @@ class MainActivity : AppCompatActivity() {
         networkMonitor.checkPermissionsAndUpdateState()
     }
 
-    fun performBackup(encrypt: Boolean = false, password: String? = null) {
-        roomBackup
-            .backupLocation(RoomBackup.BACKUP_FILE_LOCATION_CUSTOM_DIALOG)
-            .apply {
-                if (encrypt && !password.isNullOrBlank()) {
-                    backupIsEncrypted(true)
-                    customEncryptPassword(password)
-                }
+    fun beginBackup(password: String?) {
+        pendingBackupPassword = password
+        if (isRunningOnTv()) {
+            lifecycleScope.launch {
+                showBackupResult(databaseBackup.backupTo(uri = null, password))
             }
-            .onCompleteListener { success, _, _ ->
-                lifecycleScope.launch {
-                    val sideEffect =
-                        if (success) {
-                            GlobalSideEffect.Snackbar(
-                                StringValue.StringResource(R.string.backup_success),
-                                ToastType.Success,
-                            )
-                        } else {
-                            GlobalSideEffect.Snackbar(
-                                StringValue.StringResource(R.string.backup_failed),
-                                ToastType.Error,
-                            )
-                        }
-                    viewModel.postSideEffect(sideEffect)
-                }
-            }
-            .backup()
+        } else {
+            createBackupLauncher.launch(databaseBackup.newBackupFileName())
+        }
     }
 
-    fun performRestore(encrypt: Boolean = false, password: String? = null) {
-        roomBackup
-            .backupLocation(RoomBackup.BACKUP_FILE_LOCATION_CUSTOM_DIALOG)
-            .apply {
-                if (encrypt && !password.isNullOrBlank()) {
-                    backupIsEncrypted(true)
-                    customEncryptPassword(password)
-                }
+    fun beginRestore(password: String?) {
+        pendingBackupPassword = password
+        openBackupLauncher.launch(
+            arrayOf(
+                FileUtils.ZIP_FILE_MIME_TYPE,
+                FileUtils.OCTET_STREAM_MIME_TYPE,
+                "application/vnd.sqlite3",
+                FileUtils.ALL_FILE_TYPES,
+            )
+        )
+    }
+
+    fun restoreFromUri(uri: Uri, password: String?) {
+        lifecycleScope.launch { finishRestore(databaseBackup.restore(uri, password)) }
+    }
+
+    private suspend fun finishRestore(result: RestoreResult) {
+        if (result == RestoreResult.Success) {
+            restartProcess()
+        } else {
+            showRestoreResult(result)
+        }
+    }
+
+    private suspend fun showBackupResult(result: BackupWriteResult) {
+        val message =
+            when (result) {
+                BackupWriteResult.Success ->
+                    StringValue.StringResource(R.string.backup_success) to ToastType.Success
+                is BackupWriteResult.SavedToDownloads ->
+                    StringValue.StringResource(R.string.backup_saved_downloads, result.fileName) to
+                        ToastType.Success
+                BackupWriteResult.Failed ->
+                    StringValue.StringResource(R.string.backup_failed) to ToastType.Error
             }
-            .onCompleteListener { success, message, exitCode ->
-                lifecycleScope.launch {
-                    if (success) {
-                        viewModel.postSideEffect(
-                            GlobalSideEffect.Snackbar(
-                                StringValue.StringResource(R.string.restore_success),
-                                ToastType.Success,
-                            )
-                        )
-                        roomBackup.restartApp(Intent(this@MainActivity, MainActivity::class.java))
-                    } else {
-                        Timber.w("Restore failed, exitCode=$exitCode, message=$message")
+        viewModel.postSideEffect(GlobalSideEffect.Snackbar(message.first, message.second))
+    }
 
-                        val errorMessage =
-                            when (exitCode) {
-                                EXIT_CODE_ERROR_WRONG_DECRYPTION_PASSWORD ->
-                                    getString(R.string.restore_failed_wrong_password)
-
-                                EXIT_CODE_ERROR,
-                                EXIT_CODE_ERROR_DECRYPTION_ERROR,
-                                EXIT_CODE_ERROR_RESTORE_BACKUP_IS_ENCRYPTED ->
-                                    getString(R.string.restore_failed_invalid_file)
-
-                                else -> getString(R.string.restore_failed)
-                            }
-
-                        viewModel.postSideEffect(
-                            GlobalSideEffect.Snackbar(
-                                StringValue.DynamicString(errorMessage),
-                                ToastType.Error,
-                            )
-                        )
-                    }
-                }
+    private suspend fun showRestoreResult(result: RestoreResult) {
+        val message =
+            when (result) {
+                RestoreResult.WrongPassword -> R.string.restore_failed_wrong_password
+                RestoreResult.InvalidFile -> R.string.restore_failed_invalid_file
+                RestoreResult.NewerVersion -> R.string.restore_failed_newer_version
+                RestoreResult.Failed,
+                RestoreResult.Success -> R.string.restore_failed
             }
-            .restore()
+        viewModel.postSideEffect(
+            GlobalSideEffect.Snackbar(
+                StringValue.StringResource(message),
+                ToastType.Error,
+            )
+        )
+    }
+
+    private fun restartProcess() {
+        val intent =
+            Intent(this, MainActivity::class.java).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            }
+        startActivity(intent)
+        finishAffinity()
+        exitProcess(0)
     }
 
     override fun onNewIntent(intent: Intent) {

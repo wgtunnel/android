@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.AltRoute
+import androidx.compose.material.icons.automirrored.outlined.CallMerge
 import androidx.compose.material.icons.automirrored.outlined.CallSplit
 import androidx.compose.material.icons.outlined.Bolt
 import androidx.compose.material.icons.outlined.DataUsage
@@ -33,6 +33,7 @@ import com.zaneschepke.wireguardautotunnel.ui.common.button.ThemedSwitch
 import com.zaneschepke.wireguardautotunnel.ui.common.label.GroupLabel
 import com.zaneschepke.wireguardautotunnel.ui.common.text.DescriptionText
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
+import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.splittunnel.components.SplitAppsDescription
 import com.zaneschepke.wireguardautotunnel.ui.theme.Disabled
 import com.zaneschepke.wireguardautotunnel.viewmodel.SharedAppViewModel
 import com.zaneschepke.wireguardautotunnel.viewmodel.TunnelViewModel
@@ -110,7 +111,9 @@ fun TunnelSettingsScreen(
             val selectedEntry = uiState.userTunnels.firstOrNull { it.id == tunnel.entryTunnelId }
             val entryLabel = selectedEntry?.name ?: stringResource(R.string.entry_tunnel_none)
             SurfaceRow(
-                leading = { Icon(Icons.AutoMirrored.Outlined.AltRoute, contentDescription = null) },
+                leading = {
+                    Icon(Icons.AutoMirrored.Outlined.CallMerge, contentDescription = null)
+                },
                 title = stringResource(R.string.entry_tunnel),
                 description = { DescriptionText(entryLabel) },
                 onClick = { navController.push(Route.EntryTunnel(tunnel.id)) },
@@ -140,12 +143,7 @@ fun TunnelSettingsScreen(
                             disabled = true,
                         )
                     } else {
-                        uiState.includedAppsCount?.let {
-                            DescriptionText(stringResource(R.string.included_apps, it))
-                        }
-                        uiState.excludedAppsCount?.let {
-                            DescriptionText(stringResource(R.string.excluded_apps, it))
-                        }
+                        uiState.appliedSplit?.let { SplitAppsDescription(it) }
                     }
                 },
                 onClick = { navController.push(Route.SplitTunnel(id = tunnel.id)) },

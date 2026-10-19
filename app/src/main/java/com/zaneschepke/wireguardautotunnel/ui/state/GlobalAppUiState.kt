@@ -20,6 +20,7 @@ data class GlobalAppUiState(
     val reorderScopeTitle: String? = null,
     val hasGroups: Boolean = false,
     val canReorder: Boolean = false,
+    val hasActiveTunnel: Boolean = false,
     val alreadyDonated: Boolean = false,
     val isPinVerified: Boolean = false,
     val pendingWgImportUrl: String? = null,

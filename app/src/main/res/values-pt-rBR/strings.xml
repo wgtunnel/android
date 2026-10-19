@@ -13,8 +13,6 @@
     <string name="add_tunnels_text">Adicionar a partir de ficheiro ou zip</string>
     <string name="add_from_qr">Adicionar a partir de código QR</string>
     <string name="tunnel_name">Nome do Túnel</string>
-    <string name="exclude">Excluir</string>
-    <string name="include">Incluir</string>
     <string name="config_changes_saved">Mudanças nas configurações gravadas.</string>
     <string name="public_key">Chave pública</string>
     <string name="addresses">Endereços</string>
@@ -52,7 +50,6 @@
     <string name="delete_tunnel">Apagar túnel</string>
     <string name="delete_tunnel_message">Tem certeza que quer apagar este túnel?</string>
     <string name="yes">Sim</string>
-    <string name="all">todos</string>
     <string name="no_email_detected">Nenhuma aplicação de email detetado</string>
     <string name="no_browser_detected">Nenhum navegador detetado</string>
     <string name="open_issue">Abrir um problema</string>

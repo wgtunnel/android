@@ -255,7 +255,7 @@ class FileUtils(private val context: Context, private val ioDispatcher: Coroutin
     suspend fun readConfigsFromUri(uri: Uri): Result<Map<QuickConfig, TunnelName>> =
         withContext(ioDispatcher) {
             runCatching {
-                val fileName = getFileName(uri).lowercase()
+                val fileName = getFileName(uri)
                 val extension = getFileExtensionFromFileName(fileName)
                 val inputStream =
                     context.getInputStreamFromUri(uri)
@@ -325,7 +325,10 @@ class FileUtils(private val context: Context, private val ioDispatcher: Coroutin
         const val ZIP_FILE_EXTENSION = ".zip"
         const val TEXT_MIME_TYPE = "text/plain"
         const val ZIP_FILE_MIME_TYPE = "application/zip"
+        const val OCTET_STREAM_MIME_TYPE = "application/octet-stream"
         const val ALL_FILE_TYPES = "*/*"
+        val TV_IMPORT_MIME_TYPES =
+            arrayOf(TEXT_MIME_TYPE, ZIP_FILE_MIME_TYPE, OCTET_STREAM_MIME_TYPE)
 
         const val GOOGLE_TV_EXPLORER_STUB = "com.google.android.tv.frameworkpackagestubs"
         const val ANDROID_TV_EXPLORER_STUB = "com.android.tv.frameworkpackagestubs"

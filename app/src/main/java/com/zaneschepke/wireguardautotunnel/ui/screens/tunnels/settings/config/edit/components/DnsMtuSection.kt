@@ -20,6 +20,7 @@ fun DnsMtuSection(
     globalDnsEnabled: Boolean,
     interfaceState: EditableInterface,
     onInterfaceChange: (EditableInterface) -> Unit,
+    globalDnsServers: String? = null,
 ) {
     val showDns = !isGlobalConfig || globalDnsEnabled
     val showMtu = !isGlobalConfig
@@ -36,6 +37,7 @@ fun DnsMtuSection(
             hint =
                 stringResource(R.string.hint_template, stringResource(R.string.comma_separated))
                     .lowercase(locale),
+            supportingText = managedGloballySupporting(globalDnsServers),
             modifier = Modifier.fillMaxWidth(),
         )
 

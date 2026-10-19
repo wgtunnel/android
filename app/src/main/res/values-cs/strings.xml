@@ -15,8 +15,6 @@
     <string name="add_tunnels_text">Přidat ze souboru nebo zipu</string>
     <string name="add_from_qr">Přidat z QR kódu</string>
     <string name="tunnel_name">Název tunelu</string>
-    <string name="exclude">Vyloučit</string>
-    <string name="include">Zahrnout</string>
     <string name="config_changes_saved">Změny v konfiguraci uloženy.</string>
     <string name="public_key">Veřejný klíč</string>
     <string name="addresses">Adresy</string>
@@ -56,7 +54,6 @@
     <string name="delete_tunnel">Smazat tunel</string>
     <string name="delete_tunnel_message">Opravdu chcete smazat vybrané tunely?</string>
     <string name="yes">Ano</string>
-    <string name="all">Vše</string>
     <string name="no_email_detected">Žádná emailová aplikace nebyla nalezena</string>
     <string name="no_browser_detected">Žádný prohlížeč nebyl nalezen</string>
     <string name="open_issue">Otevřít případ</string>
@@ -311,8 +308,6 @@
     <string name="special_junk_packet">Speciální falešný paket</string>
     <!-- AmneziaWG 3.0 -->
     <string name="copy_from">Zkopírovat z</string>
-    <string name="mode">Mód </string>
-    <string name="app_selection">Výběr aplikací</string>
     <string name="import_url_description">URL musí být zabezpečené a poskytovat .conf soubor. </string>
     <string name="export_unsupported">Export není na tomto zařízení podporován </string>
     <string name="export_canceled">Export zrušen </string>

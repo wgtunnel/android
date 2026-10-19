@@ -277,11 +277,6 @@ dependencies {
 
     debugImplementation(libs.leakcanary.android)
 
-    // Room database backup
-    implementation(libs.roomdatabasebackup) {
-        exclude(group = "org.reactivestreams", module = "reactive-streams")
-    }
-
     // DI
     implementation(platform(libs.koin.bom))
     implementation(libs.koin.core)

@@ -5,6 +5,7 @@ import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
@@ -39,6 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
@@ -51,6 +53,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.wgtunnel.backend.state.ActiveTunnel
 import com.zaneschepke.wireguardautotunnel.R
+import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
 import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.common.ExpandingRowListItem
@@ -177,6 +180,11 @@ fun TunnelList(
         itemsIndexed(items = rows, key = { _, row -> row.key }) { index, row ->
             if (uiState.isReorderMode) {
                 ReorderableItem(reorderableLazyListState, row.key) { isDragging ->
+                    val latency =
+                        (row as? TunnelListRow.TunnelRow)?.let {
+                            uiState.reorderLatencies[it.tunnel.id]
+                        }
+                    val latencyLabel = latency?.let { pingLatencyLabel(it) }
                     val title = buildAnnotatedString {
                         when (row) {
                             is TunnelListRow.GroupHeader -> {
@@ -193,23 +201,10 @@ fun TunnelList(
                             }
                             is TunnelListRow.TunnelRow -> {
                                 append(row.tunnel.name)
-                                val latency = uiState.reorderLatencies[row.tunnel.id]
-                                if (latency != null) {
+                                if (latency != null && latencyLabel != null) {
                                     append(" - ")
-                                    if (latency == Double.MAX_VALUE) {
-                                        withStyle(SpanStyle(color = AlertRed)) {
-                                            append(stringResource(R.string.ping_unreachable))
-                                        }
-                                    } else {
-                                        val color =
-                                            when (latency) {
-                                                in 0.0..50.0 -> SilverTree
-                                                in 50.0..150.0 -> Straw
-                                                else -> AlertRed
-                                            }
-                                        withStyle(SpanStyle(color = color)) {
-                                            append("${latency.toInt()}ms")
-                                        }
+                                    withStyle(SpanStyle(color = pingLatencyColor(latency))) {
+                                        append(latencyLabel)
                                     }
                                 }
                             }
@@ -433,18 +428,7 @@ private fun ListRow(
                     )
                 },
                 title = tunnel.name,
-                description =
-                    tunnel.entryTunnelId
-                        ?.let { id -> uiState.tunnels.firstOrNull { it.id == id }?.name }
-                        ?.let { entryName ->
-                            {
-                                Text(
-                                    text = stringResource(R.string.via_entry, entryName),
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.outline,
-                                )
-                            }
-                        },
+                description = tunnelRowDescription(tunnel, uiState),
                 onClick = {
                     when {
                         uiState.isReorderMode -> Unit
@@ -482,5 +466,53 @@ private fun ListRow(
                 },
             )
         }
+    }
+}
+
+private fun tunnelRowDescription(
+    tunnel: TunnelConfig,
+    uiState: TunnelsUiState,
+): (@Composable () -> Unit)? {
+    val entryName =
+        tunnel.entryTunnelId?.let { id -> uiState.tunnels.firstOrNull { it.id == id }?.name }
+    val latency = uiState.pingLatencies[tunnel.id]
+    if (entryName == null && latency == null) return null
+    return {
+        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            if (entryName != null) {
+                Text(
+                    text = stringResource(R.string.via_entry, entryName),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.outline,
+                )
+            }
+            if (latency != null) {
+                PingLatencyText(latency)
+            }
+        }
+    }
+}
+
+@Composable
+private fun PingLatencyText(latency: Double) {
+    Text(
+        text = pingLatencyLabel(latency),
+        style = MaterialTheme.typography.bodySmall,
+        color = pingLatencyColor(latency),
+    )
+}
+
+@Composable
+private fun pingLatencyLabel(latency: Double): String {
+    return if (latency == Double.MAX_VALUE) stringResource(R.string.ping_unreachable)
+    else "${latency.toInt()}ms"
+}
+
+private fun pingLatencyColor(latency: Double): Color {
+    return when {
+        latency == Double.MAX_VALUE -> AlertRed
+        latency <= 50.0 -> SilverTree
+        latency <= 150.0 -> Straw
+        else -> AlertRed
     }
 }

@@ -15,7 +15,11 @@ data class TunnelsUiState(
     val isReorderMode: Boolean = false,
     val reorderScopeGroupId: Int? = null,
     val reorderLatencies: Map<Int, Double> = emptyMap(),
+    val pingLatencies: Map<Int, Double> = emptyMap(),
 ) {
+    val hasActiveTunnel: Boolean
+        get() = backendStatus.activeTunnels.isNotEmpty()
+
     val isSelectionMode: Boolean
         get() = selectedTunnels.isNotEmpty() || selectedGroups.isNotEmpty()
 

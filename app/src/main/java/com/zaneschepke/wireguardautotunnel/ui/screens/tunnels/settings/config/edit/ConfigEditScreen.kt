@@ -25,6 +25,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
+import com.zaneschepke.wireguardautotunnel.ui.common.banner.InfoNotice
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
 import com.zaneschepke.wireguardautotunnel.ui.common.button.ThemedSwitch
 import com.zaneschepke.wireguardautotunnel.ui.common.dialog.rememberRestartToApplyChanges
@@ -99,6 +100,15 @@ fun ConfigEditScreen(
                     orientation = Orientation.Vertical,
                 ),
     ) {
+        if (
+            !uiState.isGlobalConfig &&
+                (uiState.globalSettings.dnsEnabled || uiState.globalSettings.amneziaEnabled)
+        ) {
+            InfoNotice(
+                title = stringResource(R.string.managed_globally),
+                message = stringResource(R.string.global_override_notice),
+            )
+        }
         if (uiState.isGlobalConfig) {
             Column {
                 SurfaceRow(

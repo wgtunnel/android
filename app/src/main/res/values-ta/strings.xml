@@ -15,8 +15,6 @@
     <string name="add_tunnels_text">கோப்பு அல்லது சிப்பிலிருந்து சேர்க்கவும்</string>
     <string name="add_from_qr">QR குறியீட்டிலிருந்து சேர்க்கவும்</string>
     <string name="tunnel_name">சுரங்கப்பாதை பெயர்</string>
-    <string name="exclude">விலக்கு</string>
-    <string name="include">அடங்கும்</string>
     <string name="config_changes_saved">உள்ளமைவு மாற்றங்கள் சேமிக்கப்பட்டன.</string>
     <string name="public_key">பொது விசை</string>
     <string name="addresses">முகவரிகள்</string>
@@ -56,7 +54,6 @@
     <string name="delete_tunnel">சுரங்கப்பாதையை நீக்கு</string>
     <string name="delete_tunnel_message">இந்த சுரங்கப்பாதையை நீக்க விரும்புகிறீர்களா?</string>
     <string name="yes">ஆம்</string>
-    <string name="all">அனைத்தும்</string>
     <string name="no_email_detected">மின்னஞ்சல் பயன்பாடு எதுவும் கண்டறியப்படவில்லை</string>
     <string name="no_browser_detected">உலாவி கண்டறியப்படவில்லை</string>
     <string name="open_issue">ஒரு சிக்கலைத் திறக்கவும்</string>

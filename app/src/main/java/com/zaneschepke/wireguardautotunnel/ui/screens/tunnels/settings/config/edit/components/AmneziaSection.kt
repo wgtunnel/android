@@ -21,6 +21,7 @@ import com.zaneschepke.wireguardautotunnel.ui.state.EditableInterface
 fun AmneziaSection(
     interfaceState: EditableInterface,
     onInterfaceChange: (EditableInterface) -> Unit,
+    globalValues: EditableInterface? = null,
 ) {
     val locale = Locale.current.platformLocale
 
@@ -29,6 +30,7 @@ fun AmneziaSection(
         ConfigurationTextBox(
             value = interfaceState.junkPacketCount,
             onValueChange = { onInterfaceChange(interfaceState.copy(junkPacketCount = it)) },
+            supportingText = managedGloballySupporting(globalValues?.junkPacketCount),
             label =
                 stringResource(R.string.jc) +
                     " " +
@@ -43,6 +45,7 @@ fun AmneziaSection(
         ConfigurationTextBox(
             value = interfaceState.junkPacketMinSize,
             onValueChange = { onInterfaceChange(interfaceState.copy(junkPacketMinSize = it)) },
+            supportingText = managedGloballySupporting(globalValues?.junkPacketMinSize),
             label =
                 stringResource(R.string.jmin) +
                     " " +
@@ -57,6 +60,7 @@ fun AmneziaSection(
         ConfigurationTextBox(
             value = interfaceState.junkPacketMaxSize,
             onValueChange = { onInterfaceChange(interfaceState.copy(junkPacketMaxSize = it)) },
+            supportingText = managedGloballySupporting(globalValues?.junkPacketMaxSize),
             label =
                 stringResource(R.string.jmax) +
                     " " +
@@ -73,6 +77,7 @@ fun AmneziaSection(
         ConfigurationTextBox(
             value = interfaceState.initPacketJunkSize,
             onValueChange = { onInterfaceChange(interfaceState.copy(initPacketJunkSize = it)) },
+            supportingText = managedGloballySupporting(globalValues?.initPacketJunkSize),
             label =
                 stringResource(R.string.s1) +
                     " " +
@@ -87,6 +92,7 @@ fun AmneziaSection(
         ConfigurationTextBox(
             value = interfaceState.responsePacketJunkSize,
             onValueChange = { onInterfaceChange(interfaceState.copy(responsePacketJunkSize = it)) },
+            supportingText = managedGloballySupporting(globalValues?.responsePacketJunkSize),
             label =
                 stringResource(R.string.s2) +
                     " " +
@@ -101,6 +107,7 @@ fun AmneziaSection(
         ConfigurationTextBox(
             value = interfaceState.cookiePacketJunkSize,
             onValueChange = { onInterfaceChange(interfaceState.copy(cookiePacketJunkSize = it)) },
+            supportingText = managedGloballySupporting(globalValues?.cookiePacketJunkSize),
             label =
                 stringResource(R.string.s3) +
                     " " +
@@ -117,6 +124,7 @@ fun AmneziaSection(
             onValueChange = {
                 onInterfaceChange(interfaceState.copy(transportPacketJunkSize = it))
             },
+            supportingText = managedGloballySupporting(globalValues?.transportPacketJunkSize),
             label =
                 stringResource(R.string.s4) +
                     " " +
@@ -133,6 +141,7 @@ fun AmneziaSection(
         ConfigurationTextBox(
             value = interfaceState.initPacketMagicHeader,
             onValueChange = { onInterfaceChange(interfaceState.copy(initPacketMagicHeader = it)) },
+            supportingText = managedGloballySupporting(globalValues?.initPacketMagicHeader),
             label =
                 stringResource(R.string.h1) +
                     " " +
@@ -149,6 +158,7 @@ fun AmneziaSection(
             onValueChange = {
                 onInterfaceChange(interfaceState.copy(responsePacketMagicHeader = it))
             },
+            supportingText = managedGloballySupporting(globalValues?.responsePacketMagicHeader),
             label =
                 stringResource(R.string.h2) +
                     " " +
@@ -165,6 +175,7 @@ fun AmneziaSection(
             onValueChange = {
                 onInterfaceChange(interfaceState.copy(underloadPacketMagicHeader = it))
             },
+            supportingText = managedGloballySupporting(globalValues?.underloadPacketMagicHeader),
             label =
                 stringResource(R.string.h3) +
                     " " +
@@ -181,6 +192,7 @@ fun AmneziaSection(
             onValueChange = {
                 onInterfaceChange(interfaceState.copy(transportPacketMagicHeader = it))
             },
+            supportingText = managedGloballySupporting(globalValues?.transportPacketMagicHeader),
             label =
                 stringResource(R.string.h4) +
                     " " +
@@ -197,6 +209,7 @@ fun AmneziaSection(
         ConfigurationTextBox(
             value = interfaceState.i1,
             onValueChange = { onInterfaceChange(interfaceState.copy(i1 = it)) },
+            supportingText = managedGloballySupporting(globalValues?.i1),
             label =
                 stringResource(R.string.i1) +
                     " " +
@@ -210,6 +223,7 @@ fun AmneziaSection(
         ConfigurationTextBox(
             value = interfaceState.i2,
             onValueChange = { onInterfaceChange(interfaceState.copy(i2 = it)) },
+            supportingText = managedGloballySupporting(globalValues?.i2),
             label =
                 stringResource(R.string.i2) +
                     " " +
@@ -223,6 +237,7 @@ fun AmneziaSection(
         ConfigurationTextBox(
             value = interfaceState.i3,
             onValueChange = { onInterfaceChange(interfaceState.copy(i3 = it)) },
+            supportingText = managedGloballySupporting(globalValues?.i3),
             label =
                 stringResource(R.string.i3) +
                     " " +
@@ -236,6 +251,7 @@ fun AmneziaSection(
         ConfigurationTextBox(
             value = interfaceState.i4,
             onValueChange = { onInterfaceChange(interfaceState.copy(i4 = it)) },
+            supportingText = managedGloballySupporting(globalValues?.i4),
             label =
                 stringResource(R.string.i4) +
                     " " +
@@ -249,6 +265,7 @@ fun AmneziaSection(
         ConfigurationTextBox(
             value = interfaceState.i5,
             onValueChange = { onInterfaceChange(interfaceState.copy(i5 = it)) },
+            supportingText = managedGloballySupporting(globalValues?.i5),
             label =
                 stringResource(R.string.i5) +
                     " " +
@@ -264,6 +281,7 @@ fun AmneziaSection(
         ConfigurationTextBox(
             value = interfaceState.headerProtectionKey,
             onValueChange = { onInterfaceChange(interfaceState.copy(headerProtectionKey = it)) },
+            supportingText = managedGloballySupporting(globalValues?.headerProtectionKey),
             label = stringResource(R.string.header_protection_key),
             hint = stringResource(R.string.hint_template, "base64 key"),
             modifier = Modifier.fillMaxWidth(),
@@ -271,6 +289,7 @@ fun AmneziaSection(
         ConfigurationTextBox(
             value = interfaceState.contentPaddingAddition,
             onValueChange = { onInterfaceChange(interfaceState.copy(contentPaddingAddition = it)) },
+            supportingText = managedGloballySupporting(globalValues?.contentPaddingAddition),
             label = stringResource(R.string.content_padding_addition),
             hint = stringResource(R.string.hint_template, "0-16"),
             modifier = Modifier.fillMaxWidth(),
@@ -278,6 +297,7 @@ fun AmneziaSection(
         ConfigurationTextBox(
             value = interfaceState.rekeyAfterTime,
             onValueChange = { onInterfaceChange(interfaceState.copy(rekeyAfterTime = it)) },
+            supportingText = managedGloballySupporting(globalValues?.rekeyAfterTime),
             label = stringResource(R.string.rekey_after_time),
             hint = stringResource(R.string.hint_template, "120"),
             trailing = {
@@ -292,6 +312,7 @@ fun AmneziaSection(
         ConfigurationTextBox(
             value = interfaceState.rekeyTimeout,
             onValueChange = { onInterfaceChange(interfaceState.copy(rekeyTimeout = it)) },
+            supportingText = managedGloballySupporting(globalValues?.rekeyTimeout),
             label = stringResource(R.string.rekey_timeout),
             trailing = {
                 Text(
@@ -306,6 +327,7 @@ fun AmneziaSection(
         ConfigurationTextBox(
             value = interfaceState.rejectAfterTime,
             onValueChange = { onInterfaceChange(interfaceState.copy(rejectAfterTime = it)) },
+            supportingText = managedGloballySupporting(globalValues?.rejectAfterTime),
             label = stringResource(R.string.reject_after_time),
             trailing = {
                 Text(
@@ -320,6 +342,7 @@ fun AmneziaSection(
         ConfigurationTextBox(
             value = interfaceState.keepaliveTimeout,
             onValueChange = { onInterfaceChange(interfaceState.copy(keepaliveTimeout = it)) },
+            supportingText = managedGloballySupporting(globalValues?.keepaliveTimeout),
             label = stringResource(R.string.keepalive_timeout),
             trailing = {
                 Text(
@@ -334,6 +357,7 @@ fun AmneziaSection(
         ConfigurationTextBox(
             value = interfaceState.maxHandshakeAttempts,
             onValueChange = { onInterfaceChange(interfaceState.copy(maxHandshakeAttempts = it)) },
+            supportingText = managedGloballySupporting(globalValues?.maxHandshakeAttempts),
             label = stringResource(R.string.max_handshake_attempts),
             hint = stringResource(R.string.hint_template, "18"),
             modifier = Modifier.fillMaxWidth(),
@@ -341,6 +365,7 @@ fun AmneziaSection(
         ConfigurationTextBox(
             value = interfaceState.randomTrailers,
             onValueChange = { onInterfaceChange(interfaceState.copy(randomTrailers = it)) },
+            supportingText = managedGloballySupporting(globalValues?.randomTrailers),
             label = stringResource(R.string.random_trailers),
             hint = stringResource(R.string.hint_template, "on, off"),
             modifier = Modifier.fillMaxWidth(),
@@ -348,6 +373,7 @@ fun AmneziaSection(
         ConfigurationTextBox(
             value = interfaceState.disableCookies,
             onValueChange = { onInterfaceChange(interfaceState.copy(disableCookies = it)) },
+            supportingText = managedGloballySupporting(globalValues?.disableCookies),
             label = stringResource(R.string.disable_cookies),
             hint = stringResource(R.string.hint_template, "on, off"),
             modifier = Modifier.fillMaxWidth(),

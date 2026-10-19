@@ -4,7 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.AltRoute
+import androidx.compose.material.icons.automirrored.outlined.CallMerge
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.LinkOff
 import androidx.compose.material3.Icon
@@ -39,7 +39,9 @@ fun EntryTunnelScreen(viewModel: TunnelViewModel) {
     if (candidates.isEmpty()) {
         Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
             SurfaceRow(
-                leading = { Icon(Icons.AutoMirrored.Outlined.AltRoute, contentDescription = null) },
+                leading = {
+                    Icon(Icons.AutoMirrored.Outlined.CallMerge, contentDescription = null)
+                },
                 title = stringResource(R.string.entry_tunnel_add_another),
                 description = { DescriptionText(stringResource(R.string.entry_tunnel_desc)) },
             )
@@ -60,7 +62,7 @@ fun EntryTunnelScreen(viewModel: TunnelViewModel) {
                 viewModel.onEntryTunnel(it.id)
                 navController.pop()
             },
-            leading = { Icon(Icons.AutoMirrored.Outlined.AltRoute, contentDescription = null) },
+            leading = { Icon(Icons.AutoMirrored.Outlined.CallMerge, contentDescription = null) },
             leadingItem = {
                 val noneSelected = tunnel.entryTunnelId == null
                 SurfaceRow(
@@ -69,7 +71,7 @@ fun EntryTunnelScreen(viewModel: TunnelViewModel) {
                     description = {
                         DescriptionText(stringResource(R.string.entry_tunnel_none_desc))
                     },
-                    selected = noneSelected,
+                    selected = false,
                     trailing = {
                         if (noneSelected) {
                             Icon(

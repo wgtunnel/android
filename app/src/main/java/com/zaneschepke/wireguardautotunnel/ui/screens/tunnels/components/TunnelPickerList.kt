@@ -71,7 +71,6 @@ fun TunnelPickerList(
                 SurfaceRow(
                     leading = leading,
                     title = tunnel.name,
-                    selected = selected,
                     trailing = {
                         if (selected) {
                             Icon(

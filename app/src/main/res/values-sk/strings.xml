@@ -11,8 +11,6 @@
     <string name="add_tunnels_text">Pridať zo súboru alebo zip</string>
     <string name="add_from_qr">Pridať z QR kódu</string>
     <string name="tunnel_name">Názov tunela</string>
-    <string name="exclude">Vylúčiť</string>
-    <string name="include">Zahrnúť</string>
     <string name="config_changes_saved">Zmeny konfigurácie boli uložené.</string>
     <string name="public_key">Verejný kľúč</string>
     <string name="addresses">Adresy</string>
@@ -51,7 +49,6 @@
     <string name="delete_tunnel">Vymazanie tunela</string>
     <string name="delete_tunnel_message">Naozaj chcete tieto tunely odstrániť?</string>
     <string name="yes">Áno</string>
-    <string name="all">Všetko</string>
     <string name="no_email_detected">Nebola zistená žiadna e-mailová aplikácia</string>
     <string name="no_browser_detected">Nebol zistený žiadny prehliadač</string>
     <string name="pin_created">Pin úspešne vytvorený</string>
