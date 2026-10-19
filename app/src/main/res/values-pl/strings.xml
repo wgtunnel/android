@@ -501,7 +501,9 @@
     <string name="restore">Przywróć</string>
     <string name="hide_password">Ukryj hasło</string>
     <string name="restore_failed_wrong_password">Przywracanie nie powiodło się. Błędne hasło</string>
-    <string name="restore_failed_invalid_file">Przywracanie nie powiodło się. Wybierz prawidłowy plik kopii zapasowej (.sqlite3 lub .sqlite3.aes)</string>
+    <string name="restore_failed_invalid_file">Przywracanie nie powiodło się. Wybierz prawidłowy plik kopii zapasowej (.zip, .sqlite3 lub .sqlite3.aes)</string>
+    <string name="restore_failed_newer_version">Przywracanie nie powiodło się. Ta kopia zapasowa pochodzi z nowszej wersji aplikacji</string>
+    <string name="backup_saved_downloads">Kopia zapasowa zapisana w folderze Pobrane jako %1$s</string>
     <string name="error_invalid_config_url">Ten link zwrócił nieprawidłowy plik konfiguracyjny. Upewnij się, że używasz bezpośredniego linku do pobrania</string>
     <string name="local_network_permission_title">Wymagany dostęp do sieci lokalnej</string>
     <string name="local_network_permission_intro">WG Tunnel potrzebuje dostępu do sieci lokalnej, aby kilka funkcji działało prawidłowo.</string>
