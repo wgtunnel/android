@@ -93,6 +93,7 @@
     <string name="language">Lingua</string>
     <string name="display_theme">Tema schermo</string>
     <string name="trusted_wifi_names">Elenco reti Wi-Fi affidabili</string>
+    <string name="trusted_wifi_desc">Reti Wi-Fi che disattivano il tunnel</string>
     <string name="add_wifi_name">Aggiungi il nome di una rete WiFi</string>
     <string name="primary_tunnel">Tunnel predefinito</string>
     <string name="entry_tunnel">Tunnel di ingresso</string>
@@ -206,7 +207,9 @@
     <string name="release_notes">Note di rilascio</string>
     <string name="shizuku_not_detected">Shizuku non rilevato</string>
     <string name="sort">Ordina</string>
+    <string name="sort_by_name">Ordina per nome</string>
     <string name="sort_by_latency">Ordina per latenza</string>
+    <string name="ping_servers">Ping dei server</string>
     <string name="pinging_servers">Ping dei server in corso…</string>
     <string name="ping_unreachable">irraggiungibile</string>
     <string name="drag_handle">Maniglia di trascinamento</string>
@@ -312,6 +315,8 @@
     <string name="aovpn_description">Consente ad Android di avviare tunnel</string>
     <string name="tunnel_boot_description">Avvia il tunnel predefinito all\'avvio</string>
     <string name="remote_key">Chiave remota</string>
+    <string name="rotate_remote_key">Ruota chiave</string>
+    <string name="remote_key_rotated">Chiave remota ruotata</string>
     <string name="tunnel_mapping_description">Associa i tunnel preferiti in base al nome Wi-Fi</string>
     <string name="monitoring">Monitoraggio</string>
     <string name="tunnel_running_name_message">Il nome non può essere modificato mentre il tunnel è attivo.</string>
@@ -342,8 +347,12 @@
     <string name="special_junk_packet">Pacchetto fittizio speciale</string>
     <!-- AmneziaWG 3.0 -->
     <string name="copy_from">Copia da</string>
+    <string name="show_system_apps">Mostra app di sistema</string>
+    <string name="hide_system_apps">Nascondi app di sistema</string>
     <string name="split_tunneling">Split tunneling</string>
     <string name="split_tunneling_desc">Fai passare app specifiche attraverso questo tunnel o al di fuori di esso</string>
+    <string name="split_tunnel_all_label">Tutte nel tunnel</string>
+    <string name="split_tunnel_all_desc">Tutte le app usano questo tunnel</string>
     <string name="split_tunnel_include_label">Tunnel</string>
     <string name="split_tunnel_include_desc">Le app selezionate useranno il tunnel, mentre tutte le altre lo aggireranno</string>
     <string name="split_tunnel_exclude_label">Bypass</string>
@@ -351,7 +360,9 @@
     <string name="select_apps_to_include">Seleziona le app da includere</string>
     <string name="select_apps_to_exclude">Seleziona le app da escludere</string>
     <string name="split_mode">Modalità split</string>
-    <string name="split_mode_desc">Se le app selezionate usano questo tunnel o lo aggirano</string>
+    <string name="split_mode_desc">Usa il tunnel per tutte le app, oppure scegli quali app lo usano e quali lo aggirano</string>
+    <string name="global_split_off">Ogni tunnel usa il proprio elenco di app</string>
+    <string name="global_split_applies">Vale per tutti i tunnel</string>
     <string name="import_url_description">L\'URL deve essere sicuro e fornire un file .conf.</string>
     <string name="export_unsupported">Esportazione non supportata su questo dispositivo</string>
     <string name="export_canceled">Esportazione annullata</string>
@@ -410,6 +421,20 @@
     <string name="vpn_permission_required">Permesso VPN richiesto</string>
     <string name="included_apps">%1$s app incluse</string>
     <string name="excluded_apps">%1$s app escluse</string>
+    <plurals name="apps_tunneled">
+        <item quantity="one">%d app nel tunnel</item>
+        <item quantity="other">%d app nel tunnel</item>
+    </plurals>
+    <plurals name="apps_bypassed">
+        <item quantity="one">%d app in bypass</item>
+        <item quantity="other">%d app in bypass</item>
+    </plurals>
+    <string name="all_apps_tunneled">Tutte le app nel tunnel</string>
+    <string name="managed_globally_detail">%1$s · Gestione globale</string>
+    <string name="managed_globally">Gestione globale</string>
+    <string name="split_override_notice">Questo elenco resta salvato, ma non viene usato finché lo split tunneling globale è attivo.</string>
+    <string name="global_override_notice">Alcuni valori restano salvati qui, ma non vengono usati finché le relative impostazioni globali sono attive.</string>
+    <string name="none">Nessuno</string>
     <string name="error">Errore</string>
     <string name="tunnel_globals">Impostazioni globali</string>
     <string name="screen_recording_protection">Protezione dalla registrazione dello schermo</string>
@@ -472,7 +497,9 @@
     <string name="restore">Ripristina</string>
     <string name="hide_password">Nascondi password</string>
     <string name="restore_failed_wrong_password">Ripristino non riuscito. Password errata</string>
-    <string name="restore_failed_invalid_file">Ripristino non riuscito. Seleziona un file di backup valido (.sqlite3 o .sqlite3.aes)</string>
+    <string name="restore_failed_invalid_file">Ripristino non riuscito. Seleziona un file di backup valido (.zip, .sqlite3 o .sqlite3.aes)</string>
+    <string name="restore_failed_newer_version">Ripristino non riuscito. Questo backup proviene da una versione più recente dell\'app</string>
+    <string name="backup_saved_downloads">Backup salvato nella cartella Download come %1$s</string>
     <string name="error_invalid_config_url">Questo link ha restituito un file di configurazione non valido. Assicurati di usare un link di download diretto</string>
     <string name="local_network_permission_title">Serve l\'accesso alla rete locale</string>
     <string name="local_network_permission_intro">WG Tunnel ha bisogno dell\'accesso alla rete locale perché diverse funzionalità operino correttamente.</string>
@@ -491,6 +518,7 @@
     <string name="wildcard_wifi_desc">Supporta *, ? e ! per escludere</string>
     <string name="invalid_bssid_format">Formato BSSID non valido</string>
     <string name="trusted_bssid">BSSID attendibili</string>
+    <string name="trusted_bssid_desc">Access point che disattivano il tunnel</string>
     <string name="wildcard_bssid_desc">Supporta * e ! per escludere</string>
     <string name="captive_portal_desc">Mantiene i tunnel disattivati finché non completi l\'accesso al captive portal</string>
     <string name="add_bssid">Aggiungi BSSID</string>
