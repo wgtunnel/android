@@ -173,7 +173,7 @@ Help translate WG Tunnel on [Crowdin](https://translate.wgtunnel.com/project/wgt
           <br />
           <sub><b>(martinellimarco)</b></sub></a>
         <br />
-        <sub><b>4661 words</b></sub>
+        <sub><b>4792 words</b></sub>
       </td>
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/Pida88"><img alt="logo" style="width: 100px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/17799913/medium/ac2cec66927300857724bef7bd432cd3.jpg" />
@@ -185,6 +185,13 @@ Help translate WG Tunnel on [Crowdin](https://translate.wgtunnel.com/project/wgt
         <sub><b>2211 words</b></sub>
       </td>
       <td align="center" valign="top">
+        <a href="https://crowdin.com/profile/Matthaiks"><img alt="logo" style="width: 100px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/13139078/medium/27126ff13e6785d239e4cf1d47016adc.png" />
+          <br />
+          <sub><b>Matthaiks</b></sub></a>
+        <br />
+        <sub><b>1992 words</b></sub>
+      </td>
+      <td align="center" valign="top">
         <a href="https://crowdin.com/profile/Surfoo"><img alt="logo" style="width: 100px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/12385147/medium/2d69c468ab233ce1d371a4323309190e_default.png" />
           <br />
           <sub><b>Surfoo</b></sub></a>
@@ -192,19 +199,23 @@ Help translate WG Tunnel on [Crowdin](https://translate.wgtunnel.com/project/wgt
         <sub><b>1984 words</b></sub>
       </td>
       <td align="center" valign="top">
-        <a href="https://crowdin.com/profile/Matthaiks"><img alt="logo" style="width: 100px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/13139078/medium/27126ff13e6785d239e4cf1d47016adc.png" />
-          <br />
-          <sub><b>Matthaiks</b></sub></a>
-        <br />
-        <sub><b>1849 words</b></sub>
-      </td>
-      <td align="center" valign="top">
         <a href="https://crowdin.com/profile/solokot"><img alt="logo" style="width: 100px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/12939368/medium/23417b511371f5884018368baa1de8f3.jpg" />
           <br />
           <sub><b>solokot</b></sub></a>
         <br />
-        <sub><b>1107 words</b></sub>
+        <sub><b>1254 words</b></sub>
       </td>
+      <td align="center" valign="top">
+        <a href="https://crowdin.com/profile/EvanTechDev"><img alt="logo" style="width: 100px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/17786633/medium/75db2d8a253d39f149683c270378d8c0.jpeg" />
+          <br />
+          <sub><b>Evan Huang</b></sub>
+          <br />
+          <sub><b>(EvanTechDev)</b></sub></a>
+        <br />
+        <sub><b>1120 words</b></sub>
+      </td>
+    </tr>
+    <tr>
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/alis36"><img alt="logo" style="width: 100px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/17816977/medium/be84bd9763853d31c10c09f3708fb72b.jpeg" />
           <br />
@@ -214,8 +225,6 @@ Help translate WG Tunnel on [Crowdin](https://translate.wgtunnel.com/project/wgt
         <br />
         <sub><b>1050 words</b></sub>
       </td>
-    </tr>
-    <tr>
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/justcontributor"><img alt="logo" style="width: 100px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/13442389/medium/a6e71d4e535abf3b6d5c954658a93c70.jpg" />
           <br />
@@ -242,13 +251,13 @@ Help translate WG Tunnel on [Crowdin](https://translate.wgtunnel.com/project/wgt
         <sub><b>891 words</b></sub>
       </td>
       <td align="center" valign="top">
-        <a href="https://crowdin.com/profile/EvanTechDev"><img alt="logo" style="width: 100px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/17786633/medium/75db2d8a253d39f149683c270378d8c0.jpeg" />
+        <a href="https://crowdin.com/profile/tehb29"><img alt="logo" style="width: 100px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/17950253/medium/73287160ada318e24dae684912e5f3d5.png" />
           <br />
-          <sub><b>Evan Huang</b></sub>
+          <sub><b>Den</b></sub>
           <br />
-          <sub><b>(EvanTechDev)</b></sub></a>
+          <sub><b>(tehb29)</b></sub></a>
         <br />
-        <sub><b>751 words</b></sub>
+        <sub><b>460 words</b></sub>
       </td>
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/pixnet"><img alt="logo" style="width: 100px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/17785035/medium/ba0625fb3822f186f2a2892f443d5af9_default.png" />
@@ -266,6 +275,8 @@ Help translate WG Tunnel on [Crowdin](https://translate.wgtunnel.com/project/wgt
         <br />
         <sub><b>320 words</b></sub>
       </td>
+    </tr>
+    <tr>
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/ppac"><img alt="logo" style="width: 100px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/14481388/medium/a640e3856ebc6794ff424b663627bf6f.png" />
           <br />
@@ -275,8 +286,6 @@ Help translate WG Tunnel on [Crowdin](https://translate.wgtunnel.com/project/wgt
         <br />
         <sub><b>273 words</b></sub>
       </td>
-    </tr>
-    <tr>
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/YuryKomar"><img alt="logo" style="width: 100px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/17782179/medium/687a5b3ebd16654bef045ab89c24d237_default.png" />
           <br />
