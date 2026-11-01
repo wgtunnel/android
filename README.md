@@ -141,7 +141,7 @@ Help translate WG Tunnel on [Crowdin](https://translate.wgtunnel.com/project/wgt
           <br />
           <sub><b>Matthaiks</b></sub></a>
         <br />
-        <sub><b>1992 words</b></sub>
+        <sub><b>2005 words</b></sub>
       </td>
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/Surfoo"><img alt="logo" style="width: 100px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/12385147/medium/2d69c468ab233ce1d371a4323309190e_default.png" />
@@ -244,6 +244,13 @@ Help translate WG Tunnel on [Crowdin](https://translate.wgtunnel.com/project/wgt
           <sub><b>YuryKomar</b></sub></a>
         <br />
         <sub><b>271 words</b></sub>
+      </td>
+      <td align="center" valign="top">
+        <a href="https://crowdin.com/profile/TrainsLater"><img alt="logo" style="width: 100px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/17735369/medium/fb369833f9b67141e2823873bfbacde2_default.png" />
+          <br />
+          <sub><b>TrainsLater</b></sub></a>
+        <br />
+        <sub><b>265 words</b></sub>
       </td>
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/georgybog"><img alt="logo" style="width: 100px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/14779108/medium/da357a1603284460ec743f3c8cb51ba5.png" />
