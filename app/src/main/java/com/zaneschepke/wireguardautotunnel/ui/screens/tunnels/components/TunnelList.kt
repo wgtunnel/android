@@ -413,12 +413,7 @@ private fun ListRow(
                 }
             SurfaceRow(
                 modifier =
-                    modifier
-                        .then(if (row.grouped) Modifier.padding(start = 24.dp) else Modifier)
-                        .then(
-                            if (focusRequester != null) Modifier.focusRequester(focusRequester)
-                            else Modifier
-                        ),
+                    modifier.then(if (row.grouped) Modifier.padding(start = 24.dp) else Modifier),
                 leading = {
                     Icon(
                         Icons.Rounded.Circle,
@@ -451,6 +446,7 @@ private fun ListRow(
                     else {
                         { viewModel.toggleSelectedTunnel(tunnel.id) }
                     },
+                trailingOutsideClickTarget = isTv,
                 trailing = { rowModifier ->
                     SwitchWithDivider(
                         checked = isRunning,
@@ -461,7 +457,11 @@ private fun ListRow(
                                 viewModel.stopTunnel(tunnel)
                             }
                         },
-                        modifier = rowModifier,
+                        modifier =
+                            rowModifier.then(
+                                if (focusRequester != null) Modifier.focusRequester(focusRequester)
+                                else Modifier
+                            ),
                     )
                 },
             )

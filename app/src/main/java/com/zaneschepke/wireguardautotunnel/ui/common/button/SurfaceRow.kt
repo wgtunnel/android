@@ -50,6 +50,7 @@ fun SurfaceRow(
     selected: Boolean = false,
     leading: @Composable (() -> Unit)? = null,
     trailing: @Composable ((Modifier) -> Unit)? = null,
+    trailingOutsideClickTarget: Boolean = false,
 ) {
     val density = LocalDensity.current
     val isTv = LocalIsAndroidTV.current
@@ -57,6 +58,12 @@ fun SurfaceRow(
     val interactionSource = remember { MutableInteractionSource() }
     val mainFocusRequester = remember { FocusRequester() }
     val trailingFocusRequester = remember { FocusRequester() }
+    val trailingModifier =
+        Modifier.focusRequester(trailingFocusRequester).focusProperties {
+            if (onClick != null) {
+                left = mainFocusRequester
+            }
+        }
 
     Column(
         modifier =
@@ -79,7 +86,8 @@ fun SurfaceRow(
         ) {
             Row(
                 modifier =
-                    Modifier.onKeyEvent { event ->
+                    Modifier.weight(1f)
+                        .onKeyEvent { event ->
                             if (onLongClick == null || isTv) {
                                 if (
                                     event.key == Key.DirectionCenter &&
@@ -145,15 +153,12 @@ fun SurfaceRow(
                         description()
                     }
                 }
-                if (trailing != null) {
-                    trailing(
-                        Modifier.focusRequester(trailingFocusRequester).focusProperties {
-                            if (onClick != null) {
-                                left = mainFocusRequester
-                            }
-                        }
-                    )
+                if (trailing != null && !trailingOutsideClickTarget) {
+                    trailing(trailingModifier)
                 }
+            }
+            if (trailing != null && trailingOutsideClickTarget) {
+                trailing(trailingModifier)
             }
         }
         if (expandedContent != null) {
@@ -176,6 +181,7 @@ fun SurfaceRow(
     selected: Boolean = false,
     leading: @Composable (() -> Unit)? = null,
     trailing: @Composable ((Modifier) -> Unit)? = null,
+    trailingOutsideClickTarget: Boolean = false,
 ) {
     SurfaceRow(
         title = AnnotatedString(title),
@@ -187,6 +193,7 @@ fun SurfaceRow(
         selected = selected,
         leading = leading,
         trailing = trailing,
+        trailingOutsideClickTarget = trailingOutsideClickTarget,
         modifier = modifier,
     )
 }
