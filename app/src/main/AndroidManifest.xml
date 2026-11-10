@@ -266,6 +266,20 @@
 			</intent-filter>
 		</receiver>
 		<receiver
+			android:name=".service.widget.TunnelControlWidget"
+			android:exported="true"
+			android:label="@string/tunnel_control">
+			<intent-filter>
+				<action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+			</intent-filter>
+			<meta-data
+				android:name="android.appwidget.provider"
+				android:resource="@xml/tunnel_control_widget_info" />
+		</receiver>
+		<receiver
+			android:name=".service.widget.TunnelWidgetToggleReceiver"
+			android:exported="false" />
+		<receiver
 			android:name=".core.broadcast.NotificationActionReceiver"
 			android:exported="false"
 			android:permission="${applicationId}.permission.CONTROL_TUNNELS">

@@ -186,7 +186,7 @@ class TunnelCoordinator(
         return runtimeSettingsSnapshotState.filterNotNull().first()
     }
 
-    private var lastActiveTunnels: List<Int> = emptyList()
+    @Volatile private var lastActiveTunnels: List<Int> = emptyList()
     private val tunnelMutex = Mutex()
     private val _errors = MutableSharedFlow<TunnelErrorEvent>()
     val errors = _errors.asSharedFlow()
@@ -441,19 +441,20 @@ class TunnelCoordinator(
                 return@withLock
             }
 
-            val tunnelsToStart =
-                when {
-                    lastActiveTunnels.isNotEmpty() -> {
-                        lastActiveTunnels.mapNotNull { tunnelRepository.getById(it) }
-                    }
-
-                    else -> {
-                        tunnelRepository.getDefaultTunnel()?.let(::listOf) ?: emptyList()
-                    }
-                }
-
-            tunnelsToStart.forEach { startTunnelInternal(it, source) }
+            tunnelsToStartOnToggle().forEach { startTunnelInternal(it, source) }
         }
+
+    /**
+     * The tunnels [toggleActiveTunnels] starts when nothing is active: the tunnels it last stopped,
+     * or the default tunnel. Lets the tile/widget show what a tap will start.
+     */
+    suspend fun tunnelsToStartOnToggle(): List<TunnelConfig> {
+        val lastActive = lastActiveTunnels
+        return when {
+            lastActive.isNotEmpty() -> lastActive.mapNotNull { tunnelRepository.getById(it) }
+            else -> tunnelRepository.getDefaultTunnel()?.let(::listOf) ?: emptyList()
+        }
+    }
 
     private suspend fun stopTunnelInternal(id: Int, source: TunnelActionSource) {
         tunnelProvider
