@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.Intent
 import android.widget.RemoteViews
 import androidx.annotation.DrawableRes
+import androidx.annotation.LayoutRes
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.core.orchestration.TunnelCoordinator
 import com.zaneschepke.wireguardautotunnel.di.Scope
@@ -26,14 +27,35 @@ import org.koin.core.qualifier.named
 import timber.log.Timber
 
 /**
- * 1x1 home screen widget that shows the current tunnel state and toggles tunnels on tap, using the
- * same logic as the Quick Settings tile ([TunnelCoordinator.toggleActiveTunnels]).
+ * 1x1 rounded-square home screen widget that shows the current tunnel state and toggles tunnels on
+ * tap, using the same logic as the Quick Settings tile ([TunnelCoordinator.toggleActiveTunnels]).
  *
  * The label shows the active tunnel name, or when off, the tunnel a tap will start. The background
  * color shows the connection state: green when connected, yellow while connecting, red on handshake
  * failure, dark when off.
  */
-class TunnelControlWidget : AppWidgetProvider(), KoinComponent {
+open class TunnelControlWidget : AppWidgetProvider(), KoinComponent {
+
+    /** Background states, mapped to drawables by each widget shape. */
+    protected enum class Background {
+        INACTIVE,
+        PENDING,
+        ACTIVE,
+        ERROR,
+    }
+
+    @get:LayoutRes protected open val layoutRes: Int = R.layout.widget_tunnel_control
+
+    protected open fun RemoteViews.applyBackground(background: Background) {
+        val res =
+            when (background) {
+                Background.INACTIVE -> R.drawable.widget_background_inactive
+                Background.PENDING -> R.drawable.widget_background_pending
+                Background.ACTIVE -> R.drawable.widget_background_active
+                Background.ERROR -> R.drawable.widget_background_error
+            }
+        setInt(R.id.widget_root, "setBackgroundResource", res)
+    }
 
     private val tunnelRepository: TunnelRepository by inject()
     private val tunnelCoordinator: TunnelCoordinator by inject()
@@ -66,13 +88,13 @@ class TunnelControlWidget : AppWidgetProvider(), KoinComponent {
         val tunnels = withContext(Dispatchers.IO) { tunnelRepository.userTunnelsFlow.firstOrNull() }
         val active = tunnelCoordinator.backendStatus.value.activeTunnels
 
-        val views = RemoteViews(context.packageName, R.layout.widget_tunnel_control)
+        val views = RemoteViews(context.packageName, layoutRes)
 
         when {
             tunnels.isNullOrEmpty() -> {
                 val description = context.getString(R.string.widget_no_tunnels)
                 views.bind(
-                    background = R.drawable.widget_background_inactive,
+                    background = Background.INACTIVE,
                     icon = R.drawable.vpn_off,
                     label = context.getString(R.string.widget_off),
                     description = description,
@@ -125,7 +147,7 @@ class TunnelControlWidget : AppWidgetProvider(), KoinComponent {
                     }
                 val name = if (next.isEmpty()) context.getString(R.string.tunnel_control) else label
                 views.bind(
-                    background = R.drawable.widget_background_inactive,
+                    background = Background.INACTIVE,
                     icon = R.drawable.vpn_off,
                     label = label,
                     description =
@@ -139,25 +161,24 @@ class TunnelControlWidget : AppWidgetProvider(), KoinComponent {
     }
 
     private fun RemoteViews.bind(
-        @DrawableRes background: Int,
+        background: Background,
         @DrawableRes icon: Int,
         label: String,
         description: String,
     ) {
-        setInt(R.id.widget_root, "setBackgroundResource", background)
+        applyBackground(background)
         setImageViewResource(R.id.widget_icon, icon)
         setTextViewText(R.id.widget_title, label)
         setContentDescription(R.id.widget_root, description)
     }
 
-    @DrawableRes
-    private fun backgroundFor(state: DisplayTunnelState): Int =
+    private fun backgroundFor(state: DisplayTunnelState): Background =
         when (state) {
-            DisplayTunnelState.Connected -> R.drawable.widget_background_active
-            DisplayTunnelState.HandshakeFailure -> R.drawable.widget_background_error
+            DisplayTunnelState.Connected -> Background.ACTIVE
+            DisplayTunnelState.HandshakeFailure -> Background.ERROR
             DisplayTunnelState.ResolvingDns,
-            DisplayTunnelState.EstablishingConnection -> R.drawable.widget_background_pending
-            DisplayTunnelState.Disconnected -> R.drawable.widget_background_inactive
+            DisplayTunnelState.EstablishingConnection -> Background.PENDING
+            DisplayTunnelState.Disconnected -> Background.INACTIVE
         }
 
     private fun togglePendingIntent(context: Context): PendingIntent =
@@ -186,19 +207,24 @@ class TunnelControlWidget : AppWidgetProvider(), KoinComponent {
         private const val REQUEST_TOGGLE = 7001
         private const val REQUEST_OPEN_APP = 7002
 
+        private val providers =
+            listOf(TunnelControlWidget::class.java, TunnelControlRoundWidget::class.java)
+
         /** Re-renders all placed widgets. Cheap no-op when no widget is on the home screen. */
         fun refresh(context: Context) {
             runCatching {
                 val manager = AppWidgetManager.getInstance(context) ?: return
-                val component = ComponentName(context, TunnelControlWidget::class.java)
-                val ids = manager.getAppWidgetIds(component)
-                if (ids.isEmpty()) return
-                context.sendBroadcast(
-                    Intent(context, TunnelControlWidget::class.java).apply {
-                        action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
-                        putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
+                providers.forEach { provider ->
+                    val ids = manager.getAppWidgetIds(ComponentName(context, provider))
+                    if (ids.isNotEmpty()) {
+                        context.sendBroadcast(
+                            Intent(context, provider).apply {
+                                action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
+                                putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
+                            }
+                        )
                     }
-                )
+                }
             }
                 .onFailure { Timber.w(it, "Tunnel widget refresh failed") }
         }
