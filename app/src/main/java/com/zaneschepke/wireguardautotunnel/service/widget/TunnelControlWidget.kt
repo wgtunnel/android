@@ -46,6 +46,9 @@ open class TunnelControlWidget : AppWidgetProvider(), KoinComponent {
 
     @get:LayoutRes protected open val layoutRes: Int = R.layout.widget_tunnel_control
 
+    /** Whether tapping the label opens the app instead of toggling. */
+    protected open val labelOpensApp: Boolean = false
+
     protected open fun RemoteViews.applyBackground(background: Background) {
         val res =
             when (background) {
@@ -155,6 +158,10 @@ open class TunnelControlWidget : AppWidgetProvider(), KoinComponent {
                 )
                 views.setOnClickPendingIntent(R.id.widget_root, togglePendingIntent(context))
             }
+        }
+
+        if (labelOpensApp) {
+            views.setOnClickPendingIntent(R.id.widget_title, openAppPendingIntent(context))
         }
 
         appWidgetManager.updateAppWidget(appWidgetIds, views)
