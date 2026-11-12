@@ -184,7 +184,7 @@ class AutoTunnelService : LifecycleService() {
     }
 
     private fun launchWatcherNotification(
-        description: String = getString(R.string.monitoring_state_changes)
+        description: String = getString(R.string.monitoring_state_changes),
     ) {
         val notification =
             notificationService.createNotification(
@@ -194,8 +194,8 @@ class AutoTunnelService : LifecycleService() {
                 actions =
                     listOf(
                         notificationService.createNotificationAction(
-                            NotificationAction.AUTO_TUNNEL_OFF
-                        )
+                            NotificationAction.AUTO_TUNNEL_OFF,
+                        ),
                     ),
                 onGoing = true,
                 groupKey = NotificationService.AUTO_TUNNEL_GROUP_KEY,
@@ -244,10 +244,10 @@ class AutoTunnelService : LifecycleService() {
 
                     if (!state.ssidReadRequired) {
                         notificationService.remove(
-                            NotificationService.AUTO_TUNNEL_LOCATION_SERVICES_ID
+                            NotificationService.AUTO_TUNNEL_LOCATION_SERVICES_ID,
                         )
                         notificationService.remove(
-                            NotificationService.AUTO_TUNNEL_LOCATION_PERMISSION_ID
+                            NotificationService.AUTO_TUNNEL_LOCATION_PERMISSION_ID,
                         )
                         return@collect
                     }
@@ -266,7 +266,7 @@ class AutoTunnelService : LifecycleService() {
                         )
                     } else {
                         notificationService.remove(
-                            NotificationService.AUTO_TUNNEL_LOCATION_PERMISSION_ID
+                            NotificationService.AUTO_TUNNEL_LOCATION_PERMISSION_ID,
                         )
                     }
 
@@ -284,7 +284,7 @@ class AutoTunnelService : LifecycleService() {
                         )
                     } else {
                         notificationService.remove(
-                            NotificationService.AUTO_TUNNEL_LOCATION_SERVICES_ID
+                            NotificationService.AUTO_TUNNEL_LOCATION_SERVICES_ID,
                         )
                     }
                 }

@@ -29,7 +29,7 @@ fun BackupBottomSheet(onBackup: () -> Unit, onRestore: () -> Unit, onDismiss: ()
                 stringResource(R.string.restore_application),
                 onClick = onRestore,
             ),
-        )
+        ),
     ) {
         onDismiss()
     }

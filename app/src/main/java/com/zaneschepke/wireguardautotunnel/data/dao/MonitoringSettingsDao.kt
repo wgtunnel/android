@@ -23,7 +23,7 @@ interface MonitoringSettingsDao {
     WHERE id = (
         SELECT id FROM monitoring_settings LIMIT 1
     )
-"""
+""",
     )
     suspend fun updateStatisticsInterval(interval: Int)
 
@@ -34,7 +34,7 @@ interface MonitoringSettingsDao {
     WHERE id = (
         SELECT id FROM monitoring_settings LIMIT 1
     )
-"""
+""",
     )
     suspend fun updateStatisticsEnabled(enabled: Boolean)
 }

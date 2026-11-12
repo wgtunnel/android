@@ -47,7 +47,7 @@ fun SelectionActionsSheet(
                         onDismiss()
                         onSelectAll()
                     },
-                )
+                ),
             )
             if (singleGroup != null) {
                 add(
@@ -58,7 +58,7 @@ fun SelectionActionsSheet(
                             onDismiss()
                             onRenameGroup(singleGroup)
                         },
-                    )
+                    ),
                 )
                 if (singleGroupHasTunnels) {
                     add(
@@ -69,7 +69,7 @@ fun SelectionActionsSheet(
                                 onDismiss()
                                 onExportGroup(singleGroup)
                             },
-                        )
+                        ),
                     )
                 }
                 add(
@@ -80,7 +80,7 @@ fun SelectionActionsSheet(
                             onDismiss()
                             onDeleteGroup(singleGroup)
                         },
-                    )
+                    ),
                 )
                 if (singleGroupHasTunnels) {
                     add(
@@ -91,7 +91,7 @@ fun SelectionActionsSheet(
                                 onDismiss()
                                 onDeleteGroupAndTunnels(singleGroup)
                             },
-                        )
+                        ),
                     )
                 }
             } else {
@@ -104,7 +104,7 @@ fun SelectionActionsSheet(
                                 onDismiss()
                                 onUngroup()
                             },
-                        )
+                        ),
                     )
                 }
                 add(
@@ -115,7 +115,7 @@ fun SelectionActionsSheet(
                             onDismiss()
                             onExport()
                         },
-                    )
+                    ),
                 )
                 if (uiState.canCopy) {
                     add(
@@ -126,7 +126,7 @@ fun SelectionActionsSheet(
                                 onDismiss()
                                 onCopy()
                             },
-                        )
+                        ),
                     )
                 }
                 add(
@@ -137,10 +137,10 @@ fun SelectionActionsSheet(
                             onDismiss()
                             onDelete()
                         },
-                    )
+                    ),
                 )
             }
-        }
+        },
     ) {
         onDismiss()
     }

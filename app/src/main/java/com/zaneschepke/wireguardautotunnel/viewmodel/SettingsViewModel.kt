@@ -127,7 +127,7 @@ class SettingsViewModel(
             GlobalSideEffect.Snackbar(
                 StringValue.StringResource(R.string.remote_key_rotated),
                 ToastType.Success,
-            )
+            ),
         )
     }
 
@@ -139,13 +139,13 @@ class SettingsViewModel(
                     GlobalSideEffect.Snackbar(
                         StringValue.StringResource(R.string.error_root_denied),
                         ToastType.Error,
-                    )
+                    ),
                 )
             postSideEffect(
                 GlobalSideEffect.Snackbar(
                     StringValue.StringResource(R.string.root_accepted),
                     ToastType.Success,
-                )
+                ),
             )
         }
         settingsRepository.upsert(state.settings.copy(tunnelScriptingEnabled = to))

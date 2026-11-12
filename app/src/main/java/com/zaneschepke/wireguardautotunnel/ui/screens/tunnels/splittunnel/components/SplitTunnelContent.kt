@@ -87,7 +87,7 @@ fun SplitTunnelContent(
                             R.string.select_apps_to_include
                         } else {
                             R.string.select_apps_to_exclude
-                        }
+                        },
                     ),
                     modifier = Modifier.padding(horizontal = 16.dp),
                 )

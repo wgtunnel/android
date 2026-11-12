@@ -20,7 +20,7 @@ fun DescriptionText(
         text = text,
         style =
             MaterialTheme.typography.bodySmall.copy(
-                color = if (disabled) Disabled else MaterialTheme.colorScheme.outline
+                color = if (disabled) Disabled else MaterialTheme.colorScheme.outline,
             ),
         modifier = modifier,
         maxLines = maxLines,
@@ -38,7 +38,7 @@ fun DescriptionText(
         text = text,
         style =
             MaterialTheme.typography.bodySmall.copy(
-                color = if (disabled) Disabled else MaterialTheme.colorScheme.outline
+                color = if (disabled) Disabled else MaterialTheme.colorScheme.outline,
             ),
         modifier = modifier,
     )

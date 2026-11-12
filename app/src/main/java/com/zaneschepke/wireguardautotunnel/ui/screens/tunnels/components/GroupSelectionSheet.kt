@@ -204,7 +204,7 @@ private fun MoveToGroupTab(
                     title = group.name,
                     description = {
                         DescriptionText(
-                            pluralStringResource(R.plurals.group_tunnel_count, count, count)
+                            pluralStringResource(R.plurals.group_tunnel_count, count, count),
                         )
                     },
                     trailing = {

@@ -75,7 +75,7 @@ class LoggerViewModel(
                 mimeType = FileUtils.ZIP_FILE_MIME_TYPE,
                 successMessage = StringValue.StringResource(R.string.log_export_success),
                 prepareFile = { file -> logReader.zipLogFiles(file.absolutePath) },
-            )
+            ),
         )
     }
 
@@ -87,7 +87,7 @@ class LoggerViewModel(
             GlobalSideEffect.Snackbar(
                 StringValue.StringResource(R.string.stored_logs_deleted),
                 ToastType.Success,
-            )
+            ),
         )
     }
 

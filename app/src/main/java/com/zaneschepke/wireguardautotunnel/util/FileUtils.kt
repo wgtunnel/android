@@ -78,7 +78,7 @@ class FileUtils(private val context: Context, private val ioDispatcher: Coroutin
                         FileInputStream(file).use { fis ->
                             fis.copyTo(zos)
                             Timber.d(
-                                "Added ${file.path} to zip as $entryName, size: ${file.length()} bytes"
+                                "Added ${file.path} to zip as $entryName, size: ${file.length()} bytes",
                             )
                         }
                         zos.closeEntry()

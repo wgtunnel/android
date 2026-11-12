@@ -35,7 +35,7 @@ class ClipboardHelper(
 
 @Composable
 fun rememberClipboardHelper(
-    coroutineScope: CoroutineScope = rememberCoroutineScope()
+    coroutineScope: CoroutineScope = rememberCoroutineScope(),
 ): ClipboardHelper {
     val clipboard = LocalClipboard.current
     return remember(clipboard, coroutineScope) { ClipboardHelper(clipboard, coroutineScope) }

@@ -86,7 +86,7 @@ private fun SplitBehavior.label(): String =
             SplitBehavior.ALL -> R.string.split_tunnel_all_label
             SplitBehavior.INCLUDE -> R.string.split_tunnel_include_label
             SplitBehavior.EXCLUDE -> R.string.split_tunnel_exclude_label
-        }
+        },
     )
 
 @Composable
@@ -96,7 +96,7 @@ private fun SplitBehavior.description(): String =
             SplitBehavior.ALL -> R.string.split_tunnel_all_desc
             SplitBehavior.INCLUDE -> R.string.split_tunnel_include_desc
             SplitBehavior.EXCLUDE -> R.string.split_tunnel_exclude_desc
-        }
+        },
     )
 
 private fun SplitBehavior.icon(): ImageVector =

@@ -52,7 +52,9 @@ fun PeersSection(
                     }
                     Column {
                         IconButton(
-                            onClick = { onPeerDropdownExpanded(!uiState.ui.isPeerDropdownExpanded) }
+                            onClick = {
+                                onPeerDropdownExpanded(!uiState.ui.isPeerDropdownExpanded)
+                            },
                         ) {
                             Icon(
                                 Icons.Rounded.MoreVert,
@@ -73,7 +75,7 @@ fun PeersSection(
                                     Text(
                                         if (peer.isLanExcluded())
                                             stringResource(R.string.include_lan)
-                                        else stringResource(R.string.exclude_lan)
+                                        else stringResource(R.string.exclude_lan),
                                     )
                                 },
                                 onClick = {

@@ -37,7 +37,7 @@ fun AppModeBottomSheet(
                     },
                 selected = tunnelMode == it,
             )
-        }
+        },
     ) {
         onDismiss()
     }

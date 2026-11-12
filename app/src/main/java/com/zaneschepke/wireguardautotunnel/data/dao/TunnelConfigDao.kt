@@ -69,7 +69,7 @@ interface TunnelConfigDao {
     WHERE name != '${TunnelConfig.GLOBAL_CONFIG_NAME}'
     ORDER BY is_primary_tunnel DESC, position ASC
     LIMIT 1
-    """
+    """,
     )
     suspend fun getDefaultTunnel(): TunnelConfig?
 
@@ -78,7 +78,7 @@ interface TunnelConfigDao {
 
     @Query("SELECT * FROM tunnel_config WHERE name != :globalName ORDER BY position")
     fun getAllTunnelsExceptGlobal(
-        globalName: String = TunnelConfig.GLOBAL_CONFIG_NAME
+        globalName: String = TunnelConfig.GLOBAL_CONFIG_NAME,
     ): Flow<List<TunnelConfig>>
 
     @Query("SELECT * FROM tunnel_config WHERE name = :globalName LIMIT 1")

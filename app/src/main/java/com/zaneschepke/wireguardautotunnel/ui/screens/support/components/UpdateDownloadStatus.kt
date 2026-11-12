@@ -184,7 +184,7 @@ fun UpdateDownloadProgress(
             downloadStatusText(
                 presentation.asDownloading(),
                 includePercent = !presentation.indeterminate,
-            )
+            ),
         )
         if (presentation.indeterminate) {
             LinearProgressIndicator(modifier = Modifier.fillMaxWidth())

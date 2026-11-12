@@ -44,7 +44,7 @@ fun InterfaceDropdown(
                     text = {
                         Text(
                             if (uiState.ui.showScripts) stringResource(R.string.hide_scripts)
-                            else stringResource(R.string.show_scripts)
+                            else stringResource(R.string.show_scripts),
                         )
                     },
                     onClick = {
@@ -58,7 +58,7 @@ fun InterfaceDropdown(
                         Text(
                             if (uiState.ui.showAmneziaValues)
                                 stringResource(R.string.hide_amnezia_properties)
-                            else stringResource(R.string.show_amnezia_properties)
+                            else stringResource(R.string.show_amnezia_properties),
                         )
                     },
                     onClick = {
@@ -71,7 +71,7 @@ fun InterfaceDropdown(
                     Text(
                         if (uiState.isAmneziaCompatibilitySet)
                             stringResource(R.string.remove_amnezia_compatibility)
-                        else stringResource(R.string.enable_amnezia_compatibility)
+                        else stringResource(R.string.enable_amnezia_compatibility),
                     )
                 },
                 onClick = {

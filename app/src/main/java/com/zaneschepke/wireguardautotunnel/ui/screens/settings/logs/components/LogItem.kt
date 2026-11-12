@@ -40,7 +40,7 @@ fun LogItem(log: LogMessage) {
                     indication = null,
                     onClick = { clipboardManager.copy(log.toString()) },
                 )
-                .padding(vertical = 6.dp, horizontal = 4.dp)
+                .padding(vertical = 6.dp, horizontal = 4.dp),
     ) {
         // Top row: Time + Level + Tag
         Row(

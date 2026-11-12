@@ -15,7 +15,7 @@ import androidx.room.PrimaryKey
                 parentColumns = ["id"],
                 childColumns = ["entry_tunnel_id"],
                 onDelete = ForeignKey.SET_NULL,
-            )
+            ),
         ],
     indices =
         [

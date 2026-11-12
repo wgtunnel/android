@@ -63,7 +63,7 @@ class AndroidNotificationService(override val context: Context) : NotificationSe
                         Intent(context, MainActivity::class.java)
                             .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP),
                         PendingIntent.FLAG_IMMUTABLE,
-                    )
+                    ),
                 )
                 setContentText(description)
                 setOnlyAlertOnce(onlyAlertOnce)

@@ -98,7 +98,7 @@ fun ConfigScreen(
                         GlobalSideEffect.Snackbar(
                             StringValue.StringResource(R.string.text_too_large_for_qr),
                             ToastType.Error,
-                        )
+                        ),
                     )
                 } else {
                     showQrModal = true

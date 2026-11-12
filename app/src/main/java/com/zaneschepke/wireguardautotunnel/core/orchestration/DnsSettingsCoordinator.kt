@@ -18,7 +18,7 @@ class DnsSettingsCoordinator(private val backend: Backend) {
                     DnsBoostrapMode.Custom(DnsBoostrapConfig.DoT(dnsSettings.bootstrapDnsEndpoint))
                 BootstrapDnsProtocol.UDP ->
                     DnsBoostrapMode.Custom(
-                        DnsBoostrapConfig.Plain(dnsSettings.bootstrapDnsEndpoint)
+                        DnsBoostrapConfig.Plain(dnsSettings.bootstrapDnsEndpoint),
                     )
             }
 

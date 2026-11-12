@@ -121,7 +121,7 @@ fun AndroidIntegrationsScreen(viewModel: SettingsViewModel = koinViewModel()) {
                 title = stringResource(R.string.restart_at_boot),
                 onClick = {
                     viewModel.setRestoreOnBootEnabled(
-                        !settingsState.settings.isRestoreOnBootEnabled
+                        !settingsState.settings.isRestoreOnBootEnabled,
                     )
                 },
                 enabled = !isAlwaysOnEnabled,
@@ -177,7 +177,7 @@ fun AndroidIntegrationsScreen(viewModel: SettingsViewModel = koinViewModel()) {
                                 text = keyText,
                                 style =
                                     MaterialTheme.typography.bodySmall.copy(
-                                        color = MaterialTheme.colorScheme.outline
+                                        color = MaterialTheme.colorScheme.outline,
                                     ),
                                 overflow = TextOverflow.Clip,
                             )
@@ -198,7 +198,7 @@ fun AndroidIntegrationsScreen(viewModel: SettingsViewModel = koinViewModel()) {
                                         contentDescription =
                                             stringResource(
                                                 if (passwordProtected) R.string.show_password
-                                                else R.string.hide_password
+                                                else R.string.hide_password,
                                             ),
                                     )
                                 }

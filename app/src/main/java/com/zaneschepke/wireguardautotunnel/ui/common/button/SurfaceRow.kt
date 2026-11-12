@@ -72,7 +72,7 @@ fun SurfaceRow(
                 .indication(interactionSource, ripple())
                 .background(
                     if (!selected) MaterialTheme.colorScheme.surface
-                    else MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+                    else MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
                 )
                 .padding(horizontal = 16.dp, vertical = 8.dp)
                 .defaultMinSize(minHeight = 42.dp)
@@ -134,7 +134,7 @@ fun SurfaceRow(
                         modifier =
                             Modifier.onSizeChanged {
                                 leadingPadding = with(density) { it.width.toDp() }
-                            }
+                            },
                     ) {
                         leading()
                         Spacer(modifier = Modifier.width(16.dp))

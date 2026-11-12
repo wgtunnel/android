@@ -70,7 +70,7 @@ fun InterfaceSection(
                                             uiState.draft.config.`interface`.copy(
                                                 privateKey = privateKey.toBase64(),
                                                 publicKey = publicKey.toBase64(),
-                                            )
+                                            ),
                                         )
                                     },
                                 ) {
@@ -106,7 +106,7 @@ fun InterfaceSection(
                             if (uiState.isRunning) {
                                 {
                                     DescriptionText(
-                                        stringResource(R.string.tunnel_running_name_message)
+                                        stringResource(R.string.tunnel_running_name_message),
                                     )
                                 }
                             } else null,

@@ -61,7 +61,7 @@ fun LogsBottomSheet(
                 stringResource(R.string.delete_logs),
                 onClick = onDelete,
             ),
-        )
+        ),
     ) {
         onDismiss()
     }

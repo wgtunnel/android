@@ -193,7 +193,7 @@ fun DnsSettingsScreen(
                                                 )
                                             } else {
                                                 stringResource(R.string.no_system_dns_detected)
-                                            }
+                                            },
                                         )
                                     }
                                 }
@@ -234,7 +234,7 @@ fun DnsSettingsScreen(
                 onClick = { showResolutionMethodSheet = true },
             )
             AnimatedVisibility(
-                uiState.dnsSettings.bootstrapDnsProtocol != BootstrapDnsProtocol.SYSTEM
+                uiState.dnsSettings.bootstrapDnsProtocol != BootstrapDnsProtocol.SYSTEM,
             ) {
                 ConfigurationTextBox(
                     modifier =
@@ -269,7 +269,7 @@ fun DnsSettingsScreen(
             )
             AnimatedVisibility(
                 uiState.dnsSettings.tunnelDnsMode in
-                    setOf(TunnelDnsMode.Encrypted, TunnelDnsMode.Split, TunnelDnsMode.AllLocal)
+                    setOf(TunnelDnsMode.Encrypted, TunnelDnsMode.Split, TunnelDnsMode.AllLocal),
             ) {
                 Column {
                     val showCustomServer =
@@ -290,7 +290,7 @@ fun DnsSettingsScreen(
                             title = stringResource(R.string.protocol),
                             description = {
                                 DescriptionText(
-                                    uiState.dnsSettings.tunnelDnsProtocol.asString(context)
+                                    uiState.dnsSettings.tunnelDnsProtocol.asString(context),
                                 )
                             },
                             onClick = { showProtocolSheet = true },
@@ -311,7 +311,7 @@ fun DnsSettingsScreen(
                             },
                             onClick = {
                                 viewModel.setUseTunnelDnsServersInSplit(
-                                    !uiState.dnsSettings.useTunnelDnsServersInSplit
+                                    !uiState.dnsSettings.useTunnelDnsServersInSplit,
                                 )
                             },
                         )
@@ -368,7 +368,7 @@ fun DnsSettingsScreen(
                                     title = stringResource(R.string.split_suffix_target),
                                     description = {
                                         DescriptionText(
-                                            uiState.dnsSettings.splitSuffixTarget.asString(context)
+                                            uiState.dnsSettings.splitSuffixTarget.asString(context),
                                         )
                                     },
                                     onClick = { showSplitSuffixTargetSheet = true },

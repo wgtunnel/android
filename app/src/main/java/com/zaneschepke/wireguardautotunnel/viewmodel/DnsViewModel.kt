@@ -96,7 +96,7 @@ class DnsViewModel(
                     GlobalSideEffect.Snackbar(
                         StringValue.StringResource(r.error.labelRes()),
                         type = ToastType.Error,
-                    )
+                    ),
                 )
                 return@intent
             }
@@ -126,7 +126,7 @@ class DnsViewModel(
                             GlobalSideEffect.Snackbar(
                                 StringValue.StringResource(r.error.labelRes()),
                                 type = ToastType.Error,
-                            )
+                            ),
                         )
                         return@intent
                     }
@@ -149,7 +149,7 @@ class DnsViewModel(
                         GlobalSideEffect.Snackbar(
                             StringValue.StringResource(r.error.labelRes()),
                             type = ToastType.Error,
-                        )
+                        ),
                     )
                     return@intent
                 }
@@ -197,7 +197,7 @@ class DnsViewModel(
             GlobalSideEffect.Snackbar(
                 StringValue.StringResource(R.string.config_changes_saved),
                 ToastType.Success,
-            )
+            ),
         )
     }
 

@@ -47,7 +47,7 @@ fun AddressItem(address: Address, onClick: (address: String) -> Unit) {
                 text = walletAddress,
                 style =
                     MaterialTheme.typography.bodySmall.copy(
-                        color = MaterialTheme.colorScheme.outline
+                        color = MaterialTheme.colorScheme.outline,
                     ),
                 maxLines = if (expand) Int.MAX_VALUE else 1,
                 overflow = if (expand) TextOverflow.Clip else TextOverflow.Ellipsis,

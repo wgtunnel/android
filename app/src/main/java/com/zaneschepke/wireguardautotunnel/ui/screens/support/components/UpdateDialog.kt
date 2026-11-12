@@ -89,9 +89,9 @@ fun UpdateDialog(viewModel: SupportViewModel, context: Context, onPermissionNeed
                                             SpanStyle(
                                                 color = MaterialTheme.colorScheme.primary,
                                                 textDecoration = TextDecoration.Underline,
-                                            )
+                                            ),
                                     ),
-                            )
+                            ),
                     ) {
                         append(stringResource(R.string.release_notes))
                     }
@@ -140,7 +140,7 @@ fun UpdateDialog(viewModel: SupportViewModel, context: Context, onPermissionNeed
                     presentation.showProgress -> R.string.downloading
                     downloadedFile != null -> R.string.install
                     else -> R.string.download_and_install
-                }
+                },
             ),
     )
 }

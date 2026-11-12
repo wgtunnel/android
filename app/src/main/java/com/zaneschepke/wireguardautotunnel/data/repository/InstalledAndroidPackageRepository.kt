@@ -96,7 +96,7 @@ class InstalledAndroidPackageRepository(
             val packages =
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     context.packageManager.getInstalledPackages(
-                        PackageManager.PackageInfoFlags.of(0L)
+                        PackageManager.PackageInfoFlags.of(0L),
                     )
                 } else {
                     @Suppress("DEPRECATION") context.packageManager.getInstalledPackages(0)

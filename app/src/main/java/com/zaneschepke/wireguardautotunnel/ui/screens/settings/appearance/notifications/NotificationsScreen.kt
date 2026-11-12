@@ -78,7 +78,7 @@ fun NotificationsScreen(viewModel: SettingsViewModel = koinViewModel()) {
                     },
                     onClick = {
                         viewModel.setNotificationOriginEnabled(
-                            !settings.isNotificationOriginEnabled
+                            !settings.isNotificationOriginEnabled,
                         )
                     },
                 )
@@ -96,7 +96,7 @@ fun NotificationsScreen(viewModel: SettingsViewModel = koinViewModel()) {
                     },
                     onClick = {
                         viewModel.setNotificationTransferEnabled(
-                            !settings.isNotificationTransferEnabled
+                            !settings.isNotificationTransferEnabled,
                         )
                     },
                 )
@@ -114,7 +114,7 @@ fun NotificationsScreen(viewModel: SettingsViewModel = koinViewModel()) {
                     },
                     onClick = {
                         viewModel.setNotificationRecoveryEnabled(
-                            !settings.isNotificationRecoveryEnabled
+                            !settings.isNotificationRecoveryEnabled,
                         )
                     },
                 )
@@ -132,7 +132,7 @@ fun NotificationsScreen(viewModel: SettingsViewModel = koinViewModel()) {
                     },
                     onClick = {
                         viewModel.setNotificationFailureTintEnabled(
-                            !settings.isNotificationFailureTintEnabled
+                            !settings.isNotificationFailureTintEnabled,
                         )
                     },
                 )

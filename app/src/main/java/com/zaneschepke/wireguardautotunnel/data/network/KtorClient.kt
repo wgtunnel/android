@@ -25,7 +25,7 @@ object KtorClient {
                     Json {
                         ignoreUnknownKeys = true
                         isLenient = true
-                    }
+                    },
                 )
             }
 

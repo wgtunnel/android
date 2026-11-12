@@ -124,7 +124,7 @@ class ConfigEditViewModel(
                 GlobalSideEffect.Snackbar(
                     StringValue.StringResource(R.string.tunnel_name_taken),
                     ToastType.Error,
-                )
+                ),
             )
 
             return@intent
@@ -135,7 +135,7 @@ class ConfigEditViewModel(
                 GlobalSideEffect.Snackbar(
                     StringValue.StringResource(R.string.name_error_empty),
                     ToastType.Error,
-                )
+                ),
             )
             return@intent
         }
@@ -178,7 +178,7 @@ class ConfigEditViewModel(
                     GlobalSideEffect.Snackbar(
                         StringValue.StringResource(R.string.config_changes_saved),
                         ToastType.Success,
-                    )
+                    ),
                 )
 
                 postSideEffect(GlobalSideEffect.PopBackStack)
@@ -202,7 +202,7 @@ class ConfigEditViewModel(
 
         reduce {
             state.copy(
-                draft = state.draft.copy(config = state.draft.config.copy(peers = updatedPeers))
+                draft = state.draft.copy(config = state.draft.config.copy(peers = updatedPeers)),
             )
         }
     }
@@ -234,7 +234,7 @@ class ConfigEditViewModel(
 
         reduce {
             state.copy(
-                draft = state.draft.copy(config = state.draft.config.copy(peers = updatedPeers))
+                draft = state.draft.copy(config = state.draft.config.copy(peers = updatedPeers)),
             )
         }
     }
@@ -244,7 +244,7 @@ class ConfigEditViewModel(
 
         reduce {
             state.copy(
-                draft = state.draft.copy(config = state.draft.config.copy(peers = updatedPeers))
+                draft = state.draft.copy(config = state.draft.config.copy(peers = updatedPeers)),
             )
         }
     }
@@ -260,9 +260,9 @@ class ConfigEditViewModel(
                     state.draft.copy(
                         config =
                             state.draft.config.copy(
-                                peers = state.draft.config.peers + EditablePeer()
-                            )
-                    )
+                                peers = state.draft.config.peers + EditablePeer(),
+                            ),
+                    ),
             )
         }
     }
@@ -272,8 +272,8 @@ class ConfigEditViewModel(
             state.copy(
                 draft =
                     state.draft.copy(
-                        config = state.draft.config.copy(`interface` = editableInterface)
-                    )
+                        config = state.draft.config.copy(`interface` = editableInterface),
+                    ),
             )
         }
     }

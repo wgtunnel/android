@@ -220,7 +220,7 @@ fun ActiveTunnel.proxyStatusTexts(context: Context): List<String> {
                     if (protected) R.string.socks5_proxy_protected_template
                     else R.string.socks5_proxy_template,
                     "${socks5.host}:${socks5.port}",
-                )
+                ),
             )
         }
         proxyConfig.http?.let { http ->
@@ -230,7 +230,7 @@ fun ActiveTunnel.proxyStatusTexts(context: Context): List<String> {
                     if (protected) R.string.http_proxy_protected_template
                     else R.string.http_proxy_template,
                     "${http.host}:${http.port}",
-                )
+                ),
             )
         }
     }

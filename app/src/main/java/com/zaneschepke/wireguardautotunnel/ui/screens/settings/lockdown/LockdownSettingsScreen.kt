@@ -59,7 +59,7 @@ fun LockdownSettingsScreen(
                     stringResource(
                         R.string.restart_message_template,
                         stringResource(R.string.kill_switch),
-                    )
+                    ),
                 )
             },
             confirmText = stringResource(R.string._continue),
@@ -84,7 +84,7 @@ fun LockdownSettingsScreen(
                         text = stringResource(R.string.bypass_lan_for_kill_switch),
                         style =
                             MaterialTheme.typography.bodySmall.copy(
-                                MaterialTheme.colorScheme.outline
+                                MaterialTheme.colorScheme.outline,
                             ),
                     )
                 },

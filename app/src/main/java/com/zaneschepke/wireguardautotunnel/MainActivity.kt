@@ -187,7 +187,7 @@ class MainActivity : AppCompatActivity() {
 
     private val createBackupLauncher =
         registerForActivityResult(
-            ActivityResultContracts.CreateDocument(FileUtils.ZIP_FILE_MIME_TYPE)
+            ActivityResultContracts.CreateDocument(FileUtils.ZIP_FILE_MIME_TYPE),
         ) { uri ->
             val password = pendingBackupPassword
             pendingBackupPassword = null
@@ -283,7 +283,7 @@ class MainActivity : AppCompatActivity() {
 
             val localNetworkPermissionLauncher =
                 rememberLauncherForActivityResult(
-                    contract = ActivityResultContracts.RequestPermission()
+                    contract = ActivityResultContracts.RequestPermission(),
                 ) { isGranted ->
                     if (!isGranted) {
                         val canAskAgain =
@@ -422,7 +422,7 @@ class MainActivity : AppCompatActivity() {
                         is GlobalSideEffect.RequestNotificationPermission -> {
                             pendingNotificationAction = sideEffect.pendingAction
                             notificationPermissionLauncher.launch(
-                                Manifest.permission.POST_NOTIFICATIONS
+                                Manifest.permission.POST_NOTIFICATIONS,
                             )
                         }
                         is GlobalSideEffect.Snackbar -> snackbarChannel.send(sideEffect)
@@ -498,7 +498,7 @@ class MainActivity : AppCompatActivity() {
                                 showLocalNetworkRationale = false
 
                                 localNetworkPermissionLauncher.launch(
-                                    Manifest.permission.ACCESS_LOCAL_NETWORK
+                                    Manifest.permission.ACCESS_LOCAL_NETWORK,
                                 )
                             },
                         )
@@ -628,7 +628,7 @@ class MainActivity : AppCompatActivity() {
                                                 top = padding.calculateTopPadding().plus(8.dp),
                                                 bottom = padding.calculateBottomPadding(),
                                             )
-                                            .consumeWindowInsets(padding)
+                                            .consumeWindowInsets(padding),
                                 ) {
                                     BackHandler(enabled = uiState.selectedTunnelCount > 0) {
                                         viewModel.clearSelectedTunnels()
@@ -669,7 +669,7 @@ class MainActivity : AppCompatActivity() {
                                             entryProvider {
                                                 entry<Route.Lock> {
                                                     PinManager.initialize(
-                                                        context = this@MainActivity
+                                                        context = this@MainActivity,
                                                     )
                                                     PinLockScreen()
                                                 }
@@ -677,28 +677,28 @@ class MainActivity : AppCompatActivity() {
                                                 entry<Route.TunnelSettings> { key ->
                                                     val viewModel: TunnelViewModel =
                                                         koinViewModel(
-                                                            parameters = { parametersOf(key.id) }
+                                                            parameters = { parametersOf(key.id) },
                                                         )
                                                     TunnelSettingsScreen(viewModel)
                                                 }
                                                 entry<Route.Config> { key ->
                                                     val viewModel: TunnelViewModel =
                                                         koinViewModel(
-                                                            parameters = { parametersOf(key.id) }
+                                                            parameters = { parametersOf(key.id) },
                                                         )
                                                     ConfigScreen(viewModel, key.live)
                                                 }
                                                 entry<Route.SplitTunnel> { key ->
                                                     val viewModel: SplitTunnelViewModel =
                                                         koinViewModel(
-                                                            parameters = { parametersOf(key.id) }
+                                                            parameters = { parametersOf(key.id) },
                                                         )
                                                     SplitTunnelScreen(viewModel)
                                                 }
                                                 entry<Route.ConfigEdit> { key ->
                                                     val viewModel: ConfigEditViewModel =
                                                         koinViewModel(
-                                                            parameters = { parametersOf(key.id) }
+                                                            parameters = { parametersOf(key.id) },
                                                         )
                                                     ConfigEditScreen(viewModel)
                                                 }
@@ -720,28 +720,28 @@ class MainActivity : AppCompatActivity() {
                                                 entry<Route.ConfigGlobal> { key ->
                                                     val viewModel: ConfigEditViewModel =
                                                         koinViewModel(
-                                                            parameters = { parametersOf(key.id) }
+                                                            parameters = { parametersOf(key.id) },
                                                         )
                                                     ConfigEditScreen(viewModel)
                                                 }
                                                 entry<Route.SplitTunnelGlobal> { key ->
                                                     val viewModel: SplitTunnelViewModel =
                                                         koinViewModel(
-                                                            parameters = { parametersOf(key.id) }
+                                                            parameters = { parametersOf(key.id) },
                                                         )
                                                     SplitTunnelScreen(viewModel)
                                                 }
                                                 entry<Route.IPv6> { key ->
                                                     val viewModel: TunnelViewModel =
                                                         koinViewModel(
-                                                            parameters = { parametersOf(key.id) }
+                                                            parameters = { parametersOf(key.id) },
                                                         )
                                                     IPv6Screen(viewModel)
                                                 }
                                                 entry<Route.EntryTunnel> { key ->
                                                     val viewModel: TunnelViewModel =
                                                         koinViewModel(
-                                                            parameters = { parametersOf(key.id) }
+                                                            parameters = { parametersOf(key.id) },
                                                         )
                                                     EntryTunnelScreen(viewModel)
                                                 }
@@ -782,7 +782,7 @@ class MainActivity : AppCompatActivity() {
                                         listOf(
                                             MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp),
                                             MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp),
-                                        )
+                                        ),
                                     )
                                 },
                                 elevation = 1.dp,
@@ -802,7 +802,8 @@ class MainActivity : AppCompatActivity() {
                                             onClick = { action.onClick(toast) },
                                             colors =
                                                 ButtonDefaults.textButtonColors(
-                                                    contentColor = MaterialTheme.colorScheme.primary
+                                                    contentColor =
+                                                        MaterialTheme.colorScheme.primary,
                                                 ),
                                             modifier = Modifier.fillMaxWidth(.25f),
                                             contentPadding = PaddingValues(horizontal = 12.dp),
@@ -892,7 +893,7 @@ class MainActivity : AppCompatActivity() {
                 FileUtils.OCTET_STREAM_MIME_TYPE,
                 "application/vnd.sqlite3",
                 FileUtils.ALL_FILE_TYPES,
-            )
+            ),
         )
     }
 
@@ -935,7 +936,7 @@ class MainActivity : AppCompatActivity() {
             GlobalSideEffect.Snackbar(
                 StringValue.StringResource(message),
                 ToastType.Error,
-            )
+            ),
         )
     }
 

@@ -102,7 +102,7 @@ class WireGuardAutoTunnel : Application(), KoinComponent {
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
             StrictMode.setThreadPolicy(
-                StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog().build()
+                StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog().build(),
             )
             StrictMode.setVmPolicy(StrictMode.VmPolicy.Builder().detectAll().penaltyLog().build())
         } else {

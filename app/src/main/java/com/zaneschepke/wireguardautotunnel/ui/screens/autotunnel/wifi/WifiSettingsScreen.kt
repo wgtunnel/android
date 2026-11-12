@@ -90,12 +90,12 @@ fun WifiSettingsScreen(viewModel: AutoTunnelViewModel = koinViewModel()) {
                         append(stringResource(R.string.wifi_detection_method))
                         append(": ")
                         withStyle(
-                            style = SpanStyle(color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            style = SpanStyle(color = MaterialTheme.colorScheme.onSurfaceVariant),
                         ) {
                             append(
                                 uiState.autoTunnelSettings.wifiDetectionMethod.asTitleString(
-                                    context
-                                )
+                                    context,
+                                ),
                             )
                         }
                     },
@@ -178,7 +178,7 @@ fun WifiSettingsScreen(viewModel: AutoTunnelViewModel = koinViewModel()) {
                 title = stringResource(R.string.stop_while_captive_portal),
                 onClick = {
                     viewModel.setDisabledOnCaptivePortal(
-                        !uiState.autoTunnelSettings.disableTunnelOnCaptivePortal
+                        !uiState.autoTunnelSettings.disableTunnelOnCaptivePortal,
                     )
                 },
                 trailing = {

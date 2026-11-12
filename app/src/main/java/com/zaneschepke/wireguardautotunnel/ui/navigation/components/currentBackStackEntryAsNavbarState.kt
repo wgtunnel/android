@@ -126,7 +126,7 @@ fun currentRouteAsNavbarState(
                                 onClick = {
                                     keyboardController?.hide()
                                     sharedViewModel.postSideEffect(LocalSideEffect.SaveChanges)
-                                }
+                                },
                             ) {
                                 Icon(Icons.Rounded.Save, stringResource(R.string.save))
                             }
@@ -157,7 +157,7 @@ fun currentRouteAsNavbarState(
                                 onClick = {
                                     keyboardController?.hide()
                                     sharedViewModel.postSideEffect(LocalSideEffect.SaveChanges)
-                                }
+                                },
                             ) {
                                 Icon(Icons.Rounded.Save, stringResource(R.string.save))
                             }
@@ -186,9 +186,9 @@ fun currentRouteAsNavbarState(
                             IconButton(
                                 onClick = {
                                     sharedViewModel.postSideEffect(
-                                        LocalSideEffect.Sheet.LoggerActions
+                                        LocalSideEffect.Sheet.LoggerActions,
                                     )
-                                }
+                                },
                             ) {
                                 Icon(Icons.Rounded.Menu, stringResource(R.string.quick_actions))
                             }
@@ -205,7 +205,7 @@ fun currentRouteAsNavbarState(
                                 onClick = {
                                     keyboardController?.hide()
                                     sharedViewModel.postSideEffect(LocalSideEffect.SaveChanges)
-                                }
+                                },
                             ) {
                                 Icon(Icons.Rounded.Save, stringResource(R.string.save))
                             }
@@ -233,7 +233,7 @@ fun currentRouteAsNavbarState(
                                 onClick = {
                                     keyboardController?.hide()
                                     sharedViewModel.postSideEffect(LocalSideEffect.SaveChanges)
-                                }
+                                },
                             ) {
                                 Icon(Icons.Rounded.Save, stringResource(R.string.save))
                             }
@@ -241,9 +241,9 @@ fun currentRouteAsNavbarState(
                                 IconButton(
                                     onClick = {
                                         sharedViewModel.postSideEffect(
-                                            LocalSideEffect.ShowSensitive
+                                            LocalSideEffect.ShowSensitive,
                                         )
-                                    }
+                                    },
                                 ) {
                                     Icon(
                                         Icons.Outlined.RemoveRedEye,
@@ -254,9 +254,9 @@ fun currentRouteAsNavbarState(
                                 IconButton(
                                     onClick = {
                                         sharedViewModel.postSideEffect(
-                                            LocalSideEffect.Modal.SelectTunnel
+                                            LocalSideEffect.Modal.SelectTunnel,
                                         )
-                                    }
+                                    },
                                 ) {
                                     Icon(
                                         Icons.Outlined.ContentPasteGo,
@@ -282,7 +282,7 @@ fun currentRouteAsNavbarState(
                                 IconButton(
                                     onClick = {
                                         sharedViewModel.postSideEffect(LocalSideEffect.SaveChanges)
-                                    }
+                                    },
                                 ) {
                                     Icon(Icons.Rounded.Save, stringResource(R.string.save))
                                 }
@@ -311,7 +311,7 @@ fun currentRouteAsNavbarState(
                                         onClick = {
                                             showOverflowMenu = false
                                             sharedViewModel.postSideEffect(
-                                                LocalSideEffect.Modal.SelectTunnel
+                                                LocalSideEffect.Modal.SelectTunnel,
                                             )
                                         },
                                     )
@@ -320,8 +320,8 @@ fun currentRouteAsNavbarState(
                                             Text(
                                                 stringResource(
                                                     if (showSystemApps) R.string.hide_system_apps
-                                                    else R.string.show_system_apps
-                                                )
+                                                    else R.string.show_system_apps,
+                                                ),
                                             )
                                         },
                                         leadingIcon = {
@@ -382,7 +382,7 @@ fun currentRouteAsNavbarState(
                                 selecting -> {
                                     {
                                         IconButton(
-                                            onClick = sharedViewModel::clearSelectedTunnels
+                                            onClick = sharedViewModel::clearSelectedTunnels,
                                         ) {
                                             Icon(
                                                 Icons.Rounded.Close,
@@ -419,9 +419,9 @@ fun currentRouteAsNavbarState(
                                         IconButton(
                                             onClick = {
                                                 sharedViewModel.postSideEffect(
-                                                    LocalSideEffect.Sheet.ReorderActions
+                                                    LocalSideEffect.Sheet.ReorderActions,
                                                 )
-                                            }
+                                            },
                                         ) {
                                             Icon(
                                                 Icons.Outlined.MoreVert,
@@ -435,9 +435,9 @@ fun currentRouteAsNavbarState(
                                             IconButton(
                                                 onClick = {
                                                     sharedViewModel.postSideEffect(
-                                                        LocalSideEffect.Sheet.MoveToGroup
+                                                        LocalSideEffect.Sheet.MoveToGroup,
                                                     )
-                                                }
+                                                },
                                             ) {
                                                 Icon(
                                                     Icons.Outlined.Folder,
@@ -448,9 +448,9 @@ fun currentRouteAsNavbarState(
                                         IconButton(
                                             onClick = {
                                                 sharedViewModel.postSideEffect(
-                                                    LocalSideEffect.Sheet.SelectionActions
+                                                    LocalSideEffect.Sheet.SelectionActions,
                                                 )
-                                            }
+                                            },
                                         ) {
                                             Icon(
                                                 Icons.Outlined.MoreVert,
@@ -465,9 +465,9 @@ fun currentRouteAsNavbarState(
                                         IconButton(
                                             onClick = {
                                                 sharedViewModel.postSideEffect(
-                                                    LocalSideEffect.Sheet.ImportTunnels
+                                                    LocalSideEffect.Sheet.ImportTunnels,
                                                 )
-                                            }
+                                            },
                                         ) {
                                             Icon(
                                                 Icons.Rounded.Add,
@@ -487,7 +487,7 @@ fun currentRouteAsNavbarState(
                                                 onDismissRequest = { showOverflowMenu = false },
                                                 containerColor =
                                                     MaterialTheme.colorScheme.surface.copy(
-                                                        alpha = 0.8f
+                                                        alpha = 0.8f,
                                                     ),
                                                 tonalElevation = 4.dp,
                                                 shadowElevation = 4.dp,
@@ -512,8 +512,8 @@ fun currentRouteAsNavbarState(
                                                         text = {
                                                             Text(
                                                                 stringResource(
-                                                                    R.string.ping_servers
-                                                                )
+                                                                    R.string.ping_servers,
+                                                                ),
                                                             )
                                                         },
                                                         leadingIcon = {
@@ -595,7 +595,7 @@ fun currentRouteAsNavbarState(
                             IconButton(
                                 onClick = {
                                     sharedViewModel.postSideEffect(LocalSideEffect.ShowSensitive)
-                                }
+                                },
                             ) {
                                 Icon(
                                     Icons.Outlined.RemoveRedEye,
@@ -638,7 +638,7 @@ fun currentRouteAsNavbarState(
                                         onClick = {
                                             showOverflowMenu = false
                                             sharedViewModel.postSideEffect(
-                                                LocalSideEffect.CopyToClipboard
+                                                LocalSideEffect.CopyToClipboard,
                                             )
                                         },
                                     )
@@ -692,9 +692,9 @@ fun currentRouteAsNavbarState(
                             IconButton(
                                 onClick = {
                                     sharedViewModel.postSideEffect(
-                                        LocalSideEffect.Modal.RecoveryDetails
+                                        LocalSideEffect.Modal.RecoveryDetails,
                                     )
-                                }
+                                },
                             ) {
                                 Icon(
                                     Icons.Outlined.Info,

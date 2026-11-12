@@ -144,7 +144,7 @@ class TunnelCoordinator(
                                     payload.monitoring,
                                     payload.general.tunnelScriptingEnabled,
                                     payload.general,
-                                )
+                                ),
                             )
                             .onFailure {
                                 Timber.e(
@@ -157,10 +157,10 @@ class TunnelCoordinator(
                                     GlobalSideEffect.Snackbar(
                                         message =
                                             StringValue.StringResource(
-                                                R.string.active_tunnel_updated
+                                                R.string.active_tunnel_updated,
                                             ),
                                         ToastType.Success,
-                                    )
+                                    ),
                                 )
                             }
                     }
@@ -333,10 +333,10 @@ class TunnelCoordinator(
             )
             .onSuccess {
                 _actions.emit(
-                    TunnelActionEvent.Started(tunnelId = tunnelConfig.id, source = source)
+                    TunnelActionEvent.Started(tunnelId = tunnelConfig.id, source = source),
                 )
                 replaceLastActiveTunnelIds(
-                    tunnelProvider.backendStatus.value.activeTunnels.keys + tunnelConfig.id
+                    tunnelProvider.backendStatus.value.activeTunnels.keys + tunnelConfig.id,
                 )
             }
             .onFailure {
@@ -461,7 +461,7 @@ class TunnelCoordinator(
             .onSuccess {
                 _actions.emit(TunnelActionEvent.Stopped(tunnelId = id, source = source))
                 replaceLastActiveTunnelIds(
-                    tunnelProvider.backendStatus.value.activeTunnels.keys - id
+                    tunnelProvider.backendStatus.value.activeTunnels.keys - id,
                 )
             }
             .onFailure { _errors.emit(TunnelErrorEvent.from(it, id)) }

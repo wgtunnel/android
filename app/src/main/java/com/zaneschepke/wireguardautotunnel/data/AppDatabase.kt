@@ -157,7 +157,7 @@ class FixProxySettingsMigration : AutoMigrationSpec {
         tableName = "general_settings",
         fromColumnName = "is_tunnel_globals_enabled",
         toColumnName = "global_split_tunnel_enabled",
-    )
+    ),
 )
 class GlobalsMigration : AutoMigrationSpec
 
@@ -205,7 +205,7 @@ class SingleConfigMigration : AutoMigrationSpec {
                     WHEN 0 THEN 1
                     ELSE 0
                 END
-        """
+        """,
         )
 
         db.execSQL(
@@ -216,7 +216,7 @@ class SingleConfigMigration : AutoMigrationSpec {
                 ELSE app_mode
             END
             """
-                .trimIndent()
+                .trimIndent(),
         )
     }
 }

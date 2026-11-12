@@ -166,7 +166,7 @@ class SplitTunnelViewModel(
             GlobalSideEffect.Snackbar(
                 StringValue.StringResource(R.string.config_changes_saved),
                 ToastType.Success,
-            )
+            ),
         )
         postSideEffect(GlobalSideEffect.PopBackStack)
     }

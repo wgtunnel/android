@@ -84,7 +84,7 @@ class ProxySettingsViewModel(
                     GlobalSideEffect.Snackbar(
                         StringValue.StringResource(R.string.ports_must_differ),
                         ToastType.Error,
-                    )
+                    ),
                 )
             }
         }
@@ -103,7 +103,7 @@ class ProxySettingsViewModel(
                 GlobalSideEffect.Snackbar(
                     StringValue.StringResource(R.string.password_no_spaces),
                     ToastType.Error,
-                )
+                ),
             )
             return@intent reduce { state.copy(isPasswordError = true) }
         }
@@ -115,7 +115,7 @@ class ProxySettingsViewModel(
             GlobalSideEffect.Snackbar(
                 StringValue.StringResource(R.string.config_changes_saved),
                 ToastType.Success,
-            )
+            ),
         )
         postSideEffect(GlobalSideEffect.PopBackStack)
     }

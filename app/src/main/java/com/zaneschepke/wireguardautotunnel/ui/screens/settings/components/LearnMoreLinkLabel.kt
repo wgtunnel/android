@@ -23,7 +23,7 @@ fun LearnMoreLinkLabel(onClick: (url: String) -> Unit, url: String) {
                     TextLinkStyles(style = SpanStyle(color = MaterialTheme.colorScheme.primary)),
             ) {
                 onClick(url)
-            }
+            },
         ) {
             append(stringResource(id = R.string.learn_more))
         }

@@ -164,7 +164,7 @@ fun ProxySettingsScreen(
                     stringResource(
                         R.string.recommended_template,
                         stringResource((R.string.proxy_credentials)),
-                    )
+                    ),
                 )
                 ConfigurationTextBox(
                     value = uiState.proxyUsername,
@@ -193,7 +193,7 @@ fun ProxySettingsScreen(
                         IconButton(
                             onClick = {
                                 viewModel.onPasswordVisibilityChanged(!uiState.passwordVisible)
-                            }
+                            },
                         ) {
                             Icon(
                                 Icons.Outlined.RemoveRedEye,

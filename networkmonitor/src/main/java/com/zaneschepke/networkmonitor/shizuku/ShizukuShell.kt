@@ -80,7 +80,7 @@ class ShizukuShell(private val applicationScope: CoroutineScope) {
 
                                 if (errorData.isNotBlank()) {
                                     listener.onCommandError(
-                                        errorData.toString().trim().replace(Regex("[\n\r]"), "")
+                                        errorData.toString().trim().replace(Regex("[\n\r]"), ""),
                                     )
                                 } else {
                                     listener.onCommandResult(

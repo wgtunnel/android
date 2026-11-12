@@ -116,7 +116,7 @@ fun rememberFileExportLauncherForResult(
                             context.packageManager.queryIntentActivities(
                                 intent,
                                 PackageManager.ResolveInfoFlags.of(
-                                    PackageManager.MATCH_DEFAULT_ONLY.toLong()
+                                    PackageManager.MATCH_DEFAULT_ONLY.toLong(),
                                 ),
                             )
                         } else {
@@ -139,7 +139,7 @@ fun rememberFileExportLauncherForResult(
 
                     return intent
                 }
-            }
+            },
     ) { uri ->
         if (uri != null) {
             onSuccess(uri)

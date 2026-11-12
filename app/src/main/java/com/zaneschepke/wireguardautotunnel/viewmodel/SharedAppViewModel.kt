@@ -172,7 +172,7 @@ class SharedAppViewModel(
             ) { ui, latencies ->
                 ui.copy(
                     pingLatencies =
-                        if (ui.backendStatus.activeTunnels.isEmpty()) latencies else emptyMap()
+                        if (ui.backendStatus.activeTunnels.isEmpty()) latencies else emptyMap(),
                 )
             }
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), TunnelsUiState())
@@ -245,7 +245,7 @@ class SharedAppViewModel(
         if (state.tunnelMode == TunnelMode.VPN) {
             if (!serviceManager.hasVpnPermission())
                 return@intent postSideEffect(
-                    GlobalSideEffect.RequestVpnPermission(TunnelMode.VPN, tunnelConfig)
+                    GlobalSideEffect.RequestVpnPermission(TunnelMode.VPN, tunnelConfig),
                 )
         }
         if (
@@ -255,8 +255,8 @@ class SharedAppViewModel(
             appStateRepository.setNotificationPermissionRequested(true)
             return@intent postSideEffect(
                 GlobalSideEffect.RequestNotificationPermission(
-                    NotificationPendingAction.StartTunnel(tunnelConfig)
-                )
+                    NotificationPendingAction.StartTunnel(tunnelConfig),
+                ),
             )
         }
         tunnelCoordinator.startTunnel(tunnelConfig)
@@ -376,7 +376,7 @@ class SharedAppViewModel(
             GlobalSideEffect.Snackbar(
                 StringValue.StringResource(R.string.config_changes_saved),
                 ToastType.Success,
-            )
+            ),
         )
     }
 
@@ -416,7 +416,7 @@ class SharedAppViewModel(
             GlobalSideEffect.Snackbar(
                 StringValue.StringResource(R.string.pinging_servers),
                 ToastType.Info,
-            )
+            ),
         )
         try {
             val scopeId = draft.scopeGroupId
@@ -464,7 +464,7 @@ class SharedAppViewModel(
             GlobalSideEffect.Snackbar(
                 StringValue.StringResource(R.string.pinging_servers),
                 ToastType.Info,
-            )
+            ),
         )
         try {
             val results = pingSorted(tunnelRepository.userTunnelsFlow.first())
@@ -523,7 +523,7 @@ class SharedAppViewModel(
                 GlobalSideEffect.Snackbar(
                     StringValue.StringResource(R.string.delete_active_message),
                     ToastType.Error,
-                )
+                ),
             )
         if (children.isNotEmpty()) tunnelRepository.delete(children)
         tunnelGroupRepository.delete(group)
@@ -555,7 +555,7 @@ class SharedAppViewModel(
         var next = nextChildPosition(all, groupId)
         val ids = selected.map { it.id }.toSet()
         tunnelRepository.updateAll(
-            all.filter { it.id in ids }.map { it.copy(groupId = groupId, position = next++) }
+            all.filter { it.id in ids }.map { it.copy(groupId = groupId, position = next++) },
         )
         clearSelectedTunnels()
     }
@@ -579,7 +579,7 @@ class SharedAppViewModel(
                 GlobalSideEffect.Snackbar(
                     StringValue.StringResource(R.string.no_tunnels_in_group),
                     ToastType.Warning,
-                )
+                ),
             )
             return@intent
         }
@@ -600,7 +600,7 @@ class SharedAppViewModel(
                     }
                 },
                 onComplete = {},
-            )
+            ),
         )
     }
 
@@ -662,7 +662,7 @@ class SharedAppViewModel(
                     GlobalSideEffect.Snackbar(
                         StringValue.StringResource(R.string.config_error),
                         ToastType.Error,
-                    )
+                    ),
                 )
             }
         }
@@ -701,7 +701,7 @@ class SharedAppViewModel(
                         GlobalSideEffect.Snackbar(
                             StringValue.StringResource(R.string.error_invalid_config_url),
                             ToastType.Error,
-                        )
+                        ),
                     )
                     return@execute
                 }
@@ -714,7 +714,7 @@ class SharedAppViewModel(
                 GlobalSideEffect.Snackbar(
                     StringValue.StringResource(R.string.error_download_failed),
                     ToastType.Error,
-                )
+                ),
             )
         }
     }
@@ -746,7 +746,7 @@ class SharedAppViewModel(
             selectedTunnelsRepository.clear()
         } else {
             selectedTunnelsRepository.set(
-                TunnelsSelection(tunnels = ui.tunnels, groups = ui.groups)
+                TunnelsSelection(tunnels = ui.tunnels, groups = ui.groups),
             )
         }
     }
@@ -761,7 +761,7 @@ class SharedAppViewModel(
                 if (!removed) addAll(ui.tunnels.filter { it.id == tunnelId })
             }
         selectedTunnelsRepository.set(
-            TunnelsSelection(tunnels = selectedTuns, groups = ui.selectedGroups)
+            TunnelsSelection(tunnels = selectedTuns, groups = ui.selectedGroups),
         )
     }
 
@@ -773,7 +773,7 @@ class SharedAppViewModel(
                 if (!removed) addAll(ui.groups.filter { it.id == groupId })
             }
         selectedTunnelsRepository.set(
-            TunnelsSelection(tunnels = ui.selectedTunnels, groups = selectedGroups)
+            TunnelsSelection(tunnels = ui.selectedTunnels, groups = selectedGroups),
         )
     }
 
@@ -787,7 +787,7 @@ class SharedAppViewModel(
                 GlobalSideEffect.Snackbar(
                     StringValue.StringResource(R.string.delete_active_message),
                     ToastType.Error,
-                )
+                ),
             )
         if (selectedTuns.isNotEmpty()) tunnelRepository.delete(selectedTuns)
         var groups = ui.groups
@@ -857,7 +857,7 @@ class SharedAppViewModel(
                     }
                 },
                 onComplete = { clearSelectedTunnels() },
-            )
+            ),
         )
     }
 
