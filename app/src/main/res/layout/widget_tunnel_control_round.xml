@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Mimics a round launcher icon: circle on top, label directly underneath -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Wraps its content and is centered, so the label hugs the circle instead of sinking to
+         the bottom of tall cells.
+
+         The @android:id/background + clipToOutline pair is the Android 12+ opt-out from the
+         launcher's rounded-corner clipping. This widget draws its own shape, and that clipping
+         cuts off the ends of the label. -->
+    <LinearLayout
+        android:id="@android:id/background"
+        android:clipToOutline="true"
+        tools:targetApi="31"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="vertical"
+        android:paddingTop="2dp">
+
+        <!-- Weighted so only the circle shrinks if the cell is too short for circle + label -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+
+            <!-- Square drawable + adjustViewBounds: as tall as the cell is wide, i.e. a circle
+                 filling the width. fitCenter keeps it round if it has to shrink. -->
+            <ImageView
+                android:id="@+id/widget_bg"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:importantForAccessibility="no"
+                android:scaleType="fitCenter"
+                android:src="@drawable/widget_circle_inactive" />
+
+            <ImageView
+                android:id="@+id/widget_icon"
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:layout_gravity="center"
+                android:importantForAccessibility="no"
+                android:src="@drawable/vpn_off"
+                android:tint="@android:color/white" />
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/widget_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="1"
+            android:shadowColor="#B3000000"
+            android:shadowDy="1"
+            android:shadowRadius="3"
+            android:text="@string/widget_off"
+            android:textColor="@android:color/white"
+            android:textSize="14sp" />
+    </LinearLayout>
+</FrameLayout>

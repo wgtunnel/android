@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="background">#FF21272A</color>
+    <color name="widget_active">#FF3D8259</color>
+    <color name="widget_pending">#FF85712E</color>
+    <color name="widget_error">#FFB04A5E</color>
 </resources>

@@ -756,4 +756,8 @@
     </plurals>
     <string name="socks5" translatable="false">SOCKS5</string>
     <string name="http" translatable="false">HTTP</string>
+    <string name="widget_tunnel_control_description">Turn your tunnel on and off from the home screen</string>
+    <string name="widget_no_tunnels">No tunnels configured</string>
+    <string name="widget_off">Off</string>
+    <string name="widget_tunnel_control_round">Tunnel control (round)</string>
 </resources>
