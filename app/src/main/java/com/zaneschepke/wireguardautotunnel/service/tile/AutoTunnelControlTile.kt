@@ -2,6 +2,8 @@ package com.zaneschepke.wireguardautotunnel.service.tile
 
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
+import com.zaneschepke.wireguardautotunnel.core.lock.AppLockManager
+import com.zaneschepke.wireguardautotunnel.core.lock.PinGateActivity
 import com.zaneschepke.wireguardautotunnel.core.orchestration.AutoTunnelCoordinator
 import com.zaneschepke.wireguardautotunnel.service.autotunnel.AutoTunnelStateHolder
 import kotlinx.coroutines.CoroutineScope
@@ -16,6 +18,8 @@ class AutoTunnelControlTile : TileService() {
 
     private val autoTunnelStateHolder: AutoTunnelStateHolder by inject()
     private val autoTunnelCoordinator: AutoTunnelCoordinator by inject()
+
+    private val appLockManager: AppLockManager by inject()
 
     private val tileScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
@@ -49,6 +53,10 @@ class AutoTunnelControlTile : TileService() {
     override fun onClick() {
         unlockAndRun {
             tileScope.launch {
+                if (appLockManager.isLockRequired()) {
+                    startPinGate(PinGateActivity.Action.TOGGLE_AUTO_TUNNEL)
+                    return@launch
+                }
                 autoTunnelCoordinator.toggle()
                 updateTileState()
             }

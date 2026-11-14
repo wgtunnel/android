@@ -7,7 +7,9 @@ import androidx.lifecycle.viewModelScope
 import com.dokar.sonner.ToastType
 import com.wgtunnel.parser.Config
 import com.wgtunnel.parser.ConfigParseException
+import com.wgtunnel.parser.archive.ConfigArchive
 import com.zaneschepke.wireguardautotunnel.R
+import com.zaneschepke.wireguardautotunnel.core.lock.AppLockManager
 import com.zaneschepke.wireguardautotunnel.core.orchestration.AutoTunnelCoordinator
 import com.zaneschepke.wireguardautotunnel.core.orchestration.TunnelBackendCoordinator
 import com.zaneschepke.wireguardautotunnel.core.orchestration.TunnelCoordinator
@@ -54,7 +56,6 @@ import io.ktor.client.request.prepareGet
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
-import java.io.File
 import java.io.IOException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -92,6 +93,7 @@ class SharedAppViewModel(
     private val httpClient: HttpClient,
     private val fileUtils: FileUtils,
     private val networkUtils: NetworkUtils,
+    private val appLockManager: AppLockManager,
 ) : OrbitContainerHost<GlobalAppUiState, GlobalAppUiState, LocalSideEffect>, ViewModel() {
 
     val globalSideEffect = globalEffectRepository.flow
@@ -231,6 +233,11 @@ class SharedAppViewModel(
                     .collect { newState -> reduce { newState } }
             }
             intent {
+                appLockManager.unlocked.collect { unlocked ->
+                    reduce { state.copy(isPinVerified = unlocked) }
+                }
+            }
+            intent {
                 // Clear ping results when tunnel is active
                 tunnelCoordinator.backendStatus
                     .map { it.activeTunnels.isNotEmpty() }
@@ -329,7 +336,7 @@ class SharedAppViewModel(
         globalEffectRepository.post(globalSideEffect)
     }
 
-    fun authenticated() = intent { reduce { state.copy(isPinVerified = true) } }
+    fun authenticated() = appLockManager.unlock()
 
     suspend fun postGlobalSideEffect(sideEffect: GlobalSideEffect) {
         globalEffectRepository.post(sideEffect)
@@ -592,12 +599,9 @@ class SharedAppViewModel(
                 successMessage = StringValue.StringResource(R.string.export_success),
                 prepareFile = { shareFile ->
                     // Always a zip, even for one tunnel, so the group name survives the export
-                    val files = createConfFiles(children)
-                    try {
-                        fileUtils.zipAll(shareFile, files).getOrThrow()
-                    } finally {
-                        files.forEach { file -> if (file.exists()) file.delete() }
-                    }
+                    fileUtils
+                        .writeConfigArchive(shareFile, children.asArchiveEntries())
+                        .getOrThrow()
                 },
                 onComplete = {},
             ),
@@ -843,17 +847,17 @@ class SharedAppViewModel(
                 successMessage = StringValue.StringResource(R.string.export_success),
                 prepareFile = { shareFile ->
                     if (selectedTunnels.size == 1) {
-                        shareFile.writeText(selectedTunnels.first().quickConfig)
+                        val tunnel = selectedTunnels.first()
+                        shareFile.writeText(
+                            ConfigArchive.withNameComment(tunnel.quickConfig, tunnel.name),
+                        )
                         if (shareFile.length() == 0L) {
                             throw IOException("Failed to create config file")
                         }
                     } else {
-                        val files = createConfFiles(selectedTunnels)
-                        try {
-                            fileUtils.zipAll(shareFile, files).getOrThrow()
-                        } finally {
-                            files.forEach { file -> if (file.exists()) file.delete() }
-                        }
+                        fileUtils
+                            .writeConfigArchive(shareFile, selectedTunnels.asArchiveEntries())
+                            .getOrThrow()
                     }
                 },
                 onComplete = { clearSelectedTunnels() },
@@ -865,12 +869,10 @@ class SharedAppViewModel(
         settingsRepository.updateScreenRecordingSecurity(to)
     }
 
-    suspend fun createConfFiles(tunnels: Collection<TunnelConfig>): List<File> =
-        tunnels.mapNotNull { config ->
-            if (config.quickConfig.isNotBlank()) {
-                fileUtils.createFile(config.name, config.quickConfig)
-            } else null
-        }
+    private fun Collection<TunnelConfig>.asArchiveEntries(): List<ConfigArchive.Entry> = filter {
+        it.quickConfig.isNotBlank()
+    }
+        .map { ConfigArchive.Entry(it.name, it.quickConfig) }
 }
 
 private data class ReorderDraft(

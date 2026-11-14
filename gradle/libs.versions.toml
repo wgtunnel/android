@@ -51,7 +51,7 @@ ktfmt = "0.28.0"
 licensee = "1.14.1"
 lifecycleViewmodelNavigation3 = "2.11.0"
 sonner = "0.4.0"
-core = "1.9.11"
+core = "1.9.12"
 aboutlibraries = "15.3.0"
 
 [bundles]

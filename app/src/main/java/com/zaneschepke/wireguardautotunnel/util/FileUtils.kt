@@ -10,6 +10,7 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.provider.OpenableColumns
 import androidx.annotation.RequiresApi
+import com.wgtunnel.parser.archive.ConfigArchive
 import com.zaneschepke.wireguardautotunnel.util.extensions.QuickConfig
 import com.zaneschepke.wireguardautotunnel.util.extensions.TunnelName
 import com.zaneschepke.wireguardautotunnel.util.extensions.getInputStreamFromUri
@@ -19,9 +20,6 @@ import java.io.FileInputStream
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.io.IOException
-import java.util.zip.ZipEntry
-import java.util.zip.ZipInputStream
-import java.util.zip.ZipOutputStream
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -29,66 +27,25 @@ import timber.log.Timber
 class FileUtils(private val context: Context, private val ioDispatcher: CoroutineDispatcher) {
 
     /**
-     * Creates a configuration file for a given tunnel if the config string is valid.
+     * Writes [entries] as a zip of `.conf` files to [zipFile], replacing it.
      *
-     * @param fileName The name of the file.
-     * @param data THe string data for the file.
-     * @return The created File if successful and non-empty, else null.
-     * @throws IOException If file creation or writing fails (e.g., no space or permissions).
-     */
-    suspend fun createFile(fileName: String, data: String): File? =
-        withContext(ioDispatcher) {
-            val file = File(context.cacheDir, "${sanitizeFileName(fileName)}.conf")
-            file.outputStream().use { it.write(data.toByteArray()) }
-            Timber.d("Created file: ${file.path}, size: ${file.length()} bytes")
-
-            if (file.length() == 0L) {
-                Timber.w("Config file ${file.path} is empty")
-                return@withContext null
-            }
-            file
-        }
-
-    /**
-     * Zips a list of files into a single ZIP file.
-     *
-     * @param zipFile The target ZIP file to create or overwrite.
-     * @param files The list of files to include in the ZIP.
      * @return Result.success(Unit) on success, or Result.failure with the exception on error.
      */
-    suspend fun zipAll(zipFile: File, files: List<File>): Result<Unit> =
+    suspend fun writeConfigArchive(
+        zipFile: File,
+        entries: List<ConfigArchive.Entry>,
+    ): Result<Unit> =
         withContext(ioDispatcher) {
             runCatching {
-                if (zipFile.exists() && !zipFile.delete()) {
-                    throw IOException("Failed to delete existing ZIP file: ${zipFile.path}")
+                BufferedOutputStream(FileOutputStream(zipFile)).use { out ->
+                    ConfigArchive.write(out, entries)
                 }
-                if (!zipFile.createNewFile()) {
-                    throw IOException("Failed to create ZIP file: ${zipFile.path}")
-                }
-
-                ZipOutputStream(BufferedOutputStream(FileOutputStream(zipFile))).use { zos ->
-                    files.forEach { file ->
-                        if (!file.exists() || file.length() == 0L) {
-                            Timber.w("Skipping file ${file.path}: does not exist or empty")
-                            return@forEach
-                        }
-                        val entryName = file.name
-                        val entry = ZipEntry(entryName)
-                        zos.putNextEntry(entry)
-                        FileInputStream(file).use { fis ->
-                            fis.copyTo(zos)
-                            Timber.d(
-                                "Added ${file.path} to zip as $entryName, size: ${file.length()} bytes",
-                            )
-                        }
-                        zos.closeEntry()
-                    }
-                    zos.flush()
-                    Timber.d("Finished zipping: ${zipFile.path}, size: ${zipFile.length()} bytes")
-                }
+                Timber.d(
+                    "Wrote ${entries.size} configs to ${zipFile.path}, size: ${zipFile.length()} bytes",
+                )
             }
                 .onFailure { error ->
-                    Timber.e(error, "Error zipping files into ${zipFile.path}")
+                    Timber.e(error, "Error zipping configs into ${zipFile.path}")
                     if (zipFile.exists()) zipFile.delete()
                 }
         }
@@ -270,24 +227,7 @@ class FileUtils(private val context: Context, private val ioDispatcher: Coroutin
                         }
                     }
                     ZIP_FILE_EXTENSION.lowercase() -> {
-                        ZipInputStream(inputStream).use { zip ->
-                            val configs = mutableMapOf<String, String>()
-                            var entry: ZipEntry? = zip.nextEntry
-                            while (entry != null) {
-                                if (
-                                    !entry.isDirectory &&
-                                        getFileExtensionFromFileName(entry.name.lowercase()) ==
-                                            CONF_FILE_EXTENSION.lowercase()
-                                ) {
-                                    val content = zip.bufferedReader().readText()
-                                    val name = getNameFromFileName(entry.name)
-                                    configs[content] = name
-                                }
-                                zip.closeEntry()
-                                entry = zip.nextEntry
-                            }
-                            configs
-                        }
+                        ConfigArchive.read(inputStream).associate { it.quickConfig to it.name }
                     }
                     else -> throw FileNotFoundException("Unsupported file extension: $extension")
                 }

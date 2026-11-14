@@ -155,7 +155,15 @@
 			android:excludeFromRecents="true"
 			android:finishOnTaskLaunch="true"
 			android:launchMode="singleInstance"
-            android:theme="@android:style/Theme.NoDisplay" />
+            android:theme="@style/Theme.WireguardAutoTunnel.PinGate" />
+
+		<activity
+			android:name=".core.lock.PinGateActivity"
+			android:exported="false"
+			android:noHistory="true"
+			android:excludeFromRecents="true"
+			android:taskAffinity=""
+			android:theme="@style/Theme.WireguardAutoTunnel.PinGate" />
 
 		<provider
 			android:name="androidx.core.content.FileProvider"

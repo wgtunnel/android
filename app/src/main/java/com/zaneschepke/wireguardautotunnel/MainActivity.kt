@@ -468,7 +468,10 @@ class MainActivity : AppCompatActivity() {
             var showLock by remember {
                 mutableStateOf(uiState.pinLockEnabled && !uiState.isPinVerified)
             }
-            LaunchedEffect(uiState.isPinVerified) { if (uiState.isPinVerified) showLock = false }
+            // Also shows the lock again once the app relocks after time in the background
+            LaunchedEffect(uiState.isPinVerified, uiState.pinLockEnabled) {
+                showLock = uiState.pinLockEnabled && !uiState.isPinVerified
+            }
 
             CompositionLocalProvider(
                 LocalIsAndroidTV provides isTv,

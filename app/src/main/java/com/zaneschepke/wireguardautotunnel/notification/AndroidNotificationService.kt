@@ -17,6 +17,8 @@ import androidx.core.app.NotificationManagerCompat.IMPORTANCE_HIGH
 import com.zaneschepke.wireguardautotunnel.MainActivity
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.core.broadcast.NotificationActionReceiver
+import com.zaneschepke.wireguardautotunnel.core.lock.AppLockManager
+import com.zaneschepke.wireguardautotunnel.core.lock.PinGateActivity
 import com.zaneschepke.wireguardautotunnel.domain.enums.NotificationAction
 import com.zaneschepke.wireguardautotunnel.notification.NotificationService.Companion.EXTRA_AUTO_UPDATE
 import com.zaneschepke.wireguardautotunnel.notification.NotificationService.Companion.EXTRA_ID
@@ -28,7 +30,10 @@ import com.zaneschepke.wireguardautotunnel.notification.NotificationService.Comp
 import com.zaneschepke.wireguardautotunnel.util.extensions.apkInstallIntent
 import java.io.File
 
-class AndroidNotificationService(override val context: Context) : NotificationService {
+class AndroidNotificationService(
+    override val context: Context,
+    private val appLockManager: AppLockManager,
+) : NotificationService {
 
     private val notificationManager = NotificationManagerCompat.from(context)
 
@@ -98,16 +103,27 @@ class AndroidNotificationService(override val context: Context) : NotificationSe
         extraId: Int?,
         authenticationRequired: Boolean,
     ): Action {
+        val actionIntent =
+            Intent(context, NotificationActionReceiver::class.java).apply {
+                action = notificationAction.name
+                if (extraId != null) putExtra(EXTRA_ID, extraId)
+            }
         val pendingIntent =
-            PendingIntent.getBroadcast(
-                context,
-                extraId ?: 0,
-                Intent(context, NotificationActionReceiver::class.java).apply {
-                    action = notificationAction.name
-                    if (extraId != null) putExtra(EXTRA_ID, extraId)
-                },
-                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
-            )
+            if (appLockManager.lockEnabled.value) {
+                PinGateActivity.pendingIntent(
+                    context,
+                    extraId ?: 0,
+                    PinGateActivity.Action.NOTIFICATION,
+                    forwarded = actionIntent,
+                )
+            } else {
+                PendingIntent.getBroadcast(
+                    context,
+                    extraId ?: 0,
+                    actionIntent,
+                    PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
+                )
+            }
         return Action.Builder(
                 R.drawable.qs_logo,
                 notificationAction.title(context),

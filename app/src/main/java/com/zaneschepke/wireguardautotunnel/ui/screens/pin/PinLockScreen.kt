@@ -27,7 +27,7 @@ fun PinLockScreen(sharedViewModel: SharedAppViewModel = koinActivityViewModel())
 
     fun onPinCorrect() {
         sharedViewModel.authenticated()
-        navController.popUpTo(Route.Tunnels)
+        if (navController.currentRoute is Route.Lock) navController.popUpTo(Route.Tunnels)
     }
 
     PinLock(
@@ -57,8 +57,9 @@ fun PinLockScreen(sharedViewModel: SharedAppViewModel = koinActivityViewModel())
                 StringValue.StringResource(R.string.pin_created),
                 ToastType.Success,
             )
-            sharedViewModel.setPinLockEnabled(true)
+            // Unlock first so turning the lock on doesn't show the PIN screen again
             onPinCorrect()
+            sharedViewModel.setPinLockEnabled(true)
         },
     )
     BackHandler(enabled = (!pinAlreadyExists && !pinCreated)) {

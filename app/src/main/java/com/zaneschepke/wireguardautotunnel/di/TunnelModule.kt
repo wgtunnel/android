@@ -10,6 +10,7 @@ import com.zaneschepke.networkmonitor.AndroidNetworkMonitor
 import com.zaneschepke.networkmonitor.NetworkMonitor
 import com.zaneschepke.networkmonitor.StableNetworkEngine
 import com.zaneschepke.wireguardautotunnel.core.event.TunnelEventDispatcher
+import com.zaneschepke.wireguardautotunnel.core.lock.AppLockManager
 import com.zaneschepke.wireguardautotunnel.core.tunnel.AppProvider
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelBackendProvider
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelOriginHolder
@@ -40,6 +41,8 @@ import timber.log.Timber
 val tunnelBackendProviderModule = module {
     single<TunnelNotificationService> { AndroidTunnelNotificationService(get()) }
     single { AppVisibilityObserver() }
+    // Eager, so it sees the app go to the background and starts on the main thread
+    single(createdAtStart = true) { AppLockManager(get(), get(), get(named(Scope.APPLICATION))) }
     singleOf(::TunnelEventDispatcher)
 
     singleOf(::TunnelOriginHolder)

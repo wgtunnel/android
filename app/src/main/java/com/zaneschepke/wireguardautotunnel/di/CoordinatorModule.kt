@@ -4,6 +4,7 @@ import com.zaneschepke.wireguardautotunnel.core.orchestration.AppBoostrapCoordin
 import com.zaneschepke.wireguardautotunnel.core.orchestration.AutoTunnelCoordinator
 import com.zaneschepke.wireguardautotunnel.core.orchestration.DnsSettingsCoordinator
 import com.zaneschepke.wireguardautotunnel.core.orchestration.FileExportCoordinator
+import com.zaneschepke.wireguardautotunnel.core.orchestration.NotificationActionCoordinator
 import com.zaneschepke.wireguardautotunnel.core.orchestration.ShortcutCoordinator
 import com.zaneschepke.wireguardautotunnel.core.orchestration.StartupCoordinator
 import com.zaneschepke.wireguardautotunnel.core.orchestration.TunnelBackendCoordinator
@@ -15,6 +16,7 @@ import org.koin.dsl.module
 val coordinatorModule = module {
     singleOf(::FileExportCoordinator)
     singleOf(::ShortcutCoordinator)
+    singleOf(::NotificationActionCoordinator)
     singleOf(::TunnelBackendCoordinator)
     singleOf(::StartupCoordinator)
     singleOf(::AutoTunnelCoordinator)
