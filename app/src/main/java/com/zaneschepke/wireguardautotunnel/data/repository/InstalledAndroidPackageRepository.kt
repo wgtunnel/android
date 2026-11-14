@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.content.ContextCompat
@@ -93,38 +92,56 @@ class InstalledAndroidPackageRepository(
 
     override suspend fun refreshInstalledPackages(): List<InstalledPackage> =
         withContext(ioDispatcher) {
+            val pm = context.packageManager
             val packages =
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    context.packageManager.getInstalledPackages(
+                    pm.getInstalledPackages(
                         PackageManager.PackageInfoFlags.of(0L),
                     )
                 } else {
-                    @Suppress("DEPRECATION") context.packageManager.getInstalledPackages(0)
+                    @Suppress("DEPRECATION") pm.getInstalledPackages(0)
                 }
+            // An app with no launcher icon on phone or TV is treated as a system app
+            val launchable =
+                launcherPackages(Intent.CATEGORY_LAUNCHER) +
+                    launcherPackages(Intent.CATEGORY_LEANBACK_LAUNCHER)
 
-            val installedPackages = packages.mapNotNull { packageInfo ->
-                try {
-                    val appInfo =
-                        packageInfo.applicationInfo
-                            ?: context.packageManager.getApplicationInfo(packageInfo.packageName, 0)
+            val installedPackages =
+                packages
+                    .filter { it.packageName != context.packageName }
+                    .mapNotNull { packageInfo ->
+                        try {
+                            val appInfo =
+                                packageInfo.applicationInfo
+                                    ?: pm.getApplicationInfo(packageInfo.packageName, 0)
 
-                    InstalledPackage(
-                        name =
-                            context.packageManager.getFriendlyAppName(
-                                packageInfo.packageName,
-                                appInfo,
-                            ),
-                        packageName = packageInfo.packageName,
-                        uId = appInfo.uid,
-                        isSystem = (appInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0,
-                    )
-                } catch (e: PackageManager.NameNotFoundException) {
-                    Timber.e(e)
-                    null
-                }
-            }
+                            InstalledPackage(
+                                name = pm.getFriendlyAppName(packageInfo.packageName, appInfo),
+                                packageName = packageInfo.packageName,
+                                uId = appInfo.uid,
+                                isSystem = packageInfo.packageName !in launchable,
+                            )
+                        } catch (e: PackageManager.NameNotFoundException) {
+                            Timber.e(e)
+                            null
+                        }
+                    }
 
             _installedPackages.value = installedPackages
             installedPackages
         }
+
+    private fun launcherPackages(category: String): Set<String> {
+        val intent = Intent(Intent.ACTION_MAIN).addCategory(category)
+        val activities =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                context.packageManager.queryIntentActivities(
+                    intent,
+                    PackageManager.ResolveInfoFlags.of(0L),
+                )
+            } else {
+                @Suppress("DEPRECATION") context.packageManager.queryIntentActivities(intent, 0)
+            }
+        return activities.mapTo(HashSet()) { it.activityInfo.packageName }
+    }
 }
