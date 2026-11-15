@@ -19,6 +19,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -51,6 +52,7 @@ fun SurfaceRow(
     leading: @Composable (() -> Unit)? = null,
     trailing: @Composable ((Modifier) -> Unit)? = null,
     trailingOutsideClickTarget: Boolean = false,
+    requestInitialFocus: Boolean = false,
 ) {
     val density = LocalDensity.current
     val isTv = LocalIsAndroidTV.current
@@ -58,6 +60,9 @@ fun SurfaceRow(
     val interactionSource = remember { MutableInteractionSource() }
     val mainFocusRequester = remember { FocusRequester() }
     val trailingFocusRequester = remember { FocusRequester() }
+    if (requestInitialFocus && isTv) {
+        LaunchedEffect(Unit) { mainFocusRequester.requestFocus() }
+    }
     val trailingModifier =
         Modifier.focusRequester(trailingFocusRequester).focusProperties {
             if (onClick != null) {
@@ -182,6 +187,7 @@ fun SurfaceRow(
     leading: @Composable (() -> Unit)? = null,
     trailing: @Composable ((Modifier) -> Unit)? = null,
     trailingOutsideClickTarget: Boolean = false,
+    requestInitialFocus: Boolean = false,
 ) {
     SurfaceRow(
         title = AnnotatedString(title),
@@ -194,6 +200,7 @@ fun SurfaceRow(
         leading = leading,
         trailing = trailing,
         trailingOutsideClickTarget = trailingOutsideClickTarget,
+        requestInitialFocus = requestInitialFocus,
         modifier = modifier,
     )
 }

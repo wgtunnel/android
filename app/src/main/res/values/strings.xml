@@ -69,6 +69,7 @@
     <string name="error_ssid_exists">SSID already exists</string>
     <string name="error_root_denied">Root shell denied</string>
     <string name="error_no_file_explorer">No file explorer installed</string>
+    <string name="choose_file_manager">Choose a file manager</string>
     <string name="auto_tunnel_title">Auto-tunnel service</string>
     <string name="delete_tunnel">Delete tunnel</string>
     <string name="delete_tunnel_message">Are you sure you would like to delete the selected tunnels?</string>
