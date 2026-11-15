@@ -61,6 +61,7 @@ import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SwitchWithDivider
 import com.zaneschepke.wireguardautotunnel.ui.common.scroll.appScrollbar
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
+import com.zaneschepke.wireguardautotunnel.ui.screens.pin.LocalAppLocked
 import com.zaneschepke.wireguardautotunnel.ui.state.DisplayTunnelState
 import com.zaneschepke.wireguardautotunnel.ui.state.TunnelListRow
 import com.zaneschepke.wireguardautotunnel.ui.state.TunnelsUiState
@@ -90,8 +91,10 @@ fun TunnelList(
     val focusRequester = remember { FocusRequester() }
     var editableRows by remember { mutableStateOf(uiState.rows) }
 
-    LaunchedEffect(Unit) {
-        if (isTv) {
+    val locked = LocalAppLocked.current
+    // Waits for the PIN lock, which holds focus while it covers this screen
+    LaunchedEffect(locked) {
+        if (isTv && !locked) {
             focusRequester.requestFocus()
         }
     }

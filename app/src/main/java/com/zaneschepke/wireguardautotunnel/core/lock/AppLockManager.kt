@@ -52,7 +52,7 @@ class AppLockManager(
         return !_unlocked.value
     }
 
-    private fun relockIfExpired() {
+    fun relockIfExpired() {
         val since = backgroundedAt ?: return
         if (SystemClock.elapsedRealtime() - since >= RELOCK_AFTER_MS) _unlocked.value = false
     }

@@ -88,8 +88,6 @@ class PinGateActivity : ComponentActivity() {
                                     text = stringResource(R.string.enter_pin),
                                 )
                             },
-                            backgroundColor = MaterialTheme.colorScheme.surface,
-                            textColor = MaterialTheme.colorScheme.onSurface,
                             onPinCorrect = {
                                 appLockManager.unlock()
                                 runAndFinish(action)
