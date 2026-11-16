@@ -232,6 +232,7 @@ jobs:
       - uses: actions/checkout@v7
         with:
           ref: ${{ github.event_name == 'push' && github.ref || 'master' }}
+          persist-credentials: false
 
       - name: Download AAB artifact
         uses: actions/download-artifact@v8
