@@ -94,6 +94,7 @@ import com.zaneschepke.wireguardautotunnel.core.orchestration.FileExportCoordina
 import com.zaneschepke.wireguardautotunnel.data.backup.BackupWriteResult
 import com.zaneschepke.wireguardautotunnel.data.backup.DatabaseBackup
 import com.zaneschepke.wireguardautotunnel.data.backup.RestoreResult
+import com.zaneschepke.wireguardautotunnel.domain.enums.StrictSplitNotice
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelMode
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppStateRepository
@@ -112,6 +113,7 @@ import com.zaneschepke.wireguardautotunnel.ui.common.banner.AppAlertBanner
 import com.zaneschepke.wireguardautotunnel.ui.common.dialog.InfoDialog
 import com.zaneschepke.wireguardautotunnel.ui.common.dialog.LocalNetworkPermissionDialog
 import com.zaneschepke.wireguardautotunnel.ui.common.dialog.VpnDeniedDialog
+import com.zaneschepke.wireguardautotunnel.ui.common.sheet.StrictSplitNoticeSheet
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
 import com.zaneschepke.wireguardautotunnel.ui.navigation.SecureRoute
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Tab
@@ -128,18 +130,18 @@ import com.zaneschepke.wireguardautotunnel.ui.screens.pin.LocalAppLocked
 import com.zaneschepke.wireguardautotunnel.ui.screens.pin.PinLockOverlay
 import com.zaneschepke.wireguardautotunnel.ui.screens.pin.PinLockScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.SettingsScreen
+import com.zaneschepke.wireguardautotunnel.ui.screens.settings.advanced.AdvancedScreen
+import com.zaneschepke.wireguardautotunnel.ui.screens.settings.amnezia.GlobalAmneziaScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.appearance.AppearanceScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.appearance.display.DisplayScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.appearance.language.LanguageScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.appearance.notifications.NotificationsScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.dns.DnsSettingsScreen
-import com.zaneschepke.wireguardautotunnel.ui.screens.settings.globals.TunnelGlobalsScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.integrations.AndroidIntegrationsScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.lockdown.LockdownSettingsScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.logs.LogsScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.monitoring.MonitoringScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.proxy.ProxySettingsScreen
-import com.zaneschepke.wireguardautotunnel.ui.screens.settings.recovery.TunnelRecoveryScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.security.SecurityScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.support.SupportScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.support.donate.DonateScreen
@@ -530,6 +532,41 @@ class MainActivity : AppCompatActivity() {
                         )
                     }
 
+                    val strictSplitNotice by
+                        viewModel.strictSplitNotice.collectAsStateWithLifecycle()
+                    strictSplitNotice
+                        ?.takeUnless { showLock }
+                        ?.let { notice ->
+                            val openAdvanced = {
+                                // Back from Advanced lands on Settings, as if opened from there
+                                navController.popUpTo(Route.Settings)
+                                navController.push(Route.Advanced)
+                            }
+                            when (notice) {
+                                StrictSplitNotice.ENABLED ->
+                                    StrictSplitNoticeSheet(
+                                        notice = notice,
+                                        onConfirm = viewModel::acknowledgeStrictSplitNotice,
+                                        onSecondary = {
+                                            viewModel.acknowledgeStrictSplitNotice()
+                                            openAdvanced()
+                                        },
+                                        onDismiss = viewModel::acknowledgeStrictSplitNotice,
+                                    )
+                                StrictSplitNotice.SUGGESTED ->
+                                    StrictSplitNoticeSheet(
+                                        notice = notice,
+                                        onConfirm = { viewModel.answerStrictSplitSuggestion(true) },
+                                        onSecondary = {
+                                            viewModel.answerStrictSplitSuggestion(false)
+                                        },
+                                        onDismiss = {
+                                            viewModel.answerStrictSplitSuggestion(false)
+                                        },
+                                    )
+                            }
+                        }
+
                     uiState.pendingWgImportUrl
                         ?.takeUnless { showLock }
                         ?.let { url ->
@@ -755,14 +792,11 @@ class MainActivity : AppCompatActivity() {
                                                         AndroidIntegrationsScreen()
                                                     }
                                                     entry<Route.Dns> { DnsSettingsScreen() }
-                                                    entry<Route.ConfigGlobal> { key ->
-                                                        val viewModel: ConfigEditViewModel =
-                                                            koinViewModel(
-                                                                parameters = {
-                                                                    parametersOf(key.id)
-                                                                },
-                                                            )
-                                                        ConfigEditScreen(viewModel)
+                                                    entry<Route.ConfigGlobal> {
+                                                        GlobalAmneziaScreen()
+                                                    }
+                                                    entry<Route.GlobalAmnezia> {
+                                                        GlobalAmneziaScreen()
                                                     }
                                                     entry<Route.SplitTunnelGlobal> { key ->
                                                         val viewModel: SplitTunnelViewModel =
@@ -811,13 +845,15 @@ class MainActivity : AppCompatActivity() {
                                                     entry<Route.PreferredTunnel> { key ->
                                                         PreferredTunnelScreen(key.tunnelNetwork)
                                                     }
-                                                    entry<Route.TunnelGlobals> {
-                                                        TunnelGlobalsScreen()
-                                                    }
+                                                    entry<Route.TunnelGlobals> { AdvancedScreen() }
+                                                    entry<Route.Advanced> { AdvancedScreen() }
                                                     entry<Route.Security> { SecurityScreen() }
                                                     entry<Route.Monitoring> { MonitoringScreen() }
                                                     entry<Route.TunnelRecovery> {
-                                                        TunnelRecoveryScreen()
+                                                        MonitoringScreen()
+                                                    }
+                                                    entry<Route.MonitoringAndRecovery> {
+                                                        MonitoringScreen()
                                                     }
                                                 },
                                         )

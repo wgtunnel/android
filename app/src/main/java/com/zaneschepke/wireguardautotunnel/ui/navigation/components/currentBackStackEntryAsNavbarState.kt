@@ -41,6 +41,7 @@ import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.navigation.NavController
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route.Addresses
+import com.zaneschepke.wireguardautotunnel.ui.navigation.Route.Advanced
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route.AndroidIntegrations
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route.Appearance
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route.AutoTunnel
@@ -51,6 +52,7 @@ import com.zaneschepke.wireguardautotunnel.ui.navigation.Route.Display
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route.Dns
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route.Donate
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route.EntryTunnel
+import com.zaneschepke.wireguardautotunnel.ui.navigation.Route.GlobalAmnezia
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route.IPv6
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route.Language
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route.License
@@ -59,6 +61,7 @@ import com.zaneschepke.wireguardautotunnel.ui.navigation.Route.Lock
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route.LockdownSettings
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route.Logs
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route.Monitoring
+import com.zaneschepke.wireguardautotunnel.ui.navigation.Route.MonitoringAndRecovery
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route.Notifications
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route.PreferredTunnel
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route.ProxySettings
@@ -218,12 +221,8 @@ fun currentRouteAsNavbarState(
                         topTitle = context.getString(R.string.settings),
                     )
                 }
-                is ConfigEdit,
-                is ConfigGlobal -> {
-                    val global = route !is ConfigEdit
-                    val tunnelName =
-                        if (!global) globalState.tunnelNames[route.id]
-                        else context.getString(R.string.tunnel_configuration)
+                is ConfigEdit -> {
+                    val tunnelName = globalState.tunnelNames[route.id]
                     NavbarState(
                         topLeading = { TvBackButton { navController.pop() } },
                         showBottomItems = true,
@@ -237,19 +236,16 @@ fun currentRouteAsNavbarState(
                             ) {
                                 Icon(Icons.Rounded.Save, stringResource(R.string.save))
                             }
-                            if (!global)
-                                IconButton(
-                                    onClick = {
-                                        sharedViewModel.postSideEffect(
-                                            LocalSideEffect.ShowSensitive,
-                                        )
-                                    },
-                                ) {
-                                    Icon(
-                                        Icons.Outlined.RemoveRedEye,
-                                        stringResource(R.string.show_password),
-                                    )
-                                }
+                            IconButton(
+                                onClick = {
+                                    sharedViewModel.postSideEffect(LocalSideEffect.ShowSensitive)
+                                },
+                            ) {
+                                Icon(
+                                    Icons.Outlined.RemoveRedEye,
+                                    stringResource(R.string.show_password),
+                                )
+                            }
                             if (globalState.tunnelNames.isNotEmpty())
                                 IconButton(
                                     onClick = {
@@ -263,6 +259,24 @@ fun currentRouteAsNavbarState(
                                         stringResource(R.string.copy_from),
                                     )
                                 }
+                        },
+                    )
+                }
+                is ConfigGlobal,
+                GlobalAmnezia -> {
+                    NavbarState(
+                        topLeading = { TvBackButton { navController.pop() } },
+                        showBottomItems = true,
+                        topTitle = context.getString(R.string.amnezia_for_all_tunnels),
+                        topTrailing = {
+                            IconButton(
+                                onClick = {
+                                    keyboardController?.hide()
+                                    sharedViewModel.postSideEffect(LocalSideEffect.SaveChanges)
+                                },
+                            ) {
+                                Icon(Icons.Rounded.Save, stringResource(R.string.save))
+                            }
                         },
                     )
                 }
@@ -670,6 +684,13 @@ fun currentRouteAsNavbarState(
                         showBottomItems = true,
                     )
                 }
+                is Advanced -> {
+                    NavbarState(
+                        topLeading = { TvBackButton { navController.pop() } },
+                        topTitle = context.getString(R.string.advanced),
+                        showBottomItems = true,
+                    )
+                }
                 is Security -> {
                     NavbarState(
                         topLeading = { TvBackButton { navController.pop() } },
@@ -684,10 +705,15 @@ fun currentRouteAsNavbarState(
                         showBottomItems = true,
                     )
                 }
-                is TunnelRecovery -> {
+                is TunnelRecovery,
+                is MonitoringAndRecovery -> {
                     NavbarState(
                         topLeading = { TvBackButton { navController.pop() } },
-                        topTitle = context.getString(R.string.tunnel_recovery),
+                        topTitle =
+                            context.getString(
+                                if (route is MonitoringAndRecovery) R.string.monitoring_and_recovery
+                                else R.string.tunnel_recovery,
+                            ),
                         topTrailing = {
                             IconButton(
                                 onClick = {

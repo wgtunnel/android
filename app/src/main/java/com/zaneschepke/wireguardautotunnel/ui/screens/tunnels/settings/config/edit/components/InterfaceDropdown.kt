@@ -39,20 +39,19 @@ fun InterfaceDropdown(
             tonalElevation = 4.dp,
             shadowElevation = 4.dp,
         ) {
-            if (!uiState.isGlobalConfig)
-                DropdownMenuItem(
-                    text = {
-                        Text(
-                            if (uiState.ui.showScripts) stringResource(R.string.hide_scripts)
-                            else stringResource(R.string.show_scripts),
-                        )
-                    },
-                    onClick = {
-                        onToggleDropdown(false)
-                        onToggleScripts()
-                    },
-                )
-            if (!uiState.isGlobalConfig && !uiState.globalSettings.amneziaEnabled)
+            DropdownMenuItem(
+                text = {
+                    Text(
+                        if (uiState.ui.showScripts) stringResource(R.string.hide_scripts)
+                        else stringResource(R.string.show_scripts),
+                    )
+                },
+                onClick = {
+                    onToggleDropdown(false)
+                    onToggleScripts()
+                },
+            )
+            if (!uiState.globalSettings.amneziaEnabled)
                 DropdownMenuItem(
                     text = {
                         Text(
@@ -66,40 +65,15 @@ fun InterfaceDropdown(
                         onToggleAmneziaValues()
                     },
                 )
-            DropdownMenuItem(
-                text = {
-                    Text(
-                        if (uiState.isAmneziaCompatibilitySet)
-                            stringResource(R.string.remove_amnezia_compatibility)
-                        else stringResource(R.string.enable_amnezia_compatibility),
-                    )
-                },
-                onClick = {
+            AmneziaToolMenuItems(
+                compatibilitySet = uiState.isAmneziaCompatibilitySet,
+                onToggleCompatibility = {
                     onToggleDropdown(false)
                     onToggleAmneziaCompatibility()
                 },
-            )
-            DropdownMenuItem(
-                text = { Text(stringResource(R.string.mimic_quic)) },
-                onClick = {
+                onMimic = { mimic ->
                     onToggleDropdown(false)
-                    onMimic(MimicMode.QUIC)
-                },
-            )
-
-            DropdownMenuItem(
-                text = { Text(stringResource(R.string.mimic_dns)) },
-                onClick = {
-                    onToggleDropdown(false)
-                    onMimic(MimicMode.DNS)
-                },
-            )
-
-            DropdownMenuItem(
-                text = { Text(stringResource(R.string.mimic_sip)) },
-                onClick = {
-                    onToggleDropdown(false)
-                    onMimic(MimicMode.SIP)
+                    onMimic(mimic)
                 },
             )
         }

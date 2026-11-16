@@ -9,6 +9,7 @@ data class DnsUiState(
     val dnsSettings: DnsSettings = DnsSettings(),
     val isLoading: Boolean = true,
     val globalTunnelConfig: TunnelConfig? = null,
+    val globalDnsServers: String = "",
     val bootstrapEndpointError: DnsValidationError? = null,
     val tunnelEndpointError: DnsValidationError? = null,
     val localSuffixesError: DnsValidationError? = null,

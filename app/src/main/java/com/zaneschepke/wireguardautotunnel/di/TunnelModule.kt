@@ -12,6 +12,7 @@ import com.zaneschepke.networkmonitor.StableNetworkEngine
 import com.zaneschepke.wireguardautotunnel.core.event.TunnelEventDispatcher
 import com.zaneschepke.wireguardautotunnel.core.lock.AppLockManager
 import com.zaneschepke.wireguardautotunnel.core.tunnel.AppProvider
+import com.zaneschepke.wireguardautotunnel.core.tunnel.StrictSplitDefaults
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelBackendProvider
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelOriginHolder
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelProvider
@@ -46,6 +47,7 @@ val tunnelBackendProviderModule = module {
     singleOf(::TunnelEventDispatcher)
 
     singleOf(::TunnelOriginHolder)
+    singleOf(::StrictSplitDefaults)
 
     single {
         AppProvider(

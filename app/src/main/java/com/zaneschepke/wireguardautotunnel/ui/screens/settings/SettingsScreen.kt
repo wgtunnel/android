@@ -11,14 +11,12 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ViewQuilt
 import androidx.compose.material.icons.outlined.Android
-import androidx.compose.material.icons.outlined.Autorenew
 import androidx.compose.material.icons.outlined.Dns
 import androidx.compose.material.icons.outlined.ExpandMore
 import androidx.compose.material.icons.outlined.MonitorHeart
-import androidx.compose.material.icons.outlined.Public
 import androidx.compose.material.icons.outlined.Security
 import androidx.compose.material.icons.outlined.SettingsBackupRestore
-import androidx.compose.material.icons.outlined.Terminal
+import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material.icons.outlined.ViewHeadline
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -50,13 +48,15 @@ import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.common.button.PreferenceTrailing
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SwitchWithDivider
-import com.zaneschepke.wireguardautotunnel.ui.common.button.ThemedSwitch
 import com.zaneschepke.wireguardautotunnel.ui.common.functions.rememberFileImportLauncherForResult
 import com.zaneschepke.wireguardautotunnel.ui.common.label.GroupLabel
 import com.zaneschepke.wireguardautotunnel.ui.common.text.DescriptionText
+import com.zaneschepke.wireguardautotunnel.ui.common.text.sectionsSummary
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
+import com.zaneschepke.wireguardautotunnel.ui.screens.settings.advanced.AdvancedSection
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.components.BackupBottomSheet
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.components.BackupEncryptionDialog
+import com.zaneschepke.wireguardautotunnel.ui.screens.settings.monitoring.MonitoringSection
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.proxy.compoents.AppModeBottomSheet
 import com.zaneschepke.wireguardautotunnel.util.StringValue
 import com.zaneschepke.wireguardautotunnel.util.extensions.asString
@@ -233,42 +233,16 @@ fun SettingsScreen(
                 },
             )
             SurfaceRow(
-                leading = { Icon(Icons.Outlined.Public, contentDescription = null) },
-                title = stringResource(R.string.tunnel_globals),
-                onClick = { navController.push(Route.TunnelGlobals) },
-                description = { DescriptionText(stringResource(R.string.tunnel_globals_desc)) },
-            )
-            SurfaceRow(
-                leading = { Icon(Icons.Outlined.Terminal, contentDescription = null) },
-                title = stringResource(R.string.tunnel_scripting),
-                trailing = { modifier ->
-                    ThemedSwitch(
-                        checked = uiState.settings.tunnelScriptingEnabled,
-                        onClick = { viewModel.setTunnelScriptedEnabled(it) },
-                        modifier = modifier,
-                    )
-                },
-                description = {
-                    DescriptionText(stringResource(R.string.root_required_template, "").trim())
-                },
-                onClick = {
-                    viewModel.setTunnelScriptedEnabled(!uiState.settings.tunnelScriptingEnabled)
-                },
-            )
-            SurfaceRow(
-                leading = { Icon(Icons.Outlined.Autorenew, contentDescription = null) },
-                title = stringResource(R.string.tunnel_recovery),
-                onClick = { navController.push(Route.TunnelRecovery) },
-            )
-            SurfaceRow(
                 leading = { Icon(Icons.Outlined.MonitorHeart, null) },
-                title = stringResource(R.string.tunnel_monitoring),
-                onClick = { navController.push(Route.Monitoring) },
+                title = stringResource(R.string.monitoring_and_recovery),
+                description = { DescriptionText(sectionsSummary(MonitoringSection.entries)) },
+                onClick = { navController.push(Route.MonitoringAndRecovery) },
             )
             SurfaceRow(
-                leading = { Icon(Icons.Outlined.Android, null) },
-                title = stringResource(R.string.android_integrations),
-                onClick = { navController.push(Route.AndroidIntegrations) },
+                leading = { Icon(Icons.Outlined.Tune, contentDescription = null) },
+                title = stringResource(R.string.advanced),
+                description = { DescriptionText(sectionsSummary(AdvancedSection.entries)) },
+                onClick = { navController.push(Route.Advanced) },
             )
         }
         Column(modifier = Modifier.padding(bottom = 16.dp)) {
@@ -287,6 +261,11 @@ fun SettingsScreen(
                 leading = { Icon(Icons.Outlined.Security, contentDescription = null) },
                 title = stringResource(R.string.security),
                 onClick = { navController.push(Route.Security) },
+            )
+            SurfaceRow(
+                leading = { Icon(Icons.Outlined.Android, null) },
+                title = stringResource(R.string.android_integrations),
+                onClick = { navController.push(Route.AndroidIntegrations) },
             )
             SurfaceRow(
                 leading = { Icon(Icons.Outlined.ViewHeadline, contentDescription = null) },

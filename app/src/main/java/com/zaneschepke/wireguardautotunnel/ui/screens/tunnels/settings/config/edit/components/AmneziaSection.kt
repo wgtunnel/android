@@ -22,10 +22,11 @@ fun AmneziaSection(
     interfaceState: EditableInterface,
     onInterfaceChange: (EditableInterface) -> Unit,
     globalValues: EditableInterface? = null,
+    modifier: Modifier = Modifier,
 ) {
     val locale = Locale.current.platformLocale
 
-    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(12.dp)) {
         // Junk packets
         ConfigurationTextBox(
             value = interfaceState.junkPacketCount,

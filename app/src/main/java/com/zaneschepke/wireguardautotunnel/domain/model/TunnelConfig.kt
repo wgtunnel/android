@@ -59,6 +59,9 @@ data class TunnelConfig(
         override val isMetered: Boolean
             get() = config.isMetered
 
+        override val strictSplitTunnel: Boolean
+            get() = generalSettings.strictSplitTunnelEnabled
+
         override val ipStrategy: Tunnel.IpStrategy
             get() =
                 if (config.isIpv6Preferred)

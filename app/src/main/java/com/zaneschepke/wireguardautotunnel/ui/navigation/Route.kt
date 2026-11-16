@@ -117,6 +117,20 @@ sealed class Route : NavKey {
 
     @Keep
     @Serializable
+    data object Advanced : Route(), SecureRoute {
+        override val requiresProtection: Boolean
+            get() = true
+    }
+
+    @Keep
+    @Serializable
+    data object GlobalAmnezia : Route(), SecureRoute {
+        override val requiresProtection: Boolean
+            get() = true
+    }
+
+    @Keep
+    @Serializable
     data object ProxySettings : Route(), SecureRoute {
         override val requiresProtection: Boolean
             get() = true
@@ -158,6 +172,8 @@ sealed class Route : NavKey {
     @Keep @Serializable data object Monitoring : Route()
 
     @Keep @Serializable data object TunnelRecovery : Route()
+
+    @Keep @Serializable data object MonitoringAndRecovery : Route()
 }
 
 @Serializable
@@ -213,9 +229,12 @@ enum class Tab(
                 Route.Notifications,
                 is Route.ConfigGlobal,
                 Route.TunnelGlobals,
+                Route.Advanced,
+                Route.GlobalAmnezia,
                 Route.Security,
                 Route.Monitoring,
                 Route.TunnelRecovery,
+                Route.MonitoringAndRecovery,
                 Route.Logs -> SETTINGS
                 is Route.Support,
                 Route.License,

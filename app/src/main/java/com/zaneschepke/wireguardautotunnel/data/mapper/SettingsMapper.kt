@@ -29,6 +29,7 @@ fun Entity.toDomain(): Domain =
         isNotificationTransferEnabled = isNotificationTransferEnabled,
         isNotificationRecoveryEnabled = isNotificationRecoveryEnabled,
         isNotificationFailureTintEnabled = isNotificationFailureTintEnabled,
+        strictSplitTunnelEnabled = strictSplitTunnelEnabled,
     )
 
 fun Domain.toEntity(): Entity =
@@ -56,4 +57,5 @@ fun Domain.toEntity(): Entity =
         isNotificationTransferEnabled = isNotificationTransferEnabled,
         isNotificationRecoveryEnabled = isNotificationRecoveryEnabled,
         isNotificationFailureTintEnabled = isNotificationFailureTintEnabled,
+        strictSplitTunnelEnabled = strictSplitTunnelEnabled,
     )

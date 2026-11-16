@@ -9,9 +9,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.HdrAuto
-import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -19,15 +16,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
 import com.zaneschepke.wireguardautotunnel.ui.common.banner.InfoNotice
-import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
-import com.zaneschepke.wireguardautotunnel.ui.common.button.ThemedSwitch
 import com.zaneschepke.wireguardautotunnel.ui.common.dialog.rememberRestartToApplyChanges
 import com.zaneschepke.wireguardautotunnel.ui.common.scroll.appScrollbar
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.settings.config.edit.components.AddPeerButton
@@ -100,48 +93,11 @@ fun ConfigEditScreen(
                     orientation = Orientation.Vertical,
                 ),
     ) {
-        if (
-            !uiState.isGlobalConfig &&
-                (uiState.globalSettings.dnsEnabled || uiState.globalSettings.amneziaEnabled)
-        ) {
+        if (uiState.globalSettings.dnsEnabled || uiState.globalSettings.amneziaEnabled) {
             InfoNotice(
                 title = stringResource(R.string.managed_globally),
                 message = stringResource(R.string.global_override_notice),
             )
-        }
-        if (uiState.isGlobalConfig) {
-            Column {
-                SurfaceRow(
-                    leading = {
-                        Icon(ImageVector.vectorResource(R.drawable.host), contentDescription = null)
-                    },
-                    title = stringResource(R.string.dns_servers),
-                    trailing = { modifier ->
-                        ThemedSwitch(
-                            checked = uiState.globalSettings.dnsEnabled,
-                            onClick = { viewModel.setGlobalTunnelDnsEnabled(it) },
-                            modifier = modifier,
-                        )
-                    },
-                    onClick = {
-                        viewModel.setGlobalTunnelDnsEnabled(!uiState.globalSettings.dnsEnabled)
-                    },
-                )
-                SurfaceRow(
-                    leading = { Icon(Icons.Outlined.HdrAuto, contentDescription = null) },
-                    title = stringResource(R.string.amnezia_configuration),
-                    trailing = { modifier ->
-                        ThemedSwitch(
-                            checked = uiState.globalSettings.amneziaEnabled,
-                            onClick = { viewModel.setGlobalAmneziaEnabled(it) },
-                            modifier = modifier,
-                        )
-                    },
-                    onClick = {
-                        viewModel.setGlobalAmneziaEnabled(!uiState.globalSettings.amneziaEnabled)
-                    },
-                )
-            }
         }
         InterfaceSection(
             uiState = uiState,
@@ -153,15 +109,14 @@ fun ConfigEditScreen(
             onToggleDropdown = viewModel::setInterfaceDropdownExpanded,
             onToggleAmneziaCompat = viewModel::toggleAmneziaCompat,
         )
-        if (!uiState.isGlobalConfig)
-            PeersSection(
-                uiState = uiState,
-                onPeerDropdownExpanded = viewModel::setPeerDropdownExpanded,
-                onRemove = viewModel::onRemovePeer,
-                onToggleLan = viewModel::onToggleLan,
-                onUpdatePeer = viewModel::onUpdatePeer,
-            )
-        if (!uiState.isGlobalConfig) AddPeerButton { viewModel.onAddPeer() }
+        PeersSection(
+            uiState = uiState,
+            onPeerDropdownExpanded = viewModel::setPeerDropdownExpanded,
+            onRemove = viewModel::onRemovePeer,
+            onToggleLan = viewModel::onToggleLan,
+            onUpdatePeer = viewModel::onUpdatePeer,
+        )
+        AddPeerButton { viewModel.onAddPeer() }
         if (LocalIsAndroidTV.current) {
             Spacer(modifier = Modifier.height(300.dp))
         }

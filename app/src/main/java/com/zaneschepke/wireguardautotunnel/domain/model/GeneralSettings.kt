@@ -28,4 +28,5 @@ data class GeneralSettings(
     val isNotificationTransferEnabled: Boolean = false,
     val isNotificationRecoveryEnabled: Boolean = false,
     val isNotificationFailureTintEnabled: Boolean = false,
+    val strictSplitTunnelEnabled: Boolean = false,
 )

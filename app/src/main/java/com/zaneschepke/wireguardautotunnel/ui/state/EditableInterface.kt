@@ -95,6 +95,35 @@ data class EditableInterface(
         )
     }
 
+    fun withAmneziaFrom(source: EditableInterface): EditableInterface =
+        copy(
+            junkPacketCount = source.junkPacketCount,
+            junkPacketMinSize = source.junkPacketMinSize,
+            junkPacketMaxSize = source.junkPacketMaxSize,
+            cookiePacketJunkSize = source.cookiePacketJunkSize,
+            transportPacketJunkSize = source.transportPacketJunkSize,
+            initPacketJunkSize = source.initPacketJunkSize,
+            responsePacketJunkSize = source.responsePacketJunkSize,
+            initPacketMagicHeader = source.initPacketMagicHeader,
+            responsePacketMagicHeader = source.responsePacketMagicHeader,
+            underloadPacketMagicHeader = source.underloadPacketMagicHeader,
+            transportPacketMagicHeader = source.transportPacketMagicHeader,
+            i1 = source.i1,
+            i2 = source.i2,
+            i3 = source.i3,
+            i4 = source.i4,
+            i5 = source.i5,
+            headerProtectionKey = source.headerProtectionKey,
+            contentPaddingAddition = source.contentPaddingAddition,
+            rekeyAfterTime = source.rekeyAfterTime,
+            rekeyTimeout = source.rekeyTimeout,
+            rejectAfterTime = source.rejectAfterTime,
+            keepaliveTimeout = source.keepaliveTimeout,
+            maxHandshakeAttempts = source.maxHandshakeAttempts,
+            randomTrailers = source.randomTrailers,
+            disableCookies = source.disableCookies,
+        )
+
     fun resetAmneziaProperties(): EditableInterface {
         return copy(
             junkPacketCount = "",

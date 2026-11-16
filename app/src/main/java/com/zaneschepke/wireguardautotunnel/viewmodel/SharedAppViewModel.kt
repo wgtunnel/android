@@ -13,6 +13,7 @@ import com.zaneschepke.wireguardautotunnel.core.lock.AppLockManager
 import com.zaneschepke.wireguardautotunnel.core.orchestration.AutoTunnelCoordinator
 import com.zaneschepke.wireguardautotunnel.core.orchestration.TunnelBackendCoordinator
 import com.zaneschepke.wireguardautotunnel.core.orchestration.TunnelCoordinator
+import com.zaneschepke.wireguardautotunnel.core.tunnel.StrictSplitDefaults
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelMode
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelGroup
@@ -94,6 +95,7 @@ class SharedAppViewModel(
     private val fileUtils: FileUtils,
     private val networkUtils: NetworkUtils,
     private val appLockManager: AppLockManager,
+    private val strictSplitDefaults: StrictSplitDefaults,
 ) : OrbitContainerHost<GlobalAppUiState, GlobalAppUiState, LocalSideEffect>, ViewModel() {
 
     val globalSideEffect = globalEffectRepository.flow
@@ -137,6 +139,20 @@ class SharedAppViewModel(
             splitSystemAppsTunnelId = null
             _showSplitSystemApps.value = false
         }
+    }
+
+    val strictSplitNotice =
+        strictSplitDefaults.notice.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000L),
+            null,
+        )
+
+    fun acknowledgeStrictSplitNotice() = intent { strictSplitDefaults.acknowledge() }
+
+    fun answerStrictSplitSuggestion(enable: Boolean) = intent {
+        strictSplitDefaults.answer(enable)
+        if (enable) tunnelCoordinator.restartActiveTunnels()
     }
 
     private val reorderDraft = MutableStateFlow<ReorderDraft?>(null)
