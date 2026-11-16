@@ -16,7 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.zaneschepke.wireguardautotunnel.R
-import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
 import com.zaneschepke.wireguardautotunnel.ui.common.text.DescriptionText
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.components.TunnelPickerList
@@ -25,7 +24,6 @@ import org.orbitmvi.orbit.compose.collectAsState
 
 @Composable
 fun EntryTunnelScreen(viewModel: TunnelViewModel) {
-    val navController = LocalNavController.current
     val uiState by viewModel.collectAsState()
 
     if (uiState.isLoading) return
@@ -58,10 +56,7 @@ fun EntryTunnelScreen(viewModel: TunnelViewModel) {
             modifier = Modifier.weight(1f),
             tunnels = candidates,
             isSelected = { it.id == tunnel.entryTunnelId },
-            onSelect = {
-                viewModel.onEntryTunnel(it.id)
-                navController.pop()
-            },
+            onSelect = { viewModel.onEntryTunnel(it.id) },
             leading = { Icon(Icons.AutoMirrored.Outlined.CallMerge, contentDescription = null) },
             leadingItem = {
                 val noneSelected = tunnel.entryTunnelId == null
@@ -81,10 +76,7 @@ fun EntryTunnelScreen(viewModel: TunnelViewModel) {
                             )
                         }
                     },
-                    onClick = {
-                        viewModel.onEntryTunnel(null)
-                        navController.pop()
-                    },
+                    onClick = { viewModel.onEntryTunnel(null) },
                 )
             },
         )

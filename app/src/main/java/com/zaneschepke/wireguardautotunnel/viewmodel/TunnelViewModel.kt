@@ -88,7 +88,7 @@ class TunnelViewModel(
 
     fun onEntryTunnel(entryId: Int?) = intent {
         val tunnel = state.tunnel ?: return@intent
-        if (entryId == tunnel.id) return@intent
+        if (entryId == tunnel.id || entryId == tunnel.entryTunnelId) return@intent
         if (entryId != null) {
             val entry = state.userTunnels.firstOrNull { it.id == entryId } ?: return@intent
             if (entry.entryTunnelId != null) return@intent
