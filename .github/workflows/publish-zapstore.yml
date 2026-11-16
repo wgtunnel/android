@@ -13,6 +13,9 @@ on:
         type: string
         description: "zapstore config file"
         default: "zapstore.yaml"
+    secrets:
+      ZAPSTORE_SIGN_WITH:
+        required: true
 
 permissions:
   contents: read

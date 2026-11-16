@@ -3,6 +3,9 @@ name: publish-play-listing
 on:
   workflow_dispatch:
   workflow_call:
+    secrets:
+      SERVICE_ACCOUNT_JSON:
+        required: true
 
 permissions:
   contents: read

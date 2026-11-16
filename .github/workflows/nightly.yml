@@ -30,7 +30,11 @@ jobs:
       - check_commits
     if: ${{ needs.check_commits.outputs.has_new_commits > 0 && inputs.release_type != 'none' }}
     uses: ./.github/workflows/build.yml
-    secrets: inherit
+    secrets:
+      KEYSTORE: ${{ secrets.KEYSTORE }}
+      SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+      SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+      SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
     with:
       build_type: "nightly"
       flavor: standalone
@@ -146,6 +150,7 @@ jobs:
     needs:
       - publish
     uses: ./.github/workflows/publish-zapstore.yml
-    secrets: inherit
+    secrets:
+      ZAPSTORE_SIGN_WITH: ${{ secrets.ZAPSTORE_SIGN_WITH }}
     with:
       config: zapstore-nightly.yaml
