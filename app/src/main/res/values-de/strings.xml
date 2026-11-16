@@ -191,8 +191,8 @@
     <string name="auto_tunnel_running">Auto-Tunnel läuft</string>
     <string name="auto_tunnel_not_running">Auto-Tunnel läuft nicht</string>
     <string name="tunnel_monitoring">Tunnelüberwachung</string>
-    <string name="backup_success">Backuperfolg. %1$s</string>
-    <string name="restore_success">Wiederherstellerfolg. %1$s</string>
+    <string name="backup_success">Backuperfolg.</string>
+    <string name="restore_success">Wiederherstellerfolg.</string>
     <string name="restarting_app">Starte App neu, um Änderungen anzuwenden …</string>
     <string name="restore_failed">Wiederherstellung aus Backup fehlgeschlagen.</string>
     <string name="backup_failed">Backup konnte nicht erstellt werden.</string>

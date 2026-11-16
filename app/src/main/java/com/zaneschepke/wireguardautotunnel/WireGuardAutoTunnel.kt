@@ -3,6 +3,8 @@ package com.zaneschepke.wireguardautotunnel
 import android.app.Application
 import android.content.ComponentCallbacks2
 import android.os.StrictMode
+import androidx.core.os.UserManagerCompat
+import androidx.work.Configuration
 import com.wgtunnel.backend.Backend
 import com.wgtunnel.backend.BackendLog
 import com.wgtunnel.backend.LogLevel
@@ -36,7 +38,7 @@ import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
-import org.koin.androidx.workmanager.koin.workManagerFactory
+import org.koin.androidx.workmanager.factory.KoinWorkerFactory
 import org.koin.core.annotation.KoinViewModelScopeApi
 import org.koin.core.component.KoinComponent
 import org.koin.core.context.GlobalContext.startKoin
@@ -44,7 +46,7 @@ import org.koin.core.option.viewModelScopeFactory
 import org.koin.core.qualifier.named
 import timber.log.Timber
 
-class WireGuardAutoTunnel : Application(), KoinComponent {
+class WireGuardAutoTunnel : Application(), KoinComponent, Configuration.Provider {
 
     private val applicationScope: CoroutineScope by inject(named(Scope.APPLICATION))
     private val ioDispatcher: CoroutineDispatcher by inject(named(Dispatcher.IO))
@@ -82,7 +84,6 @@ class WireGuardAutoTunnel : Application(), KoinComponent {
         startKoin {
             androidContext(this@WireGuardAutoTunnel)
             if (BuildConfig.DEBUG) androidLogger()
-            workManagerFactory()
             modules(
                 dispatchersModule,
                 appModule,
@@ -118,7 +119,12 @@ class WireGuardAutoTunnel : Application(), KoinComponent {
         get<TunnelOriginHolder>().bind(applicationScope, tunnelCoordinator.actions)
         get<AppProvider>().bind(applicationScope)
 
-        if (BuildConfig.FLAVOR == Constants.STANDALONE_FLAVOR) {
+        // WorkManager keeps its database in credential encrypted storage, which is locked until the
+        // first unlock after boot.
+        if (
+            BuildConfig.FLAVOR == Constants.STANDALONE_FLAVOR &&
+                UserManagerCompat.isUserUnlocked(this)
+        ) {
             UpdateCheckWorker.start(this)
         }
 
@@ -126,6 +132,11 @@ class WireGuardAutoTunnel : Application(), KoinComponent {
             boostrapCoordinator.bootstrap(this@WireGuardAutoTunnel)
         }
     }
+
+    // WorkManager starts on first use, not with the process, so a process started before the
+    // user unlocks after boot never opens its database
+    override val workManagerConfiguration: Configuration
+        get() = Configuration.Builder().setWorkerFactory(KoinWorkerFactory()).build()
 
     override fun onTrimMemory(level: Int) {
         super.onTrimMemory(level)
