@@ -14,9 +14,9 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
-import org.koin.dsl.lazyModule
+import org.koin.dsl.module
 
-val networkModule = lazyModule {
+val networkModule = module {
     single {
         val client =
             if (BuildConfig.DEBUG) {
