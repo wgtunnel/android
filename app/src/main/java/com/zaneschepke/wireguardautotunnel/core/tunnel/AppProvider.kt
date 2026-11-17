@@ -21,6 +21,7 @@ import com.zaneschepke.wireguardautotunnel.notification.TunnelNotificationLine
 import com.zaneschepke.wireguardautotunnel.notification.TunnelNotificationOptions
 import com.zaneschepke.wireguardautotunnel.notification.TunnelNotificationService
 import com.zaneschepke.wireguardautotunnel.service.tile.TunnelTileRefresher
+import com.zaneschepke.wireguardautotunnel.service.widget.TunnelControlWidget
 import com.zaneschepke.wireguardautotunnel.ui.state.DisplayTunnelState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -49,6 +50,7 @@ class AppProvider(
 
     override fun refreshStatusUi() {
         TunnelTileRefresher.refresh(context)
+        TunnelControlWidget.refresh(context)
     }
 
     override fun createVpnConfigurePendingIntent(context: Context): PendingIntent {
