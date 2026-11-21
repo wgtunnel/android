@@ -787,13 +787,15 @@ class SharedAppViewModel(
 
     fun toggleSelectedGroup(groupId: Int) = intent {
         val ui = tunnelsUiState.value
+        val wasSelected = ui.selectedGroups.any { it.id == groupId }
         val selectedGroups =
-            ui.selectedGroups.toMutableList().apply {
-                val removed = removeIf { it.id == groupId }
-                if (!removed) addAll(ui.groups.filter { it.id == groupId })
-            }
+            if (wasSelected) ui.selectedGroups.filterNot { it.id == groupId }
+            else ui.selectedGroups + ui.groups.filter { it.id == groupId }
+        val selectedTuns =
+            if (wasSelected) ui.selectedTunnels.filterNot { it.groupId == groupId }
+            else ui.selectedTunnels
         selectedTunnelsRepository.set(
-            TunnelsSelection(tunnels = ui.selectedTunnels, groups = selectedGroups),
+            TunnelsSelection(tunnels = selectedTuns, groups = selectedGroups),
         )
     }
 
