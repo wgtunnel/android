@@ -29,7 +29,12 @@ licensee {
 
 configure<ApplicationExtension> {
     namespace = Constants.APP_ID
-    compileSdk = libs.versions.compileSdk.get().toInt()
+    compileSdk {
+        version =
+            release(libs.versions.compileSdk.get().toInt()) {
+                minorApiLevel = libs.versions.compileSdkMinor.get().toInt()
+            }
+    }
 
     androidResources { generateLocaleConfig = true }
 
