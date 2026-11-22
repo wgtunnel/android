@@ -35,6 +35,7 @@ import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
 import com.zaneschepke.wireguardautotunnel.ui.common.functions.FileImportTarget
 import com.zaneschepke.wireguardautotunnel.ui.common.text.DescriptionText
+import com.zaneschepke.wireguardautotunnel.ui.screens.pin.LocalAppLocked
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -43,6 +44,7 @@ fun FileManagerChooserSheet(
     onDismiss: () -> Unit,
     onChoose: (FileImportTarget) -> Unit,
 ) {
+    if (LocalAppLocked.current) return
     val isTv = LocalIsAndroidTV.current
     val sheetState =
         rememberBottomSheetState(

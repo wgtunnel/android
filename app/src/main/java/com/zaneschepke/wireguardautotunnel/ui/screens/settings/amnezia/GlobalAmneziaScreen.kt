@@ -28,6 +28,7 @@ import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.common.banner.InfoNotice
 import com.zaneschepke.wireguardautotunnel.ui.common.dialog.rememberRestartToApplyChanges
 import com.zaneschepke.wireguardautotunnel.ui.common.label.GroupLabel
+import com.zaneschepke.wireguardautotunnel.ui.screens.pin.LocalAppLocked
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.settings.config.edit.components.AmneziaSection
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.settings.config.edit.components.AmneziaToolMenuItems
 import com.zaneschepke.wireguardautotunnel.ui.sideeffect.LocalSideEffect
@@ -81,7 +82,7 @@ fun GlobalAmneziaScreen(
                         )
                     }
                     DropdownMenu(
-                        expanded = menuExpanded,
+                        expanded = menuExpanded && !LocalAppLocked.current,
                         onDismissRequest = { menuExpanded = false },
                         containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
                     ) {

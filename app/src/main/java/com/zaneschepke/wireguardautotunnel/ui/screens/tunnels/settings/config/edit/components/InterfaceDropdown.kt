@@ -14,6 +14,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.domain.enums.MimicMode
+import com.zaneschepke.wireguardautotunnel.ui.screens.pin.LocalAppLocked
 import com.zaneschepke.wireguardautotunnel.ui.state.ConfigUiState
 
 @Composable
@@ -33,7 +34,7 @@ fun InterfaceDropdown(
             )
         }
         DropdownMenu(
-            expanded = uiState.ui.isInterfaceDropdownExpanded,
+            expanded = uiState.ui.isInterfaceDropdownExpanded && !LocalAppLocked.current,
             onDismissRequest = { onToggleDropdown(false) },
             containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
             tonalElevation = 4.dp,

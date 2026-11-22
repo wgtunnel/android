@@ -11,6 +11,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.zaneschepke.wireguardautotunnel.R
+import com.zaneschepke.wireguardautotunnel.ui.screens.pin.LocalAppLocked
 
 @Composable
 fun InfoDialog(
@@ -24,6 +25,7 @@ fun InfoDialog(
     dismissText: String = stringResource(R.string.cancel),
     onDismissButton: () -> Unit = onDismiss,
 ) {
+    if (LocalAppLocked.current) return
     MaterialTheme(colorScheme = MaterialTheme.colorScheme.copy()) {
         Surface(color = MaterialTheme.colorScheme.surface, tonalElevation = 0.dp) {
             AlertDialog(

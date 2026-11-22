@@ -77,6 +77,7 @@ import com.zaneschepke.wireguardautotunnel.ui.navigation.Route.Tunnels
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route.WifiDetectionMethod
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route.WifiPreferences
 import com.zaneschepke.wireguardautotunnel.ui.navigation.TunnelNetwork
+import com.zaneschepke.wireguardautotunnel.ui.screens.pin.LocalAppLocked
 import com.zaneschepke.wireguardautotunnel.ui.sideeffect.LocalSideEffect
 import com.zaneschepke.wireguardautotunnel.ui.state.GlobalAppUiState
 import com.zaneschepke.wireguardautotunnel.ui.state.NavbarState
@@ -307,7 +308,7 @@ fun currentRouteAsNavbarState(
                                     )
                                 }
                                 DropdownMenu(
-                                    expanded = showOverflowMenu,
+                                    expanded = showOverflowMenu && !LocalAppLocked.current,
                                     onDismissRequest = { showOverflowMenu = false },
                                     containerColor =
                                         MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
@@ -497,7 +498,8 @@ fun currentRouteAsNavbarState(
                                                 )
                                             }
                                             DropdownMenu(
-                                                expanded = showOverflowMenu,
+                                                expanded =
+                                                    showOverflowMenu && !LocalAppLocked.current,
                                                 onDismissRequest = { showOverflowMenu = false },
                                                 containerColor =
                                                     MaterialTheme.colorScheme.surface.copy(
@@ -626,7 +628,7 @@ fun currentRouteAsNavbarState(
                                 }
 
                                 DropdownMenu(
-                                    expanded = showOverflowMenu,
+                                    expanded = showOverflowMenu && !LocalAppLocked.current,
                                     onDismissRequest = { showOverflowMenu = false },
                                     containerColor =
                                         MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),

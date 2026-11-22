@@ -21,6 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.common.label.GroupLabel
+import com.zaneschepke.wireguardautotunnel.ui.screens.pin.LocalAppLocked
 import com.zaneschepke.wireguardautotunnel.ui.state.ConfigUiState
 import com.zaneschepke.wireguardautotunnel.ui.state.EditablePeer
 
@@ -62,7 +63,7 @@ fun PeersSection(
                             )
                         }
                         DropdownMenu(
-                            expanded = uiState.ui.isPeerDropdownExpanded,
+                            expanded = uiState.ui.isPeerDropdownExpanded && !LocalAppLocked.current,
                             onDismissRequest = {
                                 onPeerDropdownExpanded(!uiState.ui.isPeerDropdownExpanded)
                             },
