@@ -60,6 +60,8 @@
     <string name="persistent_keepalive">Persistent keepalive</string>
     <string name="cancel">Cancel</string>
     <string name="unknown_error">Unknown error occurred</string>
+    <string name="mode_change_failed">Couldn\'t switch app mode, please try again</string>
+    <string name="lockdown_apply_failed">Couldn\'t apply lockdown settings, please try again</string>
     <string name="tunnel_on_wifi">Tunnel on Wi-Fi</string>
     <string name="my_email" translatable="false">support@zaneschepke.com</string>
     <string name="email_subject">WG Tunnel Support</string>

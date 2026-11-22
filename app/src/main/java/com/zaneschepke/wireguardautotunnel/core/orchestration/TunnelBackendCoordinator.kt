@@ -4,8 +4,11 @@ import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelProvider
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelMode
 import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.LockdownSettingsRepository
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.withContext
 
 class TunnelBackendCoordinator(
+    private val tunnelCoordinator: TunnelCoordinator,
     private val tunnelProvider: TunnelProvider,
     private val settingsRepository: GeneralSettingRepository,
     private val lockdownRepository: LockdownSettingsRepository,
@@ -20,12 +23,18 @@ class TunnelBackendCoordinator(
             return Result.success(Unit)
         }
 
-        return runCatching {
-            tunnelProvider.stopActiveTunnels().getOrThrow()
-            exitMode(oldMode)
-            enterMode(newMode)
+        // Holds the tunnel lock so a lockdown save or tunnel start can't rebuild the kill switch
+        // in between, and is not cancellable so a half finished switch can't be left behind
+        return withContext(NonCancellable) {
+            tunnelCoordinator.exclusively {
+                runCatching {
+                    tunnelProvider.stopActiveTunnels().getOrThrow()
+                    exitMode(oldMode)
+                    enterMode(newMode)
 
-            settingsRepository.upsert(settings.copy(tunnelMode = newMode))
+                    settingsRepository.upsert(settings.copy(tunnelMode = newMode))
+                }
+            }
         }
     }
 

@@ -31,6 +31,7 @@ import com.zaneschepke.wireguardautotunnel.service.ServiceManager
 import com.zaneschepke.wireguardautotunnel.util.StringValue
 import com.zaneschepke.wireguardautotunnel.util.extensions.toTunnelDnsConfigOrNull
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
@@ -44,6 +45,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 class TunnelCoordinator(
@@ -401,12 +403,15 @@ class TunnelCoordinator(
      * Rebuild the kill-switch TUN in place. HEV is rebound to the new fd by VpnService using the
      * still-running SOCKS listener
      */
-    suspend fun applyLockdownSettings(settings: LockdownSettings) = tunnelMutex.withLock {
-        tunnelProvider
-            .setLockDown(settings)
-            .onFailure { Timber.e(it, "Failed to apply lockdown/kill-switch settings") }
-            .getOrThrow()
-    }
+    // Not cancellable so leaving the screen mid rebuild left a new TUN without HEV rebound
+    suspend fun applyLockdownSettings(settings: LockdownSettings): Result<Unit> =
+        withContext(NonCancellable) {
+            tunnelMutex.withLock {
+                tunnelProvider.setLockDown(settings).onFailure {
+                    Timber.e(it, "Failed to apply lockdown/kill-switch settings")
+                }
+            }
+        }
 
     suspend fun toggleTunnel(
         tunnelConfig: TunnelConfig,

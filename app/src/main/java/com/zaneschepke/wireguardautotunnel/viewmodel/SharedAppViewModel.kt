@@ -333,7 +333,15 @@ class SharedAppViewModel(
             }
         }
 
-        tunnelBackendCoordinator.changeMode(mode)
+        tunnelBackendCoordinator.changeMode(mode).onFailure {
+            Timber.e(it, "Failed to change app mode to $mode")
+            postSideEffect(
+                GlobalSideEffect.Snackbar(
+                    StringValue.StringResource(R.string.mode_change_failed),
+                    ToastType.Error,
+                ),
+            )
+        }
     }
 
     fun setShouldShowDonationSnackbar(to: Boolean) = intent {
@@ -760,13 +768,13 @@ class SharedAppViewModel(
 
     fun toggleSelectAllTunnels() = intent {
         val ui = tunnelsUiState.value
-        val allSelected =
-            ui.selectedTunnels.size == ui.tunnels.size && ui.selectedGroups.size == ui.groups.size
+        // Configs only, a folder is selected only by tapping it
+        val allSelected = ui.selectedTunnels.size == ui.tunnels.size
         if (allSelected) {
             selectedTunnelsRepository.clear()
         } else {
             selectedTunnelsRepository.set(
-                TunnelsSelection(tunnels = ui.tunnels, groups = ui.groups),
+                TunnelsSelection(tunnels = ui.tunnels, groups = ui.selectedGroups),
             )
         }
     }
@@ -787,15 +795,13 @@ class SharedAppViewModel(
 
     fun toggleSelectedGroup(groupId: Int) = intent {
         val ui = tunnelsUiState.value
-        val wasSelected = ui.selectedGroups.any { it.id == groupId }
         val selectedGroups =
-            if (wasSelected) ui.selectedGroups.filterNot { it.id == groupId }
-            else ui.selectedGroups + ui.groups.filter { it.id == groupId }
-        val selectedTuns =
-            if (wasSelected) ui.selectedTunnels.filterNot { it.groupId == groupId }
-            else ui.selectedTunnels
+            ui.selectedGroups.toMutableList().apply {
+                val removed = removeIf { it.id == groupId }
+                if (!removed) addAll(ui.groups.filter { it.id == groupId })
+            }
         selectedTunnelsRepository.set(
-            TunnelsSelection(tunnels = selectedTuns, groups = selectedGroups),
+            TunnelsSelection(tunnels = ui.selectedTunnels, groups = selectedGroups),
         )
     }
 
