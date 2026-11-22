@@ -1,0 +1,3 @@
+What's new:
+- Bugfixes for Lockdown and proxy mode relating to DNS fails and dual stack support
+- Bugfix for select all selecting tunnel groups
