@@ -125,7 +125,7 @@ Help translate WG Tunnel on [Crowdin](https://translate.wgtunnel.com/project/wgt
           <br />
           <sub><b>(martinellimarco)</b></sub></a>
         <br />
-        <sub><b>4792 words</b></sub>
+        <sub><b>4805 words</b></sub>
       </td>
       <td align="center" valign="top">
         <a href="https://crowdin.com/profile/Pida88"><img alt="logo" style="width: 100px" src="https://crowdin-static.cf-downloads.crowdin.com/avatar/17799913/medium/ac2cec66927300857724bef7bd432cd3.jpg" />
