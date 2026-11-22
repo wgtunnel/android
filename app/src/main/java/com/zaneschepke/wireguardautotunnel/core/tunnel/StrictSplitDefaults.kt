@@ -3,6 +3,8 @@ package com.zaneschepke.wireguardautotunnel.core.tunnel
 import android.content.Context
 import android.os.Build
 import com.wgtunnel.parser.Config
+import com.zaneschepke.networkmonitor.PrivateDnsMode
+import com.zaneschepke.networkmonitor.privateDnsMode
 import com.zaneschepke.wireguardautotunnel.domain.enums.StrictSplitNotice
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelMode
 import com.zaneschepke.wireguardautotunnel.domain.model.GeneralSettings
@@ -28,7 +30,8 @@ class StrictSplitDefaults(
                 settings.strictSplitTunnelEnabled ||
                 !runConfig.leavesAppsOff() ||
                 appStateRepository.isStrictSplitDecided() ||
-                appStateRepository.strictSplitNotice.first() != null
+                appStateRepository.strictSplitNotice.first() != null ||
+                context.privateDnsMode() == PrivateDnsMode.HOSTNAME
         ) {
             return settings
         }

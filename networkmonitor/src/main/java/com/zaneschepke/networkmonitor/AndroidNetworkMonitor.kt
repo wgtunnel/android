@@ -298,15 +298,7 @@ class AndroidNetworkMonitor(
     private data class PrivateDnsSettings(val mode: PrivateDnsMode, val hostname: String?)
 
     private fun getCurrentPrivateDnsSettings(): PrivateDnsSettings {
-        val modeStr =
-            Settings.Global.getString(appContext.contentResolver, "private_dns_mode") ?: "off"
-
-        val mode =
-            when (modeStr) {
-                "hostname" -> PrivateDnsMode.HOSTNAME
-                "opportunistic" -> PrivateDnsMode.AUTOMATIC
-                else -> PrivateDnsMode.OFF
-            }
+        val mode = appContext.privateDnsMode()
 
         val hostname =
             Settings.Global.getString(appContext.contentResolver, "private_dns_specifier")
