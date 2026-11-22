@@ -7,12 +7,10 @@ workflows:
         - 'actions/checkout@v7.0.1'
         - 'actions/setup-java@v6.3.0'
         - 'actions/upload-artifact@v7.0.2'
-        - 'timheuer/base64-to-file@v2.0.0'
     '.github/workflows/build.yml':
         - 'actions/checkout@v7.0.1'
         - 'actions/setup-java@v6.3.0'
         - 'actions/upload-artifact@v7.0.2'
-        - 'timheuer/base64-to-file@v2.0.0'
     '.github/workflows/crowdin-contributors.yml':
         - 'actions/checkout@v7.0.1'
         - 'andrii-bodnar/action-crowdin-contributors@v3.3.1'
@@ -23,7 +21,6 @@ workflows:
         - 'clementtsang/delete-tag-and-release@v0.4.0'
         - 'peter-evans/repository-dispatch@v4.0.1'
         - 'requarks/changelog-action@v1.11.0'
-        - 'rickstaa/action-create-tag@v1.7.2'
         - 'softprops/action-gh-release@v3.0.4'
     '.github/workflows/notifications.yml': []
     '.github/workflows/pr.yml':
@@ -42,7 +39,6 @@ workflows:
         - 'kaliber5/action-get-release@v1.0.0'
         - 'peter-evans/repository-dispatch@v4.0.1'
         - 'requarks/changelog-action@v1.11.0'
-        - 'rickstaa/action-create-tag@v1.7.2'
         - 'ruby/setup-ruby@v1.338.0'
         - 'softprops/action-gh-release@v3.0.4'
 dependencies:
@@ -106,11 +102,6 @@ dependencies:
         commit: 'sha1-7ce6be4c4d2233ae2a943694ca34f23aeafa1054'
         owner_id: 16729233
         repo_id: 450329078
-    'rickstaa/action-create-tag@v1.7.2':
-        ref: 'v1.7.2'
-        commit: 'sha1-a1c7777fcb2fee4f19b0f283ba888afa11678b72'
-        owner_id: 17570430
-        repo_id: 328793653
     'ruby/setup-ruby@v1.338.0':
         ref: 'v1.338.0'
         commit: 'sha1-b3aaceaef7e0ee231b499e7b5f49c03fc1d32199'
@@ -121,8 +112,3 @@ dependencies:
         commit: 'sha1-8a0cd651e5b2365bd640854a3fa5dfc70e4875f3'
         owner_id: 2242
         repo_id: 204253808
-    'timheuer/base64-to-file@v2.0.0':
-        ref: 'v2.0.0'
-        commit: 'sha1-dfa5a5dd38803cb4f5c3a081eeb28e8362d43e9c'
-        owner_id: 4821
-        repo_id: 228089398

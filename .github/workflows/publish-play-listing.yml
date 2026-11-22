@@ -20,7 +20,9 @@ jobs:
           persist-credentials: false
 
       - name: Create service_account.json
-        run: echo '${{ secrets.SERVICE_ACCOUNT_JSON }}' > service_account.json
+        env:
+          SERVICE_ACCOUNT_JSON: ${{ secrets.SERVICE_ACCOUNT_JSON }}
+        run: printf '%s' "$SERVICE_ACCOUNT_JSON" > service_account.json
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1.338.0

@@ -91,12 +91,11 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Decode Keystore
-        id: decode_keystore
-        uses: timheuer/base64-to-file@v2.0.0
-        with:
-          fileName: ${{ env.KEY_STORE_FILE }}
-          fileDir: ${{ env.KEY_STORE_LOCATION }}
-          encodedString: ${{ secrets.KEYSTORE }}
+        env:
+          KEYSTORE: ${{ secrets.KEYSTORE }}
+        run: |
+          mkdir -p "$KEY_STORE_LOCATION"
+          printf '%s' "$KEYSTORE" | base64 -d > "$KEY_STORE_LOCATION$KEY_STORE_FILE"
       - name: Create keystore path env var
         if: ${{ inputs.build_type != 'debug' }}
         run: |

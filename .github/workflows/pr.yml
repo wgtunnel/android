@@ -38,3 +38,17 @@ jobs:
         run: |
           ./gradlew formatCheck
           echo "Working tree matches ./gradlew format."
+
+  actions_lock:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Verify actions.lock
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh extension install github/gh-actions-lock --pin v0.4.1
+          gh actions-lock --verify
