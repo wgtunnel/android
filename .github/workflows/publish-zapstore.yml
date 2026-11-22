@@ -13,6 +13,9 @@ on:
         type: string
         description: "zapstore config file"
         default: "zapstore.yaml"
+    secrets:
+      ZAPSTORE_SIGN_WITH:
+        required: true
 
 permissions:
   contents: read
@@ -22,9 +25,11 @@ jobs:
     name: Publish to Zapstore
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
 
-      - uses: actions/setup-go@v7
+      - uses: actions/setup-go@v7.0.0
         with:
           go-version: 'stable'
 

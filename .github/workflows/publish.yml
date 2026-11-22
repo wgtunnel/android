@@ -49,7 +49,11 @@ jobs:
         inputs.release_type != 'none' 
       }}
     uses: ./.github/workflows/build.yml
-    secrets: inherit
+    secrets:
+      KEYSTORE: ${{ secrets.KEYSTORE }}
+      SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+      SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+      SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
     with:
       build_type: ${{ github.event_name == 'push' && 'release' || inputs.release_type }}
       flavor: fdroid
@@ -61,7 +65,11 @@ jobs:
         inputs.release_type != 'none' 
       }}
     uses: ./.github/workflows/build.yml
-    secrets: inherit
+    secrets:
+      KEYSTORE: ${{ secrets.KEYSTORE }}
+      SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+      SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+      SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
     with:
       build_type: ${{ github.event_name == 'push' && 'release' || inputs.release_type }}
       flavor: standalone
@@ -78,7 +86,7 @@ jobs:
     name: publish-github
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
         with:
           ref: ${{ github.event_name == 'push' && github.ref || 'master' }}
       - name: Install system dependencies
@@ -86,7 +94,7 @@ jobs:
           sudo apt update && sudo apt install -y gh apksigner
 
       - name: Set latest tag
-        uses: rickstaa/action-create-tag@v1
+        uses: rickstaa/action-create-tag@v1.7.2
         id: tag_creation
         with:
           tag: "latest"
@@ -97,14 +105,14 @@ jobs:
 
       - name: Get latest release
         id: latest_release
-        uses: kaliber5/action-get-release@v1
+        uses: kaliber5/action-get-release@v1.0.0
         with:
           token: ${{ github.token }}
           latest: true
 
       - name: Generate Changelog
         id: changelog
-        uses: requarks/changelog-action@v1
+        uses: requarks/changelog-action@v1.11.0
         with:
           token: ${{ github.token }}
           toTag: ${{ steps.latest_release.outputs.tag_name }}
@@ -115,7 +123,7 @@ jobs:
         run: mkdir ${{ github.workspace }}/temp
 
       - name: Download artifacts
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v8.0.2
         with:
           pattern: android_artifacts_*
           path: ${{ github.workspace }}/temp
@@ -143,7 +151,7 @@ jobs:
 
       - name: Create Release
         id: create_release
-        uses: softprops/action-gh-release@v3
+        uses: softprops/action-gh-release@v3.0.4
         with:
           # Must be a PAT because bot creates release
           token: ${{ secrets.PAT }}
@@ -181,7 +189,7 @@ jobs:
       - publish-github
     steps:
       - name: Dispatch update for fdroid repo
-        uses: peter-evans/repository-dispatch@v4
+        uses: peter-evans/repository-dispatch@v4.0.1
         with:
           token: ${{ secrets.PAT }}
           repository: wgtunnel/fdroid
@@ -196,7 +204,8 @@ jobs:
     needs:
       - publish-github
     uses: ./.github/workflows/publish-zapstore.yml
-    secrets: inherit
+    secrets:
+      ZAPSTORE_SIGN_WITH: ${{ secrets.ZAPSTORE_SIGN_WITH }}
 
   build-google-aab:
     if: >-
@@ -205,7 +214,11 @@ jobs:
         inputs.track != 'none'
       }}
     uses: ./.github/workflows/build-aab.yml
-    secrets: inherit
+    secrets:
+      KEYSTORE: ${{ secrets.KEYSTORE }}
+      SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+      SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+      SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
     with:
       build_type: release
       flavor: google
@@ -216,12 +229,13 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-google-aab
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
         with:
           ref: ${{ github.event_name == 'push' && github.ref || 'master' }}
+          persist-credentials: false
 
       - name: Download AAB artifact
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v8.0.2
         with:
           name: google-play-aab
           path: ${{ github.workspace }}/aab
@@ -242,7 +256,7 @@ jobs:
         run: echo '${{ secrets.SERVICE_ACCOUNT_JSON }}' > service_account.json
 
       - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
+        uses: ruby/setup-ruby@v1.338.0
         with:
           ruby-version: '3.4'
           bundler-cache: true
@@ -263,4 +277,5 @@ jobs:
     name: Publish Play Store listing
     needs: publish-play
     uses: ./.github/workflows/publish-play-listing.yml
-    secrets: inherit
+    secrets:
+      SERVICE_ACCOUNT_JSON: ${{ secrets.SERVICE_ACCOUNT_JSON }}
