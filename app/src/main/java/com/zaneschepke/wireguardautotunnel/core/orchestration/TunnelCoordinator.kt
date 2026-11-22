@@ -7,6 +7,7 @@ import com.wgtunnel.parser.Config
 import com.wgtunnel.parser.ConfigReconciler
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.core.event.TunnelErrorEvent
+import com.zaneschepke.wireguardautotunnel.core.tunnel.StrictSplitDefaults
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelProvider
 import com.zaneschepke.wireguardautotunnel.data.repository.RoomDnsSettingsRepository
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelActionSource
@@ -57,6 +58,7 @@ class TunnelCoordinator(
     proxyRepository: ProxySettingsRepository,
     lockdownModeRepository: LockdownSettingsRepository,
     private val appStateRepository: AppStateRepository,
+    private val strictSplitDefaults: StrictSplitDefaults,
     scope: CoroutineScope,
 ) {
 
@@ -144,7 +146,7 @@ class TunnelCoordinator(
                                     payload.monitoring,
                                     payload.general.tunnelScriptingEnabled,
                                     payload.general,
-                                )
+                                ),
                             )
                             .onFailure {
                                 Timber.e(
@@ -157,10 +159,10 @@ class TunnelCoordinator(
                                     GlobalSideEffect.Snackbar(
                                         message =
                                             StringValue.StringResource(
-                                                R.string.active_tunnel_updated
+                                                R.string.active_tunnel_updated,
                                             ),
                                         ToastType.Success,
-                                    )
+                                    ),
                                 )
                             }
                     }
@@ -186,7 +188,6 @@ class TunnelCoordinator(
         return runtimeSettingsSnapshotState.filterNotNull().first()
     }
 
-    @Volatile private var lastActiveTunnels: List<Int> = emptyList()
     private val tunnelMutex = Mutex()
     private val _errors = MutableSharedFlow<TunnelErrorEvent>()
     val errors = _errors.asSharedFlow()
@@ -259,7 +260,7 @@ class TunnelCoordinator(
     ) {
 
         val snapshot = getSnapshot()
-        val settings = snapshot.general
+        var settings = snapshot.general
         val dnsSettings = snapshot.dns
         val proxySettings = snapshot.proxy
         val monitoringSettings = snapshot.monitoring
@@ -288,6 +289,8 @@ class TunnelCoordinator(
             if (policy.hasAnyOverrides) {
                 ConfigReconciler.reconcileConfig(config, globalConfig, policy)
             } else config
+
+        settings = strictSplitDefaults.beforeStart(settings, runConfig)
 
         val tunnelDnsConfig = dnsSettings.toTunnelDnsConfigOrNull(runConfig)
         val outerConfig = resolveOuterConfig(tunnelConfig, globalConfig, policy)
@@ -333,10 +336,10 @@ class TunnelCoordinator(
             )
             .onSuccess {
                 _actions.emit(
-                    TunnelActionEvent.Started(tunnelId = tunnelConfig.id, source = source)
+                    TunnelActionEvent.Started(tunnelId = tunnelConfig.id, source = source),
                 )
                 replaceLastActiveTunnelIds(
-                    tunnelProvider.backendStatus.value.activeTunnels.keys + tunnelConfig.id
+                    tunnelProvider.backendStatus.value.activeTunnels.keys + tunnelConfig.id,
                 )
             }
             .onFailure {
@@ -431,8 +434,6 @@ class TunnelCoordinator(
 
             val active = tunnelProvider.backendStatus.value.activeTunnels
             if (active.isNotEmpty()) {
-                lastActiveTunnels = active.keys.toList()
-
                 active.keys.forEach { id ->
                     _actions.emit(TunnelActionEvent.Stopped(tunnelId = id, source = source))
                 }
@@ -441,20 +442,24 @@ class TunnelCoordinator(
                 return@withLock
             }
 
-            tunnelsToStartOnToggle().forEach { startTunnelInternal(it, source) }
+            quickStartTunnels().forEach { startTunnelInternal(it, source) }
         }
 
-    /**
-     * The tunnels [toggleActiveTunnels] starts when nothing is active: the tunnels it last stopped,
-     * or the default tunnel. Lets the tile/widget show what a tap will start.
-     */
-    suspend fun tunnelsToStartOnToggle(): List<TunnelConfig> {
-        val lastActive = lastActiveTunnels
-        return when {
-            lastActive.isNotEmpty() -> lastActive.mapNotNull { tunnelRepository.getById(it) }
-            else -> tunnelRepository.getDefaultTunnel()?.let(::listOf) ?: emptyList()
+    suspend fun quickStart(source: TunnelActionSource = TunnelActionSource.USER) =
+        tunnelMutex.withLock {
+            bootstrapCoordinator.isReady.first { it }
+            if (tunnelProvider.backendStatus.value.activeTunnels.isNotEmpty()) return@withLock
+            if (source == TunnelActionSource.USER) {
+                markUserOverride()
+            }
+            quickStartTunnels().forEach { startTunnelInternal(it, source) }
         }
-    }
+
+    suspend fun quickStartTunnels(): List<TunnelConfig> =
+        appStateRepository
+            .getLastUsedTunnelIds()
+            .mapNotNull { tunnelRepository.getById(it) }
+            .ifEmpty { listOfNotNull(tunnelRepository.getDefaultTunnel()) }
 
     private suspend fun stopTunnelInternal(id: Int, source: TunnelActionSource) {
         tunnelProvider
@@ -462,7 +467,7 @@ class TunnelCoordinator(
             .onSuccess {
                 _actions.emit(TunnelActionEvent.Stopped(tunnelId = id, source = source))
                 replaceLastActiveTunnelIds(
-                    tunnelProvider.backendStatus.value.activeTunnels.keys - id
+                    tunnelProvider.backendStatus.value.activeTunnels.keys - id,
                 )
             }
             .onFailure { _errors.emit(TunnelErrorEvent.from(it, id)) }
@@ -489,6 +494,7 @@ class TunnelCoordinator(
             appStateRepository.clearLastActiveTunnelIds()
         } else {
             appStateRepository.setLastActiveTunnelIds(ids.toList())
+            appStateRepository.setLastUsedTunnelIds(ids.toList())
         }
     }
 }

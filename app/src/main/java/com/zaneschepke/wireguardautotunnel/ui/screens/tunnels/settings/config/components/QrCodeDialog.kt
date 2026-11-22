@@ -22,6 +22,7 @@ import androidx.compose.ui.window.DialogProperties
 import com.zaneschepke.wireguardautotunnel.MainActivity
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
+import com.zaneschepke.wireguardautotunnel.ui.screens.pin.LocalAppLocked
 import com.zaneschepke.wireguardautotunnel.util.extensions.setScreenBrightness
 import io.github.alexzhirkevich.qrose.options.QrBallShape
 import io.github.alexzhirkevich.qrose.options.QrBrush
@@ -36,6 +37,7 @@ import io.github.alexzhirkevich.qrose.rememberQrCodePainter
 
 @Composable
 fun QrCodeDialog(tunnelConfig: TunnelConfig, onDismiss: () -> Unit) {
+    if (LocalAppLocked.current) return
     val context = LocalContext.current
     val activity = context as? MainActivity
 

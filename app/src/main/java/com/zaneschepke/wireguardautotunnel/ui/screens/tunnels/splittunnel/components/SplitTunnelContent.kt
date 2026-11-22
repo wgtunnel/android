@@ -5,6 +5,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
+import androidx.compose.material.icons.outlined.Shield
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -22,7 +26,9 @@ import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.domain.model.InstalledPackage
 import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
 import com.zaneschepke.wireguardautotunnel.ui.common.banner.InfoNotice
+import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
 import com.zaneschepke.wireguardautotunnel.ui.common.label.GroupLabel
+import com.zaneschepke.wireguardautotunnel.ui.common.text.DescriptionText
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.splittunnel.state.SplitBehavior
 import com.zaneschepke.wireguardautotunnel.ui.state.SplitAppListSummary
 
@@ -35,6 +41,8 @@ fun SplitTunnelContent(
     onAppSelectionToggle: (String, Boolean) -> Unit,
     showSystemApps: Boolean,
     globalOverride: SplitAppListSummary? = null,
+    strictSplitEnabled: Boolean? = null,
+    onStrictSplitClick: () -> Unit = {},
 ) {
     val isTv = LocalIsAndroidTV.current
     val focusRequester = remember { FocusRequester() }
@@ -79,15 +87,36 @@ fun SplitTunnelContent(
             onBehaviorChange = onActiveBehaviorChange,
             modifier = Modifier.focusRequester(focusRequester),
         )
+        if (showApps && strictSplitEnabled != null) {
+            SurfaceRow(
+                leading = { Icon(Icons.Outlined.Shield, contentDescription = null) },
+                title = stringResource(R.string.strict_split_tunnel),
+                description = {
+                    DescriptionText(
+                        stringResource(
+                            if (strictSplitEnabled) R.string.state_on else R.string.state_off,
+                        ),
+                    )
+                },
+                trailing = { modifier ->
+                    Icon(
+                        Icons.AutoMirrored.Outlined.KeyboardArrowRight,
+                        contentDescription = null,
+                        modifier = modifier,
+                    )
+                },
+                onClick = onStrictSplitClick,
+            )
+        }
         if (showApps) {
             Column(modifier = Modifier.padding(top = 16.dp)) {
                 GroupLabel(
                     stringResource(
-                        if (activeBehavior == SplitBehavior.INCLUDE) {
-                            R.string.select_apps_to_include
-                        } else {
-                            R.string.select_apps_to_exclude
-                        }
+                        when (activeBehavior) {
+                            SplitBehavior.INCLUDE -> R.string.select_apps_to_include
+                            SplitBehavior.EXCLUDE -> R.string.select_apps_to_exclude
+                            SplitBehavior.ALL -> R.string.select_apps_to_exclude
+                        },
                     ),
                     modifier = Modifier.padding(horizontal = 16.dp),
                 )

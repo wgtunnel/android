@@ -28,7 +28,7 @@ fun DonationHeroSection() {
                 text = stringResource(R.string.donation_thanks_intro),
                 style =
                     MaterialTheme.typography.bodySmall.copy(
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = MaterialTheme.colorScheme.onSurface,
                     ),
                 textAlign = TextAlign.Start,
             )
@@ -37,7 +37,7 @@ fun DonationHeroSection() {
                 text = stringResource(R.string.donation_dev_message),
                 style =
                     MaterialTheme.typography.bodySmall.copy(
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = MaterialTheme.colorScheme.onSurface,
                     ),
                 textAlign = TextAlign.Start,
             )
@@ -46,7 +46,7 @@ fun DonationHeroSection() {
                 text = stringResource(R.string.donation_closing),
                 style =
                     MaterialTheme.typography.bodySmall.copy(
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = MaterialTheme.colorScheme.onSurface,
                     ),
                 textAlign = TextAlign.Start,
             )
@@ -55,7 +55,7 @@ fun DonationHeroSection() {
                 text = stringResource(R.string.donation_signoff),
                 style =
                     MaterialTheme.typography.bodySmall.copy(
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = MaterialTheme.colorScheme.onSurface,
                     ),
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Start,
@@ -64,7 +64,7 @@ fun DonationHeroSection() {
                 text = stringResource(R.string.dev_name),
                 style =
                     MaterialTheme.typography.bodySmall.copy(
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = MaterialTheme.colorScheme.onSurface,
                     ),
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Start,

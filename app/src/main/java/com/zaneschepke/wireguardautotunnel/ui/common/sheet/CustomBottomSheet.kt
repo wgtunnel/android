@@ -10,8 +10,9 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -21,6 +22,7 @@ import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
 import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
 import com.zaneschepke.wireguardautotunnel.ui.common.text.DescriptionText
+import com.zaneschepke.wireguardautotunnel.ui.screens.pin.LocalAppLocked
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -30,8 +32,15 @@ fun CustomBottomSheet(
     description: String? = null,
     onDismiss: () -> Unit,
 ) {
+    if (LocalAppLocked.current) return
     val isTv = LocalIsAndroidTV.current
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = isTv)
+    val sheetState =
+        rememberBottomSheetState(
+            initialValue = SheetValue.Hidden,
+            enabledValues =
+                if (isTv) setOf(SheetValue.Hidden, SheetValue.Expanded)
+                else setOf(SheetValue.Hidden, SheetValue.PartiallyExpanded, SheetValue.Expanded),
+        )
     ModalBottomSheet(
         containerColor = MaterialTheme.colorScheme.surface,
         onDismissRequest = onDismiss,

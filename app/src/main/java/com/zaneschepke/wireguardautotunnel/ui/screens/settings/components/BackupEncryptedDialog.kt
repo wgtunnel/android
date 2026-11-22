@@ -113,7 +113,7 @@ fun BackupEncryptionDialog(
                                 else PasswordVisualTransformation(),
                             trailing = {
                                 IconButton(
-                                    onClick = { confirmPasswordVisible = !confirmPasswordVisible }
+                                    onClick = { confirmPasswordVisible = !confirmPasswordVisible },
                                 ) {
                                     Icon(
                                         imageVector =

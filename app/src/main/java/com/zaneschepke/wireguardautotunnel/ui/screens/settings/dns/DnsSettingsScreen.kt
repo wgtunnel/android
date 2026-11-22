@@ -1,6 +1,10 @@
 package com.zaneschepke.wireguardautotunnel.ui.screens.settings.dns
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -30,6 +34,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
 import com.zaneschepke.networkmonitor.PrivateDnsMode
 import com.zaneschepke.wireguardautotunnel.R
@@ -193,7 +198,7 @@ fun DnsSettingsScreen(
                                                 )
                                             } else {
                                                 stringResource(R.string.no_system_dns_detected)
-                                            }
+                                            },
                                         )
                                     }
                                 }
@@ -234,7 +239,7 @@ fun DnsSettingsScreen(
                 onClick = { showResolutionMethodSheet = true },
             )
             AnimatedVisibility(
-                uiState.dnsSettings.bootstrapDnsProtocol != BootstrapDnsProtocol.SYSTEM
+                uiState.dnsSettings.bootstrapDnsProtocol != BootstrapDnsProtocol.SYSTEM,
             ) {
                 ConfigurationTextBox(
                     modifier =
@@ -268,8 +273,56 @@ fun DnsSettingsScreen(
                 onClick = { showAppModeSheet = true },
             )
             AnimatedVisibility(
+                visible = uiState.dnsSettings.tunnelDnsMode == TunnelDnsMode.Off,
+                enter = fadeIn() + expandVertically(expandFrom = Alignment.Top),
+                exit = fadeOut() + shrinkVertically(shrinkTowards = Alignment.Top),
+            ) {
+                Column {
+                    SurfaceRow(
+                        leading = { Icon(Icons.Outlined.Dns, contentDescription = null) },
+                        title = stringResource(R.string.global_tunnel_dns),
+                        trailing = { modifier ->
+                            ThemedSwitch(
+                                checked = uiState.dnsSettings.isGlobalTunnelConfigDnsEnabled,
+                                onClick = viewModel::setGlobalTunnelDnsEnabled,
+                                modifier = modifier,
+                            )
+                        },
+                        description = {
+                            DescriptionText(stringResource(R.string.global_tunnel_dns_desc))
+                        },
+                        onClick = {
+                            viewModel.setGlobalTunnelDnsEnabled(
+                                !uiState.dnsSettings.isGlobalTunnelConfigDnsEnabled,
+                            )
+                        },
+                    )
+                    AnimatedVisibility(
+                        visible = uiState.dnsSettings.isGlobalTunnelConfigDnsEnabled,
+                        enter = fadeIn() + expandVertically(expandFrom = Alignment.Top),
+                        exit = fadeOut() + shrinkVertically(shrinkTowards = Alignment.Top),
+                    ) {
+                        ConfigurationTextBox(
+                            modifier =
+                                Modifier.padding(horizontal = 16.dp)
+                                    .padding(top = 8.dp)
+                                    .fillMaxWidth(),
+                            hint =
+                                stringResource(
+                                        R.string.hint_template,
+                                        stringResource(R.string.comma_separated),
+                                    )
+                                    .lowercase(Locale.current.platformLocale),
+                            label = stringResource(R.string.dns_servers),
+                            value = uiState.globalDnsServers,
+                            onValueChange = viewModel::setGlobalDnsServers,
+                        )
+                    }
+                }
+            }
+            AnimatedVisibility(
                 uiState.dnsSettings.tunnelDnsMode in
-                    setOf(TunnelDnsMode.Encrypted, TunnelDnsMode.Split, TunnelDnsMode.AllLocal)
+                    setOf(TunnelDnsMode.Encrypted, TunnelDnsMode.Split, TunnelDnsMode.AllLocal),
             ) {
                 Column {
                     val showCustomServer =
@@ -290,7 +343,7 @@ fun DnsSettingsScreen(
                             title = stringResource(R.string.protocol),
                             description = {
                                 DescriptionText(
-                                    uiState.dnsSettings.tunnelDnsProtocol.asString(context)
+                                    uiState.dnsSettings.tunnelDnsProtocol.asString(context),
                                 )
                             },
                             onClick = { showProtocolSheet = true },
@@ -311,7 +364,7 @@ fun DnsSettingsScreen(
                             },
                             onClick = {
                                 viewModel.setUseTunnelDnsServersInSplit(
-                                    !uiState.dnsSettings.useTunnelDnsServersInSplit
+                                    !uiState.dnsSettings.useTunnelDnsServersInSplit,
                                 )
                             },
                         )
@@ -368,7 +421,7 @@ fun DnsSettingsScreen(
                                     title = stringResource(R.string.split_suffix_target),
                                     description = {
                                         DescriptionText(
-                                            uiState.dnsSettings.splitSuffixTarget.asString(context)
+                                            uiState.dnsSettings.splitSuffixTarget.asString(context),
                                         )
                                     },
                                     onClick = { showSplitSuffixTargetSheet = true },

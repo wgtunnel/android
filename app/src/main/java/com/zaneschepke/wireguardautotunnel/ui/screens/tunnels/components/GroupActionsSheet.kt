@@ -55,7 +55,7 @@ fun GroupActionsSheet(
                     onDeleteGroupAndTunnels()
                 },
             ),
-        )
+        ),
     ) {
         onDismiss()
     }

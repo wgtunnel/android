@@ -191,7 +191,7 @@ fun TunnelsScreen(sharedViewModel: SharedAppViewModel = koinActivityViewModel())
                 stringResource(
                     if (uiState.selectedTunnels.isEmpty() && uiState.selectedGroups.isNotEmpty())
                         R.string.delete_group
-                    else R.string.delete_tunnel
+                    else R.string.delete_tunnel,
                 ),
             body = {
                 Text(
@@ -202,8 +202,8 @@ fun TunnelsScreen(sharedViewModel: SharedAppViewModel = koinActivityViewModel())
                                     uiState.selectedGroups.isNotEmpty()
                             )
                                 R.string.delete_group_message
-                            else R.string.delete_tunnel_message
-                        )
+                            else R.string.delete_tunnel_message,
+                        ),
                 )
             },
             confirmText = stringResource(R.string.yes),
@@ -299,7 +299,7 @@ fun TunnelsScreen(sharedViewModel: SharedAppViewModel = koinActivityViewModel())
                         sharedViewModel.sortReorderByLatency()
                     },
                 ),
-            )
+            ),
         ) {
             showReorderActions = false
         }

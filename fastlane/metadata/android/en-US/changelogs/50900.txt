@@ -1,0 +1,6 @@
+What's new:
+- Strict split tunneling to prevent split apps from accessing the tunnel
+- Improved lock screen and animation flow
+- Android TV navigation improvements
+- Several UI bug fixes
+- Crash fixes on certain devices

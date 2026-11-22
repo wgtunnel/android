@@ -65,7 +65,7 @@ fun TrustedNetworkTextBox(
         CustomTextField(
             textStyle =
                 MaterialTheme.typography.bodySmall.copy(
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = MaterialTheme.colorScheme.onSurface,
                 ),
             value = currentText,
             onValueChange = onValueChange,

@@ -84,7 +84,7 @@ fun BottomNavbar(isAutoTunnelActive: Boolean, currentTab: Tab, onTabSelected: (T
                                     modifier = Modifier.offset(x = (-4).dp, y = (4).dp).size(6.dp),
                                     containerColor = SilverTree,
                                 )
-                            }
+                            },
                         ) {
                             button()
                         }

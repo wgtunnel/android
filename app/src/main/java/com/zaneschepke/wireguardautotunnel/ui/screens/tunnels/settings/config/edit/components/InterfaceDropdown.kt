@@ -14,6 +14,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.domain.enums.MimicMode
+import com.zaneschepke.wireguardautotunnel.ui.screens.pin.LocalAppLocked
 import com.zaneschepke.wireguardautotunnel.ui.state.ConfigUiState
 
 @Composable
@@ -33,32 +34,31 @@ fun InterfaceDropdown(
             )
         }
         DropdownMenu(
-            expanded = uiState.ui.isInterfaceDropdownExpanded,
+            expanded = uiState.ui.isInterfaceDropdownExpanded && !LocalAppLocked.current,
             onDismissRequest = { onToggleDropdown(false) },
             containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
             tonalElevation = 4.dp,
             shadowElevation = 4.dp,
         ) {
-            if (!uiState.isGlobalConfig)
-                DropdownMenuItem(
-                    text = {
-                        Text(
-                            if (uiState.ui.showScripts) stringResource(R.string.hide_scripts)
-                            else stringResource(R.string.show_scripts)
-                        )
-                    },
-                    onClick = {
-                        onToggleDropdown(false)
-                        onToggleScripts()
-                    },
-                )
-            if (!uiState.isGlobalConfig && !uiState.globalSettings.amneziaEnabled)
+            DropdownMenuItem(
+                text = {
+                    Text(
+                        if (uiState.ui.showScripts) stringResource(R.string.hide_scripts)
+                        else stringResource(R.string.show_scripts),
+                    )
+                },
+                onClick = {
+                    onToggleDropdown(false)
+                    onToggleScripts()
+                },
+            )
+            if (!uiState.globalSettings.amneziaEnabled)
                 DropdownMenuItem(
                     text = {
                         Text(
                             if (uiState.ui.showAmneziaValues)
                                 stringResource(R.string.hide_amnezia_properties)
-                            else stringResource(R.string.show_amnezia_properties)
+                            else stringResource(R.string.show_amnezia_properties),
                         )
                     },
                     onClick = {
@@ -66,40 +66,15 @@ fun InterfaceDropdown(
                         onToggleAmneziaValues()
                     },
                 )
-            DropdownMenuItem(
-                text = {
-                    Text(
-                        if (uiState.isAmneziaCompatibilitySet)
-                            stringResource(R.string.remove_amnezia_compatibility)
-                        else stringResource(R.string.enable_amnezia_compatibility)
-                    )
-                },
-                onClick = {
+            AmneziaToolMenuItems(
+                compatibilitySet = uiState.isAmneziaCompatibilitySet,
+                onToggleCompatibility = {
                     onToggleDropdown(false)
                     onToggleAmneziaCompatibility()
                 },
-            )
-            DropdownMenuItem(
-                text = { Text(stringResource(R.string.mimic_quic)) },
-                onClick = {
+                onMimic = { mimic ->
                     onToggleDropdown(false)
-                    onMimic(MimicMode.QUIC)
-                },
-            )
-
-            DropdownMenuItem(
-                text = { Text(stringResource(R.string.mimic_dns)) },
-                onClick = {
-                    onToggleDropdown(false)
-                    onMimic(MimicMode.DNS)
-                },
-            )
-
-            DropdownMenuItem(
-                text = { Text(stringResource(R.string.mimic_sip)) },
-                onClick = {
-                    onToggleDropdown(false)
-                    onMimic(MimicMode.SIP)
+                    onMimic(mimic)
                 },
             )
         }

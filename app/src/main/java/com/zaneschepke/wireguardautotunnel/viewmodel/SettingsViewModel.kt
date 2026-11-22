@@ -6,6 +6,7 @@ import com.wgtunnel.backend.shell.ShellExecutor
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.core.orchestration.TunnelCoordinator
 import com.zaneschepke.wireguardautotunnel.core.shortcut.ShortcutManager
+import com.zaneschepke.wireguardautotunnel.domain.repository.AppStateRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.GlobalEffectRepository
 import com.zaneschepke.wireguardautotunnel.domain.repository.MonitoringSettingsRepository
@@ -16,6 +17,7 @@ import com.zaneschepke.wireguardautotunnel.util.StringValue
 import java.util.UUID
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import org.orbitmvi.orbit.OrbitContainerHost
 import org.orbitmvi.orbit.viewmodel.orbitContainer
@@ -27,6 +29,7 @@ class SettingsViewModel(
     private val monitoringRepository: MonitoringSettingsRepository,
     private val globalEffectRepository: GlobalEffectRepository,
     private val tunnelCoordinator: TunnelCoordinator,
+    private val appStateRepository: AppStateRepository,
 ) : OrbitContainerHost<SettingUiState, SettingUiState, Nothing>, ViewModel() {
 
     override val container =
@@ -107,8 +110,25 @@ class SettingsViewModel(
         settingsRepository.upsert(state.settings.copy(isRestoreOnBootEnabled = to))
     }
 
-    fun setGlobalSplitTunneling(to: Boolean) = intent {
+    fun setGlobalSplitTunneling(to: Boolean, restart: Boolean = false) = intent {
         settingsRepository.upsert(state.settings.copy(isGlobalSplitTunnelEnabled = to))
+        if (restart) {
+            settingsRepository.flow.first { it.isGlobalSplitTunnelEnabled == to }
+            tunnelCoordinator.restartActiveTunnels()
+        }
+    }
+
+    fun setGlobalAmneziaEnabled(to: Boolean) = intent {
+        settingsRepository.updateGlobalAmneziaEnabled(to)
+    }
+
+    fun setStrictSplitTunnel(to: Boolean, restart: Boolean) = intent {
+        appStateRepository.setStrictSplitDecided(true)
+        settingsRepository.upsert(state.settings.copy(strictSplitTunnelEnabled = to))
+        if (restart) {
+            settingsRepository.flow.first { it.strictSplitTunnelEnabled == to }
+            tunnelCoordinator.restartActiveTunnels()
+        }
     }
 
     fun setLocalLogging(to: Boolean) = intent {
@@ -127,7 +147,7 @@ class SettingsViewModel(
             GlobalSideEffect.Snackbar(
                 StringValue.StringResource(R.string.remote_key_rotated),
                 ToastType.Success,
-            )
+            ),
         )
     }
 
@@ -139,13 +159,13 @@ class SettingsViewModel(
                     GlobalSideEffect.Snackbar(
                         StringValue.StringResource(R.string.error_root_denied),
                         ToastType.Error,
-                    )
+                    ),
                 )
             postSideEffect(
                 GlobalSideEffect.Snackbar(
                     StringValue.StringResource(R.string.root_accepted),
                     ToastType.Success,
-                )
+                ),
             )
         }
         settingsRepository.upsert(state.settings.copy(tunnelScriptingEnabled = to))

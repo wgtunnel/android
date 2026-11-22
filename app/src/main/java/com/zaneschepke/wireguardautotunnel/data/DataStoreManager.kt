@@ -30,7 +30,10 @@ class DataStoreManager(
             booleanPreferencesKey("NOTIFICATION_PERMISSION_REQUESTED")
         val shouldShowDonationSnackbar = booleanPreferencesKey("SHOW_DONATION_SNACK")
         val desktopPromptShown = booleanPreferencesKey("DESKTOP_PROMPT_SHOWN")
+        val strictSplitDecided = booleanPreferencesKey("STRICT_SPLIT_DECIDED")
+        val strictSplitNotice = stringPreferencesKey("STRICT_SPLIT_NOTICE")
         val lastActiveTunnelIds = stringPreferencesKey("LAST_ACTIVE_TUNNEL_IDS")
+        val lastUsedTunnelIds = stringPreferencesKey("LAST_USED_TUNNEL_IDS")
     }
 
     suspend fun init() {

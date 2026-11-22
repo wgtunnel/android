@@ -11,9 +11,6 @@ plugins {
     alias(libs.plugins.aboutlibraries)
 }
 
-// TODO temp fix for duplicate tink conflict from core
-configurations.configureEach { exclude(group = "com.google.crypto.tink", module = "tink") }
-
 ksp { arg("room.schemaLocation", "$projectDir/schemas") }
 
 licensee {
@@ -32,7 +29,12 @@ licensee {
 
 configure<ApplicationExtension> {
     namespace = Constants.APP_ID
-    compileSdk = libs.versions.compileSdk.get().toInt()
+    compileSdk {
+        version =
+            release(libs.versions.compileSdk.get().toInt()) {
+                minorApiLevel = libs.versions.compileSdkMinor.get().toInt()
+            }
+    }
 
     androidResources { generateLocaleConfig = true }
 
@@ -88,7 +90,7 @@ configure<ApplicationExtension> {
 
     buildTypes {
         packaging.jniLibs.keepDebugSymbols.addAll(
-            listOf("libwg-go.so", "libwg-quick.so", "libwg.so")
+            listOf("libwg-go.so", "libwg-quick.so", "libwg.so"),
         )
 
         release {

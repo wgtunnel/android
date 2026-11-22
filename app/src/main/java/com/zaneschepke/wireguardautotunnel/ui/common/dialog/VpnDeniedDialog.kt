@@ -25,11 +25,11 @@ fun VpnDeniedDialog(show: Boolean, onDismiss: () -> Unit) {
                     tag = "vpnSettings",
                     styles =
                         TextLinkStyles(
-                            style = SpanStyle(color = MaterialTheme.colorScheme.primary)
+                            style = SpanStyle(color = MaterialTheme.colorScheme.primary),
                         ),
                 ) {
                     context.launchVpnSettings()
-                }
+                },
             ) {
                 append(stringResource(id = R.string.vpn_settings))
             }
@@ -46,7 +46,7 @@ fun VpnDeniedDialog(show: Boolean, onDismiss: () -> Unit) {
                     text = alwaysOnDescription,
                     style =
                         MaterialTheme.typography.bodyMedium.copy(
-                            color = MaterialTheme.colorScheme.outline
+                            color = MaterialTheme.colorScheme.outline,
                         ),
                 )
             },

@@ -35,7 +35,7 @@ fun AppAlertBanner(
                     shape = RoundedCornerShape(bottomStart = 8.dp, bottomEnd = 8.dp),
                 )
                 .clip(RoundedCornerShape(bottomStart = 8.dp, bottomEnd = 8.dp))
-                .statusBarsPadding()
+                .statusBarsPadding(),
     ) {
         Text(
             text = message,

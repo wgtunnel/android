@@ -293,7 +293,7 @@ class DownloadManagerUpdateDownloader(
                     if (!keepPolling) return@launch
                     delay(
                         (if (_state.subscriptionCount.value > 0) FAST_POLL_MS else SLOW_POLL_MS)
-                            .milliseconds
+                            .milliseconds,
                     )
                 }
             }
@@ -369,7 +369,7 @@ class DownloadManagerUpdateDownloader(
                     DownloadManager.Request.VISIBILITY_VISIBLE
                 } else {
                     DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED
-                }
+                },
             )
             addRequestHeader("User-Agent", "wgtunnel/${BuildConfig.VERSION_NAME} (Android)")
         }

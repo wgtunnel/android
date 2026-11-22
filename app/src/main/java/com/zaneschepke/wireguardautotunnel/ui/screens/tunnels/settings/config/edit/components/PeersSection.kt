@@ -21,6 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.common.label.GroupLabel
+import com.zaneschepke.wireguardautotunnel.ui.screens.pin.LocalAppLocked
 import com.zaneschepke.wireguardautotunnel.ui.state.ConfigUiState
 import com.zaneschepke.wireguardautotunnel.ui.state.EditablePeer
 
@@ -52,7 +53,9 @@ fun PeersSection(
                     }
                     Column {
                         IconButton(
-                            onClick = { onPeerDropdownExpanded(!uiState.ui.isPeerDropdownExpanded) }
+                            onClick = {
+                                onPeerDropdownExpanded(!uiState.ui.isPeerDropdownExpanded)
+                            },
                         ) {
                             Icon(
                                 Icons.Rounded.MoreVert,
@@ -60,7 +63,7 @@ fun PeersSection(
                             )
                         }
                         DropdownMenu(
-                            expanded = uiState.ui.isPeerDropdownExpanded,
+                            expanded = uiState.ui.isPeerDropdownExpanded && !LocalAppLocked.current,
                             onDismissRequest = {
                                 onPeerDropdownExpanded(!uiState.ui.isPeerDropdownExpanded)
                             },
@@ -73,7 +76,7 @@ fun PeersSection(
                                     Text(
                                         if (peer.isLanExcluded())
                                             stringResource(R.string.include_lan)
-                                        else stringResource(R.string.exclude_lan)
+                                        else stringResource(R.string.exclude_lan),
                                     )
                                 },
                                 onClick = {

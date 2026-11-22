@@ -25,12 +25,6 @@ data class ConfigUiState(
     val isGlobalConfig: Boolean
         get() = tunnel?.name == Entity.GLOBAL_CONFIG_NAME
 
-    val showAmneziaGlobals: Boolean
-        get() = isGlobalConfig && globalSettings.amneziaEnabled
-
-    val globalInterfaceSettingsEnabled: Boolean
-        get() = globalSettings.dnsEnabled || globalSettings.amneziaEnabled
-
     val isAmneziaCompatibilitySet: Boolean
         get() = draft.config.`interface`.isAmneziaCompatibilityModeSet()
 

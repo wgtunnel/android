@@ -45,7 +45,7 @@ fun ConfigurationTextBox(
             isError = isError,
             textStyle =
                 MaterialTheme.typography.bodySmall.copy(
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = MaterialTheme.colorScheme.onSurface,
                 ),
             modifier = Modifier.fillMaxWidth().defaultMinSize(minHeight = 48.dp),
             value = value,

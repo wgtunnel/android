@@ -1,5 +1,6 @@
 package com.zaneschepke.wireguardautotunnel.viewmodel
 
+import android.os.Build
 import androidx.lifecycle.ViewModel
 import com.dokar.sonner.ToastType
 import com.wgtunnel.backend.state.BackendStatus
@@ -71,6 +72,11 @@ class SplitTunnelViewModel(
                         val tunnel = incoming ?: state.tunnel
                         val restart = needsRestart(tunnel, settings, status)
                         val override = globalOverrideSummary(tunnel, settings, globalTunnel)
+                        val strict =
+                            settings.strictSplitTunnelEnabled.takeIf {
+                                Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
+                                    settings.tunnelMode == TunnelMode.VPN
+                            }
                         if (!state.initialized && incoming != null) {
                             val config = incoming.getConfig()
                             val included = config.`interface`.allIncludedApps.toSet()
@@ -86,6 +92,7 @@ class SplitTunnelViewModel(
                                 excludedPackages = excluded,
                                 needsRestart = restart,
                                 globalOverride = override,
+                                strictSplitEnabled = strict,
                             )
                         } else {
                             state.copy(
@@ -95,6 +102,7 @@ class SplitTunnelViewModel(
                                 isLoading = packages.isEmpty() || !state.initialized,
                                 needsRestart = restart,
                                 globalOverride = override,
+                                strictSplitEnabled = strict,
                             )
                         }
                     }
@@ -143,12 +151,15 @@ class SplitTunnelViewModel(
         val editableInterface = EditableInterface.from(config.`interface`)
         val (included, excluded) =
             when (current.activeBehavior) {
-                SplitBehavior.ALL -> Pair(emptySet(), emptySet())
-                SplitBehavior.INCLUDE -> Pair(current.includedPackages, emptySet<String>())
-                SplitBehavior.EXCLUDE -> Pair(emptySet<String>(), current.excludedPackages)
+                SplitBehavior.ALL -> emptySet<String>() to emptySet()
+                SplitBehavior.INCLUDE -> current.includedPackages to emptySet()
+                SplitBehavior.EXCLUDE -> emptySet<String>() to current.excludedPackages
             }
         val updatedInterface =
-            editableInterface.copy(includedApplications = included, excludedApplications = excluded)
+            editableInterface.copy(
+                includedApplications = included,
+                excludedApplications = excluded,
+            )
         val updatedProxyConfig = editableConfig.copy(`interface` = updatedInterface)
         val updatedConfig = updatedProxyConfig.buildConfig()
         val updatedTunnel =
@@ -166,7 +177,7 @@ class SplitTunnelViewModel(
             GlobalSideEffect.Snackbar(
                 StringValue.StringResource(R.string.config_changes_saved),
                 ToastType.Success,
-            )
+            ),
         )
         postSideEffect(GlobalSideEffect.PopBackStack)
     }

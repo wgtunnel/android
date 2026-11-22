@@ -37,7 +37,7 @@ class FileExportCoordinator(
 
         try {
             Timber.d(
-                "Exporting ${export.fileName} ${if (export.uri == null) "via Downloads" else "via SAF"}"
+                "Exporting ${export.fileName} ${if (export.uri == null) "via Downloads" else "via SAF"}",
             )
             export.prepareFile(shareFile)
             fileUtils.exportFile(shareFile, export.uri, export.mimeType).getOrElse {
@@ -51,7 +51,7 @@ class FileExportCoordinator(
                     export.successMessage
                 }
             globalEffectRepository.post(
-                GlobalSideEffect.Snackbar(successMessage, ToastType.Success)
+                GlobalSideEffect.Snackbar(successMessage, ToastType.Success),
             )
             export.onComplete()
         } catch (error: Exception) {
@@ -70,7 +70,7 @@ class FileExportCoordinator(
                     ": ${error.localizedMessage}",
                 ),
                 ToastType.Error,
-            )
+            ),
         )
     }
 }

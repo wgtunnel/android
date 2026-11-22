@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.zaneschepke.wireguardautotunnel.R
+import com.zaneschepke.wireguardautotunnel.ui.screens.pin.LocalAppLocked
 import com.zaneschepke.wireguardautotunnel.ui.theme.Disabled
 
 @Composable
@@ -59,7 +60,7 @@ fun <T> DropdownSelector(
             containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
             tonalElevation = 4.dp,
             shadowElevation = 4.dp,
-            expanded = isExpanded,
+            expanded = isExpanded && !LocalAppLocked.current,
             onDismissRequest = onDismiss,
         ) {
             options.forEach { option ->

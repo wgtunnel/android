@@ -27,7 +27,7 @@ fun AppSearchField(query: String, onQueryChange: (String) -> Unit) {
     CustomTextField(
         textStyle =
             MaterialTheme.typography.labelMedium.copy(
-                color = MaterialTheme.colorScheme.onBackground
+                color = MaterialTheme.colorScheme.onBackground,
             ),
         value = query,
         onValueChange = onQueryChange,
@@ -69,6 +69,6 @@ fun filterAndSortPackages(
         }
         .sortedWith(
             compareByDescending<InstalledPackage> { pinnedPackages.contains(it.packageName) }
-                .thenBy { it.name.lowercase(platformLocale) }
+                .thenBy { it.name.lowercase(platformLocale) },
         )
 }

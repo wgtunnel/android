@@ -43,7 +43,7 @@ fun ExpandingRowListItem(
                 .animateContentSize()
                 .background(
                     if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
-                    else Color.Transparent
+                    else Color.Transparent,
                 )
                 .then(
                     if (onClick != null) {
@@ -55,9 +55,9 @@ fun ExpandingRowListItem(
                         )
                     } else {
                         Modifier
-                    }
+                    },
                 )
-                .indication(interactionSource, ripple())
+                .indication(interactionSource, ripple()),
     ) {
         Column(Modifier.padding(horizontal = 16.dp)) {
             Row(

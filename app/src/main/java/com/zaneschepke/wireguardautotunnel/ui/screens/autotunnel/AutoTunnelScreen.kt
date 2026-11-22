@@ -122,7 +122,7 @@ fun AutoTunnelScreen(
             Intent().apply {
                 action = Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
                 data = "package:${context.packageName}".toUri()
-            }
+            },
         )
     }
 
@@ -189,7 +189,7 @@ fun AutoTunnelScreen(
                             fontWeight = FontWeight.Bold,
                             style =
                                 MaterialTheme.typography.bodyMedium.copy(
-                                    color = MaterialTheme.colorScheme.surface
+                                    color = MaterialTheme.colorScheme.surface,
                                 ),
                         )
                     }
@@ -238,14 +238,14 @@ fun AutoTunnelScreen(
                                         buildAnnotatedString {
                                             append(stringResource(R.string.security_type))
                                             withStyle(
-                                                style = SpanStyle(fontWeight = FontWeight.Bold)
+                                                style = SpanStyle(fontWeight = FontWeight.Bold),
                                             ) {
                                                 append(
                                                     activeNetworkWifi.securityType?.name
-                                                        ?: stringResource(R.string.unknown)
+                                                        ?: stringResource(R.string.unknown),
                                                 )
                                             }
-                                        }
+                                        },
                                     )
                                     if (
                                         activeNetworkWifi.ssid !=
@@ -255,11 +255,11 @@ fun AutoTunnelScreen(
                                             buildAnnotatedString {
                                                 append(stringResource(R.string.network_name))
                                                 withStyle(
-                                                    style = SpanStyle(fontWeight = FontWeight.Bold)
+                                                    style = SpanStyle(fontWeight = FontWeight.Bold),
                                                 ) {
                                                     append(activeNetworkWifi.ssid)
                                                 }
-                                            }
+                                            },
                                         )
                                     }
                                     if (
@@ -271,11 +271,11 @@ fun AutoTunnelScreen(
                                                 append(stringResource(R.string.bssid))
                                                 append(": ")
                                                 withStyle(
-                                                    style = SpanStyle(fontWeight = FontWeight.Bold)
+                                                    style = SpanStyle(fontWeight = FontWeight.Bold),
                                                 ) {
                                                     append(activeNetworkWifi.bssid)
                                                 }
-                                            }
+                                            },
                                         )
                                     }
                                 }
@@ -301,10 +301,10 @@ fun AutoTunnelScreen(
                             withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
                                 append(
                                     if (mappedTunnels) stringResource(R.string.mapped)
-                                    else stringResource(R.string._default)
+                                    else stringResource(R.string._default),
                                 )
                             }
-                        }
+                        },
                     )
                 },
                 onClick = { navController.push(Route.WifiPreferences) },
@@ -327,7 +327,7 @@ fun AutoTunnelScreen(
                                 ?: withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
                                     append(stringResource(R.string._default))
                                 }
-                        }
+                        },
                     )
                 },
                 onClick = { navController.push(Route.PreferredTunnel(TunnelNetwork.MOBILE_DATA)) },
@@ -350,7 +350,7 @@ fun AutoTunnelScreen(
                                 ?: withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
                                     append(stringResource(R.string._default))
                                 }
-                        }
+                        },
                     )
                 },
                 onClick = { navController.push(Route.PreferredTunnel(TunnelNetwork.ETHERNET)) },
@@ -369,7 +369,7 @@ fun AutoTunnelScreen(
                 },
                 onClick = {
                     viewModel.setStopOnNoInternetEnabled(
-                        !uiState.autoTunnelSettings.isStopOnNoInternetEnabled
+                        !uiState.autoTunnelSettings.isStopOnNoInternetEnabled,
                     )
                 },
             )

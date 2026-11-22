@@ -37,7 +37,7 @@ import com.zaneschepke.wireguardautotunnel.data.entity.TunnelGroup
             DnsSettings::class,
             LockdownSettings::class,
         ],
-    version = 41,
+    version = 42,
     autoMigrations =
         [
             AutoMigration(from = 1, to = 2),
@@ -77,6 +77,7 @@ import com.zaneschepke.wireguardautotunnel.data.entity.TunnelGroup
             AutoMigration(from = 38, to = 39),
             AutoMigration(from = 39, to = 40),
             AutoMigration(from = 40, to = 41),
+            AutoMigration(from = 41, to = 42),
         ],
     exportSchema = true,
 )
@@ -157,7 +158,7 @@ class FixProxySettingsMigration : AutoMigrationSpec {
         tableName = "general_settings",
         fromColumnName = "is_tunnel_globals_enabled",
         toColumnName = "global_split_tunnel_enabled",
-    )
+    ),
 )
 class GlobalsMigration : AutoMigrationSpec
 
@@ -205,7 +206,7 @@ class SingleConfigMigration : AutoMigrationSpec {
                     WHEN 0 THEN 1
                     ELSE 0
                 END
-        """
+        """,
         )
 
         db.execSQL(
@@ -216,7 +217,7 @@ class SingleConfigMigration : AutoMigrationSpec {
                 ELSE app_mode
             END
             """
-                .trimIndent()
+                .trimIndent(),
         )
     }
 }

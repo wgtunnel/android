@@ -54,7 +54,7 @@ fun Context.hasSAFSupport(mimeType: String): Boolean {
             packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
         }
     Timber.d(
-        "Found ${activitiesToResolveIntent.size} activities: ${activitiesToResolveIntent.map { it.activityInfo.packageName }}"
+        "Found ${activitiesToResolveIntent.size} activities: ${activitiesToResolveIntent.map { it.activityInfo.packageName }}",
     )
 
     return if (activitiesToResolveIntent.isEmpty()) {
@@ -87,7 +87,7 @@ fun Context.launchSupportEmail(): Result<Unit> = runCatching {
         startActivity(
             Intent.createChooser(intent, getString(R.string.email_chooser)).apply {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            }
+            },
         )
     } else {
         throw IllegalStateException("No email client found")

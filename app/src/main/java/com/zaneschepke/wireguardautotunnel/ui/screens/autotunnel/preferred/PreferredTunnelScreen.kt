@@ -172,7 +172,7 @@ fun PreferredTunnelScreen(
 
                         if (totalMapped > 0) {
                             DescriptionText(
-                                stringResource(R.string.mapped_rules_count, totalMapped)
+                                stringResource(R.string.mapped_rules_count, totalMapped),
                             )
                         }
                     },

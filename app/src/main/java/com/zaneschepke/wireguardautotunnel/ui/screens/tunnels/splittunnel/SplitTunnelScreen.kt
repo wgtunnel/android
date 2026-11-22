@@ -15,7 +15,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.zaneschepke.wireguardautotunnel.ui.LocalNavController
 import com.zaneschepke.wireguardautotunnel.ui.common.dialog.rememberRestartToApplyChanges
+import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.splittunnel.components.SelectTunnelModal
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.splittunnel.components.SplitTunnelContent
 import com.zaneschepke.wireguardautotunnel.ui.screens.tunnels.splittunnel.state.SplitBehavior
@@ -33,6 +35,7 @@ fun SplitTunnelScreen(
     sharedViewModel: SharedAppViewModel = koinActivityViewModel(),
 ) {
 
+    val navController = LocalNavController.current
     val uiState by viewModel.collectAsState()
     val showSystemApps by sharedViewModel.showSplitSystemApps.collectAsStateWithLifecycle()
 
@@ -42,7 +45,6 @@ fun SplitTunnelScreen(
     }
 
     var showSelectionDialog by rememberSaveable { mutableStateOf(false) }
-
     val requestApply =
         rememberRestartToApplyChanges(
             needsRestart = uiState.needsRestart,
@@ -94,5 +96,7 @@ fun SplitTunnelScreen(
         },
         showSystemApps = showSystemApps,
         globalOverride = uiState.globalOverride,
+        strictSplitEnabled = uiState.strictSplitEnabled,
+        onStrictSplitClick = { navController.push(Route.Advanced) },
     )
 }

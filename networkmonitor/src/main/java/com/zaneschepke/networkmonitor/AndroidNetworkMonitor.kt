@@ -298,15 +298,7 @@ class AndroidNetworkMonitor(
     private data class PrivateDnsSettings(val mode: PrivateDnsMode, val hostname: String?)
 
     private fun getCurrentPrivateDnsSettings(): PrivateDnsSettings {
-        val modeStr =
-            Settings.Global.getString(appContext.contentResolver, "private_dns_mode") ?: "off"
-
-        val mode =
-            when (modeStr) {
-                "hostname" -> PrivateDnsMode.HOSTNAME
-                "opportunistic" -> PrivateDnsMode.AUTOMATIC
-                else -> PrivateDnsMode.OFF
-            }
+        val mode = appContext.privateDnsMode()
 
         val hostname =
             Settings.Global.getString(appContext.contentResolver, "private_dns_specifier")
@@ -407,8 +399,8 @@ class AndroidNetworkMonitor(
                             Permissions(
                                 locationManager?.isLocationServicesEnabled() ?: false,
                                 appContext.hasRequiredLocationPermissions(),
-                            )
-                        )
+                            ),
+                        ),
                     )
 
                     awaitClose {
@@ -431,7 +423,7 @@ class AndroidNetworkMonitor(
             .flatMapLatest { detectionMethod -> createWifiNetworkCallbackFlow(detectionMethod) }
 
     private fun createWifiNetworkCallbackFlow(
-        detectionMethod: WifiDetectionMethod
+        detectionMethod: WifiDetectionMethod,
     ): Flow<TransportEvent> = callbackFlow {
         // Caps are retained so a later link property update can re-emit them. Emitting
         // LinkPropertiesChanged on its own replaces the capabilities event, and the selector
@@ -712,7 +704,7 @@ class AndroidNetworkMonitor(
                             withTimeoutOrNull(SHELL_COMMAND_TIMEOUT_MS.milliseconds) {
                                 if (method == ROOT) {
                                     configurationListener.runRootShellCommand(
-                                        WIFI_INFO_SHELL_COMMAND
+                                        WIFI_INFO_SHELL_COMMAND,
                                     )
                                 } else {
                                     ShizukuShell(applicationScope)
@@ -728,7 +720,7 @@ class AndroidNetworkMonitor(
             }
             .also {
                 Timber.d(
-                    "Current WiFi details via ${method.name}: ssid=${it.ssid}, bssid=${it.bssid}"
+                    "Current WiFi details via ${method.name}: ssid=${it.ssid}, bssid=${it.bssid}",
                 )
             }
     }
@@ -929,8 +921,8 @@ class AndroidNetworkMonitor(
                         VpnState.Active(
                             hasInternet =
                                 defaultCaps.hasCapability(
-                                    NetworkCapabilities.NET_CAPABILITY_VALIDATED
-                                )
+                                    NetworkCapabilities.NET_CAPABILITY_VALIDATED,
+                                ),
                         )
                     }
 
@@ -938,7 +930,7 @@ class AndroidNetworkMonitor(
                     when {
                         networkData.ethernetEvent is TransportEvent.CapabilitiesChanged &&
                             networkData.ethernetEvent.networkCapabilities.hasTransport(
-                                NetworkCapabilities.TRANSPORT_ETHERNET
+                                NetworkCapabilities.TRANSPORT_ETHERNET,
                             ) &&
                             (!defaultMissing ||
                                 networkPresent(networkData.ethernetEvent.network)) -> {
@@ -950,7 +942,7 @@ class AndroidNetworkMonitor(
 
                         networkData.wifiNetworkEvent is TransportEvent.CapabilitiesChanged &&
                             networkData.wifiNetworkEvent.networkCapabilities.hasTransport(
-                                NetworkCapabilities.TRANSPORT_WIFI
+                                NetworkCapabilities.TRANSPORT_WIFI,
                             ) &&
                             !isServedOrLocalWifi(
                                 networkData.wifiNetworkEvent.network,
@@ -1122,7 +1114,7 @@ class AndroidNetworkMonitor(
         ) {
             Timber.d(
                 "Reusing cached WiFi details (ssid=${lastActive.ssid}) " +
-                    "for same networkId during VPN transition"
+                    "for same networkId during VPN transition",
             )
             val linkPropsSnapshot =
                 LinkPropertiesSnapshot.from(connectivityManager?.getLinkProperties(network))

@@ -119,7 +119,7 @@ fun CustomTextField(
                                 if (editable) {
                                     left = mainFocusRequester
                                 }
-                            }
+                            },
                         )
                     }
                 } else null,
@@ -165,7 +165,7 @@ fun CustomTextField(
                                 disabledContainerColor = containerColor,
                                 disabledIndicatorColor =
                                     MaterialTheme.colorScheme.onSurface.copy(
-                                        alpha = disabledBorderAlpha
+                                        alpha = disabledBorderAlpha,
                                     ),
                                 focusedIndicatorColor = MaterialTheme.colorScheme.primary,
                                 unfocusedIndicatorColor = MaterialTheme.colorScheme.outline,

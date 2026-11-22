@@ -145,7 +145,7 @@ fun SupportScreen(
                     GlobalSideEffect.Snackbar(
                         StringValue.StringResource(R.string.no_browser_detected),
                         ToastType.Error,
-                    )
+                    ),
                 )
             }
         }
@@ -280,7 +280,7 @@ fun SupportScreen(
                                 GlobalSideEffect.Snackbar(
                                     StringValue.StringResource(R.string.no_email_detected),
                                     ToastType.Error,
-                                )
+                                ),
                             )
                         }
                     }
@@ -299,7 +299,7 @@ fun SupportScreen(
                     Column {
                         DescriptionText(stringResource(R.string.version_template, version))
                         DescriptionText(
-                            stringResource(R.string.flavor_template, BuildConfig.FLAVOR)
+                            stringResource(R.string.flavor_template, BuildConfig.FLAVOR),
                         )
                     }
                 },
@@ -318,7 +318,7 @@ fun SupportScreen(
                             downloadReady -> R.string.update_ready_to_install
                             downloadFailed -> R.string.update_download_failed_title
                             else -> R.string.check_for_update
-                        }
+                        },
                     ),
                 description =
                     when {
@@ -340,7 +340,7 @@ fun SupportScreen(
                                 GlobalSideEffect.Snackbar(
                                     StringValue.StringResource(R.string.update_check_unsupported),
                                     ToastType.Warning,
-                                )
+                                ),
                             )
                         }
                         return@SurfaceRow

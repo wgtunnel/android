@@ -49,75 +49,70 @@ fun InterfaceSection(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                if (!uiState.isGlobalConfig || uiState.globalInterfaceSettingsEnabled) {
-                    Box(
-                        modifier = Modifier.height(48.dp).padding(horizontal = 16.dp),
-                        contentAlignment = Alignment.CenterStart,
-                    ) {
-                        GroupLabel(stringResource(R.string.interface_))
-                    }
+                Box(
+                    modifier = Modifier.height(48.dp).padding(horizontal = 16.dp),
+                    contentAlignment = Alignment.CenterStart,
+                ) {
+                    GroupLabel(stringResource(R.string.interface_))
                 }
-                if (!uiState.isGlobalConfig || uiState.showAmneziaGlobals)
-                    Row {
-                        if (isTv) {
-                            if (!uiState.isGlobalConfig)
-                                IconButton(
-                                    enabled = true,
-                                    onClick = {
-                                        val privateKey = Key.generatePrivateKey()
-                                        val publicKey = Key.generatePublicKey(privateKey)
-                                        onInterfaceChange(
-                                            uiState.draft.config.`interface`.copy(
-                                                privateKey = privateKey.toBase64(),
-                                                publicKey = publicKey.toBase64(),
-                                            )
-                                        )
-                                    },
-                                ) {
-                                    Icon(
-                                        Icons.Rounded.Refresh,
-                                        stringResource(R.string.rotate_keys),
-                                        tint = MaterialTheme.colorScheme.onSurface,
-                                    )
-                                }
+                Row {
+                    if (isTv) {
+                        IconButton(
+                            enabled = true,
+                            onClick = {
+                                val privateKey = Key.generatePrivateKey()
+                                val publicKey = Key.generatePublicKey(privateKey)
+                                onInterfaceChange(
+                                    uiState.draft.config.`interface`.copy(
+                                        privateKey = privateKey.toBase64(),
+                                        publicKey = publicKey.toBase64(),
+                                    ),
+                                )
+                            },
+                        ) {
+                            Icon(
+                                Icons.Rounded.Refresh,
+                                stringResource(R.string.rotate_keys),
+                                tint = MaterialTheme.colorScheme.onSurface,
+                            )
                         }
-                        InterfaceDropdown(
-                            uiState = uiState,
-                            onToggleDropdown = onToggleDropdown,
-                            onToggleScripts = onToggleScripts,
-                            onToggleAmneziaValues = onToggleAmneziaValues,
-                            onToggleAmneziaCompatibility = onToggleAmneziaCompat,
-                            onMimic = onMimic,
-                        )
                     }
+                    InterfaceDropdown(
+                        uiState = uiState,
+                        onToggleDropdown = onToggleDropdown,
+                        onToggleScripts = onToggleScripts,
+                        onToggleAmneziaValues = onToggleAmneziaValues,
+                        onToggleAmneziaCompatibility = onToggleAmneziaCompat,
+                        onMimic = onMimic,
+                    )
+                }
             }
             Column(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier.padding(horizontal = 16.dp),
             ) {
-                if (!uiState.isGlobalConfig)
-                    ConfigurationTextBox(
-                        value = uiState.draft.tunnelName,
-                        enabled = !uiState.isRunning,
-                        onValueChange = onTunnelNameChange,
-                        label = stringResource(R.string.name),
-                        isError = uiState.isTunnelNameTaken,
-                        supportingText =
-                            if (uiState.isRunning) {
-                                {
-                                    DescriptionText(
-                                        stringResource(R.string.tunnel_running_name_message)
-                                    )
-                                }
-                            } else null,
-                        hint =
-                            stringResource(
-                                    R.string.hint_template,
-                                    stringResource(R.string.tunnel_name),
+                ConfigurationTextBox(
+                    value = uiState.draft.tunnelName,
+                    enabled = !uiState.isRunning,
+                    onValueChange = onTunnelNameChange,
+                    label = stringResource(R.string.name),
+                    isError = uiState.isTunnelNameTaken,
+                    supportingText =
+                        if (uiState.isRunning) {
+                            {
+                                DescriptionText(
+                                    stringResource(R.string.tunnel_running_name_message),
                                 )
-                                .lowercase(locale = Locale.current.platformLocale),
-                        modifier = Modifier.fillMaxWidth(),
-                    )
+                            }
+                        } else null,
+                    hint =
+                        stringResource(
+                                R.string.hint_template,
+                                stringResource(R.string.tunnel_name),
+                            )
+                            .lowercase(locale = Locale.current.platformLocale),
+                    modifier = Modifier.fillMaxWidth(),
+                )
                 InterfaceFields(uiState = uiState, onInterfaceChange = onInterfaceChange)
             }
         }

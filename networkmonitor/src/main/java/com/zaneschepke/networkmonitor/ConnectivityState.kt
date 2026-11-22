@@ -48,7 +48,7 @@ data class ConnectivityState(
     }
 
     private fun hasInternetCapability(
-        caps: NetworkCapabilities? = activeNetwork.capabilities
+        caps: NetworkCapabilities? = activeNetwork.capabilities,
     ): Boolean {
         if (caps == null) return false
         return caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)

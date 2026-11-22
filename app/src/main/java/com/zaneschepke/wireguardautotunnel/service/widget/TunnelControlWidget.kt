@@ -137,7 +137,7 @@ open class TunnelControlWidget : AppWidgetProvider(), KoinComponent {
 
             else -> {
                 // Name what a tap will start, falling back to "Off" if nothing would start.
-                val next = tunnelCoordinator.tunnelsToStartOnToggle()
+                val next = tunnelCoordinator.quickStartTunnels()
                 val label =
                     when (next.size) {
                         0 -> context.getString(R.string.widget_off)

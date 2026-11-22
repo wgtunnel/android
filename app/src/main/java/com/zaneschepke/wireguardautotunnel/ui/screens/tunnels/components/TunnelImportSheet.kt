@@ -36,7 +36,7 @@ fun TunnelImportSheet(
                         onDismiss()
                         onFileClick()
                     },
-                )
+                ),
             )
             if (!isTv)
                 add(
@@ -47,7 +47,7 @@ fun TunnelImportSheet(
                             onDismiss()
                             onQrClick()
                         },
-                    )
+                    ),
                 )
             add(
                 SheetOption(
@@ -57,7 +57,7 @@ fun TunnelImportSheet(
                         onDismiss()
                         onClipboardClick()
                     },
-                )
+                ),
             )
             add(
                 SheetOption(
@@ -67,7 +67,7 @@ fun TunnelImportSheet(
                         onDismiss()
                         onUrlClick()
                     },
-                )
+                ),
             )
             add(
                 SheetOption(
@@ -77,9 +77,9 @@ fun TunnelImportSheet(
                         onDismiss()
                         onManualImportClick()
                     },
-                )
+                ),
             )
-        }
+        },
     ) {
         onDismiss()
     }

@@ -61,6 +61,15 @@ data class EditableConfig(
         )
     }
 
+    fun withDnsServers(dnsServers: String): EditableConfig =
+        copy(`interface` = `interface`.copy(dnsServers = dnsServers))
+
+    fun validatedConfig(name: String?): Config {
+        val config = buildConfig(name)
+        config.validate()
+        return config
+    }
+
     companion object {
         fun from(config: Config): EditableConfig {
             return EditableConfig(

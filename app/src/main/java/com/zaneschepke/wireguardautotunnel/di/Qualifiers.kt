@@ -10,5 +10,5 @@ enum class Dispatcher {
 
 // Scopes
 enum class Scope {
-    APPLICATION
+    APPLICATION,
 }

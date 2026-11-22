@@ -30,7 +30,7 @@ class AndroidAutoTunnelHost(
                         Timber.d("Stopping tunnel: $id")
                         locked.stop(id.toInt(), TunnelActionSource.AUTO_TUNNEL)
                     }
-                }
+                },
             )
         }
 }

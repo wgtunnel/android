@@ -20,28 +20,20 @@ fun InterfaceFields(uiState: ConfigUiState, onInterfaceChange: (EditableInterfac
     val keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
 
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        if (!uiState.isGlobalConfig) {
-            BasicInterfaceFields(
-                interfaceState = uiState.draft.config.`interface`,
-                onInterfaceChange = onInterfaceChange,
-                showPrivateKey = uiState.ui.showSensitiveData,
-                keyboardOptions = keyboardOptions,
-                keyboardActions = keyboardActions,
-            )
-        }
+        BasicInterfaceFields(
+            interfaceState = uiState.draft.config.`interface`,
+            onInterfaceChange = onInterfaceChange,
+            showPrivateKey = uiState.ui.showSensitiveData,
+            keyboardOptions = keyboardOptions,
+            keyboardActions = keyboardActions,
+        )
 
         val managedDns =
-            if (!uiState.isGlobalConfig && uiState.globalSettings.dnsEnabled)
-                uiState.globalInterface?.dnsServers
-            else null
+            if (uiState.globalSettings.dnsEnabled) uiState.globalInterface?.dnsServers else null
         val managedAmnezia =
-            if (!uiState.isGlobalConfig && uiState.globalSettings.amneziaEnabled)
-                uiState.globalInterface
-            else null
+            if (uiState.globalSettings.amneziaEnabled) uiState.globalInterface else null
 
         DnsMtuSection(
-            isGlobalConfig = uiState.isGlobalConfig,
-            globalDnsEnabled = uiState.globalSettings.dnsEnabled,
             interfaceState = uiState.draft.config.`interface`,
             onInterfaceChange = onInterfaceChange,
             globalDnsServers = managedDns,
@@ -51,10 +43,7 @@ fun InterfaceFields(uiState: ConfigUiState, onInterfaceChange: (EditableInterfac
             ScriptsSection(uiState.draft.config.`interface`, onInterfaceChange)
         }
 
-        if (
-            (!uiState.isGlobalConfig && (uiState.ui.showAmneziaValues || managedAmnezia != null)) ||
-                (uiState.isGlobalConfig && uiState.globalSettings.amneziaEnabled)
-        ) {
+        if (uiState.ui.showAmneziaValues || managedAmnezia != null) {
             AmneziaSection(
                 uiState.draft.config.`interface`,
                 onInterfaceChange,

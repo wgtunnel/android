@@ -2,6 +2,8 @@ package com.zaneschepke.wireguardautotunnel.util
 
 import android.content.Context
 import androidx.annotation.StringRes
+import java.util.IllegalFormatException
+import timber.log.Timber
 
 sealed class StringValue {
     data class DynamicString(val value: String) : StringValue()
@@ -24,7 +26,17 @@ sealed class StringValue {
                             }
                         }
                         .toTypedArray()
-                context?.getString(resId, *stringArgs).orEmpty()
+                context ?: return ""
+                try {
+                    context.getString(resId, *stringArgs)
+                } catch (e: IllegalFormatException) {
+                    // Show unformatted instead of crash
+                    Timber.e(
+                        e,
+                        "Bad format arguments for ${context.resources.getResourceName(resId)}",
+                    )
+                    context.getString(resId)
+                }
             }
         }
     }

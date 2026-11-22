@@ -25,7 +25,7 @@ fun GoogleDonationMessage() {
             text = stringResource(R.string.google_donation_message),
             style =
                 MaterialTheme.typography.bodySmall.copy(
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = MaterialTheme.colorScheme.onSurface,
                 ),
             textAlign = TextAlign.Start,
         )

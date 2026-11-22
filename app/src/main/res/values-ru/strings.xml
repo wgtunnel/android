@@ -603,4 +603,20 @@
         <item quantity="many">Переместить %d туннелей</item>
         <item quantity="other">Переместить %d туннелей</item>
     </plurals>
+    <string name="advanced">Дополнительно</string>
+    <string name="privacy_and_censorship">Конфиденциальность и обход блокировок</string>
+    <string name="strict_split_tunnel">Строгое раздельное туннелирование</string>
+    <string name="strict_split_tunnel_desc">Не позволять приложениям, работающим в обход VPN, использовать туннель и узнавать IP-адрес вашего сервера</string>
+    <string name="strict_split_notice_title">Строгое раздельное туннелирование включено</string>
+    <string name="strict_split_notice_body">Приложения, работающие в обход VPN, больше не могут отправлять трафик через туннель, чтобы узнать IP-адрес вашего VPN-сервера. По этому адресу VPN можно обнаружить и заблокировать.</string>
+    <string name="strict_split_notice_limits">Пинг через туннель работать не будет, а трафик неопознанных приложений будет блокироваться. Отключить функцию можно в настройках, в разделе «Дополнительно».</string>
+    <string name="strict_split_notice_settings">Настройки</string>
+    <string name="strict_split_suggest_title">Включить строгое раздельное туннелирование?</string>
+    <string name="strict_split_suggest_body">Приложения, работающие в обход VPN, могут отправлять трафик через туннель, чтобы узнать IP-адрес вашего VPN-сервера. По этому адресу VPN можно обнаружить и заблокировать. Строгое раздельное туннелирование это предотвращает.</string>
+    <string name="strict_split_suggest_limits">Пинг через туннель работать не будет, а трафик неопознанных приложений будет блокироваться. Активные туннели переподключатся, чтобы применить настройку.</string>
+    <string name="strict_split_suggest_enable">Включить</string>
+    <string name="no_thanks">Нет, спасибо</string>
+    <string name="sections_and_more">%1$s и другое</string>
+    <string name="state_on">Вкл.</string>
+    <string name="state_off">Выкл.</string>
 </resources>

@@ -11,10 +11,12 @@ jobs:
   format_check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Verify Gradle Wrapper
-        uses: gradle/actions/wrapper-validation@v6.4.0
+        uses: gradle/actions/wrapper-validation@v6.4.1
 
       - name: Read JDK version
         id: jdk
@@ -23,7 +25,7 @@ jobs:
           echo "version=$JDK_VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Set up JDK
-        uses: actions/setup-java@v6
+        uses: actions/setup-java@v6.3.0
         with:
           distribution: 'temurin'
           java-version: ${{ steps.jdk.outputs.version }}
@@ -36,3 +38,17 @@ jobs:
         run: |
           ./gradlew formatCheck
           echo "Working tree matches ./gradlew format."
+
+  actions_lock:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Verify actions.lock
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh extension install github/gh-actions-lock --pin v0.4.1
+          gh actions-lock --verify

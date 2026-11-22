@@ -1,10 +1,20 @@
 package com.zaneschepke.networkmonitor
 
+import android.content.Context
+import android.provider.Settings
+
 enum class PrivateDnsMode {
     OFF,
     AUTOMATIC,
     HOSTNAME,
 }
+
+fun Context.privateDnsMode(): PrivateDnsMode =
+    when (Settings.Global.getString(contentResolver, "private_dns_mode")) {
+        "hostname" -> PrivateDnsMode.HOSTNAME
+        "opportunistic" -> PrivateDnsMode.AUTOMATIC
+        else -> PrivateDnsMode.OFF
+    }
 
 data class DnsInfo(
     val servers: List<String> = emptyList(),

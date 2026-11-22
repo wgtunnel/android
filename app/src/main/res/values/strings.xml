@@ -69,6 +69,7 @@
     <string name="error_ssid_exists">SSID already exists</string>
     <string name="error_root_denied">Root shell denied</string>
     <string name="error_no_file_explorer">No file explorer installed</string>
+    <string name="choose_file_manager">Choose a file manager</string>
     <string name="auto_tunnel_title">Auto-tunnel service</string>
     <string name="delete_tunnel">Delete tunnel</string>
     <string name="delete_tunnel_message">Are you sure you would like to delete the selected tunnels?</string>
@@ -440,7 +441,7 @@
     <string name="copy_from">Copy from</string>
     <string name="show_system_apps">Show system apps</string>
     <string name="hide_system_apps">Hide system apps</string>
-    <string name="split_tunneling">Split Tunneling</string>
+    <string name="split_tunneling">Split tunneling</string>
     <string name="split_tunneling_desc">Route specific apps through or around this tunnel</string>
     <string name="split_tunnel_all_label">Tunnel all</string>
     <string name="split_tunnel_all_desc">Every app uses this tunnel</string>
@@ -545,6 +546,7 @@
         <item quantity="one">%d app bypassed</item>
         <item quantity="other">%d apps bypassed</item>
     </plurals>
+
     <string name="all_apps_tunneled">All apps tunneled</string>
     <string name="managed_globally_detail">%1$s · Managed globally</string>
     <string name="managed_globally">Managed globally</string>
@@ -554,6 +556,32 @@
 
     <string name="error">Error</string>
     <string name="tunnel_globals">Tunnel globals</string>
+    <string name="advanced">Advanced</string>
+    <string name="privacy_and_censorship">Privacy and censorship</string>
+    <string name="strict_split_tunnel">Strict split tunneling</string>
+    <string name="strict_split_tunnel_desc">Prevent excluded apps from using the tunnel and detecting your server\'s IP</string>
+    <string name="strict_split_notice_title">Strict split tunneling is on</string>
+    <string name="strict_split_notice_body">Apps excluded from the VPN can no longer send traffic through the tunnel to learn your VPN server\'s IP address. That address can be used to detect your VPN and block it.</string>
+    <string name="strict_split_notice_limits">Ping through the tunnel won\'t work, and traffic whose app can\'t be identified is blocked. You can turn this off in Advanced settings.</string>
+    <string name="strict_split_notice_settings">Settings</string>
+    <string name="strict_split_suggest_title">Turn on strict split tunneling?</string>
+    <string name="strict_split_suggest_body">Apps excluded from the VPN can send traffic through the tunnel to learn your VPN server\'s IP address. That address can be used to detect your VPN and block it. Strict split tunneling stops this.</string>
+    <string name="strict_split_suggest_limits">Ping through the tunnel won\'t work, and traffic whose app can\'t be identified is blocked. Running tunnels reconnect to apply it.</string>
+    <string name="strict_split_suggest_enable">Turn on</string>
+    <string name="no_thanks">No thanks</string>
+    <string name="sections_and_more">%1$s and more</string>
+    <string name="state_on">On</string>
+    <string name="state_off">Off</string>
+
+    <string name="amnezia_for_all_tunnels">Amnezia for all tunnels</string>
+    <string name="amnezia_for_all_tunnels_desc">Use the same Amnezia options on every tunnel</string>
+    <string name="amnezia_options_saved_until_enabled">These options are saved and unused until Amnezia for all tunnels is on.</string>
+    <string name="split_tunneling_for_all_tunnels">App split tunneling for all tunnels</string>
+    <string name="split_tunneling_for_all_tunnels_desc">Use the same app split tunneling on every tunnel</string>
+    <string name="scripts">Scripts</string>
+    <string name="monitoring_and_recovery">Monitoring and recovery</string>
+    <string name="global_tunnel_dns">DNS servers for all tunnels</string>
+    <string name="global_tunnel_dns_desc">Replace each tunnel\'s DNS servers with this list</string>
     <string name="screen_recording_protection">Screen recording protection</string>
     <string name="security">Security</string>
     <string name="statistics">Statistics</string>

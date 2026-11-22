@@ -48,10 +48,10 @@ class TunnelEventDispatcher(
                                                 context.getString(
                                                     R.string.notification_ipv4_fallback_message,
                                                     name,
-                                                )
+                                                ),
                                             ),
                                         type = ToastType.Success,
-                                    )
+                                    ),
                                 )
                             },
                             backgroundAction = { notificationManager.showIpv4Fallback(name) },
@@ -70,10 +70,10 @@ class TunnelEventDispatcher(
                                                 context.getString(
                                                     R.string.notification_ipv6_recovery_message,
                                                     name,
-                                                )
+                                                ),
                                             ),
                                         type = ToastType.Success,
-                                    )
+                                    ),
                                 )
                             },
                             backgroundAction = { notificationManager.showIpv6Recovery(name) },
@@ -92,10 +92,10 @@ class TunnelEventDispatcher(
                                                 context.getString(
                                                     R.string.notification_dynamic_dns_message,
                                                     name,
-                                                )
+                                                ),
                                             ),
                                         type = ToastType.Success,
-                                    )
+                                    ),
                                 )
                             },
                             backgroundAction = { notificationManager.showDynamicDnsUpdate(name) },
@@ -110,10 +110,10 @@ class TunnelEventDispatcher(
                                     Snackbar(
                                         message =
                                             DynamicString(
-                                                context.getString(R.string.error_root_denied)
+                                                context.getString(R.string.error_root_denied),
                                             ),
                                         type = ToastType.Error,
-                                    )
+                                    ),
                                 )
                             },
                             backgroundAction = { notificationManager.showRootShellAccess() },
@@ -132,10 +132,10 @@ class TunnelEventDispatcher(
                                                 context.getString(
                                                     R.string.snackbar_seamless_recovery_attempt,
                                                     name,
-                                                )
+                                                ),
                                             ),
                                         type = ToastType.Info,
-                                    )
+                                    ),
                                 )
                             },
                             backgroundAction = {
@@ -159,10 +159,10 @@ class TunnelEventDispatcher(
                                     Snackbar(
                                         message =
                                             DynamicString(
-                                                context.getString(R.string.vpn_permission_required)
+                                                context.getString(R.string.vpn_permission_required),
                                             ),
                                         type = ToastType.Error,
-                                    )
+                                    ),
                                 )
                             },
                             backgroundAction = { notificationManager.showVpnRequired() },
@@ -177,7 +177,7 @@ class TunnelEventDispatcher(
                                     Snackbar(
                                         message = DynamicString(error.message),
                                         type = ToastType.Error,
-                                    )
+                                    ),
                                 )
                             },
                             backgroundAction = { notificationManager.showError(error.message) },
@@ -196,7 +196,7 @@ class TunnelEventDispatcher(
                                     Snackbar(
                                         message = DynamicString(message),
                                         type = ToastType.Error,
-                                    )
+                                    ),
                                 )
                             },
                             backgroundAction = {
@@ -217,7 +217,7 @@ class TunnelEventDispatcher(
                                     Snackbar(
                                         message = DynamicString(message),
                                         type = ToastType.Error,
-                                    )
+                                    ),
                                 )
                             },
                             backgroundAction = {
@@ -236,7 +236,7 @@ class TunnelEventDispatcher(
                                     Snackbar(
                                         message = DynamicString(message),
                                         type = ToastType.Error,
-                                    )
+                                    ),
                                 )
                             },
                             backgroundAction = { notificationManager.showConfigMissingDns(name) },

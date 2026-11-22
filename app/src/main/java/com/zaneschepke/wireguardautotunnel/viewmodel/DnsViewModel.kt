@@ -3,6 +3,7 @@ package com.zaneschepke.wireguardautotunnel.viewmodel
 import androidx.lifecycle.ViewModel
 import com.dokar.sonner.ToastType
 import com.wgtunnel.backend.model.dns.DnsValidator
+import com.wgtunnel.parser.ConfigParseException
 import com.zaneschepke.networkmonitor.NetworkMonitor
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.core.orchestration.DnsSettingsCoordinator
@@ -17,7 +18,9 @@ import com.zaneschepke.wireguardautotunnel.domain.repository.GlobalEffectReposit
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.domain.sideeffect.GlobalSideEffect
 import com.zaneschepke.wireguardautotunnel.ui.state.DnsUiState
+import com.zaneschepke.wireguardautotunnel.ui.state.EditableConfig
 import com.zaneschepke.wireguardautotunnel.util.StringValue
+import com.zaneschepke.wireguardautotunnel.util.extensions.asStringValue
 import com.zaneschepke.wireguardautotunnel.util.extensions.labelRes
 import kotlinx.coroutines.flow.combine
 import org.orbitmvi.orbit.OrbitContainerHost
@@ -47,6 +50,8 @@ class DnsViewModel(
                         state.copy(
                             dnsSettings = dnsSettings,
                             globalTunnelConfig = globalTunnelConfig,
+                            globalDnsServers =
+                                globalTunnelConfig?.getConfig()?.`interface`?.dns.orEmpty(),
                             systemDnsInfo = connectivity?.underlyingDnsInfo,
                             isLoading = false,
                             hasActiveTunnel = backendStatus.activeTunnels.isNotEmpty(),
@@ -80,7 +85,18 @@ class DnsViewModel(
         }
     }
 
+    fun setGlobalTunnelDnsEnabled(to: Boolean) = intent {
+        reduce {
+            state.copy(dnsSettings = state.dnsSettings.copy(isGlobalTunnelConfigDnsEnabled = to))
+        }
+    }
+
+    fun setGlobalDnsServers(input: String) = intent {
+        reduce { state.copy(globalDnsServers = input) }
+    }
+
     fun save(restart: Boolean = false) = intent {
+        if (!saveGlobalDnsServers()) return@intent
         val settings = state.dnsSettings
 
         when (
@@ -96,7 +112,7 @@ class DnsViewModel(
                     GlobalSideEffect.Snackbar(
                         StringValue.StringResource(r.error.labelRes()),
                         type = ToastType.Error,
-                    )
+                    ),
                 )
                 return@intent
             }
@@ -126,7 +142,7 @@ class DnsViewModel(
                             GlobalSideEffect.Snackbar(
                                 StringValue.StringResource(r.error.labelRes()),
                                 type = ToastType.Error,
-                            )
+                            ),
                         )
                         return@intent
                     }
@@ -149,7 +165,7 @@ class DnsViewModel(
                         GlobalSideEffect.Snackbar(
                             StringValue.StringResource(r.error.labelRes()),
                             type = ToastType.Error,
-                        )
+                        ),
                     )
                     return@intent
                 }
@@ -197,7 +213,7 @@ class DnsViewModel(
             GlobalSideEffect.Snackbar(
                 StringValue.StringResource(R.string.config_changes_saved),
                 ToastType.Success,
-            )
+            ),
         )
     }
 
@@ -265,5 +281,26 @@ class DnsViewModel(
 
     suspend fun postSideEffect(globalSideEffect: GlobalSideEffect) {
         globalEffectRepository.post(globalSideEffect)
+    }
+
+    private suspend fun saveGlobalDnsServers(): Boolean {
+        val uiState = container.stateFlow.value
+        if (uiState.dnsSettings.tunnelDnsMode != TunnelDnsMode.Off) return true
+        val stored =
+            uiState.globalTunnelConfig?.let { tunnelRepository.getById(it.id) } ?: return true
+        val current = stored.getConfig()
+        val edited = EditableConfig.from(current).withDnsServers(uiState.globalDnsServers)
+        if (current.`interface`.dns == edited.`interface`.dnsServers.ifBlank { null }) return true
+        val updated =
+            try {
+                edited.validatedConfig(stored.name)
+            } catch (e: ConfigParseException) {
+                postSideEffect(GlobalSideEffect.Snackbar(e.asStringValue(), ToastType.Error))
+                return false
+            }
+        tunnelRepository.save(
+            stored.copy(quickConfig = updated.withName(stored.name).asQuickString()),
+        )
+        return true
     }
 }

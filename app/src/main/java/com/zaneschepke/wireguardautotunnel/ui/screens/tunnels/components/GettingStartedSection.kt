@@ -48,11 +48,11 @@ fun GettingStartedSection(onClick: (url: String) -> Unit, modifier: Modifier = M
                         tag = "gettingStarted",
                         styles =
                             TextLinkStyles(
-                                style = SpanStyle(color = MaterialTheme.colorScheme.primary)
+                                style = SpanStyle(color = MaterialTheme.colorScheme.primary),
                             ),
                     ) {
                         onClick(url)
-                    }
+                    },
                 ) {
                     append(linkPhrase)
                 }
@@ -66,7 +66,7 @@ fun GettingStartedSection(onClick: (url: String) -> Unit, modifier: Modifier = M
             text = guidance,
             style =
                 MaterialTheme.typography.bodyMedium.copy(
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 ),
             textAlign = TextAlign.Center,
         )

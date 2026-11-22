@@ -3,6 +3,7 @@ package com.zaneschepke.wireguardautotunnel.data.repository
 import com.zaneschepke.wireguardautotunnel.data.DataStoreManager
 import com.zaneschepke.wireguardautotunnel.data.entity.AppState as Entity
 import com.zaneschepke.wireguardautotunnel.data.mapper.toDomain
+import com.zaneschepke.wireguardautotunnel.domain.enums.StrictSplitNotice
 import com.zaneschepke.wireguardautotunnel.domain.model.AppState as Domain
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppStateRepository
 import kotlinx.coroutines.CoroutineDispatcher
@@ -63,6 +64,27 @@ class DataStoreAppStateRepository(
         dataStoreManager.saveToDataStore(DataStoreManager.desktopPromptShown, shown)
     }
 
+    override suspend fun isStrictSplitDecided(): Boolean {
+        return dataStoreManager.getFromStore(DataStoreManager.strictSplitDecided) ?: false
+    }
+
+    override suspend fun setStrictSplitDecided(decided: Boolean) {
+        dataStoreManager.saveToDataStore(DataStoreManager.strictSplitDecided, decided)
+    }
+
+    override val strictSplitNotice: Flow<StrictSplitNotice?> =
+        dataStoreManager.getFromStoreFlow(DataStoreManager.strictSplitNotice).map { name ->
+            StrictSplitNotice.entries.firstOrNull { it.name == name }
+        }
+
+    override suspend fun setStrictSplitNotice(notice: StrictSplitNotice?) {
+        if (notice == null) {
+            dataStoreManager.removeFromDataStore(DataStoreManager.strictSplitNotice)
+        } else {
+            dataStoreManager.saveToDataStore(DataStoreManager.strictSplitNotice, notice.name)
+        }
+    }
+
     override suspend fun getLastActiveTunnelIds(): List<Int> {
         val stored = dataStoreManager.getFromStore(DataStoreManager.lastActiveTunnelIds).orEmpty()
         if (stored.isBlank()) return emptyList()
@@ -82,6 +104,20 @@ class DataStoreAppStateRepository(
 
     override suspend fun clearLastActiveTunnelIds() {
         dataStoreManager.saveToDataStore(DataStoreManager.lastActiveTunnelIds, "")
+    }
+
+    override suspend fun getLastUsedTunnelIds(): List<Int> {
+        val stored = dataStoreManager.getFromStore(DataStoreManager.lastUsedTunnelIds).orEmpty()
+        if (stored.isBlank()) return emptyList()
+        return stored.split(',').mapNotNull { it.toIntOrNull() }
+    }
+
+    override suspend fun setLastUsedTunnelIds(ids: List<Int>) {
+        if (ids.isEmpty()) return
+        dataStoreManager.saveToDataStore(
+            DataStoreManager.lastUsedTunnelIds,
+            ids.distinct().joinToString(","),
+        )
     }
 
     override val flow: Flow<Domain> =

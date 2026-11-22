@@ -5,6 +5,8 @@ import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import com.wgtunnel.backend.state.ActiveTunnel
 import com.zaneschepke.wireguardautotunnel.R
+import com.zaneschepke.wireguardautotunnel.core.lock.AppLockManager
+import com.zaneschepke.wireguardautotunnel.core.lock.PinGateActivity
 import com.zaneschepke.wireguardautotunnel.core.orchestration.TunnelCoordinator
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
@@ -23,6 +25,8 @@ class TunnelControlTile : TileService() {
 
     private val tunnelsRepository: TunnelRepository by inject()
     private val tunnelCoordinator: TunnelCoordinator by inject()
+
+    private val appLockManager: AppLockManager by inject()
 
     private val tileScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
@@ -44,6 +48,10 @@ class TunnelControlTile : TileService() {
     override fun onClick() {
         unlockAndRun {
             tileScope.launch {
+                if (appLockManager.isLockRequired()) {
+                    startPinGate(PinGateActivity.Action.TOGGLE_TUNNELS)
+                    return@launch
+                }
                 tunnelCoordinator.toggleActiveTunnels()
                 updateTileState()
             }
@@ -66,7 +74,8 @@ class TunnelControlTile : TileService() {
                 val activeConfigs = tunnels.filter { active.containsKey(it.id) }
                 setActive(activeConfigs, tunnels, active)
             } else {
-                setInactive()
+                val next = withContext(Dispatchers.IO) { tunnelCoordinator.quickStartTunnels() }
+                setInactive(next)
             }
         }
     }
@@ -116,9 +125,16 @@ class TunnelControlTile : TileService() {
         }
     }
 
-    private fun setInactive() {
+    private fun setInactive(next: List<TunnelConfig>) {
         qsTile?.apply {
             state = Tile.STATE_INACTIVE
+            label =
+                when (next.size) {
+                    0 -> getString(R.string.tunnel_control)
+                    1 -> next.first().name
+                    else ->
+                        "${next.size} ${getString(R.string.tunnels).lowercase(Locale.getDefault())}"
+                }
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 subtitle = ""

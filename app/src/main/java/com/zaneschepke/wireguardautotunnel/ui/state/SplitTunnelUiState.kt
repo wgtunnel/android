@@ -18,4 +18,6 @@ data class SplitTunnelUiState(
     val needsRestart: Boolean = false,
     // Null on the global editor.
     val globalOverride: SplitAppListSummary? = null,
+    // Null where strict split tunneling can't apply, like before Android 10 or outside VPN mode.
+    val strictSplitEnabled: Boolean? = null,
 )

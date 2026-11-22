@@ -39,7 +39,7 @@ class GitHubUpdateRepository(
                 val newVersion = choice.version
 
                 Timber.i(
-                    "Latest version: $newVersion (${choice.asset.name}), current version: $currentVersion"
+                    "Latest version: $newVersion (${choice.asset.name}), current version: $currentVersion",
                 )
                 val updateAvailable =
                     if (isNightly) {

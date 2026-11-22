@@ -45,6 +45,7 @@ class DynamicShortcutManager(
                 intent =
                     Intent(context, ShortcutsActivity::class.java).apply {
                         putExtra("className", "WireGuardTunnelService")
+                        putExtra(ShortcutContract.EXTRA_QUICK_START, true)
                         action = ShortcutContract.Action.START.name
                     },
                 shortcutIcon = R.drawable.vpn_on,

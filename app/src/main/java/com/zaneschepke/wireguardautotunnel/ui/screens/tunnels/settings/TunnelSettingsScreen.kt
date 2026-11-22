@@ -90,7 +90,7 @@ fun TunnelSettingsScreen(
                         text = stringResource(R.string.set_primary_tunnel),
                         style =
                             MaterialTheme.typography.bodySmall.copy(
-                                MaterialTheme.colorScheme.outline
+                                MaterialTheme.colorScheme.outline,
                             ),
                     )
                 },

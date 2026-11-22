@@ -57,7 +57,7 @@ class AndroidTunnelNotificationService(private val notificationService: Notifica
                             notificationAction = NotificationAction.TUNNEL_OFF,
                             extraId = tunnelNotificationLines.keys.first(),
                             authenticationRequired = true,
-                        )
+                        ),
                     )
                 tunnelNotificationLines.isNotEmpty() ->
                     listOf(
@@ -65,7 +65,7 @@ class AndroidTunnelNotificationService(private val notificationService: Notifica
                             notificationAction = NotificationAction.STOP_ALL,
                             extraId = null,
                             authenticationRequired = true,
-                        )
+                        ),
                     )
                 else -> emptyList()
             }
@@ -76,7 +76,7 @@ class AndroidTunnelNotificationService(private val notificationService: Notifica
                     NotificationCompat.InboxStyle()
                         .setBigContentTitle(title)
                         .setSummaryText(
-                            "${tunnelNotificationLines.size} ${context.getString(R.string.tunnels).lowercase()}"
+                            "${tunnelNotificationLines.size} ${context.getString(R.string.tunnels).lowercase()}",
                         )
                         .also { inbox -> formattedLines.forEach { inbox.addLine(it) } }
                 description.contains('\n') -> NotificationCompat.BigTextStyle().bigText(description)

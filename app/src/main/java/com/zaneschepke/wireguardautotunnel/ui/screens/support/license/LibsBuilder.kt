@@ -49,7 +49,7 @@ fun buildLibsWithAdditionalLibraries(context: Context): Libs {
                             url = "https://opensource.org/licenses/MIT",
                             spdxId = "MIT",
                             hash = "mit-license-amneziawg-fork",
-                        )
+                        ),
                     ),
                 funding = emptySet(),
                 tag = "native",
@@ -77,7 +77,7 @@ fun buildLibsWithAdditionalLibraries(context: Context): Libs {
                             url = "https://opensource.org/licenses/MIT",
                             spdxId = "MIT",
                             hash = "mit-license-wireproxy-fork",
-                        )
+                        ),
                     ),
                 funding = emptySet(),
                 tag = "native",
@@ -105,7 +105,7 @@ fun buildLibsWithAdditionalLibraries(context: Context): Libs {
                             url = "https://opensource.org/licenses/MIT",
                             spdxId = "MIT",
                             hash = "mit-license-go-socks5-fork",
-                        )
+                        ),
                     ),
                 funding = emptySet(),
                 tag = "native",
@@ -126,7 +126,7 @@ fun buildLibsWithAdditionalLibraries(context: Context): Libs {
                             url = "https://opensource.org/licenses/BSD-3-Clause",
                             spdxId = "BSD-3-Clause",
                             hash = "bsd3-miekg-dns",
-                        )
+                        ),
                     ),
                 funding = emptySet(),
                 tag = "go",
@@ -147,7 +147,7 @@ fun buildLibsWithAdditionalLibraries(context: Context): Libs {
                             url = "https://opensource.org/licenses/MIT",
                             spdxId = "MIT",
                             hash = "mit-license-hev",
-                        )
+                        ),
                     ),
                 funding = emptySet(),
                 tag = "native",
@@ -172,7 +172,7 @@ fun buildLibsWithAdditionalLibraries(context: Context): Libs {
                             url = "https://www.apache.org/licenses/LICENSE-2.0",
                             spdxId = "Apache-2.0",
                             hash = "apache-2-quickie",
-                        )
+                        ),
                     ),
                 funding = emptySet(),
                 tag = "ui",
@@ -193,7 +193,7 @@ fun buildLibsWithAdditionalLibraries(context: Context): Libs {
                             url = "https://www.apache.org/licenses/LICENSE-2.0",
                             spdxId = "Apache-2.0",
                             hash = "apache-2-libsu",
-                        )
+                        ),
                     ),
                 funding = emptySet(),
                 tag = "system",

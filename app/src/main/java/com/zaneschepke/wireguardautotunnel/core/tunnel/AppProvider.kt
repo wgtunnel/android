@@ -71,7 +71,7 @@ class AppProvider(
         get() = initNotification(AndroidNotificationService.NotificationChannels.Tunnel.Proxy)
 
     private fun initNotification(
-        channel: AndroidNotificationService.NotificationChannels
+        channel: AndroidNotificationService.NotificationChannels,
     ): Notification {
         val promote = shouldPromoteLiveUpdates()
         val kind =
@@ -167,7 +167,7 @@ class AppProvider(
         )
 
     private suspend fun computeVpnNotificationLines(
-        status: BackendStatus
+        status: BackendStatus,
     ): Map<Int, TunnelNotificationLine> {
         val activeTunnels = status.activeTunnels
         val allTunnels = tunnelRepository.userTunnelsFlow.first()
@@ -192,7 +192,7 @@ class AppProvider(
     }
 
     private suspend fun computeProxyNotificationLines(
-        status: BackendStatus
+        status: BackendStatus,
     ): Map<Int, TunnelNotificationLine> {
         val activeTunnels = status.activeTunnels
         val allTunnels = tunnelRepository.userTunnelsFlow.first()

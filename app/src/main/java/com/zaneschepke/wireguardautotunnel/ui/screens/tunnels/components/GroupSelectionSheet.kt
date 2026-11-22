@@ -54,6 +54,7 @@ import com.zaneschepke.wireguardautotunnel.ui.common.button.SurfaceRow
 import com.zaneschepke.wireguardautotunnel.ui.common.label.GroupLabel
 import com.zaneschepke.wireguardautotunnel.ui.common.text.DescriptionText
 import com.zaneschepke.wireguardautotunnel.ui.common.textbox.ConfigurationTextBox
+import com.zaneschepke.wireguardautotunnel.ui.screens.pin.LocalAppLocked
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -65,6 +66,7 @@ fun GroupSelectionSheet(
     onMoveToGroup: (groupId: Int) -> Unit,
     onDismiss: () -> Unit,
 ) {
+    if (LocalAppLocked.current) return
     val sheetState =
         rememberBottomSheetState(
             initialValue = SheetValue.Hidden,
@@ -204,7 +206,7 @@ private fun MoveToGroupTab(
                     title = group.name,
                     description = {
                         DescriptionText(
-                            pluralStringResource(R.plurals.group_tunnel_count, count, count)
+                            pluralStringResource(R.plurals.group_tunnel_count, count, count),
                         )
                     },
                     trailing = {

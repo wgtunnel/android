@@ -82,7 +82,7 @@ class AutoTunnelViewModel(
                 TunnelMode.VPN ->
                     if (!serviceManager.hasVpnPermission())
                         return@intent postSideEffect(
-                            GlobalSideEffect.RequestVpnPermission(TunnelMode.VPN, null)
+                            GlobalSideEffect.RequestVpnPermission(TunnelMode.VPN, null),
                         )
 
                 else -> Unit
@@ -94,8 +94,8 @@ class AutoTunnelViewModel(
                 appStateRepository.setNotificationPermissionRequested(true)
                 return@intent postSideEffect(
                     GlobalSideEffect.RequestNotificationPermission(
-                        NotificationPendingAction.ToggleAutoTunnel
-                    )
+                        NotificationPendingAction.ToggleAutoTunnel,
+                    ),
                 )
             }
         }
@@ -141,11 +141,11 @@ class AutoTunnelViewModel(
                 GlobalSideEffect.Snackbar(
                     StringValue.StringResource(R.string.network_name_in_use),
                     ToastType.Error,
-                )
+                ),
             )
         }
         setTrustedNetworkNames(
-            (state.autoTunnelSettings.trustedNetworkSSIDs + trimmed).toMutableList()
+            (state.autoTunnelSettings.trustedNetworkSSIDs + trimmed).toMutableList(),
         )
         postSideEffect(AutoTunnelScreenSideEffect.SSID_SAVED)
     }
@@ -156,7 +156,7 @@ class AutoTunnelViewModel(
 
     fun removeTrustedNetworkName(name: String) = intent {
         setTrustedNetworkNames(
-            (state.autoTunnelSettings.trustedNetworkSSIDs - name).toMutableList()
+            (state.autoTunnelSettings.trustedNetworkSSIDs - name).toMutableList(),
         )
     }
 
@@ -182,7 +182,7 @@ class AutoTunnelViewModel(
                 GlobalSideEffect.Snackbar(
                     StringValue.StringResource(R.string.invalid_bssid_format),
                     ToastType.Error,
-                )
+                ),
             )
         }
 
@@ -193,7 +193,7 @@ class AutoTunnelViewModel(
                 GlobalSideEffect.Snackbar(
                     StringValue.StringResource(R.string.bssid_in_use),
                     ToastType.Error,
-                )
+                ),
             )
         }
 
@@ -230,14 +230,14 @@ class AutoTunnelViewModel(
                 GlobalSideEffect.Snackbar(
                     StringValue.StringResource(R.string.network_name_in_use),
                     ToastType.Error,
-                )
+                ),
             )
         }
 
         tunnelsRepository.save(
             tunnel.copy(
-                tunnelNetworks = tunnel.tunnelNetworks.toMutableList().apply { add(trimmed) }
-            )
+                tunnelNetworks = tunnel.tunnelNetworks.toMutableList().apply { add(trimmed) },
+            ),
         )
         postSideEffect(AutoTunnelScreenSideEffect.SSID_SAVED)
     }
@@ -252,7 +252,7 @@ class AutoTunnelViewModel(
                 GlobalSideEffect.Snackbar(
                     StringValue.StringResource(R.string.invalid_bssid_format),
                     ToastType.Error,
-                )
+                ),
             )
         }
 
@@ -263,14 +263,14 @@ class AutoTunnelViewModel(
                 GlobalSideEffect.Snackbar(
                     StringValue.StringResource(R.string.bssid_in_use),
                     ToastType.Error,
-                )
+                ),
             )
         }
 
         tunnelsRepository.save(
             tunnel.copy(
-                tunnelBSSIDs = tunnel.tunnelBSSIDs.toMutableList().apply { add(normalized) }
-            )
+                tunnelBSSIDs = tunnel.tunnelBSSIDs.toMutableList().apply { add(normalized) },
+            ),
         )
         postSideEffect(AutoTunnelScreenSideEffect.BSSID_SAVED)
     }
@@ -282,14 +282,14 @@ class AutoTunnelViewModel(
     fun removeTunnelNetwork(tunnel: TunnelConfig, ssid: String) = intent {
         tunnelsRepository.save(
             tunnel.copy(
-                tunnelNetworks = tunnel.tunnelNetworks.toMutableList().apply { remove(ssid) }
-            )
+                tunnelNetworks = tunnel.tunnelNetworks.toMutableList().apply { remove(ssid) },
+            ),
         )
     }
 
     fun removeTunnelBSSID(tunnel: TunnelConfig, bssid: String) = intent {
         tunnelsRepository.save(
-            tunnel.copy(tunnelBSSIDs = tunnel.tunnelBSSIDs.toMutableList().apply { remove(bssid) })
+            tunnel.copy(tunnelBSSIDs = tunnel.tunnelBSSIDs.toMutableList().apply { remove(bssid) }),
         )
     }
 
@@ -302,13 +302,13 @@ class AutoTunnelViewModel(
                         GlobalSideEffect.Snackbar(
                             StringValue.StringResource(R.string.error_root_denied),
                             ToastType.Error,
-                        )
+                        ),
                     )
                 postSideEffect(
                     GlobalSideEffect.Snackbar(
                         StringValue.StringResource(R.string.root_accepted),
                         ToastType.Success,
-                    )
+                    ),
                 )
             }
             WifiDetectionMethod.SHIZUKU -> {
@@ -327,23 +327,23 @@ class AutoTunnelViewModel(
                 intent {
                     autoTunnelRepository.upsert(
                         state.autoTunnelSettings.copy(
-                            wifiDetectionMethod = WifiDetectionMethod.SHIZUKU
-                        )
+                            wifiDetectionMethod = WifiDetectionMethod.SHIZUKU,
+                        ),
                     )
                 }
-            }
+            },
         )
         try {
             if (Shizuku.checkSelfPermission() != PERMISSION_GRANTED) Shizuku.requestPermission(123)
             autoTunnelRepository.upsert(
-                state.autoTunnelSettings.copy(wifiDetectionMethod = WifiDetectionMethod.SHIZUKU)
+                state.autoTunnelSettings.copy(wifiDetectionMethod = WifiDetectionMethod.SHIZUKU),
             )
         } catch (_: Exception) {
             postSideEffect(
                 GlobalSideEffect.Snackbar(
                     StringValue.StringResource(R.string.shizuku_not_detected),
                     ToastType.Error,
-                )
+                ),
             )
         }
     }

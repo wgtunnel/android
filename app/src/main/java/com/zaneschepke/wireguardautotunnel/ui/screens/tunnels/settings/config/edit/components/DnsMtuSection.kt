@@ -16,17 +16,10 @@ import com.zaneschepke.wireguardautotunnel.ui.state.EditableInterface
 
 @Composable
 fun DnsMtuSection(
-    isGlobalConfig: Boolean,
-    globalDnsEnabled: Boolean,
     interfaceState: EditableInterface,
     onInterfaceChange: (EditableInterface) -> Unit,
     globalDnsServers: String? = null,
 ) {
-    val showDns = !isGlobalConfig || globalDnsEnabled
-    val showMtu = !isGlobalConfig
-
-    if (!showDns) return
-
     val locale = Locale.current.platformLocale
 
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -41,15 +34,13 @@ fun DnsMtuSection(
             modifier = Modifier.fillMaxWidth(),
         )
 
-        if (showMtu) {
-            ConfigurationTextBox(
-                value = interfaceState.mtu,
-                onValueChange = { onInterfaceChange(interfaceState.copy(mtu = it)) },
-                label = stringResource(R.string.mtu),
-                hint = stringResource(R.string.auto).lowercase(locale),
-                modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            )
-        }
+        ConfigurationTextBox(
+            value = interfaceState.mtu,
+            onValueChange = { onInterfaceChange(interfaceState.copy(mtu = it)) },
+            label = stringResource(R.string.mtu),
+            hint = stringResource(R.string.auto).lowercase(locale),
+            modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        )
     }
 }

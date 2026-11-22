@@ -1,19 +1,22 @@
 package com.zaneschepke.wireguardautotunnel.ui.common.functions
 
 import android.app.Activity
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.content.pm.ResolveInfo
 import android.net.Uri
 import android.os.Build
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import com.zaneschepke.wireguardautotunnel.ui.LocalIsAndroidTV
+import com.zaneschepke.wireguardautotunnel.ui.common.sheet.FileManagerChooserSheet
 import com.zaneschepke.wireguardautotunnel.util.FileUtils
 import timber.log.Timber
 
@@ -25,72 +28,44 @@ fun rememberFileImportLauncherForResult(
 ): () -> Unit {
     val context = LocalContext.current
     val isTv = LocalIsAndroidTV.current
+    var chooserTargets by remember { mutableStateOf<List<FileImportTarget>?>(null) }
+    var launchingChosenTarget by remember { mutableStateOf(false) }
     val launcher =
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result
             ->
             val uri = result.data?.data
             if (result.resultCode == Activity.RESULT_OK && uri != null) onData(uri) else onCancel()
         }
+    chooserTargets?.let { targets ->
+        FileManagerChooserSheet(
+            targets = targets,
+            onDismiss = {
+                chooserTargets = null
+                if (!launchingChosenTarget) onCancel()
+                launchingChosenTarget = false
+            },
+            onChoose = { target ->
+                launchingChosenTarget = true
+                chooserTargets = null
+                launcher.launch(target.toImportIntent())
+            },
+        )
+    }
     return {
-        val intent = if (isTv) context.createTvImportIntent() else context.phoneImportIntent()
-        if (intent == null) onNoFileExplorer() else launcher.launch(intent)
-    }
-}
-
-private fun Context.phoneImportIntent(): Intent =
-    Intent(Intent.ACTION_GET_CONTENT).apply {
-        addCategory(Intent.CATEGORY_OPENABLE)
-        type = FileUtils.ALL_FILE_TYPES
-    }
-
-// An implicit */* GET_CONTENT is redirected to the photo picker, which loops on Android TV.
-private fun Context.createTvImportIntent(): Intent? {
-    val launch =
-        phoneImportIntent().apply {
-            putExtra(Intent.EXTRA_MIME_TYPES, FileUtils.TV_IMPORT_MIME_TYPES)
+        // Leanback always asks. A phone asks only when */* would open the photo picker or a stub.
+        if (isTv || context.implicitFileImportIsBlocked()) {
+            val targets = context.listFileImportTargets()
+            if (targets.isEmpty()) {
+                onNoFileExplorer()
+            } else {
+                launchingChosenTarget = false
+                chooserTargets = targets
+            }
+        } else {
+            launcher.launch(phoneImportIntent())
         }
-    val probe = Intent(launch).apply { type = FileUtils.TEXT_MIME_TYPE }
-    val real = queryImportActivities(probe).filterNot { it.isBlockedImportHandler() }
-    if (real.isEmpty()) return null
-    val preferred =
-        resolveImportActivity(probe)?.takeUnless { it.isBlockedImportHandler() }?.componentName()
-    val chosen = real.firstOrNull { it.componentName() == preferred } ?: real.first()
-    return launch.apply { component = chosen.componentName() }
-}
-
-private fun Context.queryImportActivities(intent: Intent): List<ResolveInfo> =
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        packageManager.queryIntentActivities(
-            intent,
-            PackageManager.ResolveInfoFlags.of(PackageManager.MATCH_ALL.toLong()),
-        )
-    } else {
-        packageManager.queryIntentActivities(intent, PackageManager.MATCH_ALL)
     }
-
-private fun Context.resolveImportActivity(intent: Intent): ResolveInfo? =
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        packageManager.resolveActivity(
-            intent,
-            PackageManager.ResolveInfoFlags.of(PackageManager.MATCH_DEFAULT_ONLY.toLong()),
-        )
-    } else {
-        packageManager.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY)
-    }
-
-private fun ResolveInfo.isBlockedImportHandler(): Boolean {
-    val name = activityInfo.packageName
-    return name.startsWith(FileUtils.GOOGLE_TV_EXPLORER_STUB) ||
-        name.startsWith(FileUtils.ANDROID_TV_EXPLORER_STUB) ||
-        name == PHOTO_PICKER_PACKAGE ||
-        name == PHOTO_PICKER_PACKAGE_ALT
 }
-
-private const val PHOTO_PICKER_PACKAGE = "com.google.android.providers.media.module"
-private const val PHOTO_PICKER_PACKAGE_ALT = "com.android.providers.media.module"
-
-private fun ResolveInfo.componentName(): ComponentName =
-    ComponentName(activityInfo.packageName, activityInfo.name)
 
 @Composable
 fun rememberFileExportLauncherForResult(
@@ -116,7 +91,7 @@ fun rememberFileExportLauncherForResult(
                             context.packageManager.queryIntentActivities(
                                 intent,
                                 PackageManager.ResolveInfoFlags.of(
-                                    PackageManager.MATCH_DEFAULT_ONLY.toLong()
+                                    PackageManager.MATCH_DEFAULT_ONLY.toLong(),
                                 ),
                             )
                         } else {
@@ -139,7 +114,7 @@ fun rememberFileExportLauncherForResult(
 
                     return intent
                 }
-            }
+            },
     ) { uri ->
         if (uri != null) {
             onSuccess(uri)

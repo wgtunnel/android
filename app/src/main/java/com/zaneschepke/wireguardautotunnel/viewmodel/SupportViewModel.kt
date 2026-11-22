@@ -36,7 +36,7 @@ class SupportViewModel(
                     GlobalSideEffect.Snackbar(
                         StringValue.StringResource(R.string.update_download_failed),
                         ToastType.Error,
-                    )
+                    ),
                 )
             }
             previous = next
@@ -49,7 +49,7 @@ class SupportViewModel(
                 GlobalSideEffect.Snackbar(
                     StringValue.StringResource(R.string.checking_for_update),
                     ToastType.Info,
-                )
+                ),
             )
         }
         reduce { state.copy(isLoading = true) }
@@ -63,7 +63,7 @@ class SupportViewModel(
                             GlobalSideEffect.Snackbar(
                                 StringValue.StringResource(R.string.latest_installed),
                                 ToastType.Info,
-                            )
+                            ),
                         )
                     }
                 } else {
@@ -79,7 +79,7 @@ class SupportViewModel(
                     GlobalSideEffect.Snackbar(
                         StringValue.StringResource(R.string.update_check_failed),
                         ToastType.Error,
-                    )
+                    ),
                 )
             }
     }
@@ -115,7 +115,7 @@ class SupportViewModel(
                 GlobalSideEffect.Snackbar(
                     StringValue.StringResource(R.string.update_download_failed),
                     ToastType.Error,
-                )
+                ),
             )
             return@intent
         }
@@ -136,7 +136,7 @@ class SupportViewModel(
                 GlobalSideEffect.Snackbar(
                     StringValue.StringResource(R.string.update_download_failed),
                     ToastType.Error,
-                )
+                ),
             )
         }
     }

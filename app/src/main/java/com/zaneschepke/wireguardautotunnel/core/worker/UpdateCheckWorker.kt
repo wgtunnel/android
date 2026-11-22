@@ -68,7 +68,7 @@ class UpdateCheckWorker(
                     )
                     .setInitialDelay(millisUntilNextTargetUtc(), TimeUnit.MILLISECONDS)
                     .setConstraints(
-                        Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
+                        Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build(),
                     )
                     .addTag(TAG)
                     .build()
@@ -80,7 +80,7 @@ class UpdateCheckWorker(
                     request,
                 )
             Timber.i(
-                "UpdateCheckWorker scheduled; initial delay=${millisUntilNextTargetUtc()}ms to next ${TARGET_HOUR_UTC}:${TARGET_MINUTE_UTC.toString().padStart(2, '0')} UTC"
+                "UpdateCheckWorker scheduled; initial delay=${millisUntilNextTargetUtc()}ms to next ${TARGET_HOUR_UTC}:${TARGET_MINUTE_UTC.toString().padStart(2, '0')} UTC",
             )
         }
 

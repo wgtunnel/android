@@ -16,6 +16,8 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
@@ -23,6 +25,7 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.focusGroup
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -57,10 +60,13 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.DpOffset
@@ -69,6 +75,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.core.app.ActivityCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
@@ -82,10 +89,12 @@ import com.dokar.sonner.ToastType
 import com.dokar.sonner.Toaster
 import com.dokar.sonner.rememberToasterState
 import com.zaneschepke.networkmonitor.NetworkMonitor
+import com.zaneschepke.wireguardautotunnel.core.lock.AppLockManager
 import com.zaneschepke.wireguardautotunnel.core.orchestration.FileExportCoordinator
 import com.zaneschepke.wireguardautotunnel.data.backup.BackupWriteResult
 import com.zaneschepke.wireguardautotunnel.data.backup.DatabaseBackup
 import com.zaneschepke.wireguardautotunnel.data.backup.RestoreResult
+import com.zaneschepke.wireguardautotunnel.domain.enums.StrictSplitNotice
 import com.zaneschepke.wireguardautotunnel.domain.enums.TunnelMode
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig
 import com.zaneschepke.wireguardautotunnel.domain.repository.AppStateRepository
@@ -105,6 +114,7 @@ import com.zaneschepke.wireguardautotunnel.ui.common.banner.AppAlertBanner
 import com.zaneschepke.wireguardautotunnel.ui.common.dialog.InfoDialog
 import com.zaneschepke.wireguardautotunnel.ui.common.dialog.LocalNetworkPermissionDialog
 import com.zaneschepke.wireguardautotunnel.ui.common.dialog.VpnDeniedDialog
+import com.zaneschepke.wireguardautotunnel.ui.common.sheet.StrictSplitNoticeSheet
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Route
 import com.zaneschepke.wireguardautotunnel.ui.navigation.SecureRoute
 import com.zaneschepke.wireguardautotunnel.ui.navigation.Tab
@@ -117,20 +127,22 @@ import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.detection.WifiD
 import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.disclosure.LocationDisclosureScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.preferred.PreferredTunnelScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.autotunnel.wifi.WifiSettingsScreen
+import com.zaneschepke.wireguardautotunnel.ui.screens.pin.LocalAppLocked
+import com.zaneschepke.wireguardautotunnel.ui.screens.pin.PinLockOverlay
 import com.zaneschepke.wireguardautotunnel.ui.screens.pin.PinLockScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.SettingsScreen
+import com.zaneschepke.wireguardautotunnel.ui.screens.settings.advanced.AdvancedScreen
+import com.zaneschepke.wireguardautotunnel.ui.screens.settings.amnezia.GlobalAmneziaScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.appearance.AppearanceScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.appearance.display.DisplayScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.appearance.language.LanguageScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.appearance.notifications.NotificationsScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.dns.DnsSettingsScreen
-import com.zaneschepke.wireguardautotunnel.ui.screens.settings.globals.TunnelGlobalsScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.integrations.AndroidIntegrationsScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.lockdown.LockdownSettingsScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.logs.LogsScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.monitoring.MonitoringScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.proxy.ProxySettingsScreen
-import com.zaneschepke.wireguardautotunnel.ui.screens.settings.recovery.TunnelRecoveryScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.settings.security.SecurityScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.support.SupportScreen
 import com.zaneschepke.wireguardautotunnel.ui.screens.support.donate.DonateScreen
@@ -164,6 +176,7 @@ import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
@@ -172,7 +185,6 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import org.orbitmvi.orbit.compose.collectAsState
 import timber.log.Timber
-import xyz.teamgravity.pin_lock_compose.PinManager
 
 class MainActivity : AppCompatActivity() {
 
@@ -182,13 +194,14 @@ class MainActivity : AppCompatActivity() {
     private val fileExportCoordinator: FileExportCoordinator by inject()
     private val notificationService: NotificationService by inject()
     private val databaseBackup: DatabaseBackup by inject()
+    private val appLockManager: AppLockManager by inject()
 
     val viewModel by viewModel<SharedAppViewModel>()
     private var pendingBackupPassword: String? = null
 
     private val createBackupLauncher =
         registerForActivityResult(
-            ActivityResultContracts.CreateDocument(FileUtils.ZIP_FILE_MIME_TYPE)
+            ActivityResultContracts.CreateDocument(FileUtils.ZIP_FILE_MIME_TYPE),
         ) { uri ->
             val password = pendingBackupPassword
             pendingBackupPassword = null
@@ -213,6 +226,7 @@ class MainActivity : AppCompatActivity() {
     private val snackbarChannel = Channel<GlobalSideEffect.Snackbar>(Channel.UNLIMITED)
     private val supportDeepLinkChannel = Channel<Boolean>(Channel.BUFFERED)
     private val showUpdateChannel = Channel<Unit>(Channel.BUFFERED)
+    private val pendingConfigImport = MutableStateFlow<Uri?>(null)
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -284,7 +298,7 @@ class MainActivity : AppCompatActivity() {
 
             val localNetworkPermissionLauncher =
                 rememberLauncherForActivityResult(
-                    contract = ActivityResultContracts.RequestPermission()
+                    contract = ActivityResultContracts.RequestPermission(),
                 ) { isGranted ->
                     if (!isGranted) {
                         val canAskAgain =
@@ -331,7 +345,6 @@ class MainActivity : AppCompatActivity() {
                 ) {
                     add(Route.Support)
                 }
-                if (uiState.pinLockEnabled) add(Route.Lock)
             }
 
             val backStack = rememberNavBackStack(*startingStack.toTypedArray())
@@ -423,7 +436,7 @@ class MainActivity : AppCompatActivity() {
                         is GlobalSideEffect.RequestNotificationPermission -> {
                             pendingNotificationAction = sideEffect.pendingAction
                             notificationPermissionLauncher.launch(
-                                Manifest.permission.POST_NOTIFICATIONS
+                                Manifest.permission.POST_NOTIFICATIONS,
                             )
                         }
                         is GlobalSideEffect.Snackbar -> snackbarChannel.send(sideEffect)
@@ -469,14 +482,29 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-            var showLock by remember {
-                mutableStateOf(uiState.pinLockEnabled && !uiState.isPinVerified)
+            val unlocked by appLockManager.unlocked.collectAsStateWithLifecycle()
+            val showLock = uiState.pinLockEnabled && !unlocked
+
+            // Keeps tunnels out of the recents screenshot and the app's reopen animation
+            LaunchedEffect(uiState.pinLockEnabled) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    setRecentsScreenshotEnabled(!uiState.pinLockEnabled)
+                }
             }
-            LaunchedEffect(uiState.isPinVerified) { if (uiState.isPinVerified) showLock = false }
+
+            // Imports opened from outside the app wait until the PIN has been entered
+            val pendingImportUri by pendingConfigImport.collectAsStateWithLifecycle()
+            LaunchedEffect(pendingImportUri, showLock) {
+                val uri = pendingImportUri ?: return@LaunchedEffect
+                if (showLock) return@LaunchedEffect
+                pendingConfigImport.value = null
+                viewModel.importFromUri(uri)
+            }
 
             CompositionLocalProvider(
                 LocalIsAndroidTV provides isTv,
                 LocalNavController provides navController,
+                LocalAppLocked provides showLock,
             ) {
                 WireguardAutoTunnelTheme(theme = uiState.theme) {
                     VpnDeniedDialog(
@@ -502,22 +530,61 @@ class MainActivity : AppCompatActivity() {
                                 showLocalNetworkRationale = false
 
                                 localNetworkPermissionLauncher.launch(
-                                    Manifest.permission.ACCESS_LOCAL_NETWORK
+                                    Manifest.permission.ACCESS_LOCAL_NETWORK,
                                 )
                             },
                         )
                     }
 
-                    uiState.pendingWgImportUrl?.let { url ->
-                        val host = Uri.parse(url).host ?: url
-                        InfoDialog(
-                            onDismiss = { viewModel.dismissWgImport() },
-                            onAttest = { viewModel.importFromUrl(url) },
-                            title = stringResource(R.string.add_from_url),
-                            body = { Text(stringResource(R.string.wg_url_confirm_message, host)) },
-                            confirmText = stringResource(R.string.okay),
-                        )
-                    }
+                    val strictSplitNotice by
+                        viewModel.strictSplitNotice.collectAsStateWithLifecycle()
+                    strictSplitNotice
+                        ?.takeUnless { showLock }
+                        ?.let { notice ->
+                            val openAdvanced = {
+                                // Back from Advanced lands on Settings, as if opened from there
+                                navController.popUpTo(Route.Settings)
+                                navController.push(Route.Advanced)
+                            }
+                            when (notice) {
+                                StrictSplitNotice.ENABLED ->
+                                    StrictSplitNoticeSheet(
+                                        notice = notice,
+                                        onConfirm = viewModel::acknowledgeStrictSplitNotice,
+                                        onSecondary = {
+                                            viewModel.acknowledgeStrictSplitNotice()
+                                            openAdvanced()
+                                        },
+                                        onDismiss = viewModel::acknowledgeStrictSplitNotice,
+                                    )
+                                StrictSplitNotice.SUGGESTED ->
+                                    StrictSplitNoticeSheet(
+                                        notice = notice,
+                                        onConfirm = { viewModel.answerStrictSplitSuggestion(true) },
+                                        onSecondary = {
+                                            viewModel.answerStrictSplitSuggestion(false)
+                                        },
+                                        onDismiss = {
+                                            viewModel.answerStrictSplitSuggestion(false)
+                                        },
+                                    )
+                            }
+                        }
+
+                    uiState.pendingWgImportUrl
+                        ?.takeUnless { showLock }
+                        ?.let { url ->
+                            val host = Uri.parse(url).host ?: url
+                            InfoDialog(
+                                onDismiss = { viewModel.dismissWgImport() },
+                                onAttest = { viewModel.importFromUrl(url) },
+                                title = stringResource(R.string.add_from_url),
+                                body = {
+                                    Text(stringResource(R.string.wg_url_confirm_message, host))
+                                },
+                                confirmText = stringResource(R.string.okay),
+                            )
+                        }
 
                     LaunchedEffect(Unit) {
                         if (uiState.shouldShowDonationSnackbar && !uiState.alreadyDonated) {
@@ -584,277 +651,330 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
 
-                    if (showLock) {
-                        PinManager.initialize(context = this@MainActivity)
-                        PinLockScreen()
-                    } else {
-
-                        val currentTab by remember {
-                            derivedStateOf { Tab.fromRoute(currentRoute ?: Route.Tunnels) }
-                        }
-                        val navState by
-                            currentRouteAsNavbarState(
-                                uiState,
-                                viewModel,
-                                currentRoute,
-                                navController,
-                            )
-
-                        Box(modifier = Modifier.fillMaxSize()) {
-                            if (uiState.tunnelMode == TunnelMode.LOCK_DOWN) {
-                                AppAlertBanner(
-                                    stringResource(R.string.locked_down)
-                                        .uppercase(Locale.current.platformLocale),
-                                    OffWhite,
-                                    AlertRed,
-                                    modifier = Modifier.fillMaxWidth().zIndex(2f),
-                                )
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        // Composed behind the lock so unlocking reveals a screen that is already
+                        // laid
+                        // out. While locked it is hidden from accessibility and cannot take focus.
+                        Box(modifier = Modifier.fillMaxSize().lockedContent(showLock)) {
+                            val currentTab by remember {
+                                derivedStateOf { Tab.fromRoute(currentRoute ?: Route.Tunnels) }
                             }
-                            Scaffold(
-                                topBar = { DynamicTopAppBar(navState) },
-                                bottomBar = {
-                                    if (navState.showBottomItems) {
-                                        BottomNavbar(
-                                            uiState.isAutoTunnelActive,
-                                            currentTab,
-                                            onTabSelected = { tab ->
-                                                navController.popUpTo(tab.startRoute)
+                            val navState by
+                                currentRouteAsNavbarState(
+                                    uiState,
+                                    viewModel,
+                                    currentRoute,
+                                    navController,
+                                )
+
+                            Box(modifier = Modifier.fillMaxSize()) {
+                                if (uiState.tunnelMode == TunnelMode.LOCK_DOWN) {
+                                    AppAlertBanner(
+                                        stringResource(R.string.locked_down)
+                                            .uppercase(Locale.current.platformLocale),
+                                        OffWhite,
+                                        AlertRed,
+                                        modifier = Modifier.fillMaxWidth().zIndex(2f),
+                                    )
+                                }
+                                Scaffold(
+                                    topBar = { DynamicTopAppBar(navState) },
+                                    bottomBar = {
+                                        if (navState.showBottomItems) {
+                                            BottomNavbar(
+                                                uiState.isAutoTunnelActive,
+                                                currentTab,
+                                                onTabSelected = { tab ->
+                                                    navController.popUpTo(tab.startRoute)
+                                                },
+                                            )
+                                        }
+                                    },
+                                ) { padding ->
+                                    Column(
+                                        modifier =
+                                            Modifier.fillMaxSize()
+                                                .background(MaterialTheme.colorScheme.surface)
+                                                .padding(
+                                                    top = padding.calculateTopPadding().plus(8.dp),
+                                                    bottom = padding.calculateBottomPadding(),
+                                                )
+                                                .consumeWindowInsets(padding),
+                                    ) {
+                                        BackHandler(enabled = uiState.selectedTunnelCount > 0) {
+                                            viewModel.clearSelectedTunnels()
+                                        }
+                                        NavDisplay(
+                                            backStack = backStack,
+                                            modifier = Modifier.fillMaxSize(),
+                                            onBack = { navController.pop() },
+                                            transitionSpec = {
+                                                val initialIndex =
+                                                    previousRoute?.let(Tab::fromRoute)?.index ?: 0
+                                                val targetIndex =
+                                                    currentRoute?.let(Tab::fromRoute)?.index ?: 0
+                                                if (initialIndex != targetIndex) {
+                                                    val dir =
+                                                        if (targetIndex > initialIndex) 1 else -1
+                                                    (slideInHorizontally { dir * it } +
+                                                        fadeIn()) togetherWith
+                                                        (slideOutHorizontally { dir * -it } +
+                                                            fadeOut())
+                                                } else {
+                                                    (slideInHorizontally { it } +
+                                                        fadeIn()) togetherWith
+                                                        (slideOutHorizontally { -it } + fadeOut())
+                                                }
                                             },
+                                            popTransitionSpec = {
+                                                (slideInHorizontally { -it } +
+                                                    fadeIn()) togetherWith
+                                                    (slideOutHorizontally { it } + fadeOut())
+                                            },
+                                            predictivePopTransitionSpec = {
+                                                (slideInHorizontally { -it } +
+                                                    fadeIn()) togetherWith
+                                                    (slideOutHorizontally { it } + fadeOut())
+                                            },
+                                            entryDecorators =
+                                                listOf(
+                                                    rememberSaveableStateHolderNavEntryDecorator(),
+                                                    rememberViewModelStoreNavEntryDecorator(),
+                                                ),
+                                            entryProvider =
+                                                entryProvider {
+                                                    entry<Route.Lock> { PinLockScreen() }
+                                                    entry<Route.Tunnels> { TunnelsScreen() }
+                                                    entry<Route.TunnelSettings> { key ->
+                                                        val viewModel: TunnelViewModel =
+                                                            koinViewModel(
+                                                                parameters = {
+                                                                    parametersOf(key.id)
+                                                                },
+                                                            )
+                                                        TunnelSettingsScreen(viewModel)
+                                                    }
+                                                    entry<Route.Config> { key ->
+                                                        val viewModel: TunnelViewModel =
+                                                            koinViewModel(
+                                                                parameters = {
+                                                                    parametersOf(key.id)
+                                                                },
+                                                            )
+                                                        ConfigScreen(viewModel, key.live)
+                                                    }
+                                                    entry<Route.SplitTunnel> { key ->
+                                                        val viewModel: SplitTunnelViewModel =
+                                                            koinViewModel(
+                                                                parameters = {
+                                                                    parametersOf(key.id)
+                                                                },
+                                                            )
+                                                        SplitTunnelScreen(viewModel)
+                                                    }
+                                                    entry<Route.ConfigEdit> { key ->
+                                                        val viewModel: ConfigEditViewModel =
+                                                            koinViewModel(
+                                                                parameters = {
+                                                                    parametersOf(key.id)
+                                                                },
+                                                            )
+                                                        ConfigEditScreen(viewModel)
+                                                    }
+                                                    entry<Route.LocationDisclosure> {
+                                                        LocationDisclosureScreen()
+                                                    }
+                                                    entry<Route.AutoTunnel> { AutoTunnelScreen() }
+                                                    entry<Route.WifiPreferences> {
+                                                        WifiSettingsScreen()
+                                                    }
+                                                    entry<Route.WifiDetectionMethod> {
+                                                        WifiDetectionMethodScreen()
+                                                    }
+                                                    entry<Route.Settings> { SettingsScreen() }
+                                                    entry<Route.AndroidIntegrations> {
+                                                        AndroidIntegrationsScreen()
+                                                    }
+                                                    entry<Route.Dns> { DnsSettingsScreen() }
+                                                    entry<Route.ConfigGlobal> {
+                                                        GlobalAmneziaScreen()
+                                                    }
+                                                    entry<Route.GlobalAmnezia> {
+                                                        GlobalAmneziaScreen()
+                                                    }
+                                                    entry<Route.SplitTunnelGlobal> { key ->
+                                                        val viewModel: SplitTunnelViewModel =
+                                                            koinViewModel(
+                                                                parameters = {
+                                                                    parametersOf(key.id)
+                                                                },
+                                                            )
+                                                        SplitTunnelScreen(viewModel)
+                                                    }
+                                                    entry<Route.IPv6> { key ->
+                                                        val viewModel: TunnelViewModel =
+                                                            koinViewModel(
+                                                                parameters = {
+                                                                    parametersOf(key.id)
+                                                                },
+                                                            )
+                                                        IPv6Screen(viewModel)
+                                                    }
+                                                    entry<Route.EntryTunnel> { key ->
+                                                        val viewModel: TunnelViewModel =
+                                                            koinViewModel(
+                                                                parameters = {
+                                                                    parametersOf(key.id)
+                                                                },
+                                                            )
+                                                        EntryTunnelScreen(viewModel)
+                                                    }
+                                                    entry<Route.LockdownSettings> {
+                                                        LockdownSettingsScreen()
+                                                    }
+                                                    entry<Route.ProxySettings> {
+                                                        ProxySettingsScreen()
+                                                    }
+                                                    entry<Route.Appearance> { AppearanceScreen() }
+                                                    entry<Route.Language> { LanguageScreen() }
+                                                    entry<Route.Display> { DisplayScreen() }
+                                                    entry<Route.Notifications> {
+                                                        NotificationsScreen()
+                                                    }
+                                                    entry<Route.Logs> { LogsScreen() }
+                                                    entry<Route.Support> { SupportScreen() }
+                                                    entry<Route.License> { LicenseScreen() }
+                                                    entry<Route.Donate> { DonateScreen() }
+                                                    entry<Route.Addresses> { AddressesScreen() }
+                                                    entry<Route.PreferredTunnel> { key ->
+                                                        PreferredTunnelScreen(key.tunnelNetwork)
+                                                    }
+                                                    entry<Route.TunnelGlobals> { AdvancedScreen() }
+                                                    entry<Route.Advanced> { AdvancedScreen() }
+                                                    entry<Route.Security> { SecurityScreen() }
+                                                    entry<Route.Monitoring> { MonitoringScreen() }
+                                                    entry<Route.TunnelRecovery> {
+                                                        MonitoringScreen()
+                                                    }
+                                                    entry<Route.MonitoringAndRecovery> {
+                                                        MonitoringScreen()
+                                                    }
+                                                },
                                         )
                                     }
-                                },
-                            ) { padding ->
-                                Column(
-                                    modifier =
-                                        Modifier.fillMaxSize()
-                                            .background(MaterialTheme.colorScheme.surface)
-                                            .padding(
-                                                top = padding.calculateTopPadding().plus(8.dp),
-                                                bottom = padding.calculateBottomPadding(),
+                                }
+                                // Toasts draw in their own window above the lock, so they wait for
+                                // unlock
+                                if (!showLock) {
+                                    Toaster(
+                                        state = toaster,
+                                        maxVisibleToasts = 1,
+                                        alignment = Alignment.BottomCenter,
+                                        offset = IntOffset(0, -220),
+                                        richColors = true,
+                                        background = {
+                                            Brush.linearGradient(
+                                                listOf(
+                                                    MaterialTheme.colorScheme
+                                                        .surfaceColorAtElevation(
+                                                            2.dp,
+                                                        ),
+                                                    MaterialTheme.colorScheme
+                                                        .surfaceColorAtElevation(
+                                                            2.dp,
+                                                        ),
+                                                ),
                                             )
-                                            .consumeWindowInsets(padding)
-                                ) {
-                                    BackHandler(enabled = uiState.selectedTunnelCount > 0) {
-                                        viewModel.clearSelectedTunnels()
-                                    }
-                                    NavDisplay(
-                                        backStack = backStack,
-                                        modifier = Modifier.fillMaxSize(),
-                                        onBack = { navController.pop() },
-                                        transitionSpec = {
-                                            val initialIndex =
-                                                previousRoute?.let(Tab::fromRoute)?.index ?: 0
-                                            val targetIndex =
-                                                currentRoute?.let(Tab::fromRoute)?.index ?: 0
-                                            if (initialIndex != targetIndex) {
-                                                val dir = if (targetIndex > initialIndex) 1 else -1
-                                                (slideInHorizontally { dir * it } +
-                                                    fadeIn()) togetherWith
-                                                    (slideOutHorizontally { dir * -it } + fadeOut())
-                                            } else {
-                                                (slideInHorizontally { it } + fadeIn()) togetherWith
-                                                    (slideOutHorizontally { -it } + fadeOut())
+                                        },
+                                        elevation = 1.dp,
+                                        shadowAmbientColor =
+                                            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f),
+                                        shadowSpotColor =
+                                            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+                                        border = {
+                                            BorderStroke(
+                                                0.dp,
+                                                androidx.compose.ui.graphics.Color.Transparent,
+                                            )
+                                        },
+                                        actionSlot = { toast ->
+                                            (toast.action as? TextToastAction)?.let { action ->
+                                                TextButton(
+                                                    onClick = { action.onClick(toast) },
+                                                    colors =
+                                                        ButtonDefaults.textButtonColors(
+                                                            contentColor =
+                                                                MaterialTheme.colorScheme.primary,
+                                                        ),
+                                                    modifier = Modifier.fillMaxWidth(.25f),
+                                                    contentPadding =
+                                                        PaddingValues(horizontal = 12.dp),
+                                                ) {
+                                                    Text(
+                                                        text = action.text,
+                                                        fontWeight = FontWeight.Medium,
+                                                        softWrap = true,
+                                                        maxLines = 5,
+                                                    )
+                                                }
                                             }
                                         },
-                                        popTransitionSpec = {
-                                            (slideInHorizontally { -it } + fadeIn()) togetherWith
-                                                (slideOutHorizontally { it } + fadeOut())
+                                        iconSlot = { toast ->
+                                            val (icon, color) =
+                                                (toast.icon as? ImageVector)?.let {
+                                                    it to MaterialTheme.colorScheme.primary
+                                                }
+                                                    ?: when (toast.type) {
+                                                        ToastType.Success ->
+                                                            Icons.Outlined.CheckCircleOutline to
+                                                                SilverTree
+                                                        ToastType.Error ->
+                                                            Icons.Outlined.ErrorOutline to AlertRed
+                                                        ToastType.Warning ->
+                                                            Icons.Outlined.WarningAmber to Straw
+                                                        ToastType.Info ->
+                                                            Icons.Outlined.Info to
+                                                                MaterialTheme.colorScheme.onSurface
+                                                        ToastType.Normal ->
+                                                            Icons.Outlined.FavoriteBorder to Heart
+                                                    }
+                                            Icon(
+                                                imageVector = icon,
+                                                contentDescription = null,
+                                                tint = color,
+                                                modifier = Modifier.padding(end = 12.dp),
+                                            )
                                         },
-                                        predictivePopTransitionSpec = {
-                                            (slideInHorizontally { -it } + fadeIn()) togetherWith
-                                                (slideOutHorizontally { it } + fadeOut())
+                                        contentColor = { MaterialTheme.colorScheme.onSurface },
+                                        shape = { RoundedCornerShape(16.dp) },
+                                        closeButton = { toast ->
+                                            ToastCloseButton(
+                                                onClick = { toaster.dismiss(toast) },
+                                                modifier = Modifier.align(Alignment.TopEnd),
+                                                offset = DpOffset(8.dp, (-8).dp),
+                                            )
                                         },
-                                        entryDecorators =
-                                            listOf(
-                                                rememberSaveableStateHolderNavEntryDecorator(),
-                                                rememberViewModelStoreNavEntryDecorator(),
-                                            ),
-                                        entryProvider =
-                                            entryProvider {
-                                                entry<Route.Lock> {
-                                                    PinManager.initialize(
-                                                        context = this@MainActivity
-                                                    )
-                                                    PinLockScreen()
-                                                }
-                                                entry<Route.Tunnels> { TunnelsScreen() }
-                                                entry<Route.TunnelSettings> { key ->
-                                                    val viewModel: TunnelViewModel =
-                                                        koinViewModel(
-                                                            parameters = { parametersOf(key.id) }
-                                                        )
-                                                    TunnelSettingsScreen(viewModel)
-                                                }
-                                                entry<Route.Config> { key ->
-                                                    val viewModel: TunnelViewModel =
-                                                        koinViewModel(
-                                                            parameters = { parametersOf(key.id) }
-                                                        )
-                                                    ConfigScreen(viewModel, key.live)
-                                                }
-                                                entry<Route.SplitTunnel> { key ->
-                                                    val viewModel: SplitTunnelViewModel =
-                                                        koinViewModel(
-                                                            parameters = { parametersOf(key.id) }
-                                                        )
-                                                    SplitTunnelScreen(viewModel)
-                                                }
-                                                entry<Route.ConfigEdit> { key ->
-                                                    val viewModel: ConfigEditViewModel =
-                                                        koinViewModel(
-                                                            parameters = { parametersOf(key.id) }
-                                                        )
-                                                    ConfigEditScreen(viewModel)
-                                                }
-                                                entry<Route.LocationDisclosure> {
-                                                    LocationDisclosureScreen()
-                                                }
-                                                entry<Route.AutoTunnel> { AutoTunnelScreen() }
-                                                entry<Route.WifiPreferences> {
-                                                    WifiSettingsScreen()
-                                                }
-                                                entry<Route.WifiDetectionMethod> {
-                                                    WifiDetectionMethodScreen()
-                                                }
-                                                entry<Route.Settings> { SettingsScreen() }
-                                                entry<Route.AndroidIntegrations> {
-                                                    AndroidIntegrationsScreen()
-                                                }
-                                                entry<Route.Dns> { DnsSettingsScreen() }
-                                                entry<Route.ConfigGlobal> { key ->
-                                                    val viewModel: ConfigEditViewModel =
-                                                        koinViewModel(
-                                                            parameters = { parametersOf(key.id) }
-                                                        )
-                                                    ConfigEditScreen(viewModel)
-                                                }
-                                                entry<Route.SplitTunnelGlobal> { key ->
-                                                    val viewModel: SplitTunnelViewModel =
-                                                        koinViewModel(
-                                                            parameters = { parametersOf(key.id) }
-                                                        )
-                                                    SplitTunnelScreen(viewModel)
-                                                }
-                                                entry<Route.IPv6> { key ->
-                                                    val viewModel: TunnelViewModel =
-                                                        koinViewModel(
-                                                            parameters = { parametersOf(key.id) }
-                                                        )
-                                                    IPv6Screen(viewModel)
-                                                }
-                                                entry<Route.EntryTunnel> { key ->
-                                                    val viewModel: TunnelViewModel =
-                                                        koinViewModel(
-                                                            parameters = { parametersOf(key.id) }
-                                                        )
-                                                    EntryTunnelScreen(viewModel)
-                                                }
-                                                entry<Route.LockdownSettings> {
-                                                    LockdownSettingsScreen()
-                                                }
-                                                entry<Route.ProxySettings> { ProxySettingsScreen() }
-                                                entry<Route.Appearance> { AppearanceScreen() }
-                                                entry<Route.Language> { LanguageScreen() }
-                                                entry<Route.Display> { DisplayScreen() }
-                                                entry<Route.Notifications> { NotificationsScreen() }
-                                                entry<Route.Logs> { LogsScreen() }
-                                                entry<Route.Support> { SupportScreen() }
-                                                entry<Route.License> { LicenseScreen() }
-                                                entry<Route.Donate> { DonateScreen() }
-                                                entry<Route.Addresses> { AddressesScreen() }
-                                                entry<Route.PreferredTunnel> { key ->
-                                                    PreferredTunnelScreen(key.tunnelNetwork)
-                                                }
-                                                entry<Route.TunnelGlobals> { TunnelGlobalsScreen() }
-                                                entry<Route.Security> { SecurityScreen() }
-                                                entry<Route.Monitoring> { MonitoringScreen() }
-                                                entry<Route.TunnelRecovery> {
-                                                    TunnelRecoveryScreen()
-                                                }
-                                            },
                                     )
                                 }
                             }
-                            Toaster(
-                                state = toaster,
-                                maxVisibleToasts = 1,
-                                alignment = Alignment.BottomCenter,
-                                offset = IntOffset(0, -220),
-                                richColors = true,
-                                background = {
-                                    Brush.linearGradient(
-                                        listOf(
-                                            MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp),
-                                            MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp),
-                                        )
-                                    )
-                                },
-                                elevation = 1.dp,
-                                shadowAmbientColor =
-                                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f),
-                                shadowSpotColor =
-                                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
-                                border = {
-                                    BorderStroke(
-                                        0.dp,
-                                        androidx.compose.ui.graphics.Color.Transparent,
-                                    )
-                                },
-                                actionSlot = { toast ->
-                                    (toast.action as? TextToastAction)?.let { action ->
-                                        TextButton(
-                                            onClick = { action.onClick(toast) },
-                                            colors =
-                                                ButtonDefaults.textButtonColors(
-                                                    contentColor = MaterialTheme.colorScheme.primary
-                                                ),
-                                            modifier = Modifier.fillMaxWidth(.25f),
-                                            contentPadding = PaddingValues(horizontal = 12.dp),
-                                        ) {
-                                            Text(
-                                                text = action.text,
-                                                fontWeight = FontWeight.Medium,
-                                                softWrap = true,
-                                                maxLines = 5,
-                                            )
-                                        }
-                                    }
-                                },
-                                iconSlot = { toast ->
-                                    val (icon, color) =
-                                        (toast.icon as? ImageVector)?.let {
-                                            it to MaterialTheme.colorScheme.primary
-                                        }
-                                            ?: when (toast.type) {
-                                                ToastType.Success ->
-                                                    Icons.Outlined.CheckCircleOutline to SilverTree
-                                                ToastType.Error ->
-                                                    Icons.Outlined.ErrorOutline to AlertRed
-                                                ToastType.Warning ->
-                                                    Icons.Outlined.WarningAmber to Straw
-                                                ToastType.Info ->
-                                                    Icons.Outlined.Info to
-                                                        MaterialTheme.colorScheme.onSurface
-                                                ToastType.Normal ->
-                                                    Icons.Outlined.FavoriteBorder to Heart
-                                            }
-                                    Icon(
-                                        imageVector = icon,
-                                        contentDescription = null,
-                                        tint = color,
-                                        modifier = Modifier.padding(end = 12.dp),
-                                    )
-                                },
-                                contentColor = { MaterialTheme.colorScheme.onSurface },
-                                shape = { RoundedCornerShape(16.dp) },
-                                closeButton = { toast ->
-                                    ToastCloseButton(
-                                        onClick = { toaster.dismiss(toast) },
-                                        modifier = Modifier.align(Alignment.TopEnd),
-                                        offset = DpOffset(8.dp, (-8).dp),
-                                    )
-                                },
-                            )
+                        }
+
+                        val lockAlpha = remember { Animatable(if (showLock) 1f else 0f) }
+                        LaunchedEffect(showLock) {
+                            if (showLock) lockAlpha.snapTo(1f)
+                            else lockAlpha.animateTo(0f, tween(durationMillis = LOCK_FADE_OUT_MS))
+                        }
+                        if (showLock || lockAlpha.value > 0f) {
+                            Box(
+                                modifier =
+                                    Modifier.fillMaxSize().graphicsLayer {
+                                        alpha = if (showLock) 1f else lockAlpha.value
+                                    },
+                            ) {
+                                PinLockOverlay(active = showLock, backKey = backStack.size) {
+                                    finish()
+                                }
+                            }
                         }
                     }
                 }
@@ -870,6 +990,12 @@ class MainActivity : AppCompatActivity() {
                 viewModel.promptWgImport(httpsUrl)
             }
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        // Before the first frame back, rather than after the foreground event reaches the lock
+        appLockManager.relockIfExpired()
     }
 
     override fun onResume() {
@@ -896,7 +1022,7 @@ class MainActivity : AppCompatActivity() {
                 FileUtils.OCTET_STREAM_MIME_TYPE,
                 "application/vnd.sqlite3",
                 FileUtils.ALL_FILE_TYPES,
-            )
+            ),
         )
     }
 
@@ -939,7 +1065,7 @@ class MainActivity : AppCompatActivity() {
             GlobalSideEffect.Snackbar(
                 StringValue.StringResource(message),
                 ToastType.Error,
-            )
+            ),
         )
     }
 
@@ -988,8 +1114,15 @@ class MainActivity : AppCompatActivity() {
                     Timber.d("Ignoring non-config URI in handleIncomingIntent: $uri")
                     return
                 }
-                viewModel.importFromUri(uri)
+                pendingConfigImport.value = uri
             }
         }
     }
 }
+
+private const val LOCK_FADE_OUT_MS = 220
+
+private fun Modifier.lockedContent(locked: Boolean): Modifier =
+    this.then(if (locked) Modifier.clearAndSetSemantics {} else Modifier)
+        .focusProperties { onEnter = { if (locked) cancelFocusChange() } }
+        .focusGroup()

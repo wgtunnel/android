@@ -110,6 +110,7 @@ class ConfigEditViewModel(
                                 tunnel = tunnel,
                                 tunnels = snapshot.tunnels,
                                 isRunning = snapshot.isRunning,
+                                globalSettings = snapshot.globalSettings,
                                 globalInterface = snapshot.globalInterface,
                             )
                         }
@@ -124,7 +125,7 @@ class ConfigEditViewModel(
                 GlobalSideEffect.Snackbar(
                     StringValue.StringResource(R.string.tunnel_name_taken),
                     ToastType.Error,
-                )
+                ),
             )
 
             return@intent
@@ -135,15 +136,13 @@ class ConfigEditViewModel(
                 GlobalSideEffect.Snackbar(
                     StringValue.StringResource(R.string.name_error_empty),
                     ToastType.Error,
-                )
+                ),
             )
             return@intent
         }
 
         runCatching {
-            val config = state.draft.config.buildConfig(state.draft.tunnelName)
-
-            config.validate()
+            val config = state.draft.config.validatedConfig(state.draft.tunnelName)
 
             val tunnelConfig =
                 if (tunnelId == null) {
@@ -165,10 +164,6 @@ class ConfigEditViewModel(
             tunnelConfig?.let {
                 tunnelRepository.save(it)
 
-                dnsSettingsRepository.updateGlobalDnsEnabled(state.globalSettings.dnsEnabled)
-
-                settingsRepository.updateGlobalAmneziaEnabled(state.globalSettings.amneziaEnabled)
-
                 if (restart && state.isRunning) {
                     tunnelCoordinator.stopTunnel(it.id)
                     tunnelCoordinator.startTunnel(it)
@@ -178,7 +173,7 @@ class ConfigEditViewModel(
                     GlobalSideEffect.Snackbar(
                         StringValue.StringResource(R.string.config_changes_saved),
                         ToastType.Success,
-                    )
+                    ),
                 )
 
                 postSideEffect(GlobalSideEffect.PopBackStack)
@@ -202,17 +197,13 @@ class ConfigEditViewModel(
 
         reduce {
             state.copy(
-                draft = state.draft.copy(config = state.draft.config.copy(peers = updatedPeers))
+                draft = state.draft.copy(config = state.draft.config.copy(peers = updatedPeers)),
             )
         }
     }
 
     suspend fun postSideEffect(globalSideEffect: GlobalSideEffect) {
         globalEffectRepository.post(globalSideEffect)
-    }
-
-    fun setGlobalTunnelDnsEnabled(to: Boolean) = intent {
-        reduce { state.copy(globalSettings = state.globalSettings.copy(dnsEnabled = to)) }
     }
 
     fun onToggleLan(index: Int) = intent {
@@ -234,7 +225,7 @@ class ConfigEditViewModel(
 
         reduce {
             state.copy(
-                draft = state.draft.copy(config = state.draft.config.copy(peers = updatedPeers))
+                draft = state.draft.copy(config = state.draft.config.copy(peers = updatedPeers)),
             )
         }
     }
@@ -244,7 +235,7 @@ class ConfigEditViewModel(
 
         reduce {
             state.copy(
-                draft = state.draft.copy(config = state.draft.config.copy(peers = updatedPeers))
+                draft = state.draft.copy(config = state.draft.config.copy(peers = updatedPeers)),
             )
         }
     }
@@ -260,9 +251,9 @@ class ConfigEditViewModel(
                     state.draft.copy(
                         config =
                             state.draft.config.copy(
-                                peers = state.draft.config.peers + EditablePeer()
-                            )
-                    )
+                                peers = state.draft.config.peers + EditablePeer(),
+                            ),
+                    ),
             )
         }
     }
@@ -272,8 +263,8 @@ class ConfigEditViewModel(
             state.copy(
                 draft =
                     state.draft.copy(
-                        config = state.draft.config.copy(`interface` = editableInterface)
-                    )
+                        config = state.draft.config.copy(`interface` = editableInterface),
+                    ),
             )
         }
     }
@@ -307,10 +298,6 @@ class ConfigEditViewModel(
 
         onInterfaceChange(updated)
         reduce { state.copy(ui = state.ui.copy(showAmneziaValues = true)) }
-    }
-
-    fun setGlobalAmneziaEnabled(to: Boolean) = intent {
-        reduce { state.copy(globalSettings = state.globalSettings.copy(amneziaEnabled = to)) }
     }
 
     fun toggleShowScripts() = intent {

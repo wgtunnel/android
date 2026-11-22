@@ -3,6 +3,9 @@ name: publish-play-listing
 on:
   workflow_dispatch:
   workflow_call:
+    secrets:
+      SERVICE_ACCOUNT_JSON:
+        required: true
 
 permissions:
   contents: read
@@ -12,13 +15,17 @@ jobs:
     name: Publish Play Store listing
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Create service_account.json
-        run: echo '${{ secrets.SERVICE_ACCOUNT_JSON }}' > service_account.json
+        env:
+          SERVICE_ACCOUNT_JSON: ${{ secrets.SERVICE_ACCOUNT_JSON }}
+        run: printf '%s' "$SERVICE_ACCOUNT_JSON" > service_account.json
 
       - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
+        uses: ruby/setup-ruby@v1.338.0
         with:
           ruby-version: "3.4"
           bundler-cache: true

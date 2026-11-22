@@ -15,6 +15,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.zaneschepke.wireguardautotunnel.R
+import com.zaneschepke.wireguardautotunnel.ui.screens.pin.LocalAppLocked
 
 @Composable
 fun rememberRestartToApplyChanges(
@@ -25,7 +26,7 @@ fun rememberRestartToApplyChanges(
     val latestOnSave by rememberUpdatedState(onSave)
     val latestNeedsRestart by rememberUpdatedState(needsRestart)
 
-    if (show) {
+    if (show && !LocalAppLocked.current) {
         MaterialTheme(colorScheme = MaterialTheme.colorScheme.copy()) {
             Surface(color = MaterialTheme.colorScheme.surface, tonalElevation = 0.dp) {
                 AlertDialog(
@@ -35,7 +36,7 @@ fun rememberRestartToApplyChanges(
                             onClick = {
                                 show = false
                                 latestOnSave(true)
-                            }
+                            },
                         ) {
                             Text(stringResource(R.string.save_and_restart))
                         }
@@ -45,7 +46,7 @@ fun rememberRestartToApplyChanges(
                             onClick = {
                                 show = false
                                 latestOnSave(false)
-                            }
+                            },
                         ) {
                             Text(stringResource(R.string.save))
                         }

@@ -34,7 +34,7 @@ val MIGRATION_23_24 =
                 `is_always_on_vpn_enabled` INTEGER NOT NULL DEFAULT 0,
                 `is_lan_on_kill_switch_enabled` INTEGER NOT NULL DEFAULT 0
             )
-            """
+            """,
                 )
 
                 db.execSQL(
@@ -52,7 +52,7 @@ val MIGRATION_23_24 =
                 `is_tunnel_on_unsecure_enabled` INTEGER NOT NULL DEFAULT 0,
                 `wifi_detection_method` INTEGER NOT NULL DEFAULT 0
             )
-            """
+            """,
                 )
 
                 db.execSQL(
@@ -67,7 +67,7 @@ val MIGRATION_23_24 =
                 `show_detailed_ping_stats` INTEGER NOT NULL DEFAULT 0,
                 `is_local_logs_enabled` INTEGER NOT NULL DEFAULT 0
             )
-            """
+            """,
                 )
 
                 db.execSQL(
@@ -77,7 +77,7 @@ val MIGRATION_23_24 =
                 `dns_protocol` INTEGER NOT NULL DEFAULT 0,
                 `dns_endpoint` TEXT
             )
-            """
+            """,
                 )
 
                 db.execSQL(
@@ -98,13 +98,13 @@ val MIGRATION_23_24 =
                 `position` INTEGER NOT NULL DEFAULT 0,
                 `auto_tunnel_apps` TEXT NOT NULL DEFAULT '[]'
             )
-            """
+            """,
                 )
 
                 db.execSQL(
                     """
             CREATE UNIQUE INDEX `index_tunnel_config_name` ON `tunnel_config` (`name`)
-            """
+            """,
                 )
 
                 try {
@@ -125,7 +125,7 @@ val MIGRATION_23_24 =
                     COALESCE(`is_always_on_vpn_enabled`, 0),
                     COALESCE(`is_lan_on_kill_switch_enabled`, 0)
                 FROM `Settings`
-                """
+                """,
                     )
                     Timber.d("Migrated data to general_settings")
                 } catch (e: Exception) {
@@ -156,7 +156,7 @@ val MIGRATION_23_24 =
                     COALESCE(`is_tunnel_on_unsecure_enabled`, 0),
                     COALESCE(`wifi_detection_method`, 0)
                 FROM `Settings`
-                """
+                """,
                     )
                     Timber.d("Migrated data to auto_tunnel_settings")
                 } catch (e: Exception) {
@@ -182,7 +182,7 @@ val MIGRATION_23_24 =
                     COALESCE(`tunnel_ping_attempts`, 3),
                     COALESCE(`tunnel_ping_timeout_sec`, NULL)
                 FROM `Settings`
-                """
+                """,
                     )
                     Timber.d("Migrated data to monitoring_settings")
                 } catch (e: Exception) {
@@ -204,7 +204,7 @@ val MIGRATION_23_24 =
                     COALESCE(`dns_protocol`, 0),
                     COALESCE(`dns_endpoint`, NULL)
                 FROM `Settings`
-                """
+                """,
                     )
                     Timber.d("Migrated data to dns_settings")
                 } catch (e: Exception) {
@@ -227,7 +227,7 @@ val MIGRATION_23_24 =
                     `ping_target`, `is_ethernet_tunnel`, `is_ipv4_preferred`, `position`,
                     `auto_tunnel_apps`
                 FROM `TunnelConfig`
-                """
+                """,
                     )
                 } catch (e: Exception) {
                     Timber.e(e, "Failed to migrate data to tunnel_config")
@@ -329,7 +329,7 @@ val MIGRATION_25_26 =
                     `dual_stack` INTEGER NOT NULL DEFAULT 0
                 )
                 """
-                    .trimIndent()
+                    .trimIndent(),
             )
 
             val cursor =
@@ -367,7 +367,7 @@ val MIGRATION_25_26 =
                     `custom_split_packages` TEXT NOT NULL DEFAULT '{}'
                 )
                 """
-                    .trimIndent()
+                    .trimIndent(),
             )
 
             db.execSQL(
@@ -403,7 +403,7 @@ val MIGRATION_25_26 =
                     `custom_split_packages`
                 FROM `general_settings`
                 """
-                    .trimIndent()
+                    .trimIndent(),
             )
 
             db.execSQL("DROP TABLE `general_settings`")
@@ -436,7 +436,7 @@ val MIGRATION_28_29 =
                     `is_metered` INTEGER NOT NULL DEFAULT false 
                 )
                 """
-                    .trimIndent()
+                    .trimIndent(),
             )
 
             database.execSQL(
@@ -454,13 +454,13 @@ val MIGRATION_28_29 =
                     `auto_tunnel_apps`, 0 AS `is_metered`
                 FROM `tunnel_config`
                 """
-                    .trimIndent()
+                    .trimIndent(),
             )
 
             database.execSQL("DROP TABLE `tunnel_config`")
             database.execSQL("ALTER TABLE `tunnel_config_new` RENAME TO `tunnel_config`")
             database.execSQL(
-                "CREATE UNIQUE INDEX IF NOT EXISTS `index_tunnel_config_name` ON `tunnel_config` (`name`)"
+                "CREATE UNIQUE INDEX IF NOT EXISTS `index_tunnel_config_name` ON `tunnel_config` (`name`)",
             )
         }
     }

@@ -11,6 +11,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.zaneschepke.wireguardautotunnel.R
 import com.zaneschepke.wireguardautotunnel.ui.common.text.DescriptionText
+import com.zaneschepke.wireguardautotunnel.ui.screens.pin.LocalAppLocked
 import com.zaneschepke.wireguardautotunnel.util.extensions.toAgoDisplay
 
 @Composable
@@ -19,6 +20,7 @@ fun RecoveryDetailsDialog(
     lastEventMs: Long,
     onDismiss: () -> Unit,
 ) {
+    if (LocalAppLocked.current) return
     val lastEvent =
         lastEventMs.takeIf { it > 0L }?.div(1000)?.toAgoDisplay()
             ?: stringResource(R.string.never).lowercase()

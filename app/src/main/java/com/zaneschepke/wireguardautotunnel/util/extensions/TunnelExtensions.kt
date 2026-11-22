@@ -59,7 +59,7 @@ fun InterfaceSection.isAmneziaEnabled(): Boolean {
 fun DnsSettings.toTunnelDnsConfigOrNull(config: Config): TunnelDnsConfig? {
     fun getHost(endpoint: String): String =
         TunnelDnsConfig.splitHostPort(
-                endpoint.removePrefix("https://").removePrefix("http://").substringBefore("/")
+                endpoint.removePrefix("https://").removePrefix("http://").substringBefore("/"),
             )
             ?.first
             ?: runCatching { URI(endpoint).host }.getOrNull()
@@ -70,7 +70,7 @@ fun DnsSettings.toTunnelDnsConfigOrNull(config: Config): TunnelDnsConfig? {
             val endpoints = config.parseDnsServersOnly().map { DnsHostUtils.ensurePort53(it) }
             if (endpoints.isEmpty()) {
                 throw BackendException.ConfigMissingDNS(
-                    "Split with tunnel DNS requires DNS servers in the tunnel config"
+                    "Split with tunnel DNS requires DNS servers in the tunnel config",
                 )
             }
             Triple("plain", null, endpoints)
@@ -78,7 +78,7 @@ fun DnsSettings.toTunnelDnsConfigOrNull(config: Config): TunnelDnsConfig? {
             val endpoint =
                 tunnelDnsEndpoint
                     ?: throw BackendException.ConfigMissingDNS(
-                        "Endpoint missing for split DNS mode"
+                        "Endpoint missing for split DNS mode",
                     )
             when (tunnelDnsProtocol) {
                 TunnelDnsProtocol.Doh -> Triple("doh", getHost(endpoint), listOf(endpoint))
@@ -104,7 +104,7 @@ fun DnsSettings.toTunnelDnsConfigOrNull(config: Config): TunnelDnsConfig? {
             val endpoint =
                 tunnelDnsEndpoint
                     ?: throw BackendException.ConfigMissingDNS(
-                        "No upstream endpoint configured for encrypted DNS mode"
+                        "No upstream endpoint configured for encrypted DNS mode",
                     )
             val (transport, host) =
                 when (tunnelDnsProtocol) {
@@ -112,7 +112,7 @@ fun DnsSettings.toTunnelDnsConfigOrNull(config: Config): TunnelDnsConfig? {
                     TunnelDnsProtocol.Dot -> "dot" to getHost(endpoint)
                     TunnelDnsProtocol.Plain ->
                         throw BackendException.ConfigMissingDNS(
-                            "Plain is invalid for encrypted mode"
+                            "Plain is invalid for encrypted mode",
                         )
                 }
             TunnelDnsConfig(

@@ -35,7 +35,7 @@ fun InfoNotice(
     AnimatedVisibility(visible = visible, enter = expandVertically(), exit = shrinkVertically()) {
         val colors =
             CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
+                containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
             )
         val shape = RoundedCornerShape(8.dp)
         val elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
