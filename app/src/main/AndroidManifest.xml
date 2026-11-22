@@ -296,9 +296,6 @@
 				android:resource="@xml/tunnel_control_round_widget_info" />
 		</receiver>
 		<receiver
-			android:name=".service.widget.TunnelWidgetToggleReceiver"
-			android:exported="false" />
-		<receiver
 			android:name=".core.broadcast.NotificationActionReceiver"
 			android:exported="false"
 			android:permission="${applicationId}.permission.CONTROL_TUNNELS">

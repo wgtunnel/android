@@ -10,6 +10,7 @@ import android.widget.RemoteViews
 import androidx.annotation.DrawableRes
 import androidx.annotation.LayoutRes
 import com.zaneschepke.wireguardautotunnel.R
+import com.zaneschepke.wireguardautotunnel.core.lock.PinGateActivity
 import com.zaneschepke.wireguardautotunnel.core.orchestration.TunnelCoordinator
 import com.zaneschepke.wireguardautotunnel.di.Scope
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
@@ -188,14 +189,15 @@ open class TunnelControlWidget : AppWidgetProvider(), KoinComponent {
             DisplayTunnelState.Disconnected -> Background.INACTIVE
         }
 
+    /**
+     * Toggles through [PinGateActivity], like the Quick Settings tile, so the app lock also covers
+     * the widget. Without a PIN to enter, the transparent activity toggles and closes at once.
+     */
     private fun togglePendingIntent(context: Context): PendingIntent =
-        PendingIntent.getBroadcast(
+        PinGateActivity.pendingIntent(
             context,
             REQUEST_TOGGLE,
-            Intent(context, TunnelWidgetToggleReceiver::class.java).apply {
-                action = TunnelWidgetToggleReceiver.ACTION_TOGGLE
-            },
-            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
+            PinGateActivity.Action.TOGGLE_TUNNELS,
         )
 
     private fun openAppPendingIntent(context: Context): PendingIntent? {
