@@ -1,4 +1,5 @@
 repository: https://github.com/wgtunnel/android
+release_filter: '^nightly$'
 match: 'wgtunnel-standalone-v[0-9.]+-nightly\+git\.[0-9a-f]+\.apk$'
 prerelease_channel: nightly
 
