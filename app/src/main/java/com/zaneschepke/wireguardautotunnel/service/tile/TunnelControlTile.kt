@@ -74,7 +74,8 @@ class TunnelControlTile : TileService() {
                 val activeConfigs = tunnels.filter { active.containsKey(it.id) }
                 setActive(activeConfigs, tunnels, active)
             } else {
-                setInactive()
+                val next = withContext(Dispatchers.IO) { tunnelCoordinator.quickStartTunnels() }
+                setInactive(next)
             }
         }
     }
@@ -124,9 +125,16 @@ class TunnelControlTile : TileService() {
         }
     }
 
-    private fun setInactive() {
+    private fun setInactive(next: List<TunnelConfig>) {
         qsTile?.apply {
             state = Tile.STATE_INACTIVE
+            label =
+                when (next.size) {
+                    0 -> getString(R.string.tunnel_control)
+                    1 -> next.first().name
+                    else ->
+                        "${next.size} ${getString(R.string.tunnels).lowercase(Locale.getDefault())}"
+                }
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 subtitle = ""

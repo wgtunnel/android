@@ -39,5 +39,9 @@ interface AppStateRepository {
 
     suspend fun clearLastActiveTunnelIds()
 
+    suspend fun getLastUsedTunnelIds(): List<Int>
+
+    suspend fun setLastUsedTunnelIds(ids: List<Int>)
+
     val flow: Flow<AppState>
 }

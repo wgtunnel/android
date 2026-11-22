@@ -8,6 +8,9 @@ object ShortcutContract {
 
     const val EXTRA_CLASS_NAME = "className"
 
+    // Set only on the app's own VPN on shortcut
+    const val EXTRA_QUICK_START = "com.zaneschepke.wireguardautotunnel.shortcut.QUICK_START"
+
     enum class ShortcutType(val value: String) {
         TUNNEL("tunnel"),
         AUTO_TUNNEL("auto_tunnel"),

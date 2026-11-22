@@ -33,6 +33,7 @@ class DataStoreManager(
         val strictSplitDecided = booleanPreferencesKey("STRICT_SPLIT_DECIDED")
         val strictSplitNotice = stringPreferencesKey("STRICT_SPLIT_NOTICE")
         val lastActiveTunnelIds = stringPreferencesKey("LAST_ACTIVE_TUNNEL_IDS")
+        val lastUsedTunnelIds = stringPreferencesKey("LAST_USED_TUNNEL_IDS")
     }
 
     suspend fun init() {

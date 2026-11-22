@@ -15,6 +15,7 @@ import com.zaneschepke.wireguardautotunnel.core.event.TunnelEventDispatcher
 import com.zaneschepke.wireguardautotunnel.core.orchestration.AppBoostrapCoordinator
 import com.zaneschepke.wireguardautotunnel.core.orchestration.StartupCoordinator
 import com.zaneschepke.wireguardautotunnel.core.orchestration.TunnelCoordinator
+import com.zaneschepke.wireguardautotunnel.core.shortcut.ShortcutManager
 import com.zaneschepke.wireguardautotunnel.core.tunnel.AppProvider
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelOriginHolder
 import com.zaneschepke.wireguardautotunnel.core.tunnel.TunnelProvider
@@ -28,11 +29,13 @@ import com.zaneschepke.wireguardautotunnel.di.dispatchersModule
 import com.zaneschepke.wireguardautotunnel.di.networkModule
 import com.zaneschepke.wireguardautotunnel.di.tunnelBackendProviderModule
 import com.zaneschepke.wireguardautotunnel.di.workerModule
+import com.zaneschepke.wireguardautotunnel.domain.repository.GeneralSettingRepository
 import com.zaneschepke.wireguardautotunnel.notification.NotificationService
 import com.zaneschepke.wireguardautotunnel.util.Constants
 import com.zaneschepke.wireguardautotunnel.util.ReleaseTree
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
@@ -130,6 +133,21 @@ class WireGuardAutoTunnel : Application(), KoinComponent, Configuration.Provider
 
         applicationScope.launch(ioDispatcher) {
             boostrapCoordinator.bootstrap(this@WireGuardAutoTunnel)
+        }
+
+        refreshShortcuts()
+    }
+
+    private fun refreshShortcuts() {
+        if (!UserManagerCompat.isUserUnlocked(this)) return
+        applicationScope.launch(ioDispatcher) {
+            runCatching {
+                boostrapCoordinator.isReady.first { it }
+                if (get<GeneralSettingRepository>().getGeneralSettings().isShortcutsEnabled) {
+                    get<ShortcutManager>().addShortcuts()
+                }
+            }
+                .onFailure { Timber.w(it, "Failed to refresh shortcuts") }
         }
     }
 

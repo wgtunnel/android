@@ -65,6 +65,15 @@ class ShortcutCoordinator(
 
         val tunnelName = intent.getStringExtra(ShortcutContract.EXTRA_TUNNEL_NAME)
 
+        if (
+            tunnelName == null &&
+                intent.action == ShortcutContract.Action.START.name &&
+                intent.getBooleanExtra(ShortcutContract.EXTRA_QUICK_START, false)
+        ) {
+            tunnelCoordinator.quickStart()
+            return
+        }
+
         val tunnel =
             tunnelName?.let { tunnelsRepository.findByTunnelName(it) }
                 ?: tunnelsRepository.getDefaultTunnel()

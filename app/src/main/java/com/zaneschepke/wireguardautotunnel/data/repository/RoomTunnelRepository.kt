@@ -1,15 +1,21 @@
 package com.zaneschepke.wireguardautotunnel.data.repository
 
 import com.zaneschepke.wireguardautotunnel.data.dao.TunnelConfigDao
+import com.zaneschepke.wireguardautotunnel.data.dao.TunnelGroupDao
+import com.zaneschepke.wireguardautotunnel.data.entity.TunnelConfig as TunnelConfigEntity
 import com.zaneschepke.wireguardautotunnel.data.mapper.toDomain
 import com.zaneschepke.wireguardautotunnel.data.mapper.toEntity
 import com.zaneschepke.wireguardautotunnel.domain.model.TunnelConfig as Domain
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
+import com.zaneschepke.wireguardautotunnel.ui.state.tunnelsInListOrder
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 
-class RoomTunnelRepository(private val tunnelConfigDao: TunnelConfigDao) : TunnelRepository {
+class RoomTunnelRepository(
+    private val tunnelConfigDao: TunnelConfigDao,
+    private val tunnelGroupDao: TunnelGroupDao,
+) : TunnelRepository {
 
     override val flow =
         tunnelConfigDao.getAllFlow().map { it.map { tunnelConfig -> tunnelConfig.toDomain() } }
@@ -71,7 +77,15 @@ class RoomTunnelRepository(private val tunnelConfigDao: TunnelConfigDao) : Tunne
     }
 
     override suspend fun getDefaultTunnel(): Domain? {
-        return tunnelConfigDao.getDefaultTunnel()?.toDomain()
+        tunnelConfigDao
+            .findByPrimary()
+            .firstOrNull { it.name != TunnelConfigEntity.GLOBAL_CONFIG_NAME }
+            ?.let {
+                return it.toDomain()
+            }
+        val tunnels = userTunnelsFlow.firstOrNull().orEmpty()
+        val groups = tunnelGroupDao.getAll().map { it.toDomain() }
+        return tunnelsInListOrder(groups, tunnels).firstOrNull()
     }
 
     override suspend fun count(): Int {

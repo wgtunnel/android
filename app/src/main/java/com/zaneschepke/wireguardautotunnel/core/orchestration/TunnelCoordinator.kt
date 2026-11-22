@@ -188,7 +188,6 @@ class TunnelCoordinator(
         return runtimeSettingsSnapshotState.filterNotNull().first()
     }
 
-    private var lastActiveTunnels: List<Int> = emptyList()
     private val tunnelMutex = Mutex()
     private val _errors = MutableSharedFlow<TunnelErrorEvent>()
     val errors = _errors.asSharedFlow()
@@ -435,8 +434,6 @@ class TunnelCoordinator(
 
             val active = tunnelProvider.backendStatus.value.activeTunnels
             if (active.isNotEmpty()) {
-                lastActiveTunnels = active.keys.toList()
-
                 active.keys.forEach { id ->
                     _actions.emit(TunnelActionEvent.Stopped(tunnelId = id, source = source))
                 }
@@ -445,19 +442,24 @@ class TunnelCoordinator(
                 return@withLock
             }
 
-            val tunnelsToStart =
-                when {
-                    lastActiveTunnels.isNotEmpty() -> {
-                        lastActiveTunnels.mapNotNull { tunnelRepository.getById(it) }
-                    }
-
-                    else -> {
-                        tunnelRepository.getDefaultTunnel()?.let(::listOf) ?: emptyList()
-                    }
-                }
-
-            tunnelsToStart.forEach { startTunnelInternal(it, source) }
+            quickStartTunnels().forEach { startTunnelInternal(it, source) }
         }
+
+    suspend fun quickStart(source: TunnelActionSource = TunnelActionSource.USER) =
+        tunnelMutex.withLock {
+            bootstrapCoordinator.isReady.first { it }
+            if (tunnelProvider.backendStatus.value.activeTunnels.isNotEmpty()) return@withLock
+            if (source == TunnelActionSource.USER) {
+                markUserOverride()
+            }
+            quickStartTunnels().forEach { startTunnelInternal(it, source) }
+        }
+
+    suspend fun quickStartTunnels(): List<TunnelConfig> =
+        appStateRepository
+            .getLastUsedTunnelIds()
+            .mapNotNull { tunnelRepository.getById(it) }
+            .ifEmpty { listOfNotNull(tunnelRepository.getDefaultTunnel()) }
 
     private suspend fun stopTunnelInternal(id: Int, source: TunnelActionSource) {
         tunnelProvider
@@ -492,6 +494,7 @@ class TunnelCoordinator(
             appStateRepository.clearLastActiveTunnelIds()
         } else {
             appStateRepository.setLastActiveTunnelIds(ids.toList())
+            appStateRepository.setLastUsedTunnelIds(ids.toList())
         }
     }
 }
