@@ -230,7 +230,7 @@ open class TunnelControlWidget : AppWidgetProvider(), KoinComponent {
                             Intent(context, provider).apply {
                                 action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
                                 putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
-                            }
+                            },
                         )
                     }
                 }
