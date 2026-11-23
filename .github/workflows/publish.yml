@@ -255,7 +255,7 @@ jobs:
         run: printf '%s' "$SERVICE_ACCOUNT_JSON" > service_account.json
 
       - name: Set up Ruby
-        uses: ruby/setup-ruby@v1.338.0
+        uses: ruby/setup-ruby@v1.343.0
         with:
           ruby-version: '3.4'
           bundler-cache: true
