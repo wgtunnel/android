@@ -1,0 +1,19 @@
+# Plumber overlay: inherits every control from the CLI's built-in
+# baseline, only the differences for this repository are written here.
+# Run 'plumber config resolve' to see the full effective config.
+extends: plumber:default
+version: '2.0'
+
+github:
+  controls:
+    githubActionMustComeFromAuthorizedSources:
+      # Keep the curated default list and trust the five third-party
+      # actions the release, nightly and Crowdin workflows use, each one
+      # recorded in .github/workflows/actions.lock.
+      includePlumberDefaults: true
+      trustedGithubActions:
+        - andrii-bodnar/action-crowdin-contributors
+        - ClementTsang/delete-tag-and-release
+        - kaliber5/action-get-release
+        - requarks/changelog-action
+        - softprops/action-gh-release
