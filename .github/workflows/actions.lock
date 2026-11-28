@@ -29,7 +29,7 @@ workflows:
         - 'gradle/actions@v6.4.1'
     '.github/workflows/publish-play-listing.yml':
         - 'actions/checkout@v7.0.1'
-        - 'ruby/setup-ruby@v1.343.0'
+        - 'ruby/setup-ruby@v1.344.0'
     '.github/workflows/publish-zapstore.yml':
         - 'actions/checkout@v7.0.1'
         - 'actions/setup-go@v7.1.0'
@@ -39,7 +39,7 @@ workflows:
         - 'kaliber5/action-get-release@v1.0.0'
         - 'peter-evans/repository-dispatch@v4.0.1'
         - 'requarks/changelog-action@v1.11.0'
-        - 'ruby/setup-ruby@v1.343.0'
+        - 'ruby/setup-ruby@v1.344.0'
         - 'softprops/action-gh-release@v3.0.4'
 dependencies:
     'actions/checkout@v7.0.1':
@@ -102,9 +102,9 @@ dependencies:
         commit: 'sha1-7ce6be4c4d2233ae2a943694ca34f23aeafa1054'
         owner_id: 16729233
         repo_id: 450329078
-    'ruby/setup-ruby@v1.343.0':
-        ref: 'v1.343.0'
-        commit: 'sha1-be3c7df29b3349ec6bcfc6b4792f1cf9f5237d18'
+    'ruby/setup-ruby@v1.344.0':
+        ref: 'v1.344.0'
+        commit: 'sha1-78c62f2208e480ce3d5ae4dfd9b9e181acf48b63'
         owner_id: 210414
         repo_id: 231208785
     'softprops/action-gh-release@v3.0.4':
