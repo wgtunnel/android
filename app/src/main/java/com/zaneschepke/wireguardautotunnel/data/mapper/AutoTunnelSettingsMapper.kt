@@ -18,6 +18,7 @@ fun Entity.toDomain(): Domain =
         startOnBoot = startOnBoot,
         disableTunnelOnCaptivePortal = disableTunnelOnCaptivePortal,
         trustedNetworkBSSIDs = trustedNetworkBSSIDs,
+        isWifiWithoutInternetAsMobileEnabled = isWifiWithoutInternetAsMobileEnabled,
     )
 
 fun Domain.toEntity(): Entity =
@@ -35,4 +36,5 @@ fun Domain.toEntity(): Entity =
         startOnBoot = startOnBoot,
         disableTunnelOnCaptivePortal = disableTunnelOnCaptivePortal,
         trustedNetworkBSSIDs = trustedNetworkBSSIDs,
+        isWifiWithoutInternetAsMobileEnabled = isWifiWithoutInternetAsMobileEnabled,
     )

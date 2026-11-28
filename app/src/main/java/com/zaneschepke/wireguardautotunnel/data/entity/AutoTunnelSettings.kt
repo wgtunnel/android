@@ -31,4 +31,6 @@ data class AutoTunnelSettings(
     val disableTunnelOnCaptivePortal: Boolean = true,
     @ColumnInfo(name = "trusted_network_bssids", defaultValue = "[]")
     val trustedNetworkBSSIDs: List<String> = emptyList(),
+    @ColumnInfo(name = "is_wifi_without_internet_as_mobile_enabled", defaultValue = "1")
+    val isWifiWithoutInternetAsMobileEnabled: Boolean = true,
 )

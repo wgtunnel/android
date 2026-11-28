@@ -279,6 +279,10 @@ class AutoTunnelViewModel(
         autoTunnelRepository.updateDisableOnCaptivePortal(enabled)
     }
 
+    fun setWifiWithoutInternetAsMobile(enabled: Boolean) = intent {
+        autoTunnelRepository.updateWifiWithoutInternetAsMobile(enabled)
+    }
+
     fun removeTunnelNetwork(tunnel: TunnelConfig, ssid: String) = intent {
         tunnelsRepository.save(
             tunnel.copy(

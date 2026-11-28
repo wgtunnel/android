@@ -682,6 +682,8 @@
     <string name="trusted_bssid_desc">Access points that disable the tunnel</string>
     <string name="wildcard_bssid_desc">Supports * and ! for blacklisting</string>
     <string name="captive_portal_desc">Keeps tunnels disabled until captive portal is completed</string>
+    <string name="wifi_without_internet_as_mobile">Treat Wi-Fi without internet as mobile data</string>
+    <string name="wifi_without_internet_as_mobile_desc">Use mobile data rules when Android marks Wi-Fi as having no internet</string>
     <string name="add_bssid">Add BSSID</string>
     <string name="mapped_rules_count">Mapped rules: %d</string>
     <string name="bssid_in_use">This BSSID or pattern is already in use</string>

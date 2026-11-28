@@ -21,4 +21,7 @@ interface AutoTunnelSettingsDao {
 
     @Query("UPDATE auto_tunnel_settings SET disable_on_captive_portal = :enabled")
     suspend fun updateDisableOnCaptivePortal(enabled: Boolean)
+
+    @Query("UPDATE auto_tunnel_settings SET is_wifi_without_internet_as_mobile_enabled = :enabled")
+    suspend fun updateWifiWithoutInternetAsMobile(enabled: Boolean)
 }

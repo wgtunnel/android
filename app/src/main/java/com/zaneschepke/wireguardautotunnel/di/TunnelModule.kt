@@ -89,6 +89,12 @@ val tunnelBackendProviderModule = module {
                         .flow
                         .distinctUntilChangedBy { it.wifiDetectionMethod }
                         .map { it.wifiDetectionMethod.to() }
+
+                override val wifiWithoutInternetAsMobile =
+                    get<AutoTunnelSettingsRepository>()
+                        .flow
+                        .distinctUntilChangedBy { it.isWifiWithoutInternetAsMobileEnabled }
+                        .map { it.isWifiWithoutInternetAsMobileEnabled }
             },
             get<CoroutineScope>(named(Scope.APPLICATION)),
         )

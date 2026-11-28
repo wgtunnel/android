@@ -13,4 +13,6 @@ interface AutoTunnelSettingsRepository {
     suspend fun updateAutoTunnelEnabled(enabled: Boolean)
 
     suspend fun updateDisableOnCaptivePortal(enabled: Boolean)
+
+    suspend fun updateWifiWithoutInternetAsMobile(enabled: Boolean)
 }

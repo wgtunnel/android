@@ -66,6 +66,9 @@ class AndroidNetworkMonitor(
     interface ConfigurationListener {
         val detectionMethod: Flow<WifiDetectionMethod>
 
+        /** Report a Wi-Fi Android routes around for lack of internet as mobile data. */
+        val wifiWithoutInternetAsMobile: Flow<Boolean>
+
         // maybe this shouldn't just be a string result
         suspend fun runRootShellCommand(cmd: String): String?
     }
@@ -728,6 +731,28 @@ class AndroidNetworkMonitor(
             }
     }
 
+    /**
+     * Whether Android sends traffic over mobile data while this Wi-Fi stays associated, as when the
+     * Wi-Fi lost its internet validation. Without a VPN the default network shows it directly. With
+     * one the default is the VPN, so a Wi-Fi without validated internet next to a validated mobile
+     * network stands in. Captive portals keep their own handling.
+     */
+    private fun isWifiBypassedForCellular(
+        network: Network,
+        caps: NetworkCapabilities,
+        defaultNetwork: Network?,
+        defaultCaps: NetworkCapabilities?,
+        isVpnActive: Boolean,
+    ): Boolean {
+        if (caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_CAPTIVE_PORTAL)) return false
+        if (!isVpnActive && defaultNetwork != null && defaultCaps != null) {
+            return defaultNetwork != network &&
+                defaultCaps.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)
+        }
+        return !caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED) &&
+            activeCellularNetworks.value.values.any { hasValidatedInternet(it) }
+    }
+
     private fun hasValidatedInternet(caps: NetworkCapabilities?): Boolean {
         if (caps == null) return false
         return caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
@@ -886,7 +911,9 @@ class AndroidNetworkMonitor(
                 airplaneModeState,
                 configurationListener.detectionMethod,
                 privateDnsFlow,
-            ) { networkData, isAirplaneOn, detectionMethod, privateDnsSettings ->
+                configurationListener.wifiWithoutInternetAsMobile,
+            ) { networkData, isAirplaneOn, detectionMethod, privateDnsSettings, wifiWithoutInternetAsMobile
+                ->
                 val defaultEvent = networkData.defaultNetworkEvent
                 val permissions =
                     when (defaultEvent) {
@@ -929,6 +956,16 @@ class AndroidNetworkMonitor(
                         )
                     }
 
+                fun routedOverMobile(network: Network, caps: NetworkCapabilities): Boolean =
+                    wifiWithoutInternetAsMobile &&
+                        isWifiBypassedForCellular(
+                            network,
+                            caps,
+                            defaultNetwork,
+                            defaultCaps,
+                            isVpnActive,
+                        )
+
                 val physicalNetwork: ActiveNetwork =
                     when {
                         networkData.ethernetEvent is TransportEvent.CapabilitiesChanged &&
@@ -952,7 +989,11 @@ class AndroidNetworkMonitor(
                                 networkData.wifiNetworkEvent.networkCapabilities,
                             ) &&
                             (!defaultMissing ||
-                                networkPresent(networkData.wifiNetworkEvent.network)) -> {
+                                networkPresent(networkData.wifiNetworkEvent.network)) &&
+                            !routedOverMobile(
+                                networkData.wifiNetworkEvent.network,
+                                networkData.wifiNetworkEvent.networkCapabilities,
+                            ) -> {
                             val wifiEvent = networkData.wifiNetworkEvent
                             buildWifiNetwork(
                                 network = wifiEvent.network,
@@ -991,7 +1032,11 @@ class AndroidNetworkMonitor(
                             // as the capabilities won't have location restricted information
                             val oemFallbackWifiNetwork =
                                 if (isVpnActive && needsUnderlyingWifiFallback) {
-                                    findUnderlyingWifi()?.let { (network, caps) ->
+                                    findUnderlyingWifi()
+                                        ?.takeUnless { (network, caps) ->
+                                            routedOverMobile(network, caps)
+                                        }
+                                        ?.let { (network, caps) ->
                                         val method =
                                             if (detectionMethod == DEFAULT) {
                                                 LEGACY

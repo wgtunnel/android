@@ -11,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Filter1
 import androidx.compose.material.icons.outlined.Map
 import androidx.compose.material.icons.outlined.PublicOff
+import androidx.compose.material.icons.outlined.SignalWifiStatusbarConnectedNoInternet4
 import androidx.compose.material.icons.outlined.WifiFind
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -188,6 +189,29 @@ fun WifiSettingsScreen(viewModel: AutoTunnelViewModel = koinViewModel()) {
                     )
                 },
                 description = { DescriptionText(stringResource(R.string.captive_portal_desc)) },
+            )
+            SurfaceRow(
+                leading = {
+                    Icon(
+                        Icons.Outlined.SignalWifiStatusbarConnectedNoInternet4,
+                        contentDescription = null,
+                    )
+                },
+                title = stringResource(R.string.wifi_without_internet_as_mobile),
+                onClick = {
+                    viewModel.setWifiWithoutInternetAsMobile(
+                        !uiState.autoTunnelSettings.isWifiWithoutInternetAsMobileEnabled,
+                    )
+                },
+                trailing = {
+                    ThemedSwitch(
+                        checked = uiState.autoTunnelSettings.isWifiWithoutInternetAsMobileEnabled,
+                        onClick = { viewModel.setWifiWithoutInternetAsMobile(it) },
+                    )
+                },
+                description = {
+                    DescriptionText(stringResource(R.string.wifi_without_internet_as_mobile_desc))
+                },
             )
             SurfaceRow(
                 leading = { Icon(Icons.Outlined.Map, contentDescription = null) },

@@ -30,4 +30,8 @@ class RoomAutoTunnelSettingsRepository(private val autoTunnelSettingsDao: AutoTu
     override suspend fun updateDisableOnCaptivePortal(enabled: Boolean) {
         autoTunnelSettingsDao.updateDisableOnCaptivePortal(enabled)
     }
+
+    override suspend fun updateWifiWithoutInternetAsMobile(enabled: Boolean) {
+        autoTunnelSettingsDao.updateWifiWithoutInternetAsMobile(enabled)
+    }
 }

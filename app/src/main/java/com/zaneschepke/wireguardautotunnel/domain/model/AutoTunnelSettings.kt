@@ -16,4 +16,5 @@ data class AutoTunnelSettings(
     val startOnBoot: Boolean = false,
     val disableTunnelOnCaptivePortal: Boolean = true,
     val trustedNetworkBSSIDs: List<String> = emptyList(),
+    val isWifiWithoutInternetAsMobileEnabled: Boolean = true,
 )
