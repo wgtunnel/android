@@ -11,6 +11,7 @@ import com.zaneschepke.wireguardautotunnel.domain.repository.MonitoringSettingsR
 import com.zaneschepke.wireguardautotunnel.domain.repository.TunnelRepository
 import com.zaneschepke.wireguardautotunnel.service.tile.AutoTunnelTileRefresher
 import com.zaneschepke.wireguardautotunnel.service.tile.TunnelTileRefresher
+import com.zaneschepke.wireguardautotunnel.service.widget.TunnelControlWidget
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -55,6 +56,7 @@ class AppBoostrapCoordinator(
         } finally {
             TunnelTileRefresher.refresh(context)
             AutoTunnelTileRefresher.refresh(context)
+            TunnelControlWidget.refresh(context)
         }
     }
 
