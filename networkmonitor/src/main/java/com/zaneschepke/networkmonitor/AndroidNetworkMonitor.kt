@@ -421,6 +421,9 @@ class AndroidNetworkMonitor(
                 detectionMethod
             }
             .flatMapLatest { detectionMethod -> createWifiNetworkCallbackFlow(detectionMethod) }
+            // combine() emits nothing until every flow has. Associated to a local-only Wi-Fi
+            // (like wireless Android Auto), the callback flow may never emit, so we seed once here.
+            .onStart { emit(TransportEvent.Unknown) }
 
     private fun createWifiNetworkCallbackFlow(
         detectionMethod: WifiDetectionMethod,
