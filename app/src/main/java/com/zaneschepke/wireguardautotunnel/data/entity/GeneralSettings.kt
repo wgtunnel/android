@@ -26,7 +26,7 @@ data class GeneralSettings(
     @ColumnInfo(name = "is_pin_lock_enabled", defaultValue = "0")
     val isPinLockEnabled: Boolean = false,
     @ColumnInfo(name = "is_always_on_vpn_enabled", defaultValue = "0")
-    val isAlwaysOnVpnEnabled: Boolean = false,
+    val isAlwaysOnVpnEnabled: Boolean = true,
     @ColumnInfo(name = "already_donated", defaultValue = "0") val alreadyDonated: Boolean = false,
     @ColumnInfo(name = "screen_recording_security", defaultValue = "1")
     val screenRecordingSecurityEnabled: Boolean = true,

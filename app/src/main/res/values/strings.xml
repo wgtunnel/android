@@ -383,6 +383,7 @@
     <string name="ddns_success_message">Dynamic DNS endpoint successfully updated.</string>
     <string name="aovpn_description">Allows Android to start tunnels</string>
     <string name="tunnel_boot_description">Start the default tunnel on boot</string>
+    <string name="tunnel_boot_description_always_on">Start the default tunnel on boot. Not needed if WG Tunnel is set as Always-on VPN in Android settings</string>
     <string name="remote_key">Remote key</string>
     <string name="rotate_remote_key">Rotate key</string>
     <string name="remote_key_rotated">Remote key rotated</string>

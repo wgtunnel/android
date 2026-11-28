@@ -212,6 +212,22 @@ class TunnelCoordinator(
         startExclusive(config, source)
     }
 
+    /**
+     * For system start triggers. Boot and Always-on can both fire for the same start, and a start
+     * on an active tunnel would restart it, so this keeps whatever is already active or starting.
+     */
+    suspend fun startTunnelIfIdle(config: TunnelConfig) = tunnelMutex.withLock {
+        bootstrapCoordinator.isReady.first { it }
+
+        if (backendStatus.value.activeTunnels.isNotEmpty()) {
+            Timber.d("Tunnel already active, skipping start of ${config.name}")
+            return@withLock
+        }
+
+        markUserOverride()
+        startExclusive(config, TunnelActionSource.USER)
+    }
+
     // enforce single tunnel, for now. We do not clear the last active here as start success
     // replaces it
     private suspend fun startExclusive(config: TunnelConfig, source: TunnelActionSource) {

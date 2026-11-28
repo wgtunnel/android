@@ -38,7 +38,7 @@ class StartupCoordinator(
 
         val defaultTunnel = tunnelRepository.getDefaultTunnel() ?: return@runCatching
         Timber.d("Boot policy: starting default tunnel ${defaultTunnel.name}")
-        tunnelCoordinator.startTunnel(defaultTunnel)
+        tunnelCoordinator.startTunnelIfIdle(defaultTunnel)
     }
 
     suspend fun restoreAfterPackageReplace(): Result<Unit> = restoreRuntimeState("package replace")
@@ -99,8 +99,16 @@ class StartupCoordinator(
         }
 
         bootstrapCoordinator.isReady.first { it }
+
+        // Auto-tunnel decides which tunnel, if any, so Always-on does not override it
+        if (autoTunnelCoordinator.isEnabled()) {
+            Timber.d("Always-On trigger: starting auto-tunnel")
+            autoTunnelCoordinator.start()
+            return
+        }
+
         val defaultTunnel = tunnelRepository.getDefaultTunnel() ?: return
         Timber.d("Always-On trigger: starting default tunnel ${defaultTunnel.name}")
-        tunnelCoordinator.startTunnel(defaultTunnel)
+        tunnelCoordinator.startTunnelIfIdle(defaultTunnel)
     }
 }

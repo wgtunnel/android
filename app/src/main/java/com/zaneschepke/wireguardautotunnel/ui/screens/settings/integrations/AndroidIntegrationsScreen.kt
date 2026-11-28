@@ -24,7 +24,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -62,10 +61,6 @@ fun AndroidIntegrationsScreen(viewModel: SettingsViewModel = koinViewModel()) {
 
     val isAlwaysOnEnabled = settingsState.settings.isAlwaysOnVpnEnabled
 
-    LaunchedEffect(isAlwaysOnEnabled) {
-        if (isAlwaysOnEnabled) viewModel.setRestoreOnBootEnabled(false)
-    }
-
     Column(
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.Top),
@@ -102,20 +97,11 @@ fun AndroidIntegrationsScreen(viewModel: SettingsViewModel = koinViewModel()) {
                 Modifier.padding(horizontal = 16.dp),
             )
             SurfaceRow(
-                leading = {
-                    Icon(
-                        Icons.Outlined.Restore,
-                        contentDescription = null,
-                        tint =
-                            if (isAlwaysOnEnabled) MaterialTheme.colorScheme.outline
-                            else MaterialTheme.colorScheme.onSurface,
-                    )
-                },
+                leading = { Icon(Icons.Outlined.Restore, contentDescription = null) },
                 trailing = {
                     ThemedSwitch(
                         checked = settingsState.settings.isRestoreOnBootEnabled,
                         onClick = { viewModel.setRestoreOnBootEnabled(it) },
-                        enabled = !isAlwaysOnEnabled,
                     )
                 },
                 title = stringResource(R.string.restart_at_boot),
@@ -124,8 +110,15 @@ fun AndroidIntegrationsScreen(viewModel: SettingsViewModel = koinViewModel()) {
                         !settingsState.settings.isRestoreOnBootEnabled,
                     )
                 },
-                enabled = !isAlwaysOnEnabled,
-                description = { DescriptionText(stringResource(R.string.tunnel_boot_description)) },
+                description = {
+                    DescriptionText(
+                        stringResource(
+                            // TV has no system Always-on VPN to point to
+                            if (isTv) R.string.tunnel_boot_description
+                            else R.string.tunnel_boot_description_always_on,
+                        ),
+                    )
+                },
             )
             SurfaceRow(
                 leading = { Icon(Icons.Filled.AppShortcut, contentDescription = null) },

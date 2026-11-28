@@ -15,7 +15,7 @@ data class GeneralSettings(
     val remoteKey: String? = null,
     val isRemoteControlEnabled: Boolean = false,
     val isPinLockEnabled: Boolean = false,
-    val isAlwaysOnVpnEnabled: Boolean = false,
+    val isAlwaysOnVpnEnabled: Boolean = true,
     val isKillSwitchMetered: Boolean = true,
     val alreadyDonated: Boolean = false,
     val screenRecordingSecurityEnabled: Boolean = true,
